@@ -54,8 +54,8 @@ export function UsersFilters({
 
   return (
     <div className="space-y-4">
-      <div className="flex gap-2">
-        <div className="relative flex-1">
+      <div className="flex flex-wrap gap-2 items-center">
+        <div className="relative flex-1 min-w-[200px]">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder={t('users.filters.searchPlaceholder')}
@@ -69,7 +69,7 @@ export function UsersFilters({
           <SheetTrigger asChild>
             <Button 
               variant="outline" 
-              className="gap-2 cursor-pointer"
+              className="gap-2 cursor-pointer shrink-0"
             >
               <SlidersHorizontal className="h-4 w-4" />
               {t('users.filters.advanced')}
@@ -177,7 +177,7 @@ export function UsersFilters({
           <Button 
             variant="outline" 
             onClick={onClearFilters}
-            className="gap-2"
+            className="gap-2 shrink-0"
           >
             <X className="h-4 w-4" />
             {t('users.actions.resetFilters')}

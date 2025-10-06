@@ -114,37 +114,37 @@ export const usersApi = {
     const token = await getAuthToken();
     
     // Fetch counts for each category using minimal data
-    const [customersRes, adminsRes, activeRes, inactiveRes] = await Promise.all([
+    const [customersRes, adminsRes, allUsersRes] = await Promise.all([
       fetch(`${API_BASE_URL}/api/users?userType=customer&limit=1`, {
         headers: { 'Authorization': `Bearer ${token}` },
       }),
       fetch(`${API_BASE_URL}/api/users?userType=admin&limit=1`, {
         headers: { 'Authorization': `Bearer ${token}` },
       }),
-      fetch(`${API_BASE_URL}/api/users?disabled=false&limit=1`, {
-        headers: { 'Authorization': `Bearer ${token}` },
-      }),
-      fetch(`${API_BASE_URL}/api/users?disabled=true&limit=1`, {
+      fetch(`${API_BASE_URL}/api/users?limit=1000`, {
         headers: { 'Authorization': `Bearer ${token}` },
       }),
     ]);
 
-    const [customers, admins, active, inactive] = await Promise.all([
+    const [customers, admins, allUsers] = await Promise.all([
       handleResponse<UsersListResponse>(customersRes),
       handleResponse<UsersListResponse>(adminsRes),
-      handleResponse<UsersListResponse>(activeRes),
-      handleResponse<UsersListResponse>(inactiveRes),
+      handleResponse<UsersListResponse>(allUsersRes),
     ]);
 
     const totalCustomers = customers.data.pagination.totalDocs;
     const totalAdmins = admins.data.pagination.totalDocs;
+    
+    // Count active/inactive from all users
+    const activeUsers = allUsers.data.users.filter(user => !user.disabled).length;
+    const inactiveUsers = allUsers.data.users.filter(user => user.disabled).length;
 
     return {
       totalUsers: totalCustomers + totalAdmins,
       totalCustomers,
       totalAdmins,
-      activeUsers: active.data.pagination.totalDocs,
-      inactiveUsers: inactive.data.pagination.totalDocs,
+      activeUsers,
+      inactiveUsers,
     };
   },
 };
