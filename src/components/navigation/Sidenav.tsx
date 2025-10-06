@@ -25,10 +25,11 @@ export function Sidenav({ items, logo, footer, isCollapsed, expandedGroups, onTo
       animate={{ width: isCollapsed ? 80 : '33.333333%' }}
       transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
       className={cn(
-        'hidden xl:flex flex-col h-full',
+        'hidden xl:flex flex-col',
         'border-[hsl(var(--sidenav-border))] bg-[hsl(var(--sidenav-bg))]',
         'glass-card shadow-glass',
         isRTL ? 'border-l' : 'border-r',
+        'h-[calc(100vh-var(--header-height,64px))]'
       )}
       role="navigation"
       aria-label={t('nav.primary')}

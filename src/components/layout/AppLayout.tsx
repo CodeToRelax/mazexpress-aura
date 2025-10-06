@@ -56,7 +56,7 @@ export function AppLayout() {
       />
 
       {/* Full-width Top header */}
-      <header className="sticky top-0 z-30 border-b border-border/50 backdrop-blur-sm bg-background/80">
+      <header className="sticky top-0 z-30 border-b border-[hsl(var(--sidenav-border))] backdrop-blur-sm bg-[hsl(var(--sidenav-bg))]">
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center gap-3">
             {/* Mobile menu button */}
