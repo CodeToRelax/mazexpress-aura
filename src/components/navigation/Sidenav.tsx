@@ -25,7 +25,7 @@ export function Sidenav({ items, logo, footer, isCollapsed, expandedGroups, onTo
       animate={{ width: isCollapsed ? 80 : 288 }}
       transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
       className={cn(
-        'hidden xl:flex flex-col',
+        'hidden xl:flex flex-col overflow-hidden',
         'border-[hsl(var(--sidenav-border))] bg-[hsl(var(--sidenav-bg))]',
         'glass-card shadow-glass',
         isRTL ? 'border-l' : 'border-r',
