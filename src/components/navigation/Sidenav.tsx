@@ -1,5 +1,4 @@
 import { useTranslation } from 'react-i18next';
-import { motion } from 'framer-motion';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { LanguageToggle } from '@/components/ui/LanguageToggle';
 import { NavSection } from './NavSection';
@@ -20,16 +19,14 @@ export function Sidenav({ items, logo, footer, isCollapsed, expandedGroups, onTo
   const isRTL = document.documentElement.dir === 'rtl';
 
   return (
-    <motion.aside
-      initial={false}
-      animate={{ width: isCollapsed ? 80 : 288 }}
-      transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+    <aside
       className={cn(
         'hidden xl:flex flex-col overflow-hidden',
         'border-[hsl(var(--sidenav-border))] bg-[hsl(var(--sidenav-bg))]',
         'glass-card shadow-glass',
         isRTL ? 'border-l' : 'border-r',
-        'h-[calc(100vh-var(--header-height,64px))]'
+        'h-[calc(100vh-var(--header-height,64px))]',
+        isCollapsed ? 'w-20' : 'w-72'
       )}
       role="navigation"
       aria-label={t('nav.primary')}
@@ -53,6 +50,6 @@ export function Sidenav({ items, logo, footer, isCollapsed, expandedGroups, onTo
         <LanguageToggle />
         {!isCollapsed && footer}
       </div>
-    </motion.aside>
+    </aside>
   );
 }
