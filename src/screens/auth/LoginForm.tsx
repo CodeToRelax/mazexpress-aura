@@ -1,4 +1,4 @@
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
@@ -25,8 +25,7 @@ export function LoginForm({ onSubmit, isSubmitting, serverError }: LoginFormProp
     register,
     handleSubmit,
     formState: { errors },
-    setValue,
-    watch,
+    control,
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -35,8 +34,6 @@ export function LoginForm({ onSubmit, isSubmitting, serverError }: LoginFormProp
       rememberMe: false,
     },
   });
-  
-  const rememberMe = watch('rememberMe');
   
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -84,11 +81,17 @@ export function LoginForm({ onSubmit, isSubmitting, serverError }: LoginFormProp
       
       {/* Remember Me */}
       <div className="flex items-center space-x-2">
-        <Checkbox
-          id="rememberMe"
-          checked={rememberMe}
-          onCheckedChange={(checked) => setValue('rememberMe', !!checked)}
-          disabled={isSubmitting}
+        <Controller
+          name="rememberMe"
+          control={control}
+          render={({ field }) => (
+            <Checkbox
+              id="rememberMe"
+              checked={field.value}
+              onCheckedChange={field.onChange}
+              disabled={isSubmitting}
+            />
+          )}
         />
         <Label
           htmlFor="rememberMe"
