@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Settings, Loader2 } from 'lucide-react';
+import { ArrowLeft, Settings, Loader2, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CountryConfigCard } from './CountryConfigCard';
@@ -31,14 +31,24 @@ export default function SystemSettings() {
   const navigate = useNavigate();
   const [config, setConfig] = useState<SystemConfigData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const fetchConfig = async () => {
+  const fetchConfig = async (isRefresh = false) => {
+    if (isRefresh) {
+      setIsRefreshing(true);
+    }
     try {
       const data = await getSystemConfig();
       setConfig({
         lydExchangeRate: data.lydExchangeRate,
         countries: data.countries,
       });
+      if (isRefresh) {
+        toast({
+          title: 'Success',
+          description: 'Configuration refreshed successfully',
+        });
+      }
     } catch (error) {
       toast({
         title: 'Error',
@@ -47,6 +57,7 @@ export default function SystemSettings() {
       });
     } finally {
       setIsLoading(false);
+      setIsRefreshing(false);
     }
   };
 
@@ -89,6 +100,15 @@ export default function SystemSettings() {
               </div>
             </div>
           </div>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => fetchConfig(true)}
+            disabled={isRefreshing}
+            className="hover:bg-muted"
+          >
+            <RefreshCw className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''}`} />
+          </Button>
         </div>
       </header>
 
