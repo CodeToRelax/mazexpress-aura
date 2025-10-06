@@ -39,6 +39,15 @@
     --success: 160 84% 39%;
     --warning: 43 96% 56%;
     
+    /* Pastel Toast Colors */
+    --toast-success-bg: 142 76% 92%;
+    --toast-success-text: 142 71% 25%;
+    --toast-success-border: 142 50% 75%;
+    
+    --toast-error-bg: 0 100% 94%;
+    --toast-error-text: 0 70% 35%;
+    --toast-error-border: 0 60% 80%;
+    
     /* Glass Effects */
     --glass-blur: 24px;
     --glass-opacity: 0.75;
@@ -93,6 +102,15 @@
     --shadow-glass: 0 2px 12px 0 rgba(0, 0, 0, 0.25);
     --shadow-glass-hover: 0 4px 16px 0 rgba(0, 0, 0, 0.3);
     --glow-primary: 0 0 20px hsla(var(--primary-glow), 0.2);
+    
+    /* Pastel Toast Colors - Dark Mode */
+    --toast-success-bg: 142 60% 20%;
+    --toast-success-text: 142 76% 85%;
+    --toast-success-border: 142 50% 35%;
+    
+    --toast-error-bg: 0 60% 25%;
+    --toast-error-text: 0 100% 90%;
+    --toast-error-border: 0 50% 40%;
   }
 }
 

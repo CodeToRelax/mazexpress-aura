@@ -46,6 +46,7 @@ export function CountryConfigCard({ country, displayName, config, onUpdate }: Co
       toast({
         title: 'Success',
         description: `${displayName} configuration updated successfully`,
+        variant: 'success',
       });
       onUpdate();
     } catch (error) {
