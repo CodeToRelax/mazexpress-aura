@@ -1,6 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -61,13 +60,11 @@ export function NavItemRow({
     <>
       {/* Active indicator */}
       {isActive && (
-        <motion.div
-          layoutId="active-indicator"
+        <div
           className={cn(
             'absolute top-1/2 -translate-y-1/2 w-1 h-8 bg-[hsl(var(--sidenav-active))] rounded-full',
             isRTL ? 'right-0' : 'left-0',
           )}
-          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
         />
       )}
 
@@ -92,12 +89,13 @@ export function NavItemRow({
             </Badge>
           )}
           {hasChildren && (
-            <motion.div
-              animate={{ rotate: isExpanded ? 180 : 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <ChevronIcon className="h-4 w-4" aria-hidden="true" />
-            </motion.div>
+            <ChevronIcon 
+              className={cn(
+                'h-4 w-4 transition-transform duration-200',
+                isExpanded && 'rotate-180'
+              )} 
+              aria-hidden="true" 
+            />
           )}
         </>
       )}
@@ -164,27 +162,21 @@ export function NavItemRow({
           </TooltipProvider>
 
           {/* Flyout submenu */}
-          <AnimatePresence>
-            {showFlyout && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95, x: isRTL ? 10 : -10 }}
-                animate={{ opacity: 1, scale: 1, x: 0 }}
-                exit={{ opacity: 0, scale: 0.95, x: isRTL ? 10 : -10 }}
-                transition={{ duration: 0.15 }}
-                className={cn(
-                  'absolute top-0 z-50 min-w-[200px] rounded-2xl border border-[hsl(var(--sidenav-border))]',
-                  'bg-[hsl(var(--sidenav-flyout-bg))] shadow-glass p-2 space-y-1',
-                  isRTL ? 'right-full mr-2' : 'left-full ml-2',
-                )}
-                onMouseEnter={() => onFlyoutChange?.(true)}
-                onMouseLeave={() => onFlyoutChange?.(false)}
-              >
-                {item.children?.map((child) => (
-                  <NavItemRow key={child.id} item={child} isCollapsed={false} depth={depth + 1} />
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {showFlyout && (
+            <div
+              className={cn(
+                'absolute top-0 z-50 min-w-[200px] rounded-2xl border border-[hsl(var(--sidenav-border))]',
+                'bg-[hsl(var(--sidenav-flyout-bg))] shadow-glass p-2 space-y-1',
+                isRTL ? 'right-full mr-2' : 'left-full ml-2',
+              )}
+              onMouseEnter={() => onFlyoutChange?.(true)}
+              onMouseLeave={() => onFlyoutChange?.(false)}
+            >
+              {item.children?.map((child) => (
+                <NavItemRow key={child.id} item={child} isCollapsed={false} depth={depth + 1} />
+              ))}
+            </div>
+          )}
         </div>
       );
     }
