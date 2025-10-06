@@ -17,6 +17,7 @@ import { ColumnVisibilityToggle } from './ColumnVisibilityToggle';
 import { UsersStatsBar } from './UsersStatsBar';
 import { DeleteUserDialog } from './DeleteUserDialog';
 import { DeactivateUserDialog } from './DeactivateUserDialog';
+import { CreateUserDialog } from './CreateUserDialog';
 
 // localStorage keys
 const STORAGE_KEYS = {
@@ -88,6 +89,7 @@ export default function Users() {
   const [userToToggle, setUserToToggle] = useState<User | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showToggleDialog, setShowToggleDialog] = useState(false);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   
@@ -274,6 +276,15 @@ export default function Users() {
     }
   };
 
+  const handleCreateUser = () => {
+    setShowCreateDialog(true);
+  };
+
+  const handleCreateSuccess = () => {
+    fetchUsers();
+    fetchStats();
+  };
+
   const handleEditUser = (user: User) => {
     // TODO: Implement edit functionality
     toast({
@@ -398,6 +409,7 @@ export default function Users() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
+        className="relative z-10"
       >
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
@@ -421,7 +433,7 @@ export default function Users() {
                 {t('users.actions.export')}
               </Button>
             )}
-            <Button className="gap-2">
+            <Button className="gap-2" onClick={handleCreateUser}>
               <Plus className="h-4 w-4" />
               {t('users.actions.create')}
             </Button>
@@ -573,6 +585,12 @@ export default function Users() {
         open={showToggleDialog}
         onClose={() => setShowToggleDialog(false)}
         onConfirm={confirmToggleStatus}
+      />
+
+      <CreateUserDialog
+        open={showCreateDialog}
+        onOpenChange={setShowCreateDialog}
+        onSuccess={handleCreateSuccess}
       />
     </div>
   );

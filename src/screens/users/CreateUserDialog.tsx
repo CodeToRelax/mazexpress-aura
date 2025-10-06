@@ -1,0 +1,349 @@
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslation } from 'react-i18next';
+import { Loader2 } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
+import { toast } from '@/hooks/use-toast';
+import { authApi } from '@/utilities/api/auth.api';
+import { signupSchema, type SignupFormData } from '@/utilities/zod/user.schemas';
+import { ResponsiveFormLayout, FormSection, FormField } from '@/components/layout/ResponsiveFormLayout';
+
+interface CreateUserDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSuccess: () => void;
+}
+
+const CITIES = [
+  { value: 'benghazi', label: 'Benghazi' },
+  { value: 'tripoli', label: 'Tripoli' },
+  { value: 'musrata', label: 'Musrata' },
+  { value: 'al bayda', label: 'Al Bayda' },
+  { value: 'zawiya', label: 'Zawiya' },
+  { value: 'gharyan', label: 'Gharyan' },
+  { value: 'tobruk', label: 'Tobruk' },
+  { value: 'ajdabiya', label: 'Ajdabiya' },
+  { value: 'zliten', label: 'Zliten' },
+  { value: 'derna', label: 'Derna' },
+  { value: 'sirte', label: 'Sirte' },
+  { value: 'sabha', label: 'Sabha' },
+  { value: 'khoms', label: 'Khoms' },
+  { value: 'bani walid', label: 'Bani Walid' },
+  { value: 'sabratha', label: 'Sabratha' },
+  { value: 'zuwara', label: 'Zuwara' },
+  { value: 'kufra', label: 'Kufra' },
+  { value: 'al marj', label: 'Al Marj' },
+  { value: 'tarhuna', label: 'Tarhuna' },
+  { value: 'ubari', label: 'Ubari' },
+  { value: 'gadames', label: 'Gadames' },
+  { value: 'ghat', label: 'Ghat' },
+  { value: 'nalut', label: 'Nalut' },
+  { value: 'jalu', label: 'Jalu' },
+  { value: 'brega', label: 'Brega' },
+  { value: 'istanbul', label: 'Istanbul' },
+  { value: 'dubai', label: 'Dubai' },
+  { value: 'hongkong', label: 'Hong Kong' },
+];
+
+const COUNTRIES = [
+  { value: 'libya', label: 'Libya' },
+  { value: 'turkey', label: 'Turkey' },
+  { value: 'china', label: 'China' },
+  { value: 'uae', label: 'UAE' },
+];
+
+export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDialogProps) {
+  const { t } = useTranslation();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    watch,
+    reset,
+  } = useForm<SignupFormData>({
+    resolver: zodResolver(signupSchema),
+    defaultValues: {
+      userType: 'customer',
+    },
+  });
+
+  const privacyAgreement = watch('privacyPolicy.usageAgreement');
+
+  const onSubmit = async (data: SignupFormData) => {
+    setIsSubmitting(true);
+    try {
+      // Type assertion: zod validation ensures all required fields are present
+      await authApi.signup(data as any);
+      toast({
+        title: t('users.messages.createSuccess'),
+        description: 'User account created successfully',
+      });
+      reset();
+      onOpenChange(false);
+      onSuccess();
+    } catch (error) {
+      toast({
+        title: t('users.messages.error'),
+        description: error instanceof Error ? error.message : 'Failed to create user',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>{t('users.actions.create')}</DialogTitle>
+          <DialogDescription>
+            Create a new user account. All fields marked with * are required.
+          </DialogDescription>
+        </DialogHeader>
+
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <ResponsiveFormLayout>
+            {/* Personal Information */}
+            <FormSection title="Personal Information" columns={2}>
+              <FormField>
+                <Label htmlFor="firstName">First Name *</Label>
+                <Input
+                  id="firstName"
+                  {...register('firstName')}
+                  placeholder="John"
+                />
+                {errors.firstName && (
+                  <p className="text-sm text-destructive">{errors.firstName.message}</p>
+                )}
+              </FormField>
+
+              <FormField>
+                <Label htmlFor="lastName">Last Name *</Label>
+                <Input
+                  id="lastName"
+                  {...register('lastName')}
+                  placeholder="Doe"
+                />
+                {errors.lastName && (
+                  <p className="text-sm text-destructive">{errors.lastName.message}</p>
+                )}
+              </FormField>
+
+              <FormField>
+                <Label htmlFor="gender">Gender *</Label>
+                <Select onValueChange={(value) => setValue('gender', value as 'male' | 'female')}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select gender" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="male">Male</SelectItem>
+                    <SelectItem value="female">Female</SelectItem>
+                  </SelectContent>
+                </Select>
+                {errors.gender && (
+                  <p className="text-sm text-destructive">{errors.gender.message}</p>
+                )}
+              </FormField>
+
+              <FormField>
+                <Label htmlFor="birthdate">Birth Date *</Label>
+                <Input
+                  id="birthdate"
+                  type="date"
+                  {...register('birthdate')}
+                />
+                {errors.birthdate && (
+                  <p className="text-sm text-destructive">{errors.birthdate.message}</p>
+                )}
+              </FormField>
+            </FormSection>
+
+            {/* Contact Information */}
+            <FormSection title="Contact Information" columns={2}>
+              <FormField>
+                <Label htmlFor="email">Email *</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  {...register('email')}
+                  placeholder="john.doe@example.com"
+                />
+                {errors.email && (
+                  <p className="text-sm text-destructive">{errors.email.message}</p>
+                )}
+              </FormField>
+
+              <FormField>
+                <Label htmlFor="phoneNumber">Phone Number *</Label>
+                <Input
+                  id="phoneNumber"
+                  {...register('phoneNumber')}
+                  placeholder="+218912345678"
+                />
+                {errors.phoneNumber && (
+                  <p className="text-sm text-destructive">{errors.phoneNumber.message}</p>
+                )}
+              </FormField>
+
+              <FormField fullWidth>
+                <Label htmlFor="password">Password *</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  {...register('password')}
+                  placeholder="Minimum 6 characters"
+                />
+                {errors.password && (
+                  <p className="text-sm text-destructive">{errors.password.message}</p>
+                )}
+              </FormField>
+            </FormSection>
+
+            {/* Address */}
+            <FormSection title="Address" columns={2}>
+              <FormField>
+                <Label htmlFor="country">Country *</Label>
+                <Select onValueChange={(value) => setValue('address.country', value as any)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select country" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {COUNTRIES.map((country) => (
+                      <SelectItem key={country.value} value={country.value}>
+                        {country.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.address?.country && (
+                  <p className="text-sm text-destructive">{errors.address.country.message}</p>
+                )}
+              </FormField>
+
+              <FormField>
+                <Label htmlFor="city">City *</Label>
+                <Select onValueChange={(value) => setValue('address.city', value as any)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select city" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {CITIES.map((city) => (
+                      <SelectItem key={city.value} value={city.value}>
+                        {city.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.address?.city && (
+                  <p className="text-sm text-destructive">{errors.address.city.message}</p>
+                )}
+              </FormField>
+
+              <FormField>
+                <Label htmlFor="street">Street (Optional)</Label>
+                <Input
+                  id="street"
+                  {...register('address.street')}
+                  placeholder="123 Main Street"
+                />
+                {errors.address?.street && (
+                  <p className="text-sm text-destructive">{errors.address.street.message}</p>
+                )}
+              </FormField>
+
+              <FormField>
+                <Label htmlFor="specificDescription">Location Description (Optional)</Label>
+                <Input
+                  id="specificDescription"
+                  {...register('address.specificDescription')}
+                  placeholder="Near the mosque, blue building"
+                />
+                {errors.address?.specificDescription && (
+                  <p className="text-sm text-destructive">{errors.address.specificDescription.message}</p>
+                )}
+              </FormField>
+            </FormSection>
+
+            {/* Account Type */}
+            <FormSection title="Account Settings">
+              <FormField>
+                <Label htmlFor="userType">User Type *</Label>
+                <Select
+                  defaultValue="customer"
+                  onValueChange={(value) => setValue('userType', value as 'admin' | 'customer')}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="customer">Customer</SelectItem>
+                    <SelectItem value="admin">Admin</SelectItem>
+                  </SelectContent>
+                </Select>
+                {errors.userType && (
+                  <p className="text-sm text-destructive">{errors.userType.message}</p>
+                )}
+              </FormField>
+
+              <FormField fullWidth>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="privacyPolicy"
+                    checked={privacyAgreement}
+                    onCheckedChange={(checked) =>
+                      setValue('privacyPolicy.usageAgreement', !!checked as true)
+                    }
+                  />
+                  <Label htmlFor="privacyPolicy" className="text-sm font-normal cursor-pointer">
+                    I accept the terms and conditions *
+                  </Label>
+                </div>
+                {errors.privacyPolicy?.usageAgreement && (
+                  <p className="text-sm text-destructive">{errors.privacyPolicy.usageAgreement.message}</p>
+                )}
+              </FormField>
+            </FormSection>
+          </ResponsiveFormLayout>
+
+          <DialogFooter className="mt-6">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              disabled={isSubmitting}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Create User
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
