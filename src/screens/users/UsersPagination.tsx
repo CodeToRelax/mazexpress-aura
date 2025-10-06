@@ -54,7 +54,7 @@ export function UsersPagination({ pagination, onPageChange, onLimitChange }: Use
   };
 
   return (
-    <div className="flex items-center justify-between glass-card px-6 py-4 rounded-2xl">
+    <div className="flex items-center justify-between bg-card px-6 py-4 rounded-2xl shadow-sm border relative z-20">
       <div className="flex items-center gap-4">
         <div className="text-sm text-muted-foreground">
           {t('users.table.showingResults', { from: startIndex, to: endIndex, total: totalDocs })}
@@ -82,6 +82,7 @@ export function UsersPagination({ pagination, onPageChange, onLimitChange }: Use
           size="icon"
           onClick={() => onPageChange(currentPage - 1)}
           disabled={!hasPrevPage}
+          className="cursor-pointer"
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
@@ -97,6 +98,7 @@ export function UsersPagination({ pagination, onPageChange, onLimitChange }: Use
               variant={page === currentPage ? 'default' : 'outline'}
               size="icon"
               onClick={() => onPageChange(page as number)}
+              className="cursor-pointer"
             >
               {page}
             </Button>
@@ -108,6 +110,7 @@ export function UsersPagination({ pagination, onPageChange, onLimitChange }: Use
           size="icon"
           onClick={() => onPageChange(currentPage + 1)}
           disabled={!hasNextPage}
+          className="cursor-pointer"
         >
           <ChevronRight className="h-4 w-4" />
         </Button>
