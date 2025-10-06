@@ -22,7 +22,7 @@ export function Sidenav({ items, logo, footer, isCollapsed, expandedGroups, onTo
   return (
     <motion.aside
       initial={false}
-      animate={{ width: isCollapsed ? 80 : '33.333333%' }}
+      animate={{ width: isCollapsed ? 80 : 288 }}
       transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
       className={cn(
         'hidden xl:flex flex-col',
