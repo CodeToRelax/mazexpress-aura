@@ -1,5 +1,5 @@
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { 
   MoreVertical, 
@@ -66,6 +66,7 @@ export function UsersTable({
   onSort,
 }: UsersTableProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const getSortIcon = (column: string) => {
     if (sortBy !== column) {
@@ -139,7 +140,7 @@ export function UsersTable({
             <TableRow 
               key={user._id}
               className="cursor-pointer hover:bg-accent/20 transition-colors duration-150"
-              onClick={() => onView(user)}
+              onClick={() => navigate(`/users/${user._id}`)}
             >
               <TableCell onClick={(e) => e.stopPropagation()}>
                 <Checkbox
@@ -209,7 +210,7 @@ export function UsersTable({
                   <DropdownMenuContent align="end">
                     <DropdownMenuLabel>{t('users.table.columns.actions')}</DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => onView(user)}>
+                    <DropdownMenuItem onClick={() => navigate(`/users/${user._id}`)}>
                       <Eye className="h-4 w-4 mr-2" />
                       {t('users.actions.view')}
                     </DropdownMenuItem>

@@ -15,7 +15,6 @@ import { UsersFilters, ActiveFiltersBadges } from './UsersFilters';
 import { UsersPagination } from './UsersPagination';
 import { ColumnVisibilityToggle } from './ColumnVisibilityToggle';
 import { UsersStatsBar } from './UsersStatsBar';
-import { UserDetailDialog } from './UserDetailDialog';
 import { DeleteUserDialog } from './DeleteUserDialog';
 import { DeactivateUserDialog } from './DeactivateUserDialog';
 
@@ -85,10 +84,8 @@ export default function Users() {
   });
 
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
   const [userToToggle, setUserToToggle] = useState<User | null>(null);
-  const [showDetailDialog, setShowDetailDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showToggleDialog, setShowToggleDialog] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -275,11 +272,6 @@ export default function Users() {
     } else {
       setSelectedUsers(new Set());
     }
-  };
-
-  const handleViewUser = (user: User) => {
-    setSelectedUser(user);
-    setShowDetailDialog(true);
   };
 
   const handleEditUser = (user: User) => {
@@ -552,7 +544,7 @@ export default function Users() {
               visibleColumns={visibleColumns}
               onSelectUser={handleSelectUser}
               onSelectAll={handleSelectAll}
-              onView={handleViewUser}
+              onView={() => {}}
               onEdit={handleEditUser}
               onDelete={handleDeleteUser}
               onToggleStatus={handleToggleStatus}
@@ -568,13 +560,6 @@ export default function Users() {
           </>
         )}
       </motion.div>
-
-      <UserDetailDialog
-        user={selectedUser}
-        open={showDetailDialog}
-        onClose={() => setShowDetailDialog(false)}
-        onEdit={handleEditUser}
-      />
 
       <DeleteUserDialog
         user={userToDelete}

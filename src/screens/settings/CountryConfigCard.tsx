@@ -78,7 +78,7 @@ export function CountryConfigCard({ country, displayName, config, onUpdate }: Co
                 type="number"
                 step="0.01"
                 {...register('seaShippingRate')}
-                className={errors.seaShippingRate ? 'border-destructive' : ''}
+                className={`pointer-events-auto ${errors.seaShippingRate ? 'border-destructive' : ''}`}
               />
               {errors.seaShippingRate && (
                 <p className="text-sm text-destructive">{errors.seaShippingRate.message}</p>
@@ -92,7 +92,7 @@ export function CountryConfigCard({ country, displayName, config, onUpdate }: Co
                 type="number"
                 step="0.01"
                 {...register('airShippingRate')}
-                className={errors.airShippingRate ? 'border-destructive' : ''}
+                className={`pointer-events-auto ${errors.airShippingRate ? 'border-destructive' : ''}`}
               />
               {errors.airShippingRate && (
                 <p className="text-sm text-destructive">{errors.airShippingRate.message}</p>
@@ -106,7 +106,7 @@ export function CountryConfigCard({ country, displayName, config, onUpdate }: Co
                 type="number"
                 step="1"
                 {...register('seaShippingFactor')}
-                className={errors.seaShippingFactor ? 'border-destructive' : ''}
+                className={`pointer-events-auto ${errors.seaShippingFactor ? 'border-destructive' : ''}`}
               />
               {errors.seaShippingFactor && (
                 <p className="text-sm text-destructive">{errors.seaShippingFactor.message}</p>
@@ -120,7 +120,7 @@ export function CountryConfigCard({ country, displayName, config, onUpdate }: Co
                 type="number"
                 step="1"
                 {...register('airShippingFactor')}
-                className={errors.airShippingFactor ? 'border-destructive' : ''}
+                className={`pointer-events-auto ${errors.airShippingFactor ? 'border-destructive' : ''}`}
               />
               {errors.airShippingFactor && (
                 <p className="text-sm text-destructive">{errors.airShippingFactor.message}</p>

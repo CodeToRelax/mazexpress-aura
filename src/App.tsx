@@ -11,6 +11,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import Login from "@/screens/auth/Login";
 import Dashboard from "@/screens/dashboard/Dashboard";
 import Users from "@/screens/users/Users";
+import UserDetail from "@/screens/users/UserDetail";
 import SystemSettings from "@/screens/settings/SystemSettings";
 import NotFound from "./pages/NotFound";
 
@@ -36,6 +37,7 @@ const App = () => {
             <Route element={<PrivateRoute><AppLayout /></PrivateRoute>}>
               <Route path="/" element={<Dashboard />} />
               <Route path="/users" element={<Users />} />
+              <Route path="/users/:id" element={<UserDetail />} />
               <Route path="/settings" element={<SystemSettings />} />
             </Route>
             <Route path="*" element={<NotFound />} />
