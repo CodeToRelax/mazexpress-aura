@@ -33,13 +33,14 @@ export interface SignupData {
 export const authApi = {
   /**
    * Create a new user account
-   * This is a public endpoint that doesn't require authentication
+   * Requires authentication token from the admin creating the user
    */
-  async signup(data: SignupData): Promise<{ success: boolean; data: User; message: string }> {
+  async signup(data: SignupData, token: string): Promise<{ success: boolean; data: User; message: string }> {
     const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify(data),
     });

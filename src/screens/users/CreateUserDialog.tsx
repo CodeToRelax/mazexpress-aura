@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
 import { Loader2 } from 'lucide-react';
+import { getFirebaseAuth } from '@/utilities/firebase/firebase';
 import {
   Dialog,
   DialogContent,
@@ -86,12 +87,13 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
     setValue,
     watch,
     reset,
   } = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
+    mode: 'onChange',
     defaultValues: {
       userType: 'customer',
     },
@@ -113,8 +115,16 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
   const onSubmit = async (data: SignupFormData) => {
     setIsSubmitting(true);
     try {
+      // Get the current user's auth token
+      const auth = getFirebaseAuth();
+      const user = auth.currentUser;
+      if (!user) {
+        throw new Error('No authenticated user');
+      }
+      const token = await user.getIdToken();
+
       // Type assertion: zod validation ensures all required fields are present
-      await authApi.signup(data as any);
+      await authApi.signup(data as any, token);
       toast({
         title: t('users.messages.createSuccess'),
         description: 'User account created successfully',
@@ -359,7 +369,7 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
+            <Button type="submit" disabled={isSubmitting || !isValid}>
               {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Create User
             </Button>
