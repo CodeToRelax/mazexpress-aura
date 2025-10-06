@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
@@ -33,36 +33,44 @@ interface CreateUserDialogProps {
   onSuccess: () => void;
 }
 
-const CITIES = [
-  { value: 'benghazi', label: 'Benghazi' },
-  { value: 'tripoli', label: 'Tripoli' },
-  { value: 'musrata', label: 'Musrata' },
-  { value: 'al bayda', label: 'Al Bayda' },
-  { value: 'zawiya', label: 'Zawiya' },
-  { value: 'gharyan', label: 'Gharyan' },
-  { value: 'tobruk', label: 'Tobruk' },
-  { value: 'ajdabiya', label: 'Ajdabiya' },
-  { value: 'zliten', label: 'Zliten' },
-  { value: 'derna', label: 'Derna' },
-  { value: 'sirte', label: 'Sirte' },
-  { value: 'sabha', label: 'Sabha' },
-  { value: 'khoms', label: 'Khoms' },
-  { value: 'bani walid', label: 'Bani Walid' },
-  { value: 'sabratha', label: 'Sabratha' },
-  { value: 'zuwara', label: 'Zuwara' },
-  { value: 'kufra', label: 'Kufra' },
-  { value: 'al marj', label: 'Al Marj' },
-  { value: 'tarhuna', label: 'Tarhuna' },
-  { value: 'ubari', label: 'Ubari' },
-  { value: 'gadames', label: 'Gadames' },
-  { value: 'ghat', label: 'Ghat' },
-  { value: 'nalut', label: 'Nalut' },
-  { value: 'jalu', label: 'Jalu' },
-  { value: 'brega', label: 'Brega' },
-  { value: 'istanbul', label: 'Istanbul' },
-  { value: 'dubai', label: 'Dubai' },
-  { value: 'hongkong', label: 'Hong Kong' },
-];
+const CITIES_BY_COUNTRY = {
+  libya: [
+    { value: 'benghazi', label: 'Benghazi' },
+    { value: 'tripoli', label: 'Tripoli' },
+    { value: 'musrata', label: 'Musrata' },
+    { value: 'al bayda', label: 'Al Bayda' },
+    { value: 'zawiya', label: 'Zawiya' },
+    { value: 'gharyan', label: 'Gharyan' },
+    { value: 'tobruk', label: 'Tobruk' },
+    { value: 'ajdabiya', label: 'Ajdabiya' },
+    { value: 'zliten', label: 'Zliten' },
+    { value: 'derna', label: 'Derna' },
+    { value: 'sirte', label: 'Sirte' },
+    { value: 'sabha', label: 'Sabha' },
+    { value: 'khoms', label: 'Khoms' },
+    { value: 'bani walid', label: 'Bani Walid' },
+    { value: 'sabratha', label: 'Sabratha' },
+    { value: 'zuwara', label: 'Zuwara' },
+    { value: 'kufra', label: 'Kufra' },
+    { value: 'al marj', label: 'Al Marj' },
+    { value: 'tarhuna', label: 'Tarhuna' },
+    { value: 'ubari', label: 'Ubari' },
+    { value: 'gadames', label: 'Gadames' },
+    { value: 'ghat', label: 'Ghat' },
+    { value: 'nalut', label: 'Nalut' },
+    { value: 'jalu', label: 'Jalu' },
+    { value: 'brega', label: 'Brega' },
+  ],
+  turkey: [
+    { value: 'istanbul', label: 'Istanbul' },
+  ],
+  uae: [
+    { value: 'dubai', label: 'Dubai' },
+  ],
+  china: [
+    { value: 'hongkong', label: 'Hong Kong' },
+  ],
+};
 
 const COUNTRIES = [
   { value: 'libya', label: 'Libya' },
@@ -90,6 +98,17 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
   });
 
   const privacyAgreement = watch('privacyPolicy.usageAgreement');
+  const selectedCountry = watch('address.country');
+
+  // Filter cities based on selected country
+  const availableCities = selectedCountry ? CITIES_BY_COUNTRY[selectedCountry] || [] : [];
+
+  // Reset city when country changes
+  useEffect(() => {
+    if (selectedCountry) {
+      setValue('address.city', '' as any);
+    }
+  }, [selectedCountry, setValue]);
 
   const onSubmit = async (data: SignupFormData) => {
     setIsSubmitting(true);
@@ -245,12 +264,15 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
 
               <FormField>
                 <Label htmlFor="city">City *</Label>
-                <Select onValueChange={(value) => setValue('address.city', value as any)}>
+                <Select 
+                  onValueChange={(value) => setValue('address.city', value as any)}
+                  disabled={!selectedCountry}
+                >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select city" />
+                    <SelectValue placeholder={selectedCountry ? "Select city" : "Select country first"} />
                   </SelectTrigger>
                   <SelectContent>
-                    {CITIES.map((city) => (
+                    {availableCities.map((city) => (
                       <SelectItem key={city.value} value={city.value}>
                         {city.label}
                       </SelectItem>
