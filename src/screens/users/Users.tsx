@@ -267,10 +267,10 @@ export default function Users() {
             />
           </div>
           <Button
+            type="button"
             variant="outline"
             size="icon"
             onClick={fetchUsers}
-            disabled={loading}
             className="shrink-0"
             title={t('users.actions.refresh')}
           >
