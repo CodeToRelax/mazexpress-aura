@@ -1,9 +1,11 @@
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search, SlidersHorizontal, X } from 'lucide-react';
 import type { UserFilters } from '@/types/user';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useDebounce } from '@/hooks/useDebounce';
 import {
   Select,
   SelectContent,
@@ -34,10 +36,14 @@ export function UsersFilters({
   activeFilterCount 
 }: UsersFiltersProps) {
   const { t } = useTranslation();
+  const [searchInput, setSearchInput] = useState(filters.search || '');
+  const debouncedSearch = useDebounce(searchInput, 500);
 
-  const handleSearchChange = (value: string) => {
-    onFiltersChange({ ...filters, search: value, page: 1 });
-  };
+  useEffect(() => {
+    if (debouncedSearch !== filters.search) {
+      onFiltersChange({ ...filters, search: debouncedSearch, page: 1 });
+    }
+  }, [debouncedSearch]);
 
   const handleFilterChange = (key: keyof UserFilters, value: any) => {
     onFiltersChange({ ...filters, [key]: value, page: 1 });
@@ -53,8 +59,8 @@ export function UsersFilters({
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder={t('users.filters.searchPlaceholder')}
-            value={filters.search || ''}
-            onChange={(e) => handleSearchChange(e.target.value)}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
             className="pl-9"
           />
         </div>

@@ -7,22 +7,14 @@ import type { User, UserFilters, UserType } from '@/types/user';
 import { usersApi } from '@/utilities/api/users.api';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
 import { toast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UsersTable } from './UsersTable';
 import { UsersFilters } from './UsersFilters';
 import { UsersPagination } from './UsersPagination';
 import { UserDetailDialog } from './UserDetailDialog';
+import { DeleteUserDialog } from './DeleteUserDialog';
+import { DeactivateUserDialog } from './DeactivateUserDialog';
 
 export default function Users() {
   const { t } = useTranslation();
@@ -55,8 +47,10 @@ export default function Users() {
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
+  const [userToToggle, setUserToToggle] = useState<User | null>(null);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showToggleDialog, setShowToggleDialog] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -182,11 +176,18 @@ export default function Users() {
     }
   };
 
-  const handleToggleStatus = async (user: User) => {
+  const handleToggleStatus = (user: User) => {
+    setUserToToggle(user);
+    setShowToggleDialog(true);
+  };
+
+  const confirmToggleStatus = async () => {
+    if (!userToToggle) return;
+    
     try {
-      await usersApi.toggleUserStatus(user._id, !user.disabled);
+      await usersApi.toggleUserStatus(userToToggle._id, !userToToggle.disabled);
       toast({
-        title: user.disabled 
+        title: userToToggle.disabled 
           ? t('users.messages.activateSuccess') 
           : t('users.messages.deactivateSuccess'),
       });
@@ -197,6 +198,9 @@ export default function Users() {
         description: error instanceof Error ? error.message : 'Unknown error',
         variant: 'destructive',
       });
+    } finally {
+      setShowToggleDialog(false);
+      setUserToToggle(null);
     }
   };
 
@@ -364,22 +368,25 @@ export default function Users() {
         onEdit={handleEditUser}
       />
 
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('users.actions.delete')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('users.messages.deleteConfirm')}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>{t('users.form.cancel')}</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              {t('users.actions.delete')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeleteUserDialog
+        user={userToDelete}
+        open={showDeleteDialog}
+        onClose={() => {
+          setShowDeleteDialog(false);
+          setUserToDelete(null);
+        }}
+        onConfirm={confirmDelete}
+      />
+
+      <DeactivateUserDialog
+        user={userToToggle}
+        open={showToggleDialog}
+        onClose={() => {
+          setShowToggleDialog(false);
+          setUserToToggle(null);
+        }}
+        onConfirm={confirmToggleStatus}
+      />
     </div>
   );
 }
