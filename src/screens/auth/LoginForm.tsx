@@ -24,16 +24,22 @@ export function LoginForm({ onSubmit, isSubmitting, serverError }: LoginFormProp
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
     control,
+    watch,
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
+    mode: 'onChange',
     defaultValues: {
       email: '',
       password: '',
       rememberMe: true,
     },
   });
+  
+  const email = watch('email');
+  const password = watch('password');
+  const isFormValid = email.trim().length > 0 && password.length >= 6 && isValid;
   
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -93,7 +99,7 @@ export function LoginForm({ onSubmit, isSubmitting, serverError }: LoginFormProp
       <Button
         type="submit"
         className="w-full h-12 bg-primary hover:bg-primary-light shadow-glow-subtle hover:shadow-glow transition-smooth"
-        disabled={isSubmitting}
+        disabled={isSubmitting || !isFormValid}
       >
         {isSubmitting ? (
           <>
