@@ -41,7 +41,7 @@ export function TopNav({ items }: TopNavProps) {
   };
 
   return (
-    <NavigationMenu className="hidden xl:flex">
+    <NavigationMenu className="hidden xl:flex ml-[10%]">
       <NavigationMenuList>
         {visibleItems.map((item) => {
           const Icon = item.icon;
@@ -60,8 +60,8 @@ export function TopNav({ items }: TopNavProps) {
               <NavigationMenuItem key={item.id}>
                 <NavigationMenuTrigger
                   className={cn(
-                    'gap-2 bg-transparent hover:bg-accent/50',
-                    active && 'bg-accent/30 border-b-2 border-primary'
+                    'gap-2 bg-transparent hover:bg-primary/5 hover:scale-[1.02] transition-all duration-200 ease-in-out',
+                    active && 'bg-[hsl(var(--sidenav-active-bg))] text-[hsl(var(--sidenav-active))] font-semibold rounded-lg'
                   )}
                 >
                   {Icon && <Icon className="h-4 w-4" />}
@@ -105,8 +105,10 @@ export function TopNav({ items }: TopNavProps) {
                 <Link
                   to={item.href || '#'}
                   className={cn(
-                    'group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-accent/50 hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 gap-2',
-                    active && 'bg-accent/30 border-b-2 border-primary'
+                    'group inline-flex h-10 w-max items-center justify-center rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 ease-in-out gap-2 hover:bg-primary/5 hover:scale-[1.02]',
+                    active 
+                      ? 'bg-[hsl(var(--sidenav-active-bg))] text-[hsl(var(--sidenav-active))] font-semibold' 
+                      : 'text-muted-foreground hover:text-foreground'
                   )}
                 >
                   {Icon && <Icon className="h-4 w-4" />}

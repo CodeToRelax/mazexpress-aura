@@ -11,6 +11,7 @@ import { clearACL } from '@/utilities/redux/acl.slice';
 import { appConfig } from '@/app.config';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { LanguageToggle } from '@/components/ui/LanguageToggle';
+import { SettingsToggle } from '@/components/ui/SettingsToggle';
 import { navigationItems } from '@/data/navigation';
 import { TopNav } from '@/components/navigation/TopNav';
 import { MobileSidenav } from '@/components/navigation/MobileSidenav';
@@ -81,6 +82,7 @@ export function AppLayout() {
           <div className="hidden xl:flex items-center gap-2">
             <ThemeToggle />
             <LanguageToggle />
+            <SettingsToggle />
             <Button variant="ghost" size="sm" onClick={handleSignOut} className="gap-2">
               <LogOut className="h-4 w-4" />
               {t('actions.signOut')}
@@ -90,6 +92,7 @@ export function AppLayout() {
           {/* Mobile Actions */}
           <div className="flex xl:hidden items-center gap-2">
             <ThemeToggle />
+            <SettingsToggle />
             <Button variant="ghost" size="icon" onClick={handleSignOut}>
               <LogOut className="h-4 w-4" />
             </Button>
