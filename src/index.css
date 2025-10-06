@@ -147,16 +147,24 @@
     position: absolute;
     inset: 0;
     background-image: 
-      linear-gradient(transparent 65%, hsla(var(--primary), 0.03) 100%),
+      radial-gradient(ellipse at top left, hsla(var(--primary), 0.08) 0%, transparent 60%),
+      radial-gradient(ellipse at bottom right, hsla(var(--primary-light), 0.06) 0%, transparent 60%),
       repeating-linear-gradient(
-        45deg,
+        60deg,
         transparent,
-        transparent 20px,
-        hsla(var(--primary), 0.015) 20px,
-        hsla(var(--primary), 0.015) 40px
+        transparent 40px,
+        hsla(var(--primary), 0.04) 40px,
+        hsla(var(--primary), 0.04) 80px
+      ),
+      repeating-linear-gradient(
+        -60deg,
+        transparent,
+        transparent 40px,
+        hsla(var(--primary-light), 0.03) 40px,
+        hsla(var(--primary-light), 0.03) 80px
       );
-    animation: wave-drift 25s linear infinite;
-    opacity: 0.6;
+    animation: wave-drift 30s ease-in-out infinite;
+    pointer-events: none;
   }
   
   @keyframes float {
@@ -166,9 +174,11 @@
   }
   
   @keyframes wave-drift {
-    0% { transform: translateX(0) translateY(0); }
-    50% { transform: translateX(-25px) translateY(15px); }
-    100% { transform: translateX(0) translateY(0); }
+    0% { transform: translateX(0) translateY(0) scale(1); }
+    25% { transform: translateX(-20px) translateY(10px) scale(1.05); }
+    50% { transform: translateX(-25px) translateY(15px) scale(1); }
+    75% { transform: translateX(-15px) translateY(5px) scale(1.05); }
+    100% { transform: translateX(0) translateY(0) scale(1); }
   }
   
   /* Glass Card Effect */
