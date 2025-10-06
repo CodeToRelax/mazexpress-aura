@@ -175,12 +175,13 @@ export function UsersFilters({
 
         {activeFilterCount > 0 && (
           <Button 
-            variant="outline" 
+            variant="ghost" 
+            size="icon"
             onClick={onClearFilters}
-            className="gap-2 shrink-0"
+            className="shrink-0"
+            title={t('users.actions.resetFilters')}
           >
             <X className="h-4 w-4" />
-            {t('users.actions.resetFilters')}
           </Button>
         )}
       </div>
