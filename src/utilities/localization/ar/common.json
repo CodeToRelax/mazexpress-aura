@@ -61,7 +61,8 @@
       "deactivate": "تعطيل",
       "copyId": "نسخ المعرف",
       "refresh": "تحديث",
-      "clearFilters": "مسح الفلاتر"
+      "clearFilters": "مسح الفلاتر",
+      "resetFilters": "إعادة تعيين الفلاتر"
     },
     "filters": {
       "searchPlaceholder": "الاسم، البريد، الهاتف...",
@@ -123,13 +124,11 @@
       "resetDefault": "إعادة تعيين الافتراضي"
     },
     "stats": {
-      "total": "إجمالي المستخدمين",
-      "active": "نشط",
-      "inactive": "معطل",
-      "admins": "المسؤولين",
+      "totalUsers": "إجمالي المستخدمين",
       "customers": "العملاء",
-      "byCity": "أفضل المدن",
-      "byCountry": "أفضل البلدان"
+      "admins": "المسؤولون",
+      "active": "نشط",
+      "inactive": "غير نشط"
     }
   },
   "login": {

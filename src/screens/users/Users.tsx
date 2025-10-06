@@ -18,6 +18,13 @@ import { UserDetailDialog } from './UserDetailDialog';
 import { DeleteUserDialog } from './DeleteUserDialog';
 import { DeactivateUserDialog } from './DeactivateUserDialog';
 
+// localStorage keys
+const STORAGE_KEYS = {
+  VISIBLE_COLUMNS: 'users-visible-columns',
+  FILTERS: 'users-filters',
+  TABLE_LIMIT: 'users-table-limit',
+};
+
 export default function Users() {
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -38,12 +45,42 @@ export default function Users() {
     prevPage: null,
   });
   
-  const [filters, setFilters] = useState<UserFilters>({
-    page: 1,
-    limit: 10,
-    sortBy: 'createdAt',
-    sortOrder: 'desc',
-    userType: activeTab,
+  const [userStats, setUserStats] = useState({
+    totalUsers: 0,
+    totalCustomers: 0,
+    totalAdmins: 0,
+    activeUsers: 0,
+    inactiveUsers: 0,
+  });
+
+  // Initialize from localStorage
+  const [filters, setFilters] = useState<UserFilters>(() => {
+    try {
+      const savedFilters = localStorage.getItem(STORAGE_KEYS.FILTERS);
+      const savedLimit = localStorage.getItem(STORAGE_KEYS.TABLE_LIMIT);
+      const parsedFilters = savedFilters ? JSON.parse(savedFilters) : {};
+      
+      return {
+        page: 1,
+        limit: savedLimit ? parseInt(savedLimit) : 10,
+        userType: activeTab,
+        sortBy: parsedFilters.sortBy || 'createdAt',
+        sortOrder: parsedFilters.sortOrder || 'desc',
+        disabled: parsedFilters.disabled,
+        gender: parsedFilters.gender,
+        country: parsedFilters.country,
+        createdAfter: parsedFilters.createdAfter,
+        createdBefore: parsedFilters.createdBefore,
+      };
+    } catch {
+      return {
+        page: 1,
+        limit: 10,
+        userType: activeTab,
+        sortBy: 'createdAt',
+        sortOrder: 'desc',
+      };
+    }
   });
 
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
@@ -55,9 +92,17 @@ export default function Users() {
   const [showToggleDialog, setShowToggleDialog] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [visibleColumns, setVisibleColumns] = useState<Set<string>>(
-    new Set(['email', 'phone', 'role', 'status', 'country', 'joined'])
-  );
+  
+  const [visibleColumns, setVisibleColumns] = useState<Set<string>>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.VISIBLE_COLUMNS);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return new Set(parsed);
+      }
+    } catch {}
+    return new Set(['email', 'phone', 'role', 'status', 'country', 'joined']);
+  });
 
   const fetchUsers = useCallback(async () => {
     console.log('fetchUsers called with filters:', filters);
@@ -87,14 +132,49 @@ export default function Users() {
     }
   }, [filters, t]);
 
+  const fetchStats = useCallback(async () => {
+    try {
+      const stats = await usersApi.getStats();
+      setUserStats(stats);
+    } catch (err) {
+      console.error('Failed to fetch stats:', err);
+    }
+  }, []);
+
   useEffect(() => {
     fetchUsers();
   }, [fetchUsers]);
 
   useEffect(() => {
+    fetchStats();
+  }, [fetchStats]);
+
+  useEffect(() => {
     setFilters(prev => ({ ...prev, userType: activeTab, page: 1 }));
     setSearchParams({ tab: activeTab });
   }, [activeTab, setSearchParams]);
+
+  // Persist filters to localStorage
+  useEffect(() => {
+    try {
+      const { page, search, userType, limit, ...persistableFilters } = filters;
+      localStorage.setItem(STORAGE_KEYS.FILTERS, JSON.stringify(persistableFilters));
+      if (limit) {
+        localStorage.setItem(STORAGE_KEYS.TABLE_LIMIT, limit.toString());
+      }
+    } catch (err) {
+      console.error('Failed to persist filters:', err);
+    }
+  }, [filters]);
+
+  // Persist column visibility to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEYS.VISIBLE_COLUMNS, JSON.stringify(Array.from(visibleColumns)));
+    } catch (err) {
+      console.error('Failed to persist column visibility:', err);
+    }
+  }, [visibleColumns]);
 
   const handleTabChange = (tab: string) => {
     console.log('Tab clicked:', tab, 'Current activeTab:', activeTab);
@@ -114,6 +194,58 @@ export default function Users() {
       sortOrder: 'desc',
       userType: activeTab,
     });
+  };
+
+  const handleStatClick = (filterType: 'all' | 'customers' | 'admins' | 'active' | 'inactive') => {
+    switch (filterType) {
+      case 'all':
+        setFilters({
+          page: 1,
+          limit: filters.limit,
+          userType: activeTab,
+          sortBy: 'createdAt',
+          sortOrder: 'desc',
+        });
+        break;
+      case 'customers':
+        setActiveTab('customer');
+        searchParams.set('tab', 'customer');
+        setSearchParams(searchParams);
+        setFilters({
+          page: 1,
+          limit: filters.limit,
+          userType: 'customer',
+          sortBy: 'createdAt',
+          sortOrder: 'desc',
+        });
+        break;
+      case 'admins':
+        setActiveTab('admin');
+        searchParams.set('tab', 'admin');
+        setSearchParams(searchParams);
+        setFilters({
+          page: 1,
+          limit: filters.limit,
+          userType: 'admin',
+          sortBy: 'createdAt',
+          sortOrder: 'desc',
+        });
+        break;
+      case 'active':
+        setFilters(prev => ({
+          ...prev,
+          disabled: false,
+          page: 1,
+        }));
+        break;
+      case 'inactive':
+        setFilters(prev => ({
+          ...prev,
+          disabled: true,
+          page: 1,
+        }));
+        break;
+    }
   };
 
   const handlePageChange = (page: number) => {
@@ -171,6 +303,7 @@ export default function Users() {
         title: t('users.messages.deleteSuccess'),
       });
       fetchUsers();
+      fetchStats(); // Refresh stats after delete
     } catch (error) {
       toast({
         title: t('users.messages.error'),
@@ -199,6 +332,7 @@ export default function Users() {
           : t('users.messages.deactivateSuccess'),
       });
       fetchUsers();
+      fetchStats(); // Refresh stats after toggle
     } catch (error) {
       toast({
         title: t('users.messages.error'),
@@ -313,15 +447,14 @@ export default function Users() {
         </Tabs>
 
         {/* Stats Bar */}
-        {!loading && !hasError && users.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.15 }}
-          >
-            <UsersStatsBar users={users} totalCount={pagination.totalDocs} />
-          </motion.div>
-        )}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.15 }}
+          className="mb-6"
+        >
+          <UsersStatsBar stats={userStats} onStatClick={handleStatClick} />
+        </motion.div>
       </motion.div>
 
       <motion.div
@@ -351,6 +484,7 @@ export default function Users() {
             onClick={() => {
               console.log('Refresh button clicked');
               fetchUsers();
+              fetchStats();
             }}
             className="shrink-0 cursor-pointer"
             title={t('users.actions.refresh')}
@@ -373,7 +507,7 @@ export default function Users() {
             <p className="text-sm text-muted-foreground mb-4 font-mono">
               {errorMessage}
             </p>
-            <Button onClick={fetchUsers} className="gap-2">
+            <Button onClick={() => { fetchUsers(); fetchStats(); }} className="gap-2">
               <RotateCw className="h-4 w-4" />
               Try Again
             </Button>
@@ -398,7 +532,7 @@ export default function Users() {
             <h2 className="text-xl font-semibold text-foreground mb-2">
               {t('users.empty.title')}
             </h2>
-            <p className="text-muted-foreground max-w-md mx-auto">
+            <p className="text-muted-foreground">
               {t('users.empty.description')}
             </p>
           </div>
@@ -407,18 +541,17 @@ export default function Users() {
             <UsersTable
               users={users}
               selectedUsers={selectedUsers}
+              visibleColumns={visibleColumns}
               onSelectUser={handleSelectUser}
               onSelectAll={handleSelectAll}
               onView={handleViewUser}
               onEdit={handleEditUser}
               onDelete={handleDeleteUser}
               onToggleStatus={handleToggleStatus}
-              visibleColumns={visibleColumns}
               sortBy={filters.sortBy}
               sortOrder={filters.sortOrder}
               onSort={handleSort}
             />
-
             <UsersPagination
               pagination={pagination}
               onPageChange={handlePageChange}
@@ -431,30 +564,21 @@ export default function Users() {
       <UserDetailDialog
         user={selectedUser}
         open={showDetailDialog}
-        onClose={() => {
-          setShowDetailDialog(false);
-          setSelectedUser(null);
-        }}
+        onClose={() => setShowDetailDialog(false)}
         onEdit={handleEditUser}
       />
 
       <DeleteUserDialog
         user={userToDelete}
         open={showDeleteDialog}
-        onClose={() => {
-          setShowDeleteDialog(false);
-          setUserToDelete(null);
-        }}
+        onClose={() => setShowDeleteDialog(false)}
         onConfirm={confirmDelete}
       />
 
       <DeactivateUserDialog
         user={userToToggle}
         open={showToggleDialog}
-        onClose={() => {
-          setShowToggleDialog(false);
-          setUserToToggle(null);
-        }}
+        onClose={() => setShowToggleDialog(false)}
         onConfirm={confirmToggleStatus}
       />
     </div>

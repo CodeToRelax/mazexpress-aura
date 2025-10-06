@@ -69,6 +69,7 @@
       "refresh": "Refresh",
       "bulkActions": "Bulk Actions",
       "clearFilters": "Clear all filters",
+      "resetFilters": "Reset Filters",
       "applyFilters": "Apply Filters"
     },
     "filters": {
@@ -179,13 +180,11 @@
       "resetDefault": "Reset to Default"
     },
     "stats": {
-      "total": "Total Users",
-      "active": "Active",
-      "inactive": "Inactive",
-      "admins": "Admins",
+      "totalUsers": "Total Users",
       "customers": "Customers",
-      "byCity": "Top Cities",
-      "byCountry": "Top Countries"
+      "admins": "Admins",
+      "active": "Active",
+      "inactive": "Inactive"
     }
   },
   "login": {

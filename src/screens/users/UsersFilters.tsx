@@ -70,7 +70,6 @@ export function UsersFilters({
             <Button 
               variant="outline" 
               className="gap-2 cursor-pointer"
-              onClick={() => console.log('Advanced filters button clicked')}
             >
               <SlidersHorizontal className="h-4 w-4" />
               {t('users.filters.advanced')}
@@ -170,20 +169,20 @@ export function UsersFilters({
                   onChange={(e) => handleFilterChange('createdBefore', e.target.value)}
                 />
               </div>
-
-              {activeFilterCount > 0 && (
-                <Button 
-                  variant="outline" 
-                  onClick={onClearFilters}
-                  className="w-full gap-2"
-                >
-                  <X className="h-4 w-4" />
-                  {t('users.actions.clearFilters')}
-                </Button>
-              )}
             </div>
           </SheetContent>
         </Sheet>
+
+        {activeFilterCount > 0 && (
+          <Button 
+            variant="outline" 
+            onClick={onClearFilters}
+            className="gap-2"
+          >
+            <X className="h-4 w-4" />
+            {t('users.actions.resetFilters')}
+          </Button>
+        )}
       </div>
 
       {activeFilterCount > 0 && (
