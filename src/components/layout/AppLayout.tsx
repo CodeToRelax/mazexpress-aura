@@ -12,16 +12,15 @@ import { appConfig } from '@/app.config';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { LanguageToggle } from '@/components/ui/LanguageToggle';
 import { navigationItems } from '@/data/navigation';
-import { useSidenavState } from '@/hooks/useSidenavState';
-import { Sidenav } from '@/components/navigation/Sidenav';
+import { TopNav } from '@/components/navigation/TopNav';
 import { MobileSidenav } from '@/components/navigation/MobileSidenav';
 
 export function AppLayout() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { isCollapsed, expandedGroups, toggleGroup } = useSidenavState();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
 
   const handleSignOut = async () => {
     const { error } = await signOut();
@@ -34,6 +33,18 @@ export function AppLayout() {
       toast.success(t('status.success'));
       navigate(appConfig.auth.redirectAfterLogout);
     }
+  };
+
+  const toggleGroup = (groupId: string) => {
+    setExpandedGroups((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(groupId)) {
+        newSet.delete(groupId);
+      } else {
+        newSet.add(groupId);
+      }
+      return newSet;
+    });
   };
 
   const logo = (
@@ -62,6 +73,9 @@ export function AppLayout() {
             </Button>
             {logo}
           </div>
+
+          {/* Desktop Navigation */}
+          <TopNav items={navigationItems} />
           
           {/* Desktop Actions */}
           <div className="hidden xl:flex items-center gap-2">
@@ -69,7 +83,7 @@ export function AppLayout() {
             <LanguageToggle />
             <Button variant="ghost" size="sm" onClick={handleSignOut} className="gap-2">
               <LogOut className="h-4 w-4" />
-              {t('nav.signOut')}
+              {t('actions.signOut')}
             </Button>
           </div>
 
@@ -83,32 +97,21 @@ export function AppLayout() {
         </div>
       </header>
 
-      {/* Main layout with sidebar */}
-      <div className="flex flex-1">
-        {/* Desktop Sidebar */}
-        <Sidenav
-          items={navigationItems}
-          isCollapsed={isCollapsed}
-          expandedGroups={expandedGroups}
-          onToggleGroup={toggleGroup}
-        />
+      {/* Mobile Sidebar */}
+      <MobileSidenav
+        items={navigationItems}
+        isOpen={mobileOpen}
+        onClose={() => setMobileOpen(false)}
+        expandedGroups={expandedGroups}
+        onToggleGroup={toggleGroup}
+      />
 
-        {/* Mobile Sidebar */}
-        <MobileSidenav
-          items={navigationItems}
-          isOpen={mobileOpen}
-          onClose={() => setMobileOpen(false)}
-          expandedGroups={expandedGroups}
-          onToggleGroup={toggleGroup}
-        />
-
-        {/* Main content */}
-        <main className="flex-1 overflow-auto">
-          <div className="container mx-auto p-6">
-            <Outlet />
-          </div>
-        </main>
-      </div>
+      {/* Main content */}
+      <main className="flex-1 overflow-auto">
+        <div className="container mx-auto p-6">
+          <Outlet />
+        </div>
+      </main>
     </div>
   );
 }

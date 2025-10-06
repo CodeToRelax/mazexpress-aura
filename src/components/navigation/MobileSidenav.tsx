@@ -5,11 +5,12 @@ import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { LanguageToggle } from '@/components/ui/LanguageToggle';
 import { NavItem } from './NavItem';
+import { useACL } from '@/hooks/useACL';
 import { cn } from '@/lib/utils';
-import type { NavItem as NavItemType } from '@/types/navigation';
+import type { NavItemWithACL } from '@/data/navigation';
 
 interface MobileSidenavProps {
-  items: NavItemType[];
+  items: NavItemWithACL[];
   logo?: React.ReactNode;
   isOpen: boolean;
   onClose: () => void;
@@ -26,7 +27,14 @@ export function MobileSidenav({
   onToggleGroup,
 }: MobileSidenavProps) {
   const { t } = useTranslation();
+  const { hasFlag, isLoaded } = useACL();
   const isRTL = document.documentElement.dir === 'rtl';
+
+  // Filter items based on ACL
+  const visibleItems = items.filter((item) => {
+    if (!item.aclFlag) return true;
+    return hasFlag(item.aclFlag);
+  });
 
   // Prevent body scroll when open
   useEffect(() => {
@@ -91,17 +99,19 @@ export function MobileSidenav({
 
         {/* Navigation content */}
         <div className="flex-1 overflow-y-auto p-4">
-          <nav className="space-y-1">
-            {items.map((item) => (
-              <NavItem
-                key={item.id}
-                item={item}
-                isCollapsed={false}
-                isExpanded={expandedGroups.has(item.id)}
-                onToggle={() => onToggleGroup(item.id)}
-              />
-            ))}
-          </nav>
+          {isLoaded && (
+            <nav className="space-y-1">
+              {visibleItems.map((item) => (
+                <NavItem
+                  key={item.id}
+                  item={item}
+                  isCollapsed={false}
+                  isExpanded={expandedGroups.has(item.id)}
+                  onToggle={() => onToggleGroup(item.id)}
+                />
+              ))}
+            </nav>
+          )}
         </div>
 
         {/* Footer */}
