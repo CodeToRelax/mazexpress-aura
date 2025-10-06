@@ -112,6 +112,13 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
     }
   }, [selectedCountry, setValue]);
 
+  // Reset form when dialog closes
+  useEffect(() => {
+    if (!open) {
+      reset();
+    }
+  }, [open, reset]);
+
   const onSubmit = async (data: SignupFormData) => {
     setIsSubmitting(true);
     try {
