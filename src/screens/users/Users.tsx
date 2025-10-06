@@ -91,6 +91,7 @@ export default function Users() {
   }, [activeTab, setSearchParams]);
 
   const handleTabChange = (tab: string) => {
+    console.log('Tab clicked:', tab, 'Current activeTab:', activeTab);
     setActiveTab(tab as UserType);
     setSelectedUsers(new Set());
   };
