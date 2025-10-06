@@ -9,6 +9,7 @@ import { PrivateRoute } from "@/utilities/router/PrivateRoute";
 import { PublicRoute } from "@/utilities/router/PublicRoute";
 import Login from "@/screens/auth/Login";
 import Dashboard from "@/screens/dashboard/Dashboard";
+import SystemSettings from "@/screens/settings/SystemSettings";
 import NotFound from "./pages/NotFound";
 
 // Initialize Firebase on app start
@@ -26,11 +27,12 @@ const App = () => {
     <ReduxProvider>
       <I18nProvider>
         <Toaster />
-        <Sonner position="top-right" />
+        <Sonner position="bottom-center" />
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
             <Route path="/" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+            <Route path="/settings" element={<PrivateRoute><SystemSettings /></PrivateRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { LogOut, Package } from 'lucide-react';
+import { LogOut, Package, Settings } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -41,15 +41,27 @@ export default function Dashboard() {
             </h1>
           </div>
           
-          <Button
-            onClick={handleSignOut}
-            variant="outline"
-            size="sm"
-            className="glass-card hover:shadow-glass-hover text-xs sm:text-sm"
-          >
-            <LogOut className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
-            <span className="hidden sm:inline">{t('actions.signOut')}</span>
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={() => navigate('/settings')}
+              variant="outline"
+              size="sm"
+              className="glass-card hover:shadow-glass-hover"
+            >
+              <Settings className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Settings</span>
+            </Button>
+            
+            <Button
+              onClick={handleSignOut}
+              variant="outline"
+              size="sm"
+              className="glass-card hover:shadow-glass-hover text-xs sm:text-sm"
+            >
+              <LogOut className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
+              <span className="hidden sm:inline">{t('actions.signOut')}</span>
+            </Button>
+          </div>
         </div>
       </header>
       
