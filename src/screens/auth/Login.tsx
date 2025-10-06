@@ -34,7 +34,7 @@ export default function Login() {
     dispatch(setSubmitting(true));
     
     try {
-      const { user, error } = await signInWithEmail(data.email, data.password);
+      const { user, error } = await signInWithEmail(data.email, data.password, data.rememberMe || false);
       
       if (error) {
         dispatch(setError(error));

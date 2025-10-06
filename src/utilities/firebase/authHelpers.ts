@@ -4,6 +4,9 @@ import {
   User,
   AuthError,
   UserCredential,
+  setPersistence,
+  browserLocalPersistence,
+  browserSessionPersistence,
 } from 'firebase/auth';
 import { getFirebaseAuth } from './firebase';
 
@@ -33,10 +36,18 @@ export function mapAuthErrorToMessage(error: AuthError): string {
  */
 export async function signInWithEmail(
   email: string,
-  password: string
+  password: string,
+  rememberMe: boolean = false
 ): Promise<{ user: User | null; error: string | null }> {
   try {
     const auth = getFirebaseAuth();
+    
+    // Set persistence based on user preference
+    await setPersistence(
+      auth,
+      rememberMe ? browserLocalPersistence : browserSessionPersistence
+    );
+    
     const userCredential: UserCredential = await signInWithEmailAndPassword(
       auth,
       email,
