@@ -1,26 +1,21 @@
-import { useState } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
-import { Menu, LogOut, Settings } from 'lucide-react';
+import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { LogOut, Settings, Users, LayoutDashboard, BarChart3, Package } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { Sidenav } from '@/components/navigation/Sidenav';
-import { MobileSidenav } from '@/components/navigation/MobileSidenav';
-import { navigationItems } from '@/data/navigation';
-import { useSidenavState } from '@/hooks/useSidenavState';
 import { signOut } from '@/utilities/firebase/authHelpers';
 import { useAppDispatch } from '@/utilities/redux';
 import { logout } from '@/screens/auth/auth.slice';
 import { appConfig } from '@/app.config';
 import { cn } from '@/lib/utils';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
+import { LanguageToggle } from '@/components/ui/LanguageToggle';
 
 export function AppLayout() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const { isCollapsed, toggleCollapsed, expandedGroups, toggleGroup } = useSidenavState();
-  const isRTL = document.documentElement.dir === 'rtl';
+  const location = useLocation();
 
   const handleSignOut = async () => {
     const { error } = await signOut();
@@ -43,91 +38,84 @@ export function AppLayout() {
     </div>
   );
 
+  const isActive = (path: string) => location.pathname === path;
+
   return (
     <div className="glass-background min-h-screen flex flex-col">
-      {/* Mobile Sidenav */}
-      <MobileSidenav
-        items={navigationItems}
-        logo={logo}
-        isOpen={mobileOpen}
-        onClose={() => setMobileOpen(false)}
-        expandedGroups={expandedGroups}
-        onToggleGroup={toggleGroup}
-      />
-
-      {/* Full-width Top header */}
-      <header className="sticky top-0 z-30 border-b border-[hsl(var(--sidenav-border))] backdrop-blur-sm bg-[hsl(var(--sidenav-bg))]">
+      {/* Top header */}
+      <header className="sticky top-0 z-30 border-b border-border backdrop-blur-sm bg-background/80">
         <div className="flex items-center justify-between px-4 py-3">
+          {/* Logo */}
           <div className="flex items-center gap-3">
-            {/* Mobile menu button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setMobileOpen(true)}
-              aria-label="Open menu"
-              className="xl:hidden"
-            >
-              <Menu className="h-5 w-5" />
-            </Button>
             {logo}
-            
-            {/* Desktop toggle button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleCollapsed}
-              aria-expanded={!isCollapsed}
-              aria-label={isCollapsed ? t('nav.expand') : t('nav.collapse')}
-              className="hidden xl:flex"
-            >
-              <Menu className="h-5 w-5" />
-            </Button>
           </div>
+          
+          {/* Navigation */}
+          <nav className="hidden md:flex items-center gap-1 mx-4 flex-1">
+            <Button
+              onClick={() => navigate('/dashboard')}
+              variant={isActive('/dashboard') ? 'secondary' : 'ghost'}
+              size="sm"
+              className="gap-2"
+            >
+              <LayoutDashboard className="h-4 w-4" />
+              {t('nav.dashboard')}
+            </Button>
+            <Button
+              onClick={() => navigate('/users')}
+              variant={isActive('/users') ? 'secondary' : 'ghost'}
+              size="sm"
+              className="gap-2"
+            >
+              <Users className="h-4 w-4" />
+              {t('nav.users')}
+            </Button>
+            <Button
+              onClick={() => navigate('/reports')}
+              variant="ghost"
+              size="sm"
+              className="gap-2"
+              disabled
+              title="Coming soon"
+            >
+              <BarChart3 className="h-4 w-4" />
+              {t('nav.reports')}
+            </Button>
+            <Button
+              onClick={() => navigate('/inventory')}
+              variant="ghost"
+              size="sm"
+              className="gap-2"
+              disabled
+              title="Coming soon"
+            >
+              <Package className="h-4 w-4" />
+              {t('nav.inventory')}
+            </Button>
+          </nav>
           
           {/* Action buttons */}
           <div className="flex items-center gap-2">
-            <Button
-              onClick={() => navigate('/settings')}
-              variant="outline"
-              size="sm"
-              className="glass-card hover:shadow-glass-hover"
-            >
-              <Settings className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
-              <span className="hidden sm:inline">{t('nav.settings')}</span>
-            </Button>
+            <ThemeToggle />
+            <LanguageToggle />
             
             <Button
               onClick={handleSignOut}
               variant="outline"
               size="sm"
-              className="glass-card hover:shadow-glass-hover text-xs sm:text-sm"
+              className="gap-2"
             >
-              <LogOut className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
+              <LogOut className="h-4 w-4" />
               <span className="hidden sm:inline">{t('actions.signOut')}</span>
             </Button>
           </div>
         </div>
       </header>
 
-      {/* Content area with sidebar and main */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Desktop Sidenav - 1/3 width */}
-        <Sidenav 
-          items={navigationItems} 
-          logo={logo}
-          isCollapsed={isCollapsed}
-          expandedGroups={expandedGroups}
-          onToggleGroup={toggleGroup}
-        />
-
-        {/* Main content - 2/3 width */}
-        <main className={cn(
-          'flex-1 overflow-y-auto p-4 lg:p-6',
-          'xl:transition-all xl:duration-300'
-        )}>
-          <Outlet />
-        </main>
-      </div>
+      {/* Main content */}
+      <main className="flex-1 overflow-y-auto p-4 lg:p-6">
+        <Outlet />
+      </main>
     </div>
   );
 }
