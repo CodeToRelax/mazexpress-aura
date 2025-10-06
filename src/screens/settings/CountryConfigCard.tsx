@@ -66,7 +66,7 @@ export function CountryConfigCard({ country, displayName, config, onUpdate }: Co
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <Card className="p-6">
+      <Card className="relative z-10 p-6">
         <h3 className="text-lg font-semibold text-foreground mb-6">{displayName}</h3>
         
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
