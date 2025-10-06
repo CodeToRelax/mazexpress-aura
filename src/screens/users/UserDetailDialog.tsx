@@ -102,7 +102,9 @@ export function UserDetailDialog({ user, open, onClose, onEdit }: UserDetailDial
                   <Calendar className="h-5 w-5 text-muted-foreground mt-0.5" />
                   <div>
                     <div className="text-sm text-muted-foreground">{t('users.detail.fields.birthdate')}</div>
-                    <div className="font-medium">{format(new Date(user.birthdate), 'MMMM dd, yyyy')}</div>
+                    <div className="font-medium">
+                      {user.birthdate ? format(new Date(user.birthdate), 'MMMM dd, yyyy') : 'N/A'}
+                    </div>
                   </div>
                 </div>
 
@@ -194,13 +196,13 @@ export function UserDetailDialog({ user, open, onClose, onEdit }: UserDetailDial
                 <div>
                   <label className="text-sm text-muted-foreground">{t('users.detail.fields.createdAt')}</label>
                   <div className="font-medium mt-1">
-                    {format(new Date(user.createdAt), 'MMMM dd, yyyy HH:mm')}
+                    {user.createdAt ? format(new Date(user.createdAt), 'MMMM dd, yyyy HH:mm') : 'N/A'}
                   </div>
                 </div>
                 <div>
                   <label className="text-sm text-muted-foreground">{t('users.detail.fields.updatedAt')}</label>
                   <div className="font-medium mt-1">
-                    {format(new Date(user.updatedAt), 'MMMM dd, yyyy HH:mm')}
+                    {user.updatedAt ? format(new Date(user.updatedAt), 'MMMM dd, yyyy HH:mm') : 'N/A'}
                   </div>
                 </div>
                 <div>
