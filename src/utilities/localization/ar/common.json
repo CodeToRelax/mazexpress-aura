@@ -57,6 +57,7 @@
       "activate": "تفعيل",
       "deactivate": "تعطيل",
       "copyId": "نسخ المعرف",
+      "refresh": "تحديث",
       "clearFilters": "مسح الفلاتر"
     },
     "filters": {

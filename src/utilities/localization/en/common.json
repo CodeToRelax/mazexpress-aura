@@ -63,6 +63,7 @@
       "copyId": "Copy ID",
       "export": "Export",
       "import": "Import",
+      "refresh": "Refresh",
       "bulkActions": "Bulk Actions",
       "clearFilters": "Clear all filters",
       "applyFilters": "Apply Filters"

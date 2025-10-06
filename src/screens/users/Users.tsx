@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Users as UsersIcon, Plus, Download, Trash2 } from 'lucide-react';
+import { Users as UsersIcon, Plus, Download, Trash2, RotateCw } from 'lucide-react';
 import type { User, UserFilters, UserType } from '@/types/user';
 import { usersApi } from '@/utilities/api/users.api';
 import { Button } from '@/components/ui/button';
@@ -257,12 +257,26 @@ export default function Users() {
         transition={{ duration: 0.5, delay: 0.1 }}
         className="space-y-4"
       >
-        <UsersFilters
-          filters={filters}
-          onFiltersChange={handleFiltersChange}
-          onClearFilters={handleClearFilters}
-          activeFilterCount={activeFilterCount}
-        />
+        <div className="flex items-center gap-2">
+          <div className="flex-1">
+            <UsersFilters
+              filters={filters}
+              onFiltersChange={handleFiltersChange}
+              onClearFilters={handleClearFilters}
+              activeFilterCount={activeFilterCount}
+            />
+          </div>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={fetchUsers}
+            disabled={loading}
+            className="shrink-0"
+            title={t('users.actions.refresh')}
+          >
+            <RotateCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+          </Button>
+        </div>
 
         {loading ? (
           <div className="glass-card rounded-2xl p-8 space-y-4">
