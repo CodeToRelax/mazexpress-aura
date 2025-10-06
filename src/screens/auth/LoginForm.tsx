@@ -88,7 +88,7 @@ export function LoginForm({ onSubmit, isSubmitting, serverError }: LoginFormProp
             <Checkbox
               id="rememberMe"
               checked={field.value}
-              onCheckedChange={field.onChange}
+              onCheckedChange={(checked) => field.onChange(checked === true)}
               disabled={isSubmitting}
             />
           )}
