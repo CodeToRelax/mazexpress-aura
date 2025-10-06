@@ -1,0 +1,51 @@
+{
+  "appName": "MazExpress Admin",
+  "login": {
+    "title": "Sign in",
+    "subtitle": "Welcome back. Please enter your details.",
+    "email": "Email",
+    "emailPlaceholder": "name@example.com",
+    "password": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "remember": "Remember me",
+    "submit": "Sign in",
+    "submitting": "Signing in...",
+    "forgot": "Forgot password?",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
+  },
+  "errors": {
+    "required": "This field is required",
+    "email": "Please enter a valid email address",
+    "passwordMin": "Password must be at least 6 characters",
+    "auth": {
+      "invalid": "Invalid email or password",
+      "disabled": "This account has been disabled",
+      "tooManyRequests": "Too many attempts. Please try again later",
+      "network": "Network error. Please check your connection",
+      "notAllowed": "This sign-in method is not allowed",
+      "unknown": "An unexpected error occurred. Please try again"
+    }
+  },
+  "lang": {
+    "english": "English",
+    "arabic": "العربية",
+    "switchTo": "Switch to {{language}}"
+  },
+  "actions": {
+    "signOut": "Sign out",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "close": "Close"
+  },
+  "status": {
+    "authenticated": "You are authenticated",
+    "loading": "Loading...",
+    "success": "Success",
+    "error": "Error"
+  },
+  "dashboard": {
+    "welcome": "Welcome to MazExpress Admin",
+    "placeholder": "Dashboard coming in Phase 2"
+  }
+}
