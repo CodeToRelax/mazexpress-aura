@@ -30,7 +30,7 @@ interface CountryConfigCardProps {
 export function CountryConfigCard({ country, displayName, config, onUpdate }: CountryConfigCardProps) {
   const [isSaving, setIsSaving] = useState(false);
   
-  const { register, handleSubmit, formState: { errors } } = useForm<CountryConfigFormData>({
+  const { register, handleSubmit, formState: { errors, isDirty } } = useForm<CountryConfigFormData>({
     resolver: zodResolver(countryConfigSchema),
     defaultValues: config,
   });
@@ -124,7 +124,7 @@ export function CountryConfigCard({ country, displayName, config, onUpdate }: Co
           </div>
 
           <div className="flex justify-end pt-2">
-            <Button type="submit" disabled={isSaving}>
+            <Button type="submit" disabled={isSaving || !isDirty}>
               {isSaving ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
