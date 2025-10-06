@@ -12,6 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { UsersTable } from './UsersTable';
 import { UsersFilters } from './UsersFilters';
 import { UsersPagination } from './UsersPagination';
+import { ColumnVisibilityToggle } from './ColumnVisibilityToggle';
 import { UserDetailDialog } from './UserDetailDialog';
 import { DeleteUserDialog } from './DeleteUserDialog';
 import { DeactivateUserDialog } from './DeactivateUserDialog';
@@ -53,6 +54,9 @@ export default function Users() {
   const [showToggleDialog, setShowToggleDialog] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [visibleColumns, setVisibleColumns] = useState<Set<string>>(
+    new Set(['email', 'phone', 'role', 'status', 'country', 'joined'])
+  );
 
   const fetchUsers = useCallback(async () => {
     console.log('fetchUsers called with filters:', filters);
@@ -206,6 +210,22 @@ export default function Users() {
     }
   };
 
+  const handleToggleColumn = (column: string) => {
+    setVisibleColumns(prev => {
+      const next = new Set(prev);
+      if (next.has(column)) {
+        next.delete(column);
+      } else {
+        next.add(column);
+      }
+      return next;
+    });
+  };
+
+  const handleResetColumns = () => {
+    setVisibleColumns(new Set(['email', 'phone', 'role', 'status', 'country', 'joined']));
+  };
+
   const activeFilterCount = Object.entries(filters).filter(
     ([key, value]) => 
       value !== undefined && 
@@ -277,6 +297,11 @@ export default function Users() {
               activeFilterCount={activeFilterCount}
             />
           </div>
+          <ColumnVisibilityToggle
+            visibleColumns={visibleColumns}
+            onToggleColumn={handleToggleColumn}
+            onReset={handleResetColumns}
+          />
           <Button
             type="button"
             variant="outline"
@@ -346,6 +371,7 @@ export default function Users() {
               onEdit={handleEditUser}
               onDelete={handleDeleteUser}
               onToggleStatus={handleToggleStatus}
+              visibleColumns={visibleColumns}
             />
 
             <UsersPagination

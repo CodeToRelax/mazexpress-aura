@@ -42,6 +42,7 @@ interface UsersTableProps {
   onEdit: (user: User) => void;
   onDelete: (user: User) => void;
   onToggleStatus: (user: User) => void;
+  visibleColumns?: Set<string>;
 }
 
 export function UsersTable({
@@ -53,6 +54,7 @@ export function UsersTable({
   onEdit,
   onDelete,
   onToggleStatus,
+  visibleColumns = new Set(['email', 'phone', 'role', 'status', 'country', 'joined']),
 }: UsersTableProps) {
   const { t } = useTranslation();
 
@@ -83,12 +85,12 @@ export function UsersTable({
               />
             </TableHead>
             <TableHead>{t('users.table.columns.user')}</TableHead>
-            <TableHead>{t('users.table.columns.email')}</TableHead>
-            <TableHead>{t('users.table.columns.phone')}</TableHead>
-            <TableHead>{t('users.table.columns.role')}</TableHead>
-            <TableHead>{t('users.table.columns.status')}</TableHead>
-            <TableHead>{t('users.table.columns.country')}</TableHead>
-            <TableHead>{t('users.table.columns.joined')}</TableHead>
+            {visibleColumns.has('email') && <TableHead>{t('users.table.columns.email')}</TableHead>}
+            {visibleColumns.has('phone') && <TableHead>{t('users.table.columns.phone')}</TableHead>}
+            {visibleColumns.has('role') && <TableHead>{t('users.table.columns.role')}</TableHead>}
+            {visibleColumns.has('status') && <TableHead>{t('users.table.columns.status')}</TableHead>}
+            {visibleColumns.has('country') && <TableHead>{t('users.table.columns.country')}</TableHead>}
+            {visibleColumns.has('joined') && <TableHead>{t('users.table.columns.joined')}</TableHead>}
             <TableHead className="w-12"></TableHead>
           </TableRow>
         </TableHeader>
@@ -122,29 +124,41 @@ export function UsersTable({
                   </div>
                 </div>
               </TableCell>
-              <TableCell className="text-muted-foreground">{user.email}</TableCell>
-              <TableCell className="text-muted-foreground">{user.phoneNumber}</TableCell>
-              <TableCell>
-                <Badge variant={user.userType === 'admin' ? 'default' : 'secondary'}>
-                  {t(`users.table.role.${user.userType}`)}
-                </Badge>
-              </TableCell>
-              <TableCell>
-                <Badge variant={user.disabled ? 'destructive' : 'default'} className="gap-1">
-                  {user.disabled ? (
-                    <XCircle className="h-3 w-3" />
-                  ) : (
-                    <CheckCircle2 className="h-3 w-3" />
-                  )}
-                  {t(`users.table.status.${user.disabled ? 'disabled' : 'active'}`)}
-                </Badge>
-              </TableCell>
-              <TableCell className="text-muted-foreground capitalize">
-                {user.address.country}
-              </TableCell>
-              <TableCell className="text-muted-foreground">
-                {format(new Date(user.createdAt), 'MMM dd, yyyy')}
-              </TableCell>
+              {visibleColumns.has('email') && (
+                <TableCell className="text-muted-foreground">{user.email}</TableCell>
+              )}
+              {visibleColumns.has('phone') && (
+                <TableCell className="text-muted-foreground">{user.phoneNumber}</TableCell>
+              )}
+              {visibleColumns.has('role') && (
+                <TableCell>
+                  <Badge variant={user.userType === 'admin' ? 'default' : 'secondary'}>
+                    {t(`users.table.role.${user.userType}`)}
+                  </Badge>
+                </TableCell>
+              )}
+              {visibleColumns.has('status') && (
+                <TableCell>
+                  <Badge variant={user.disabled ? 'destructive' : 'default'} className="gap-1">
+                    {user.disabled ? (
+                      <XCircle className="h-3 w-3" />
+                    ) : (
+                      <CheckCircle2 className="h-3 w-3" />
+                    )}
+                    {t(`users.table.status.${user.disabled ? 'disabled' : 'active'}`)}
+                  </Badge>
+                </TableCell>
+              )}
+              {visibleColumns.has('country') && (
+                <TableCell className="text-muted-foreground capitalize">
+                  {user.address.country}
+                </TableCell>
+              )}
+              {visibleColumns.has('joined') && (
+                <TableCell className="text-muted-foreground">
+                  {format(new Date(user.createdAt), 'MMM dd, yyyy')}
+                </TableCell>
+              )}
               <TableCell onClick={(e) => e.stopPropagation()}>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>

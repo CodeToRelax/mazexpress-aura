@@ -168,6 +168,12 @@
       "confirmDelete": "Are you sure you want to delete {{count}} users? This action cannot be undone.",
       "confirmActivate": "Activate {{count}} selected users?",
       "confirmDeactivate": "Deactivate {{count}} selected users?"
+    },
+    "columns": {
+      "visibility": "Columns",
+      "showHide": "Show/Hide Columns",
+      "hiddenCount": "{{count}} hidden",
+      "resetDefault": "Reset to Default"
     }
   },
   "login": {

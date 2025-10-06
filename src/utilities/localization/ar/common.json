@@ -112,6 +112,12 @@
     },
     "bulk": {
       "delete": "حذف المحدد"
+    },
+    "columns": {
+      "visibility": "الأعمدة",
+      "showHide": "إظهار/إخفاء الأعمدة",
+      "hiddenCount": "{{count}} مخفي",
+      "resetDefault": "إعادة تعيين الافتراضي"
     }
   },
   "login": {
