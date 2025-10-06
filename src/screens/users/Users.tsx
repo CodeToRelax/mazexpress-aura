@@ -57,20 +57,31 @@ export default function Users() {
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [hasError, setHasError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
+      setHasError(false);
+      setErrorMessage('');
       const response = await usersApi.getUsers(filters);
       setUsers(response.data.users);
       setPagination(response.data.pagination);
     } catch (error) {
       console.error('Failed to fetch users:', error);
-      toast({
-        title: t('users.messages.error'),
-        description: error instanceof Error ? error.message : 'Unknown error',
-        variant: 'destructive',
-      });
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      setHasError(true);
+      setErrorMessage(message);
+      
+      // Only show toast if it's not a 404 (backend not ready)
+      if (!message.includes('404')) {
+        toast({
+          title: t('users.messages.error'),
+          description: message,
+          variant: 'destructive',
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -278,7 +289,26 @@ export default function Users() {
           </Button>
         </div>
 
-        {loading ? (
+        {hasError ? (
+          <div className="glass-card rounded-2xl p-12 text-center">
+            <div className="w-20 h-20 rounded-2xl bg-destructive/10 mx-auto flex items-center justify-center mb-4">
+              <UsersIcon className="h-10 w-10 text-destructive" />
+            </div>
+            <h2 className="text-xl font-semibold text-foreground mb-2">
+              Backend Connection Error
+            </h2>
+            <p className="text-muted-foreground max-w-md mx-auto mb-4">
+              Unable to connect to the API endpoint. Please check your backend configuration.
+            </p>
+            <p className="text-sm text-muted-foreground mb-4 font-mono">
+              {errorMessage}
+            </p>
+            <Button onClick={fetchUsers} className="gap-2">
+              <RotateCw className="h-4 w-4" />
+              Try Again
+            </Button>
+          </div>
+        ) : loading ? (
           <div className="glass-card rounded-2xl p-8 space-y-4">
             {[...Array(5)].map((_, i) => (
               <div key={i} className="flex items-center gap-4">
