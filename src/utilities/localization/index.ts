@@ -5,6 +5,8 @@ import { appConfig } from '@/app.config';
 
 import enCommon from './en/common.json';
 import arCommon from './ar/common.json';
+import enACL from './en/acl.json';
+import arACL from './ar/acl.json';
 
 /**
  * Initialize i18next with language detection and resources
@@ -16,14 +18,16 @@ i18n
     resources: {
       en: {
         common: enCommon,
+        acl: enACL.acl,
       },
       ar: {
         common: arCommon,
+        acl: arACL.acl,
       },
     },
     fallbackLng: appConfig.localization.fallbackLocale,
     defaultNS: 'common',
-    ns: ['common'],
+    ns: ['common', 'acl'],
     
     detection: {
       order: ['localStorage', 'navigator'],

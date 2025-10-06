@@ -1,13 +1,21 @@
 import { Home, Users, Settings, BarChart, Package, FileText, HelpCircle } from 'lucide-react';
 import type { NavItem } from '@/types/navigation';
+import type { ACLFlags } from '@/types/acl';
 
-export const navigationItems: NavItem[] = [
+// Extend NavItem type to include ACL flag
+export interface NavItemWithACL extends NavItem {
+  aclFlag?: keyof ACLFlags;
+  children?: NavItemWithACL[];
+}
+
+export const navigationItems: NavItemWithACL[] = [
   {
     id: 'dashboard',
     labelKey: 'nav.dashboard',
     icon: Home,
     href: '/',
     match: 'exact',
+    aclFlag: 'canViewDashboard',
   },
   {
     id: 'users',
@@ -15,11 +23,13 @@ export const navigationItems: NavItem[] = [
     icon: Users,
     href: '/users',
     match: 'prefix',
+    aclFlag: 'canViewUsers',
   },
   {
     id: 'reports',
     labelKey: 'nav.reports',
     icon: BarChart,
+    aclFlag: 'canViewReports',
     children: [
       {
         id: 'reports-sales',
@@ -27,6 +37,7 @@ export const navigationItems: NavItem[] = [
         icon: FileText,
         href: '/reports/sales',
         match: 'exact',
+        aclFlag: 'canViewReports',
       },
       {
         id: 'reports-analytics',
@@ -34,6 +45,7 @@ export const navigationItems: NavItem[] = [
         icon: BarChart,
         href: '/reports/analytics',
         match: 'exact',
+        aclFlag: 'canViewReports',
       },
     ],
   },
@@ -47,6 +59,7 @@ export const navigationItems: NavItem[] = [
       text: 'Beta',
       tone: 'info',
     },
+    // No ACL flag - placeholder for future feature
   },
   {
     id: 'help',
@@ -54,5 +67,6 @@ export const navigationItems: NavItem[] = [
     icon: HelpCircle,
     href: '/help',
     match: 'exact',
+    // No ACL flag - placeholder for future feature
   },
 ];

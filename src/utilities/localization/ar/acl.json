@@ -1,0 +1,50 @@
+{
+  "acl": {
+    "title": "التحكم في الوصول",
+    "permissions": "الصلاحيات",
+    "managePermissions": "إدارة الصلاحيات",
+    "noPermissions": "لا توجد صلاحيات ممنوحة",
+    "updateSuccess": "تم تحديث الصلاحيات بنجاح",
+    "updateError": "فشل تحديث الصلاحيات",
+    "loadError": "فشل تحميل الصلاحيات",
+    "resources": {
+      "users": {
+        "label": "إدارة المستخدمين",
+        "description": "إدارة مستخدمي النظام وملفاتهم الشخصية"
+      },
+      "shipments": {
+        "label": "الشحنات",
+        "description": "التعامل مع الشحنات والتتبع"
+      },
+      "wallet": {
+        "label": "المحفظة والفواتير",
+        "description": "إدارة محافظ المستخدمين والمعاملات"
+      },
+      "config": {
+        "label": "إعدادات النظام",
+        "description": "تكوين إعدادات النظام والتفضيلات"
+      },
+      "reports": {
+        "label": "التقارير والتحليلات",
+        "description": "عرض تقارير النظام والتحليلات"
+      },
+      "dashboard": {
+        "label": "لوحة التحكم",
+        "description": "الوصول إلى لوحة تحكم المدير"
+      }
+    },
+    "actions": {
+      "read": "عرض",
+      "create": "إنشاء",
+      "update": "تعديل",
+      "delete": "حذف",
+      "write": "كتابة",
+      "manage": "الإدارة الكاملة"
+    },
+    "messages": {
+      "atLeastOnePermission": "يجب تحديد صلاحية واحدة على الأقل",
+      "confirmUpdate": "هل أنت متأكد من تحديث الصلاحيات؟",
+      "permissionDenied": "ليس لديك إذن لتنفيذ هذا الإجراء"
+    }
+  }
+}

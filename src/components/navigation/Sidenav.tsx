@@ -1,12 +1,14 @@
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { LanguageToggle } from '@/components/ui/LanguageToggle';
 import { NavItem } from './NavItem';
 import { cn } from '@/lib/utils';
-import type { NavItem as NavItemType } from '@/types/navigation';
+import { useACL } from '@/hooks/useACL';
+import type { NavItemWithACL } from '@/data/navigation';
 
 interface SidenavProps {
-  items: NavItemType[];
+  items: NavItemWithACL[];
   logo?: React.ReactNode;
   isCollapsed: boolean;
   expandedGroups: Set<string>;
@@ -15,7 +17,20 @@ interface SidenavProps {
 
 export function Sidenav({ items, isCollapsed, expandedGroups, onToggleGroup }: SidenavProps) {
   const { t } = useTranslation();
+  const { hasFlag } = useACL();
   const isRTL = document.documentElement.dir === 'rtl';
+
+  // Filter navigation items based on ACL permissions
+  const filteredItems = useMemo(() => {
+    return items.filter((item) => {
+      // If item has ACL flag, check permission
+      if (item.aclFlag) {
+        return hasFlag(item.aclFlag);
+      }
+      // No ACL flag means visible to all
+      return true;
+    });
+  }, [items, hasFlag]);
 
   return (
     <aside
@@ -33,7 +48,7 @@ export function Sidenav({ items, isCollapsed, expandedGroups, onToggleGroup }: S
       {/* Navigation content */}
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-3">
         <nav className="space-y-1">
-          {items.map((item) => (
+          {filteredItems.map((item) => (
             <NavItem
               key={item.id}
               item={item}

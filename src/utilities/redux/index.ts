@@ -2,11 +2,13 @@ import { configureStore } from '@reduxjs/toolkit';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import authReducer from '@/screens/auth/auth.slice';
 import uiReducer from './ui.slice';
+import aclReducer from './acl.slice';
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
     ui: uiReducer,
+    acl: aclReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

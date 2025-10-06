@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
-import { X, Mail, Phone, MapPin, Calendar, User as UserIcon, Package, Wallet } from 'lucide-react';
+import { X, Mail, Phone, MapPin, Calendar, User as UserIcon, Package, Wallet, Shield } from 'lucide-react';
 import type { User } from '@/types/user';
 import {
   Dialog,
@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ACLManagementTab } from './ACLManagementTab';
 
 interface UserDetailDialogProps {
   user: User | null;
@@ -62,10 +63,16 @@ export function UserDetailDialog({ user, open, onClose, onEdit }: UserDetailDial
         </DialogHeader>
 
         <Tabs defaultValue="overview" className="mt-6">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className={`grid w-full ${user.userType === 'admin' ? 'grid-cols-4' : 'grid-cols-3'}`}>
             <TabsTrigger value="overview">{t('users.detail.overview')}</TabsTrigger>
             <TabsTrigger value="profile">{t('users.detail.profile')}</TabsTrigger>
             <TabsTrigger value="metadata">{t('users.detail.metadata')}</TabsTrigger>
+            {user.userType === 'admin' && (
+              <TabsTrigger value="acl">
+                <Shield className="h-4 w-4 mr-2" />
+                {t('acl:permissions')}
+              </TabsTrigger>
+            )}
           </TabsList>
 
           <TabsContent value="overview" className="space-y-4 mt-4">
@@ -216,6 +223,13 @@ export function UserDetailDialog({ user, open, onClose, onEdit }: UserDetailDial
               </div>
             </div>
           </TabsContent>
+
+          {/* ACL Management Tab - Only for Admins */}
+          {user.userType === 'admin' && (
+            <TabsContent value="acl" className="mt-4">
+              <ACLManagementTab userId={user._id} userType={user.userType} />
+            </TabsContent>
+          )}
         </Tabs>
       </DialogContent>
     </Dialog>

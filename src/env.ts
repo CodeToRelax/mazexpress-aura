@@ -37,5 +37,6 @@ export const env = {
   app: {
     defaultLocale: getEnvVar('VITE_DEFAULT_LOCALE') || 'en',
     supportedLocales: (getEnvVar('VITE_SUPPORTED_LOCALES') || 'en,ar').split(','),
+    apiUrl: getEnvVar('VITE_API_BASE_URL') || 'http://localhost:3000',
   },
 } as const;

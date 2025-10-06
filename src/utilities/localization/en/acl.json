@@ -1,0 +1,50 @@
+{
+  "acl": {
+    "title": "Access Control",
+    "permissions": "Permissions",
+    "managePermissions": "Manage Permissions",
+    "noPermissions": "No permissions granted",
+    "updateSuccess": "Permissions updated successfully",
+    "updateError": "Failed to update permissions",
+    "loadError": "Failed to load permissions",
+    "resources": {
+      "users": {
+        "label": "Users Management",
+        "description": "Manage system users and their profiles"
+      },
+      "shipments": {
+        "label": "Shipments",
+        "description": "Handle shipments and tracking"
+      },
+      "wallet": {
+        "label": "Wallet & Billing",
+        "description": "Manage user wallets and transactions"
+      },
+      "config": {
+        "label": "System Configuration",
+        "description": "Configure system settings and preferences"
+      },
+      "reports": {
+        "label": "Reports & Analytics",
+        "description": "View system reports and analytics"
+      },
+      "dashboard": {
+        "label": "Dashboard",
+        "description": "Access admin dashboard"
+      }
+    },
+    "actions": {
+      "read": "View",
+      "create": "Create",
+      "update": "Edit",
+      "delete": "Delete",
+      "write": "Write",
+      "manage": "Full Management"
+    },
+    "messages": {
+      "atLeastOnePermission": "At least one permission must be selected",
+      "confirmUpdate": "Are you sure you want to update permissions?",
+      "permissionDenied": "You don't have permission to perform this action"
+    }
+  }
+}

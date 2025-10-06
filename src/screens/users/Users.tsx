@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ACLGuard } from '@/components/guards/ACLGuard';
 import { UsersTable } from './UsersTable';
 import { UsersFilters, ActiveFiltersBadges } from './UsersFilters';
 import { UsersPagination } from './UsersPagination';
