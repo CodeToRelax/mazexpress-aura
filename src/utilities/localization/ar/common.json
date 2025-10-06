@@ -21,10 +21,96 @@
     "help": "المساعدة"
   },
   "users": {
-    "subtitle": "إدارة مستخدمي النظام",
+    "title": "إدارة المستخدمين",
+    "subtitle": "إدارة مستخدمي النظام والصلاحيات",
+    "tabs": {
+      "customers": "العملاء",
+      "admins": "المسؤولين"
+    },
+    "table": {
+      "columns": {
+        "user": "المستخدم",
+        "email": "البريد الإلكتروني",
+        "phone": "الهاتف",
+        "role": "الدور",
+        "status": "الحالة",
+        "country": "البلد",
+        "joined": "تاريخ الانضمام",
+        "actions": "الإجراءات"
+      },
+      "status": {
+        "active": "نشط",
+        "disabled": "معطل"
+      },
+      "role": {
+        "admin": "مسؤول",
+        "customer": "عميل"
+      },
+      "selectAll": "تحديد الكل",
+      "showingResults": "عرض {{from}}-{{to}} من {{total}} مستخدم"
+    },
+    "actions": {
+      "create": "إنشاء مستخدم",
+      "edit": "تعديل",
+      "delete": "حذف",
+      "view": "عرض التفاصيل",
+      "activate": "تفعيل",
+      "deactivate": "تعطيل",
+      "copyId": "نسخ المعرف",
+      "clearFilters": "مسح الفلاتر"
+    },
+    "filters": {
+      "searchPlaceholder": "الاسم، البريد، الهاتف...",
+      "advanced": "فلاتر متقدمة",
+      "status": "الحالة",
+      "gender": "الجنس",
+      "country": "البلد",
+      "createdAfter": "تم الإنشاء بعد",
+      "createdBefore": "تم الإنشاء قبل",
+      "allStatuses": "جميع الحالات",
+      "allGenders": "جميع الأجناس",
+      "allCountries": "جميع البلدان",
+      "male": "ذكر",
+      "female": "أنثى"
+    },
     "empty": {
-      "title": "إدارة المستخدمين",
-      "description": "سيتم تنفيذ ميزات إدارة المستخدمين هنا. هذه الصفحة فارغة حاليًا وجاهزة للتطوير."
+      "title": "لا يوجد مستخدمين",
+      "description": "لا يوجد مستخدمين مطابقين للفلاتر."
+    },
+    "detail": {
+      "overview": "نظرة عامة",
+      "profile": "الملف الشخصي",
+      "metadata": "البيانات الوصفية",
+      "generalInfo": "المعلومات العامة",
+      "addressInfo": "العنوان",
+      "fields": {
+        "firstName": "الاسم الأول",
+        "lastName": "اسم العائلة",
+        "email": "البريد الإلكتروني",
+        "phone": "رقم الهاتف",
+        "birthdate": "تاريخ الميلاد",
+        "gender": "الجنس",
+        "city": "المدينة",
+        "country": "البلد",
+        "shippingNumber": "رقم الشحن",
+        "userType": "نوع المستخدم",
+        "createdAt": "تاريخ الإنشاء",
+        "updatedAt": "آخر تحديث"
+      }
+    },
+    "form": {
+      "cancel": "إلغاء"
+    },
+    "messages": {
+      "deleteConfirm": "هل أنت متأكد من حذف هذا المستخدم؟",
+      "deleteSuccess": "تم حذف المستخدم بنجاح",
+      "activateSuccess": "تم تفعيل المستخدم بنجاح",
+      "deactivateSuccess": "تم تعطيل المستخدم بنجاح",
+      "error": "حدث خطأ. يرجى المحاولة مرة أخرى.",
+      "copySuccess": "تم نسخ معرف المستخدم"
+    },
+    "bulk": {
+      "delete": "حذف المحدد"
     }
   },
   "login": {

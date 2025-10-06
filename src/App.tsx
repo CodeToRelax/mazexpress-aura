@@ -10,7 +10,6 @@ import { PublicRoute } from "@/utilities/router/PublicRoute";
 import { AppLayout } from "@/components/layout/AppLayout";
 import Login from "@/screens/auth/Login";
 import Dashboard from "@/screens/dashboard/Dashboard";
-import SystemSettings from "@/screens/settings/SystemSettings";
 import Users from "@/screens/users/Users";
 import NotFound from "./pages/NotFound";
 
@@ -36,7 +35,6 @@ const App = () => {
             <Route element={<PrivateRoute><AppLayout /></PrivateRoute>}>
               <Route path="/" element={<Dashboard />} />
               <Route path="/users" element={<Users />} />
-              <Route path="/settings" element={<SystemSettings />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

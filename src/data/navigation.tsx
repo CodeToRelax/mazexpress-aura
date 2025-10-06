@@ -49,13 +49,6 @@ export const navigationItems: NavItem[] = [
     },
   },
   {
-    id: 'settings',
-    labelKey: 'nav.settings',
-    icon: Settings,
-    href: '/settings',
-    match: 'prefix',
-  },
-  {
     id: 'help',
     labelKey: 'nav.help',
     icon: HelpCircle,

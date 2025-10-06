@@ -21,10 +21,152 @@
     "help": "Help"
   },
   "users": {
-    "subtitle": "Manage system users",
+    "title": "Users Management",
+    "subtitle": "Manage system users and permissions",
+    "tabs": {
+      "customers": "Customers",
+      "admins": "Admins"
+    },
+    "table": {
+      "columns": {
+        "user": "User",
+        "email": "Email",
+        "phone": "Phone",
+        "role": "Role",
+        "status": "Status",
+        "country": "Country",
+        "city": "City",
+        "shippingNumber": "Shipping #",
+        "joined": "Joined",
+        "lastUpdated": "Last Updated",
+        "actions": "Actions"
+      },
+      "status": {
+        "active": "Active",
+        "disabled": "Disabled"
+      },
+      "role": {
+        "admin": "Admin",
+        "customer": "Customer"
+      },
+      "selectAll": "Select all",
+      "selectedCount": "{{count}} selected",
+      "showingResults": "Showing {{from}}-{{to}} of {{total}} users"
+    },
+    "actions": {
+      "create": "Create User",
+      "edit": "Edit",
+      "delete": "Delete",
+      "view": "View Details",
+      "activate": "Activate",
+      "deactivate": "Deactivate",
+      "copyId": "Copy ID",
+      "export": "Export",
+      "import": "Import",
+      "bulkActions": "Bulk Actions",
+      "clearFilters": "Clear all filters",
+      "applyFilters": "Apply Filters"
+    },
+    "filters": {
+      "search": "Search users...",
+      "searchPlaceholder": "Name, email, phone, shipping number...",
+      "advanced": "Advanced Filters",
+      "status": "Status",
+      "role": "Role",
+      "gender": "Gender",
+      "country": "Country",
+      "city": "City",
+      "dateRange": "Date Range",
+      "createdAfter": "Created After",
+      "createdBefore": "Created Before",
+      "allStatuses": "All Statuses",
+      "allRoles": "All Roles",
+      "allGenders": "All Genders",
+      "allCountries": "All Countries",
+      "male": "Male",
+      "female": "Female"
+    },
+    "sort": {
+      "sortBy": "Sort by",
+      "newest": "Newest first",
+      "oldest": "Oldest first",
+      "nameAZ": "Name (A-Z)",
+      "nameZA": "Name (Z-A)",
+      "emailAZ": "Email (A-Z)",
+      "emailZA": "Email (Z-A)"
+    },
     "empty": {
-      "title": "Users Management",
-      "description": "User management features will be implemented here. This page is currently empty and ready for development."
+      "title": "No users found",
+      "description": "No users match your current filters. Try adjusting your search criteria.",
+      "noData": "No users in the system yet",
+      "noDataDescription": "Get started by creating your first user."
+    },
+    "detail": {
+      "title": "User Details",
+      "overview": "Overview",
+      "profile": "Profile & Contact",
+      "security": "Security",
+      "activity": "Activity",
+      "metadata": "Metadata",
+      "generalInfo": "General Information",
+      "contactInfo": "Contact Information",
+      "addressInfo": "Address",
+      "accountInfo": "Account Information",
+      "fields": {
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "username": "Username",
+        "email": "Email",
+        "phone": "Phone Number",
+        "birthdate": "Birth Date",
+        "gender": "Gender",
+        "street": "Street",
+        "city": "City",
+        "country": "Country",
+        "specificDescription": "Location Description",
+        "shippingNumber": "Shipping Number",
+        "walletId": "Wallet ID",
+        "firebaseId": "Firebase ID",
+        "accountStatus": "Account Status",
+        "userType": "User Type",
+        "privacyAgreement": "Privacy Agreement",
+        "createdAt": "Created At",
+        "updatedAt": "Last Updated"
+      }
+    },
+    "form": {
+      "createTitle": "Create New User",
+      "editTitle": "Edit User",
+      "saveChanges": "Save Changes",
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "validation": {
+        "required": "This field is required",
+        "emailInvalid": "Please enter a valid email address",
+        "phoneInvalid": "Please enter a valid phone number",
+        "usernameInvalid": "Username must be 3-30 characters (letters, numbers, underscore)",
+        "firstNameMin": "First name must be at least 2 characters",
+        "lastNameMin": "Last name must be at least 2 characters"
+      }
+    },
+    "messages": {
+      "deleteConfirm": "Are you sure you want to delete this user? This action cannot be undone.",
+      "deleteSuccess": "User deleted successfully",
+      "updateSuccess": "User updated successfully",
+      "createSuccess": "User created successfully",
+      "activateSuccess": "User activated successfully",
+      "deactivateSuccess": "User deactivated successfully",
+      "error": "An error occurred. Please try again.",
+      "copySuccess": "User ID copied to clipboard"
+    },
+    "bulk": {
+      "activate": "Activate Selected",
+      "deactivate": "Deactivate Selected",
+      "delete": "Delete Selected",
+      "export": "Export Selected",
+      "confirmDelete": "Are you sure you want to delete {{count}} users? This action cannot be undone.",
+      "confirmActivate": "Activate {{count}} selected users?",
+      "confirmDeactivate": "Deactivate {{count}} selected users?"
     }
   },
   "login": {
