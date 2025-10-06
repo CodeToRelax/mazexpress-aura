@@ -34,11 +34,13 @@ export const signupSchema = z.object({
     street: z
       .string()
       .max(100, 'Street address must be less than 100 characters')
-      .optional(),
+      .optional()
+      .or(z.literal('')),
     specificDescription: z
       .string()
       .max(200, 'Description must be less than 200 characters')
-      .optional(),
+      .optional()
+      .or(z.literal('')),
     city: z.enum([
       'benghazi',
       'tripoli',
