@@ -47,7 +47,10 @@
         "customer": "عميل"
       },
       "selectAll": "تحديد الكل",
-      "showingResults": "عرض {{from}}-{{to}} من {{total}} مستخدم"
+      "showingResults": "عرض {{from}}-{{to}} من {{total}} مستخدم",
+      "sortBy": "ترتيب حسب {{column}}",
+      "sortAsc": "ترتيب تصاعدي",
+      "sortDesc": "ترتيب تنازلي"
     },
     "actions": {
       "create": "إنشاء مستخدم",
@@ -118,6 +121,15 @@
       "showHide": "إظهار/إخفاء الأعمدة",
       "hiddenCount": "{{count}} مخفي",
       "resetDefault": "إعادة تعيين الافتراضي"
+    },
+    "stats": {
+      "total": "إجمالي المستخدمين",
+      "active": "نشط",
+      "inactive": "معطل",
+      "admins": "المسؤولين",
+      "customers": "العملاء",
+      "byCity": "أفضل المدن",
+      "byCountry": "أفضل البلدان"
     }
   },
   "login": {

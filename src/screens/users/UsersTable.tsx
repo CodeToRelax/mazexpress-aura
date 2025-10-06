@@ -8,7 +8,10 @@ import {
   Eye, 
   Copy,
   CheckCircle2,
-  XCircle
+  XCircle,
+  ChevronsUpDown,
+  ChevronUp,
+  ChevronDown
 } from 'lucide-react';
 import type { User } from '@/types/user';
 import { Button } from '@/components/ui/button';
@@ -43,6 +46,9 @@ interface UsersTableProps {
   onDelete: (user: User) => void;
   onToggleStatus: (user: User) => void;
   visibleColumns?: Set<string>;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+  onSort?: (column: string) => void;
 }
 
 export function UsersTable({
@@ -55,8 +61,42 @@ export function UsersTable({
   onDelete,
   onToggleStatus,
   visibleColumns = new Set(['email', 'phone', 'role', 'status', 'country', 'joined']),
+  sortBy,
+  sortOrder,
+  onSort,
 }: UsersTableProps) {
   const { t } = useTranslation();
+
+  const getSortIcon = (column: string) => {
+    if (sortBy !== column) {
+      return <ChevronsUpDown className="h-4 w-4 ml-1 text-muted-foreground" />;
+    }
+    return sortOrder === 'asc' ? (
+      <ChevronUp className="h-4 w-4 ml-1 text-primary" />
+    ) : (
+      <ChevronDown className="h-4 w-4 ml-1 text-primary" />
+    );
+  };
+
+  const renderSortableHeader = (column: string, label: string) => {
+    // Only allow sorting for columns that have API support
+    const isSortable = onSort && ['name', 'email', 'role', 'joined'].includes(column);
+    
+    if (!isSortable) {
+      return label;
+    }
+
+    return (
+      <button
+        onClick={() => onSort(column)}
+        className="flex items-center gap-1 hover:text-foreground transition-colors"
+        aria-label={t('users.table.sortBy', { column: label })}
+      >
+        <span>{label}</span>
+        {getSortIcon(column)}
+      </button>
+    );
+  };
 
   const getInitials = (firstName: string, lastName: string) => {
     return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
@@ -84,13 +124,13 @@ export function UsersTable({
                 aria-label={t('users.table.selectAll')}
               />
             </TableHead>
-            <TableHead>{t('users.table.columns.user')}</TableHead>
-            {visibleColumns.has('email') && <TableHead>{t('users.table.columns.email')}</TableHead>}
-            {visibleColumns.has('phone') && <TableHead>{t('users.table.columns.phone')}</TableHead>}
-            {visibleColumns.has('role') && <TableHead>{t('users.table.columns.role')}</TableHead>}
+            <TableHead>{renderSortableHeader('name', t('users.table.columns.user'))}</TableHead>
+            {visibleColumns.has('email') && <TableHead>{renderSortableHeader('email', t('users.table.columns.email'))}</TableHead>}
+            {visibleColumns.has('phone') && <TableHead>{renderSortableHeader('phone', t('users.table.columns.phone'))}</TableHead>}
+            {visibleColumns.has('role') && <TableHead>{renderSortableHeader('role', t('users.table.columns.role'))}</TableHead>}
             {visibleColumns.has('status') && <TableHead>{t('users.table.columns.status')}</TableHead>}
-            {visibleColumns.has('country') && <TableHead>{t('users.table.columns.country')}</TableHead>}
-            {visibleColumns.has('joined') && <TableHead>{t('users.table.columns.joined')}</TableHead>}
+            {visibleColumns.has('country') && <TableHead>{renderSortableHeader('country', t('users.table.columns.country'))}</TableHead>}
+            {visibleColumns.has('joined') && <TableHead>{renderSortableHeader('joined', t('users.table.columns.joined'))}</TableHead>}
             <TableHead className="w-12"></TableHead>
           </TableRow>
         </TableHeader>
@@ -98,7 +138,7 @@ export function UsersTable({
           {users.map((user) => (
             <TableRow 
               key={user._id}
-              className="cursor-pointer hover:bg-accent/50"
+              className="cursor-pointer hover:bg-accent/20 transition-colors duration-150"
               onClick={() => onView(user)}
             >
               <TableCell onClick={(e) => e.stopPropagation()}>

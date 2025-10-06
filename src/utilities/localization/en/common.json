@@ -51,7 +51,10 @@
       },
       "selectAll": "Select all",
       "selectedCount": "{{count}} selected",
-      "showingResults": "Showing {{from}}-{{to}} of {{total}} users"
+      "showingResults": "Showing {{from}}-{{to}} of {{total}} users",
+      "sortBy": "Sort by {{column}}",
+      "sortAsc": "Sort ascending",
+      "sortDesc": "Sort descending"
     },
     "actions": {
       "create": "Create User",
@@ -174,6 +177,15 @@
       "showHide": "Show/Hide Columns",
       "hiddenCount": "{{count}} hidden",
       "resetDefault": "Reset to Default"
+    },
+    "stats": {
+      "total": "Total Users",
+      "active": "Active",
+      "inactive": "Inactive",
+      "admins": "Admins",
+      "customers": "Customers",
+      "byCity": "Top Cities",
+      "byCountry": "Top Countries"
     }
   },
   "login": {

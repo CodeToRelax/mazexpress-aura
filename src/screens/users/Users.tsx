@@ -13,6 +13,7 @@ import { UsersTable } from './UsersTable';
 import { UsersFilters } from './UsersFilters';
 import { UsersPagination } from './UsersPagination';
 import { ColumnVisibilityToggle } from './ColumnVisibilityToggle';
+import { UsersStatsBar } from './UsersStatsBar';
 import { UserDetailDialog } from './UserDetailDialog';
 import { DeleteUserDialog } from './DeleteUserDialog';
 import { DeactivateUserDialog } from './DeactivateUserDialog';
@@ -226,6 +227,36 @@ export default function Users() {
     setVisibleColumns(new Set(['email', 'phone', 'role', 'status', 'country', 'joined']));
   };
 
+  const handleSort = (column: string) => {
+    // Map UI column names to API sortBy values (only valid UserFilters sortBy values)
+    const columnMap: Record<string, 'createdAt' | 'updatedAt' | 'firstName' | 'lastName' | 'email' | 'userType'> = {
+      name: 'firstName',
+      email: 'email',
+      role: 'userType',
+      joined: 'createdAt',
+    };
+
+    // Only allow sorting for columns that map to valid API sortBy values
+    const apiColumn = columnMap[column];
+    if (!apiColumn) return;
+
+    setFilters(prev => {
+      // Toggle sort order if clicking the same column
+      if (prev.sortBy === apiColumn) {
+        return {
+          ...prev,
+          sortOrder: prev.sortOrder === 'asc' ? 'desc' : 'asc',
+        };
+      }
+      // Set new column with default ascending order
+      return {
+        ...prev,
+        sortBy: apiColumn,
+        sortOrder: 'asc',
+      };
+    });
+  };
+
   const activeFilterCount = Object.entries(filters).filter(
     ([key, value]) => 
       value !== undefined && 
@@ -280,12 +311,23 @@ export default function Users() {
             </TabsTrigger>
           </TabsList>
         </Tabs>
+
+        {/* Stats Bar */}
+        {!loading && !hasError && users.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.15 }}
+          >
+            <UsersStatsBar users={users} totalCount={pagination.totalDocs} />
+          </motion.div>
+        )}
       </motion.div>
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
         className="space-y-4"
       >
         <div className="flex items-center gap-2 relative z-20">
@@ -372,6 +414,9 @@ export default function Users() {
               onDelete={handleDeleteUser}
               onToggleStatus={handleToggleStatus}
               visibleColumns={visibleColumns}
+              sortBy={filters.sortBy}
+              sortOrder={filters.sortOrder}
+              onSort={handleSort}
             />
 
             <UsersPagination
