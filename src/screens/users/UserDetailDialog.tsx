@@ -31,6 +31,17 @@ export function UserDetailDialog({ user, open, onClose, onEdit }: UserDetailDial
     return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
   };
 
+  const formatDate = (dateValue: string | Date | null | undefined, formatString: string): string => {
+    if (!dateValue) return 'N/A';
+    
+    const date = new Date(dateValue);
+    
+    // Check if date is valid
+    if (isNaN(date.getTime())) return 'N/A';
+    
+    return format(date, formatString);
+  };
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
@@ -110,7 +121,7 @@ export function UserDetailDialog({ user, open, onClose, onEdit }: UserDetailDial
                   <div>
                     <div className="text-sm text-muted-foreground">{t('users.detail.fields.birthdate')}</div>
                     <div className="font-medium">
-                      {user.birthdate ? format(new Date(user.birthdate), 'MMMM dd, yyyy') : 'N/A'}
+                      {formatDate(user.birthdate, 'MMMM dd, yyyy')}
                     </div>
                   </div>
                 </div>
@@ -203,13 +214,13 @@ export function UserDetailDialog({ user, open, onClose, onEdit }: UserDetailDial
                 <div>
                   <label className="text-sm text-muted-foreground">{t('users.detail.fields.createdAt')}</label>
                   <div className="font-medium mt-1">
-                    {user.createdAt ? format(new Date(user.createdAt), 'MMMM dd, yyyy HH:mm') : 'N/A'}
+                    {formatDate(user.createdAt, 'MMMM dd, yyyy HH:mm')}
                   </div>
                 </div>
                 <div>
                   <label className="text-sm text-muted-foreground">{t('users.detail.fields.updatedAt')}</label>
                   <div className="font-medium mt-1">
-                    {user.updatedAt ? format(new Date(user.updatedAt), 'MMMM dd, yyyy HH:mm') : 'N/A'}
+                    {formatDate(user.updatedAt, 'MMMM dd, yyyy HH:mm')}
                   </div>
                 </div>
                 <div>
