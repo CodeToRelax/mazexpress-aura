@@ -237,16 +237,10 @@ export default function Users() {
           
           <div className="flex items-center gap-2">
             {selectedUsers.size > 0 && (
-              <>
-                <Button variant="outline" className="gap-2">
-                  <Download className="h-4 w-4" />
-                  {t('users.actions.export')}
-                </Button>
-                <Button variant="destructive" className="gap-2">
-                  <Trash2 className="h-4 w-4" />
-                  {t('users.bulk.delete')} ({selectedUsers.size})
-                </Button>
-              </>
+              <Button variant="outline" className="gap-2">
+                <Download className="h-4 w-4" />
+                {t('users.actions.export')}
+              </Button>
             )}
             <Button className="gap-2">
               <Plus className="h-4 w-4" />
