@@ -55,6 +55,7 @@ export default function Users() {
   const [errorMessage, setErrorMessage] = useState('');
 
   const fetchUsers = useCallback(async () => {
+    console.log('fetchUsers called with filters:', filters);
     try {
       setLoading(true);
       setHasError(false);
@@ -267,7 +268,7 @@ export default function Users() {
         transition={{ duration: 0.5, delay: 0.1 }}
         className="space-y-4"
       >
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 relative z-20">
           <div className="flex-1">
             <UsersFilters
               filters={filters}
@@ -280,8 +281,11 @@ export default function Users() {
             type="button"
             variant="outline"
             size="icon"
-            onClick={fetchUsers}
-            className="shrink-0"
+            onClick={() => {
+              console.log('Refresh button clicked');
+              fetchUsers();
+            }}
+            className="shrink-0 cursor-pointer"
             title={t('users.actions.refresh')}
           >
             <RotateCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />

@@ -67,7 +67,11 @@ export function UsersFilters({
         
         <Sheet>
           <SheetTrigger asChild>
-            <Button variant="outline" className="gap-2">
+            <Button 
+              variant="outline" 
+              className="gap-2 cursor-pointer"
+              onClick={() => console.log('Advanced filters button clicked')}
+            >
               <SlidersHorizontal className="h-4 w-4" />
               {t('users.filters.advanced')}
               {activeFilterCount > 0 && (
