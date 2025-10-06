@@ -1,18 +1,16 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { LanguageToggle } from '@/components/ui/LanguageToggle';
-import { NavSection } from './NavSection';
+import { NavItem } from './NavItem';
 import { cn } from '@/lib/utils';
-import type { NavItem } from '@/types/navigation';
+import type { NavItem as NavItemType } from '@/types/navigation';
 
 interface MobileSidenavProps {
-  items: NavItem[];
+  items: NavItemType[];
   logo?: React.ReactNode;
-  footer?: React.ReactNode;
   isOpen: boolean;
   onClose: () => void;
   expandedGroups: Set<string>;
@@ -22,7 +20,6 @@ interface MobileSidenavProps {
 export function MobileSidenav({
   items,
   logo,
-  footer,
   isOpen,
   onClose,
   expandedGroups,
@@ -31,90 +28,88 @@ export function MobileSidenav({
   const { t } = useTranslation();
   const isRTL = document.documentElement.dir === 'rtl';
 
-  // Prevent background scroll when drawer is open
+  // Prevent body scroll when open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
-      return () => {
-        document.body.style.overflow = '';
-      };
+    } else {
+      document.body.style.overflow = '';
     }
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [isOpen]);
 
-  // Handle ESC key
+  // Close on escape key
   useEffect(() => {
-    const handleEsc = (e: KeyboardEvent) => {
+    const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
         onClose();
       }
     };
-    document.addEventListener('keydown', handleEsc);
-    return () => document.removeEventListener('keydown', handleEsc);
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
   }, [isOpen, onClose]);
 
+  if (!isOpen) return null;
+
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm xl:hidden"
+    <>
+      {/* Backdrop */}
+      <div
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 xl:hidden"
+        onClick={onClose}
+        aria-hidden="true"
+      />
+
+      {/* Drawer */}
+      <aside
+        className={cn(
+          'fixed top-0 bottom-0 z-50 w-72',
+          'bg-[hsl(var(--sidenav-bg))] glass-card shadow-glass',
+          'flex flex-col xl:hidden',
+          'transition-transform duration-300',
+          isRTL ? 'right-0' : 'left-0'
+        )}
+        role="dialog"
+        aria-modal="true"
+        aria-label={t('nav.primary')}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 border-b border-[hsl(var(--sidenav-border))]">
+          {logo}
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={onClose}
-            aria-hidden="true"
-          />
-
-          {/* Drawer */}
-          <motion.aside
-            initial={{ x: isRTL ? '100%' : '-100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: isRTL ? '100%' : '-100%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className={cn(
-              'fixed top-0 bottom-0 z-50 w-72 flex flex-col',
-              'border-[hsl(var(--sidenav-border))] bg-[hsl(var(--sidenav-bg))]',
-              'glass-card shadow-glass xl:hidden',
-              isRTL ? 'right-0 border-l' : 'left-0 border-r',
-            )}
-            role="dialog"
-            aria-label={t('nav.mobile')}
-            aria-modal="true"
+            aria-label="Close menu"
+            className="glass-card hover:shadow-glass-hover"
           >
-            {/* Header with logo and close button */}
-            <div className="flex items-center justify-between p-4 border-b border-[hsl(var(--sidenav-border))]">
-              <div className="flex-1">{logo}</div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={onClose}
-                aria-label={t('nav.close')}
-              >
-                <X className="h-5 w-5" />
-              </Button>
-            </div>
+            <X className="h-5 w-5" />
+          </Button>
+        </div>
 
-            {/* Navigation content */}
-            <div className="flex-1 overflow-y-auto overflow-x-hidden p-3">
-              <NavSection
-                items={items}
+        {/* Navigation content */}
+        <div className="flex-1 overflow-y-auto p-4">
+          <nav className="space-y-1">
+            {items.map((item) => (
+              <NavItem
+                key={item.id}
+                item={item}
                 isCollapsed={false}
-                expandedGroups={expandedGroups}
-                onToggleGroup={onToggleGroup}
+                isExpanded={expandedGroups.has(item.id)}
+                onToggle={() => onToggleGroup(item.id)}
               />
-            </div>
+            ))}
+          </nav>
+        </div>
 
-            {/* Footer */}
-            <div className="p-3 border-t border-[hsl(var(--sidenav-border))] flex items-center gap-2">
-              <ThemeToggle />
-              <LanguageToggle />
-              {footer}
-            </div>
-          </motion.aside>
-        </>
-      )}
-    </AnimatePresence>
+        {/* Footer */}
+        <div className="p-4 border-t border-[hsl(var(--sidenav-border))] flex items-center gap-2">
+          <ThemeToggle />
+          <LanguageToggle />
+        </div>
+      </aside>
+    </>
   );
 }
