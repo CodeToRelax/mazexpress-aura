@@ -39,19 +39,19 @@ export function LoginForm({ onSubmit, isSubmitting, serverError }: LoginFormProp
   const rememberMe = watch('rememberMe');
   
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       {/* Email Field */}
       <div className="space-y-2">
-        <Label htmlFor="email" className="text-foreground font-medium text-sm sm:text-base">
+        <Label htmlFor="email" className="text-foreground font-medium">
           {t('login.email')}
         </Label>
         <div className="relative">
-          <Mail className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             id="email"
             type="email"
             placeholder={t('login.emailPlaceholder')}
-            className={`pl-9 sm:pl-10 text-sm sm:text-base focus-ring ${errors.email ? 'border-destructive' : ''}`}
+            className={`pl-10 h-12 focus-ring ${errors.email ? 'border-destructive' : ''}`}
             disabled={isSubmitting}
             {...register('email')}
           />
@@ -63,15 +63,15 @@ export function LoginForm({ onSubmit, isSubmitting, serverError }: LoginFormProp
       
       {/* Password Field */}
       <div className="space-y-2">
-        <Label htmlFor="password" className="text-foreground font-medium text-sm sm:text-base">
+        <Label htmlFor="password" className="text-foreground font-medium">
           {t('login.password')}
         </Label>
         <div className="relative">
-          <Lock className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
+          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
           <PasswordField
             id="password"
             placeholder={t('login.passwordPlaceholder')}
-            className={`pl-9 sm:pl-10 text-sm sm:text-base focus-ring ${errors.password ? 'border-destructive' : ''}`}
+            className={`pl-10 h-12 focus-ring ${errors.password ? 'border-destructive' : ''}`}
             disabled={isSubmitting}
             error={errors.password?.message}
             {...register('password')}
@@ -111,7 +111,7 @@ export function LoginForm({ onSubmit, isSubmitting, serverError }: LoginFormProp
       {/* Submit Button */}
       <Button
         type="submit"
-        className="w-full h-11 sm:h-12 text-sm sm:text-base bg-primary hover:bg-primary-light shadow-glow-subtle hover:shadow-glow transition-smooth"
+        className="w-full h-12 bg-primary hover:bg-primary-light shadow-glow-subtle hover:shadow-glow transition-smooth"
         disabled={isSubmitting}
       >
         {isSubmitting ? (

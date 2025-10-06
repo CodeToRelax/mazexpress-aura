@@ -55,40 +55,73 @@ export default function Login() {
   
   return (
     <AuthLayoutGlass>
-      {/* Logo & Brand */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="text-center mb-6 sm:mb-8"
-      >
-        <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-primary/10 mb-3 sm:mb-4">
-          <Package className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
-        </div>
-        <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-1">
-          {t('appName')}
-        </h1>
-        <p className="text-muted-foreground text-xs sm:text-sm">
-          {t('login.subtitle')}
-        </p>
-      </motion.div>
-      
-      {/* Login Form */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.2 }}
-      >
-        <h2 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6 text-foreground">
-          {t('login.title')}
-        </h2>
+      {/* Mobile: Simplified header */}
+      <div className="md:hidden space-y-8">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="text-center"
+        >
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 mb-4">
+            <Package className="h-8 w-8 text-primary" />
+          </div>
+          <h1 className="text-2xl font-bold text-foreground mb-1">
+            {t('appName')}
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            {t('login.subtitle')}
+          </p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
+          <LoginForm
+            onSubmit={handleLogin}
+            isSubmitting={isSubmitting}
+            serverError={serverError || undefined}
+          />
+        </motion.div>
+      </div>
+
+      {/* Desktop: Card with header */}
+      <div className="hidden md:block">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="text-center mb-8"
+        >
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 mb-4">
+            <Package className="h-8 w-8 text-primary" />
+          </div>
+          <h1 className="text-2xl font-bold text-foreground mb-1">
+            {t('appName')}
+          </h1>
+          <p className="text-muted-foreground text-sm">
+            {t('login.subtitle')}
+          </p>
+        </motion.div>
         
-        <LoginForm
-          onSubmit={handleLogin}
-          isSubmitting={isSubmitting}
-          serverError={serverError || undefined}
-        />
-      </motion.div>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
+          <h2 className="text-xl font-semibold mb-6 text-foreground">
+            {t('login.title')}
+          </h2>
+          
+          <LoginForm
+            onSubmit={handleLogin}
+            isSubmitting={isSubmitting}
+            serverError={serverError || undefined}
+          />
+        </motion.div>
+      </div>
     </AuthLayoutGlass>
   );
 }
