@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -30,10 +30,14 @@ interface CountryConfigCardProps {
 export function CountryConfigCard({ country, displayName, config, onUpdate }: CountryConfigCardProps) {
   const [isSaving, setIsSaving] = useState(false);
   
-  const { register, handleSubmit, formState: { errors, isDirty } } = useForm<CountryConfigFormData>({
+  const { register, handleSubmit, formState: { errors, isDirty }, reset } = useForm<CountryConfigFormData>({
     resolver: zodResolver(countryConfigSchema),
     defaultValues: config,
   });
+
+  useEffect(() => {
+    reset(config);
+  }, [config, reset]);
 
   const onSubmit = async (data: CountryConfigFormData) => {
     setIsSaving(true);
