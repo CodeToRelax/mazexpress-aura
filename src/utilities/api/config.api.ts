@@ -26,7 +26,17 @@ async function getAuthToken(): Promise<string | null> {
 }
 
 export async function getSystemConfig(): Promise<SystemConfig> {
-  const response = await fetch(`${API_BASE_URL}/api/config`);
+  const token = await getAuthToken();
+  
+  if (!token) {
+    throw new Error('Authentication required');
+  }
+  
+  const response = await fetch(`${API_BASE_URL}/api/config`, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
   
   if (!response.ok) {
     throw new Error('Failed to fetch system configuration');
@@ -37,7 +47,17 @@ export async function getSystemConfig(): Promise<SystemConfig> {
 }
 
 export async function getCountryConfig(country: string): Promise<CountryShippingConfig & { country: string }> {
-  const response = await fetch(`${API_BASE_URL}/api/config/countries/${country}`);
+  const token = await getAuthToken();
+  
+  if (!token) {
+    throw new Error('Authentication required');
+  }
+  
+  const response = await fetch(`${API_BASE_URL}/api/config/countries/${country}`, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
   
   if (!response.ok) {
     throw new Error(`Failed to fetch configuration for ${country}`);
