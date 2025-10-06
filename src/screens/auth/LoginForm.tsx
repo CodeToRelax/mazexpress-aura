@@ -82,31 +82,20 @@ export function LoginForm({ onSubmit, isSubmitting, serverError }: LoginFormProp
         )}
       </div>
       
-      {/* Remember Me & Forgot Password */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="rememberMe"
-            checked={rememberMe}
-            onCheckedChange={(checked) => setValue('rememberMe', !!checked)}
-            disabled={isSubmitting}
-          />
-          <Label
-            htmlFor="rememberMe"
-            className="text-sm font-normal cursor-pointer"
-          >
-            {t('login.remember')}
-          </Label>
-        </div>
-        
-        <Button
-          type="button"
-          variant="link"
-          className="px-0 text-sm text-primary hover:text-primary-light"
+      {/* Remember Me */}
+      <div className="flex items-center space-x-2">
+        <Checkbox
+          id="rememberMe"
+          checked={rememberMe}
+          onCheckedChange={(checked) => setValue('rememberMe', !!checked)}
           disabled={isSubmitting}
+        />
+        <Label
+          htmlFor="rememberMe"
+          className="text-sm font-normal cursor-pointer"
         >
-          {t('login.forgot')}
-        </Button>
+          {t('login.remember')}
+        </Label>
       </div>
       
       {/* Server Error */}
