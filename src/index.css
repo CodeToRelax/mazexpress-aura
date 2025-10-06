@@ -45,10 +45,10 @@
     --glass-border-opacity: 0.2;
     
     /* Shadows & Glows */
-    --shadow-glass: 0 4px 20px 0 rgba(31, 38, 135, 0.12);
-    --shadow-glass-hover: 0 8px 28px 0 rgba(31, 38, 135, 0.18);
-    --glow-primary: 0 0 32px hsla(var(--primary-glow), 0.25);
-    --glow-subtle: 0 0 16px hsla(var(--primary-glow), 0.12);
+    --shadow-glass: 0 2px 12px 0 rgba(31, 38, 135, 0.08);
+    --shadow-glass-hover: 0 4px 16px 0 rgba(31, 38, 135, 0.12);
+    --glow-primary: 0 0 20px hsla(var(--primary-glow), 0.15);
+    --glow-subtle: 0 0 10px hsla(var(--primary-glow), 0.08);
     
     /* Spacing & Radii */
     --radius: 16px;
@@ -90,9 +90,9 @@
     --input: 0 0% 25%;
     --ring: 191 75% 52%;
     
-    --shadow-glass: 0 4px 20px 0 rgba(0, 0, 0, 0.4);
-    --shadow-glass-hover: 0 8px 28px 0 rgba(0, 0, 0, 0.5);
-    --glow-primary: 0 0 32px hsla(var(--primary-glow), 0.35);
+    --shadow-glass: 0 2px 12px 0 rgba(0, 0, 0, 0.25);
+    --shadow-glass-hover: 0 4px 16px 0 rgba(0, 0, 0, 0.3);
+    --glow-primary: 0 0 20px hsla(var(--primary-glow), 0.2);
   }
 }
 
