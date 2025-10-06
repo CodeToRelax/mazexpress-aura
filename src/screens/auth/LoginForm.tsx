@@ -31,7 +31,7 @@ export function LoginForm({ onSubmit, isSubmitting, serverError }: LoginFormProp
     defaultValues: {
       email: '',
       password: '',
-      rememberMe: false,
+      rememberMe: true,
     },
   });
   
@@ -77,28 +77,6 @@ export function LoginForm({ onSubmit, isSubmitting, serverError }: LoginFormProp
         {errors.password && (
           <InlineError message={t(errors.password.message || 'errors.required')} />
         )}
-      </div>
-      
-      {/* Remember Me */}
-      <div className="flex items-center space-x-2">
-        <Controller
-          name="rememberMe"
-          control={control}
-          render={({ field }) => (
-            <Checkbox
-              id="rememberMe"
-              checked={field.value}
-              onCheckedChange={(checked) => field.onChange(checked === true)}
-              disabled={isSubmitting}
-            />
-          )}
-        />
-        <Label
-          htmlFor="rememberMe"
-          className="text-sm font-normal cursor-pointer"
-        >
-          {t('login.remember')}
-        </Label>
       </div>
       
       {/* Server Error */}
