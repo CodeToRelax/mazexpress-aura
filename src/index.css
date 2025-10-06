@@ -67,6 +67,14 @@
     /* Transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-spring: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    
+    /* Sidenav */
+    --sidenav-bg: 0 0% 100%;
+    --sidenav-hover: 0 0% 96%;
+    --sidenav-active: 193 98% 44%;
+    --sidenav-active-bg: 193 98% 96%;
+    --sidenav-border: 0 0% 90%;
+    --sidenav-flyout-bg: 0 0% 100%;
   }
 
   .dark {
@@ -111,6 +119,14 @@
     --toast-error-bg: 0 60% 25%;
     --toast-error-text: 0 100% 90%;
     --toast-error-border: 0 50% 40%;
+    
+    /* Sidenav - Dark Mode */
+    --sidenav-bg: 220 28% 15%;
+    --sidenav-hover: 0 0% 20%;
+    --sidenav-active: 191 75% 52%;
+    --sidenav-active-bg: 191 75% 18%;
+    --sidenav-border: 0 0% 25%;
+    --sidenav-flyout-bg: 220 28% 18%;
   }
 }
 

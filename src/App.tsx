@@ -7,9 +7,11 @@ import { I18nProvider } from "@/app/providers/I18nProvider";
 import { initializeFirebase } from "@/utilities/firebase/firebase";
 import { PrivateRoute } from "@/utilities/router/PrivateRoute";
 import { PublicRoute } from "@/utilities/router/PublicRoute";
+import { AppLayout } from "@/components/layout/AppLayout";
 import Login from "@/screens/auth/Login";
 import Dashboard from "@/screens/dashboard/Dashboard";
 import SystemSettings from "@/screens/settings/SystemSettings";
+import Users from "@/screens/users/Users";
 import NotFound from "./pages/NotFound";
 
 // Initialize Firebase on app start
@@ -31,8 +33,11 @@ const App = () => {
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
-            <Route path="/" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-            <Route path="/settings" element={<PrivateRoute><SystemSettings /></PrivateRoute>} />
+            <Route element={<PrivateRoute><AppLayout /></PrivateRoute>}>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/users" element={<Users />} />
+              <Route path="/settings" element={<SystemSettings />} />
+            </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

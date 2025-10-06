@@ -1,5 +1,32 @@
 {
   "appName": "MazExpress Admin",
+  "lang": {
+    "english": "English",
+    "arabic": "العربية",
+    "switchTo": "Switch to {{language}}"
+  },
+  "nav": {
+    "primary": "Primary navigation",
+    "mobile": "Mobile navigation",
+    "expand": "Expand navigation",
+    "collapse": "Collapse navigation",
+    "close": "Close navigation",
+    "dashboard": "Dashboard",
+    "users": "Users",
+    "reports": "Reports",
+    "reports.sales": "Sales Reports",
+    "reports.analytics": "Analytics",
+    "inventory": "Inventory",
+    "settings": "Settings",
+    "help": "Help"
+  },
+  "users": {
+    "subtitle": "Manage system users",
+    "empty": {
+      "title": "Users Management",
+      "description": "User management features will be implemented here. This page is currently empty and ready for development."
+    }
+  },
   "login": {
     "title": "Sign in",
     "subtitle": "Welcome back. Please enter your details.",
@@ -26,11 +53,6 @@
       "notAllowed": "This sign-in method is not allowed",
       "unknown": "An unexpected error occurred. Please try again"
     }
-  },
-  "lang": {
-    "english": "English",
-    "arabic": "العربية",
-    "switchTo": "Switch to {{language}}"
   },
   "actions": {
     "signOut": "Sign out",
