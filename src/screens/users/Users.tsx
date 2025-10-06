@@ -10,7 +10,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UsersTable } from './UsersTable';
-import { UsersFilters } from './UsersFilters';
+import { UsersFilters, ActiveFiltersBadges } from './UsersFilters';
 import { UsersPagination } from './UsersPagination';
 import { ColumnVisibilityToggle } from './ColumnVisibilityToggle';
 import { UsersStatsBar } from './UsersStatsBar';
@@ -492,6 +492,13 @@ export default function Users() {
             <RotateCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
           </Button>
         </div>
+
+        <ActiveFiltersBadges
+          filters={filters}
+          onFiltersChange={handleFiltersChange}
+          onClearFilters={handleClearFilters}
+          activeFilterCount={activeFilterCount}
+        />
 
         {hasError ? (
           <div className="glass-card rounded-2xl p-12 text-center">
