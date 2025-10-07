@@ -19,25 +19,39 @@ async function getAuthToken(): Promise<string> {
   const auth = getFirebaseAuth();
   const user = auth.currentUser;
   
+  console.log('[ACL API] Getting auth token...', {
+    hasUser: !!user,
+    userEmail: user?.email,
+  });
+  
   if (!user) {
+    console.error('[ACL API] No authenticated user found');
     throw new Error('User not authenticated');
   }
   
-  return await user.getIdToken();
+  const token = await user.getIdToken();
+  console.log('[ACL API] Auth token obtained:', token.substring(0, 20) + '...');
+  
+  return token;
 }
 
 /**
  * Handle API response errors
  */
 async function handleResponse<T>(response: Response): Promise<T> {
+  console.log('[ACL API] Response status:', response.status, response.statusText);
+  
   if (!response.ok) {
     const error = await response.json().catch(() => ({
       message: 'An error occurred',
     }));
+    console.error('[ACL API] Error response:', error);
     throw new Error(error.message || `HTTP ${response.status}`);
   }
   
-  return response.json();
+  const data = await response.json();
+  console.log('[ACL API] Response data:', data);
+  return data;
 }
 
 /**
@@ -48,6 +62,10 @@ export const aclApi = {
    * Get complete ACL information for current user
    */
   async getUserACL(): Promise<UserACLData> {
+    console.log('[ACL API] Fetching user ACL...');
+    console.log('[ACL API] API Base URL:', API_BASE_URL);
+    console.log('[ACL API] Full endpoint:', `${API_BASE_URL}/api/acl/user`);
+    
     const token = await getAuthToken();
     const response = await fetch(`${API_BASE_URL}/api/acl/user`, {
       method: 'GET',
@@ -58,6 +76,12 @@ export const aclApi = {
     });
     
     const result = await handleResponse<ACLApiResponse>(response);
+    console.log('[ACL API] User ACL data received:', {
+      userId: result.data.userId,
+      userType: result.data.userType,
+      permissionsCount: result.data.permissions.length,
+      flags: result.data.frontendFlags,
+    });
     return result.data;
   },
 

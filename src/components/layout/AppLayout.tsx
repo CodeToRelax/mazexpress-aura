@@ -15,6 +15,7 @@ import { SettingsToggle } from '@/components/ui/SettingsToggle';
 import { navigationItems } from '@/data/navigation';
 import { TopNav } from '@/components/navigation/TopNav';
 import { MobileSidenav } from '@/components/navigation/MobileSidenav';
+import { ACLDebugPanel } from '@/components/debug/ACLDebugPanel';
 
 export function AppLayout() {
   const { t } = useTranslation();
@@ -115,6 +116,9 @@ export function AppLayout() {
           <Outlet />
         </div>
       </main>
+
+      {/* ACL Debug Panel */}
+      <ACLDebugPanel />
     </div>
   );
 }

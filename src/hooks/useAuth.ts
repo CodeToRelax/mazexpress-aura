@@ -21,19 +21,32 @@ export function useAuth() {
     
     // Set up auth state listener
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      console.log('[useAuth] Auth state changed:', {
+        hasUser: !!firebaseUser,
+        email: firebaseUser?.email,
+        uid: firebaseUser?.uid,
+      });
+      
       dispatch(setUser(firebaseUser));
       
       if (firebaseUser) {
         // Fetch ACL data after successful authentication
+        console.log('[useAuth] Fetching ACL data for authenticated user...');
         try {
           const aclData = await aclApi.getUserACL();
+          console.log('[useAuth] ACL data fetched successfully:', {
+            userId: aclData.userId,
+            userType: aclData.userType,
+            flags: aclData.frontendFlags,
+          });
           dispatch(setACL(aclData));
         } catch (error) {
-          console.error('Failed to fetch ACL data:', error);
+          console.error('[useAuth] Failed to fetch ACL data:', error);
           dispatch(setACLError(error instanceof Error ? error.message : 'Failed to load permissions'));
         }
       } else {
         // Clear ACL data on logout
+        console.log('[useAuth] User logged out, clearing ACL');
         dispatch(clearACL());
       }
       

@@ -23,17 +23,24 @@ export function useACL() {
    * Check if user has a specific permission
    */
   const hasPermission = (resource: string, action: string): boolean => {
-    if (!acl) return false;
+    if (!acl) {
+      console.warn('[useACL] hasPermission called but ACL not loaded:', { resource, action });
+      return false;
+    }
     
     const permission = acl.permissions.find((p) => p.resource === resource);
-    return permission?.actions.includes(action) ?? false;
+    const result = permission?.actions.includes(action) ?? false;
+    console.log('[useACL] Permission check:', { resource, action, result, permission });
+    return result;
   };
 
   /**
    * Check if user has a specific frontend flag
    */
   const hasFlag = (flag: keyof ACLFlags): boolean => {
-    return flags?.[flag] ?? false;
+    const result = flags?.[flag] ?? false;
+    console.log('[useACL] Flag check:', { flag, result, allFlags: flags });
+    return result;
   };
 
   /**
