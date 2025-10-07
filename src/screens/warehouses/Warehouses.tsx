@@ -85,7 +85,7 @@ export default function Warehouses() {
       <WarehousesStatsBar warehouses={warehouses} />
 
       {/* Filters */}
-      <div className="flex items-center gap-2 relative z-10">
+      <div className="flex items-center gap-2">
         <Card className="p-4 flex-1">
           <WarehousesFilters filters={filters} onFilterChange={handleFilterChange} />
         </Card>
@@ -93,7 +93,7 @@ export default function Warehouses() {
           variant="outline"
           size="icon"
           onClick={() => refetch()}
-          className="shrink-0"
+          className="shrink-0 relative z-20"
           title={t('warehouses.actions.refresh')}
         >
           <RotateCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
