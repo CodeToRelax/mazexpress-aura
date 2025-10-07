@@ -34,7 +34,7 @@ export function OperatingHoursEditor({ form }: OperatingHoursEditorProps) {
                 render={({ field }) => (
                   <FormItem className="flex items-center space-x-2 space-y-0">
                     <FormLabel className="text-sm">
-                      {field.value ? t('warehouses.detail.hours.open') : t('warehouses.detail.hours.closed')}
+                      {field.value ? t('warehouses.detail.times.open') : t('warehouses.detail.times.closed')}
                     </FormLabel>
                     <FormControl>
                       <Switch
@@ -54,7 +54,7 @@ export function OperatingHoursEditor({ form }: OperatingHoursEditorProps) {
                   name={`operatingHours.${day}.openTime`}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('warehouses.detail.hours.openTime')}</FormLabel>
+                      <FormLabel>{t('warehouses.detail.times.openTime')}</FormLabel>
                       <FormControl>
                         <Input
                           type="time"
@@ -72,7 +72,7 @@ export function OperatingHoursEditor({ form }: OperatingHoursEditorProps) {
                   name={`operatingHours.${day}.closeTime`}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('warehouses.detail.hours.closeTime')}</FormLabel>
+                      <FormLabel>{t('warehouses.detail.times.closeTime')}</FormLabel>
                       <FormControl>
                         <Input
                           type="time"
@@ -90,7 +90,7 @@ export function OperatingHoursEditor({ form }: OperatingHoursEditorProps) {
                   name={`operatingHours.${day}.breakStartTime`}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('warehouses.detail.hours.breakTime')} ({t('warehouses.detail.hours.openTime')})</FormLabel>
+                      <FormLabel>{t('warehouses.detail.times.breakTime')} ({t('warehouses.detail.times.openTime')})</FormLabel>
                       <FormControl>
                         <Input
                           type="time"
@@ -108,7 +108,7 @@ export function OperatingHoursEditor({ form }: OperatingHoursEditorProps) {
                   name={`operatingHours.${day}.breakEndTime`}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('warehouses.detail.hours.breakTime')} ({t('warehouses.detail.hours.closeTime')})</FormLabel>
+                      <FormLabel>{t('warehouses.detail.times.breakTime')} ({t('warehouses.detail.times.closeTime')})</FormLabel>
                       <FormControl>
                         <Input
                           type="time"

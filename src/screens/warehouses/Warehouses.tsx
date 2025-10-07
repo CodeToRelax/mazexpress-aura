@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Plus } from 'lucide-react';
+import { Plus, RotateCw } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -85,9 +85,20 @@ export default function Warehouses() {
       <WarehousesStatsBar warehouses={warehouses} />
 
       {/* Filters */}
-      <Card className="p-4">
-        <WarehousesFilters filters={filters} onFilterChange={handleFilterChange} />
-      </Card>
+      <div className="flex items-center gap-2">
+        <Card className="p-4 flex-1">
+          <WarehousesFilters filters={filters} onFilterChange={handleFilterChange} />
+        </Card>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => refetch()}
+          className="shrink-0"
+          title={t('warehouses.actions.refresh')}
+        >
+          <RotateCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+        </Button>
+      </div>
 
       {/* Table */}
       {isLoading ? (

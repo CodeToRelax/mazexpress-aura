@@ -1,7 +1,8 @@
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, MapPin, Phone, Mail, ExternalLink } from 'lucide-react';
+import { ArrowLeft, MapPin, Phone, Mail, ExternalLink, Edit } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -10,16 +11,19 @@ import { InlineError } from '@/components/feedback/InlineError';
 import { getWarehouseById } from '@/utilities/api/warehouses.api';
 import { WarehouseStatus } from '@/types/warehouse';
 import { format } from 'date-fns';
+import { EditWarehouseDialog } from './EditWarehouseDialog';
 
 export default function WarehouseDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   const {
     data: response,
     isLoading,
     error,
+    refetch,
   } = useQuery({
     queryKey: ['warehouse', id],
     queryFn: () => getWarehouseById(id!),
@@ -46,6 +50,9 @@ export default function WarehouseDetail() {
       <div className="flex items-center gap-4 relative z-10">
         <Button variant="outline" size="icon" onClick={() => navigate('/warehouses')} className="glass-card hover:shadow-glass-hover">
           <ArrowLeft className="h-5 w-5" />
+        </Button>
+        <Button variant="outline" size="icon" onClick={() => setIsEditDialogOpen(true)} className="glass-card hover:shadow-glass-hover">
+          <Edit className="h-5 w-5" />
         </Button>
       </div>
 
@@ -195,6 +202,17 @@ export default function WarehouseDetail() {
           ))}
         </div>
       </Card>
+
+      {/* Edit Dialog */}
+      <EditWarehouseDialog
+        open={isEditDialogOpen}
+        onOpenChange={setIsEditDialogOpen}
+        warehouse={warehouse}
+        onSuccess={() => {
+          setIsEditDialogOpen(false);
+          refetch();
+        }}
+      />
     </div>
   );
 }
