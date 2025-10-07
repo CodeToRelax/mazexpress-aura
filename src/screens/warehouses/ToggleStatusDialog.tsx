@@ -1,15 +1,16 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Loader2 } from 'lucide-react';
+import { ToggleLeft } from 'lucide-react';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { toast } from '@/hooks/use-toast';
 import { toggleWarehouseStatus } from '@/utilities/api/warehouses.api';
 import { WarehouseStatus, type Warehouse } from '@/types/warehouse';
@@ -32,6 +33,8 @@ export function ToggleStatusDialog({
 
   const newStatus =
     warehouse.status === WarehouseStatus.OPEN ? WarehouseStatus.CLOSED : WarehouseStatus.OPEN;
+  
+  const isOpening = newStatus === WarehouseStatus.OPEN;
 
   const handleToggle = async () => {
     try {
@@ -54,37 +57,47 @@ export function ToggleStatusDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{t('warehouses.actions.toggleStatus')}</DialogTitle>
-          <DialogDescription>
-            Change the status of "{warehouse.name}" from{' '}
-            <span className="font-semibold">
-              {warehouse.status === WarehouseStatus.OPEN
-                ? t('warehouses.table.status.open')
-                : t('warehouses.table.status.closed')}
-            </span>{' '}
-            to{' '}
-            <span className="font-semibold">
-              {newStatus === WarehouseStatus.OPEN
-                ? t('warehouses.table.status.open')
-                : t('warehouses.table.status.closed')}
-            </span>
-            ?
-          </DialogDescription>
-        </DialogHeader>
-
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isUpdating}>
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <div className="flex items-center gap-3 mb-2">
+            <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
+              isOpening ? 'bg-primary/10' : 'bg-muted'
+            }`}>
+              <ToggleLeft className={`h-6 w-6 ${isOpening ? 'text-primary' : 'text-muted-foreground'}`} />
+            </div>
+            <AlertDialogTitle className="text-xl">
+              {t('warehouses.actions.toggleStatus')}
+            </AlertDialogTitle>
+          </div>
+          <AlertDialogDescription className="space-y-3">
+            <p>
+              {t('warehouses.messages.statusToggleConfirm', {
+                action: isOpening ? t('warehouses.table.status.open') : t('warehouses.table.status.closed')
+              })}
+            </p>
+            <div className="bg-muted/50 p-3 rounded-lg">
+              <p className="font-medium text-foreground">{warehouse.name}</p>
+              <p className="text-sm text-muted-foreground">
+                {t('warehouses.messages.currentStatus')}: {' '}
+                <span className="font-semibold">
+                  {warehouse.status === WarehouseStatus.OPEN
+                    ? t('warehouses.table.status.open')
+                    : t('warehouses.table.status.closed')}
+                </span>
+              </p>
+            </div>
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={isUpdating}>
             {t('actions.cancel')}
-          </Button>
-          <Button onClick={handleToggle} disabled={isUpdating}>
-            {isUpdating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          </AlertDialogCancel>
+          <AlertDialogAction onClick={handleToggle} disabled={isUpdating}>
             {t('actions.confirm')}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }

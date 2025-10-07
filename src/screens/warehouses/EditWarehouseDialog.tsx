@@ -94,12 +94,12 @@ export function EditWarehouseDialog({
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <Tabs defaultValue="basic" className="w-full">
-              <TabsList className="grid w-full grid-cols-4">
-                <TabsTrigger value="basic">{t('warehouses.form.basicInfo')}</TabsTrigger>
-                <TabsTrigger value="address">{t('warehouses.form.addressInfo')}</TabsTrigger>
-                <TabsTrigger value="contact">{t('warehouses.form.contactInfo')}</TabsTrigger>
-                <TabsTrigger value="hours">{t('warehouses.form.operatingHours')}</TabsTrigger>
-              </TabsList>
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="basic">{t('warehouses.form.basicInfo')}</TabsTrigger>
+            <TabsTrigger value="address">{t('warehouses.form.addressInfo')}</TabsTrigger>
+            <TabsTrigger value="contact">{t('warehouses.form.contactInfo')}</TabsTrigger>
+            <TabsTrigger value="hours">{t('warehouses.detail.operatingHours')}</TabsTrigger>
+          </TabsList>
 
               <TabsContent value="basic" className="space-y-4 mt-4">
                 <FormField

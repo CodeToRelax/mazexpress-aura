@@ -124,17 +124,17 @@ export function WarehousesTable({ warehouses, onRefetch }: WarehousesTableProps)
                         {t('warehouses.actions.view')}
                       </DropdownMenuItem>
                       <ACLGuard flag="canManageWarehouses">
-                        <DropdownMenuItem onClick={() => handleEdit(warehouse)}>
+                        <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleEdit(warehouse); }}>
                           <Edit className="h-4 w-4 mr-2" />
                           {t('warehouses.actions.edit')}
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleToggleStatus(warehouse)}>
+                        <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleToggleStatus(warehouse); }}>
                           <ToggleLeft className="h-4 w-4 mr-2" />
                           {t('warehouses.actions.toggleStatus')}
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
-                          onClick={() => handleDelete(warehouse)}
+                          onClick={(e) => { e.stopPropagation(); handleDelete(warehouse); }}
                           className="text-destructive"
                         >
                           <Trash2 className="h-4 w-4 mr-2" />

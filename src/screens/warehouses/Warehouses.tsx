@@ -72,10 +72,12 @@ export default function Warehouses() {
           <p className="text-muted-foreground mt-1">{t('warehouses.subtitle')}</p>
         </div>
         <ACLGuard flag="canManageWarehouses">
-          <Button onClick={() => setIsCreateDialogOpen(true)} size="default">
-            <Plus className="h-4 w-4 mr-2" />
-            {t('warehouses.actions.create')}
-          </Button>
+          <div className="relative z-10">
+            <Button onClick={() => setIsCreateDialogOpen(true)} size="default">
+              <Plus className="h-4 w-4 mr-2" />
+              {t('warehouses.actions.create')}
+            </Button>
+          </div>
         </ACLGuard>
       </div>
 

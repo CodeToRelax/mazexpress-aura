@@ -54,37 +54,13 @@ export function WarehousesFilters({ filters, onFilterChange }: WarehousesFilters
         />
       </div>
 
-      {/* Filter Row */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        {/* Status Filter */}
-        <Select
-          value={filters.status || 'all'}
-          onValueChange={(value) =>
-            onFilterChange({ status: value === 'all' ? undefined : (value as WarehouseStatus) })
-          }
-        >
-          <SelectTrigger className="w-full sm:w-[180px]">
-            <SelectValue placeholder={t('warehouses.filters.status')} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">{t('warehouses.filters.allStatuses')}</SelectItem>
-            <SelectItem value={WarehouseStatus.OPEN}>
-              {t('warehouses.table.status.open')}
-            </SelectItem>
-            <SelectItem value={WarehouseStatus.CLOSED}>
-              {t('warehouses.table.status.closed')}
-            </SelectItem>
-          </SelectContent>
-        </Select>
-
-        {/* Clear Filters Button */}
-        {hasActiveFilters && (
-          <Button variant="outline" onClick={handleClearFilters} size="default">
-            <X className="h-4 w-4 mr-2" />
-            {t('warehouses.actions.clearFilters')}
-          </Button>
-        )}
-      </div>
+      {/* Clear Filters Button */}
+      {hasActiveFilters && (
+        <Button variant="outline" onClick={handleClearFilters} size="default">
+          <X className="h-4 w-4 mr-2" />
+          {t('warehouses.actions.clearFilters')}
+        </Button>
+      )}
     </div>
   );
 }
