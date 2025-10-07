@@ -4,8 +4,8 @@ import { Plus, RotateCw } from 'lucide-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { PageLoader } from '@/components/feedback/PageLoader';
 import { InlineError } from '@/components/feedback/InlineError';
+import { Skeleton } from '@/components/ui/skeleton';
 import { ACLGuard } from '@/components/guards/ACLGuard';
 import { WarehousesStatsBar } from './WarehousesStatsBar';
 import { WarehousesFilters } from './WarehousesFilters';
@@ -109,8 +109,14 @@ export default function Warehouses() {
       </div>
 
       {/* Table */}
-      {isLoading && !isFetching ? (
-        <PageLoader />
+      {isLoading ? (
+        <Card className="p-8 space-y-4">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="flex items-center gap-4">
+              <Skeleton className="h-12 w-full rounded-lg" />
+            </div>
+          ))}
+        </Card>
       ) : (
         <Card className="p-0 overflow-hidden">
           <WarehousesTable warehouses={warehouses} onRefetch={refetch} />
