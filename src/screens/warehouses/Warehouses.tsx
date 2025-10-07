@@ -32,6 +32,7 @@ export default function Warehouses() {
   } = useQuery({
     queryKey: ['warehouses', filters],
     queryFn: () => getWarehouses(filters),
+    staleTime: 0,
   });
 
   const warehouses = response?.data.warehouses || [];
@@ -93,7 +94,6 @@ export default function Warehouses() {
           variant="outline"
           size="icon"
           onClick={() => {
-            console.log('Refresh button clicked');
             refetch();
           }}
           className="shrink-0 pointer-events-auto"
