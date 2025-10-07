@@ -101,7 +101,7 @@ export default function Users() {
         return new Set(parsed);
       }
     } catch {}
-    return new Set(['email', 'phone', 'role', 'status', 'country', 'joined']);
+    return new Set(['email', 'phone', 'status', 'country', 'joined']);
   });
 
   const fetchUsers = useCallback(async () => {
@@ -362,7 +362,7 @@ export default function Users() {
   };
 
   const handleResetColumns = () => {
-    setVisibleColumns(new Set(['email', 'phone', 'role', 'status', 'country', 'joined']));
+    setVisibleColumns(new Set(['email', 'phone', 'status', 'country', 'joined']));
   };
 
   const handleSort = (column: string) => {

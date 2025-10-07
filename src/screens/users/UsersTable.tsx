@@ -11,7 +11,8 @@ import {
   XCircle,
   ChevronsUpDown,
   ChevronUp,
-  ChevronDown
+  ChevronDown,
+  Package
 } from 'lucide-react';
 import type { User } from '@/types/user';
 import { Button } from '@/components/ui/button';
@@ -60,7 +61,7 @@ export function UsersTable({
   onEdit,
   onDelete,
   onToggleStatus,
-  visibleColumns = new Set(['email', 'phone', 'role', 'status', 'country', 'joined']),
+  visibleColumns = new Set(['email', 'phone', 'status', 'country', 'joined']),
   sortBy,
   sortOrder,
   onSort,
@@ -126,6 +127,7 @@ export function UsersTable({
               />
             </TableHead>
             <TableHead>{renderSortableHeader('name', t('users.table.columns.user'))}</TableHead>
+            <TableHead>{t('users.table.columns.shippingNumber')}</TableHead>
             {visibleColumns.has('email') && <TableHead>{renderSortableHeader('email', t('users.table.columns.email'))}</TableHead>}
             {visibleColumns.has('phone') && <TableHead>{renderSortableHeader('phone', t('users.table.columns.phone'))}</TableHead>}
             {visibleColumns.has('role') && <TableHead>{renderSortableHeader('role', t('users.table.columns.role'))}</TableHead>}
@@ -163,6 +165,12 @@ export function UsersTable({
                       <div className="text-sm text-muted-foreground">@{user.username}</div>
                     )}
                   </div>
+                </div>
+              </TableCell>
+              <TableCell>
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Package className="h-4 w-4" />
+                  <span className="font-mono text-sm">{user.uniqueShippingNumber}</span>
                 </div>
               </TableCell>
               {visibleColumns.has('email') && (
