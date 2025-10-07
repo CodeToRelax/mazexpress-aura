@@ -46,7 +46,7 @@ export default function WarehouseDetail() {
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="sm" onClick={() => navigate('/warehouses')}>
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back
+          {t('actions.back')}
         </Button>
       </div>
 
@@ -125,7 +125,7 @@ export default function WarehouseDetail() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  View on Google Maps <ExternalLink className="h-3 w-3 ml-1" />
+                  {t('actions.viewOnMaps')} <ExternalLink className="h-3 w-3 ml-1" />
                 </a>
               </Button>
             )}
@@ -151,7 +151,7 @@ export default function WarehouseDetail() {
             {warehouse.youtubeUrl && (
               <Button variant="link" asChild className="p-0 h-auto">
                 <a href={warehouse.youtubeUrl} target="_blank" rel="noopener noreferrer">
-                  YouTube Video <ExternalLink className="h-3 w-3 ml-1" />
+                  {t('actions.viewVideo')} <ExternalLink className="h-3 w-3 ml-1" />
                 </a>
               </Button>
             )}

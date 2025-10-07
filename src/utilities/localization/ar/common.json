@@ -290,7 +290,10 @@
     "signOut": "تسجيل الخروج",
     "cancel": "إلغاء",
     "confirm": "تأكيد",
-    "close": "إغلاق"
+    "close": "إغلاق",
+    "back": "رجوع",
+    "viewOnMaps": "عرض على خرائط جوجل",
+    "viewVideo": "مشاهدة فيديو يوتيوب"
   },
   "status": {
     "authenticated": "أنت مسجل الدخول",

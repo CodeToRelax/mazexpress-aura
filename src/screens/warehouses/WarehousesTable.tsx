@@ -38,8 +38,8 @@ export function WarehousesTable({ warehouses, onRefetch }: WarehousesTableProps)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isToggleStatusDialogOpen, setIsToggleStatusDialogOpen] = useState(false);
 
-  const handleView = (warehouse: Warehouse) => {
-    navigate(`/warehouses/${warehouse._id}`);
+  const handleView = (warehouseId: string) => {
+    navigate(`/warehouses/${warehouseId}`);
   };
 
   const handleEdit = (warehouse: Warehouse) => {
@@ -91,7 +91,11 @@ export function WarehousesTable({ warehouses, onRefetch }: WarehousesTableProps)
           </TableHeader>
           <TableBody>
             {warehouses.map((warehouse) => (
-              <TableRow key={warehouse._id} className="hover:bg-muted/50">
+              <TableRow 
+                key={warehouse._id} 
+                className="cursor-pointer hover:bg-muted/50 transition-colors"
+                onClick={() => handleView(warehouse._id)}
+              >
                 <TableCell className="font-medium">{warehouse.name}</TableCell>
                 <TableCell>{warehouse.address.city}</TableCell>
                 <TableCell>{warehouse.address.country}</TableCell>
@@ -109,13 +113,13 @@ export function WarehousesTable({ warehouses, onRefetch }: WarehousesTableProps)
                 </TableCell>
                 <TableCell className="text-right">
                   <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
+                    <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
                       <Button variant="ghost" size="sm">
                         <MoreVertical className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48">
-                      <DropdownMenuItem onClick={() => handleView(warehouse)}>
+                      <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleView(warehouse._id); }}>
                         <Eye className="h-4 w-4 mr-2" />
                         {t('warehouses.actions.view')}
                       </DropdownMenuItem>
