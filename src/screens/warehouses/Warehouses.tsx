@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Plus, RotateCw } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { PageLoader } from '@/components/feedback/PageLoader';
@@ -17,6 +17,7 @@ import type { WarehouseFilters } from '@/types/warehouse';
 
 export default function Warehouses() {
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
   const [filters, setFilters] = useState<WarehouseFilters>({
     page: 1,
     limit: 10,
@@ -93,12 +94,14 @@ export default function Warehouses() {
         <Button
           variant="outline"
           size="icon"
-          onClick={() => {
+          onClick={async () => {
+            await queryClient.invalidateQueries({ queryKey: ['warehouses'] });
             refetch();
           }}
           className="shrink-0 pointer-events-auto"
           style={{ position: 'relative', zIndex: 9999 }}
           title={t('warehouses.actions.refresh')}
+          disabled={isLoading}
         >
           <RotateCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
         </Button>
