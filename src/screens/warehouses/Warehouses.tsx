@@ -109,7 +109,7 @@ export default function Warehouses() {
       </div>
 
       {/* Table */}
-      {isLoading ? (
+      {(isLoading || isFetching) ? (
         <Card className="p-8 space-y-4">
           {[...Array(5)].map((_, i) => (
             <div key={i} className="flex items-center gap-4">
