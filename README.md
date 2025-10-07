@@ -27,7 +27,13 @@ Modern shipping management platform with Apple-inspired "Liquid Glass" UI, built
 pnpm install
 ```
 
-2. **Environment variables are already configured in `.env`**
+2. **Set up environment variables:**
+```bash
+cp .env.example .env
+# Add your Firebase credentials to .env
+```
+
+⚠️ **SECURITY NOTE**: Never commit `.env` to version control. It contains sensitive credentials.
 
 3. **Start development server:**
 ```bash
