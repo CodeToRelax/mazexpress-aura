@@ -108,6 +108,7 @@ export function MobileSidenav({
                   isCollapsed={false}
                   isExpanded={expandedGroups.has(item.id)}
                   onToggle={() => onToggleGroup(item.id)}
+                  onNavigate={onClose}
                 />
               ))}
             </nav>

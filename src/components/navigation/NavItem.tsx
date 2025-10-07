@@ -12,6 +12,7 @@ interface NavItemProps {
   isCollapsed: boolean;
   isExpanded?: boolean;
   onToggle?: () => void;
+  onNavigate?: () => void;
   depth?: number;
 }
 
@@ -22,7 +23,7 @@ const BADGE_STYLES = {
   danger: 'bg-destructive/10 text-destructive border-destructive/20',
 };
 
-export function NavItem({ item, isCollapsed, isExpanded = false, onToggle, depth = 0 }: NavItemProps) {
+export function NavItem({ item, isCollapsed, isExpanded = false, onToggle, onNavigate, depth = 0 }: NavItemProps) {
   const { t } = useTranslation();
   const location = useLocation();
   const [showSubmenu, setShowSubmenu] = useState(false);
@@ -56,6 +57,7 @@ export function NavItem({ item, isCollapsed, isExpanded = false, onToggle, depth
         to={item.href}
         className={baseClasses}
         aria-current={isActive ? 'page' : undefined}
+        onClick={onNavigate}
       >
         {/* Active indicator */}
         {isActive && (
@@ -140,6 +142,7 @@ export function NavItem({ item, isCollapsed, isExpanded = false, onToggle, depth
                 key={child.id}
                 item={child}
                 isCollapsed={false}
+                onNavigate={onNavigate}
                 depth={depth + 1}
               />
             ))}
@@ -160,7 +163,7 @@ export function NavItem({ item, isCollapsed, isExpanded = false, onToggle, depth
             onMouseLeave={() => setShowSubmenu(false)}
           >
             {item.children?.map((child) => (
-              <NavItem key={child.id} item={child} isCollapsed={false} depth={0} />
+              <NavItem key={child.id} item={child} isCollapsed={false} onNavigate={onNavigate} depth={0} />
             ))}
           </div>
         )}
