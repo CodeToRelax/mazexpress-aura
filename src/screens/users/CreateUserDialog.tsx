@@ -190,7 +190,7 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
 
               <FormField>
                 <Label htmlFor="gender">Gender *</Label>
-                <Select onValueChange={(value) => setValue('gender', value as 'male' | 'female')}>
+                <Select onValueChange={(value) => setValue('gender', value as 'male' | 'female', { shouldValidate: true })}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select gender" />
                   </SelectTrigger>
@@ -262,7 +262,7 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
             <FormSection title="Address" columns={2}>
               <FormField>
                 <Label htmlFor="country">Country *</Label>
-                <Select onValueChange={(value) => setValue('address.country', value as any)}>
+                <Select onValueChange={(value) => setValue('address.country', value as any, { shouldValidate: true })}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select country" />
                   </SelectTrigger>
@@ -282,7 +282,7 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
               <FormField>
                 <Label htmlFor="city">City *</Label>
                 <Select 
-                  onValueChange={(value) => setValue('address.city', value as any)}
+                  onValueChange={(value) => setValue('address.city', value as any, { shouldValidate: true })}
                   disabled={!selectedCountry}
                 >
                   <SelectTrigger>
@@ -332,7 +332,7 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
                 <Label htmlFor="userType">User Type *</Label>
                 <Select
                   defaultValue="customer"
-                  onValueChange={(value) => setValue('userType', value as 'admin' | 'customer')}
+                  onValueChange={(value) => setValue('userType', value as 'admin' | 'customer', { shouldValidate: true })}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -353,7 +353,7 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
                     id="privacyPolicy"
                     checked={privacyAgreement}
                     onCheckedChange={(checked) =>
-                      setValue('privacyPolicy.usageAgreement', !!checked as true)
+                      setValue('privacyPolicy.usageAgreement', !!checked as true, { shouldValidate: true })
                     }
                   />
                   <Label htmlFor="privacyPolicy" className="text-sm font-normal cursor-pointer">
