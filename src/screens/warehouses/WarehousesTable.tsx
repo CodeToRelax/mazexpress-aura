@@ -78,7 +78,7 @@ export function WarehousesTable({ warehouses, onRefetch }: WarehousesTableProps)
       <div className="overflow-x-auto">
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="hover:bg-transparent">
               <TableHead>{t('warehouses.table.columns.name')}</TableHead>
               <TableHead>{t('warehouses.table.columns.city')}</TableHead>
               <TableHead>{t('warehouses.table.columns.country')}</TableHead>

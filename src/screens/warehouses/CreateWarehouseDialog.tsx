@@ -27,7 +27,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
 import { createWarehouse } from '@/utilities/api/warehouses.api';
 import { createWarehouseSchema, type CreateWarehouseFormData } from '@/utilities/zod/warehouse.schemas';
@@ -64,6 +63,7 @@ export function CreateWarehouseDialog({
 }: CreateWarehouseDialogProps) {
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [currentStep, setCurrentStep] = useState(1);
 
   const form = useForm<CreateWarehouseFormData>({
     resolver: zodResolver(createWarehouseSchema),
@@ -102,6 +102,7 @@ export function CreateWarehouseDialog({
         description: t('warehouses.messages.createSuccess'),
       });
       form.reset();
+      setCurrentStep(1);
       onSuccess();
     } catch (error) {
       toast({
@@ -114,23 +115,77 @@ export function CreateWarehouseDialog({
     }
   };
 
+  const handleNext = async () => {
+    const fields = getStepFields(currentStep);
+    const isValid = await form.trigger(fields);
+    if (isValid) {
+      setCurrentStep((prev) => prev + 1);
+    }
+  };
+
+  const handleBack = () => {
+    setCurrentStep((prev) => prev - 1);
+  };
+
+  const getStepFields = (step: number): any[] => {
+    switch (step) {
+      case 1:
+        return ['name', 'status'];
+      case 2:
+        return ['address.city', 'address.country', 'address.street', 'address.zipCode'];
+      case 3:
+        return ['phoneNumber', 'email'];
+      default:
+        return [];
+    }
+  };
+
+  const isStepValid = () => {
+    const fields = getStepFields(currentStep);
+    const values = form.getValues();
+    
+    switch (currentStep) {
+      case 1:
+        return !!values.name && !!values.status;
+      case 2:
+        return !!values.address.city && !!values.address.country && !!values.address.street && !!values.address.zipCode;
+      case 3:
+        return !!values.phoneNumber && !!values.email;
+      default:
+        return true;
+    }
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={(isOpen) => { 
+      onOpenChange(isOpen); 
+      if (!isOpen) setCurrentStep(1); 
+    }}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{t('warehouses.form.createTitle')}</DialogTitle>
+          <div className="flex gap-2 mt-4">
+            {[1, 2, 3].map((step) => (
+              <div
+                key={step}
+                className={`flex-1 h-2 rounded-full transition-colors ${
+                  step === currentStep
+                    ? 'bg-primary'
+                    : step < currentStep
+                    ? 'bg-primary/50'
+                    : 'bg-muted'
+                }`}
+              />
+            ))}
+          </div>
         </DialogHeader>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <Tabs defaultValue="basic" className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="basic">{t('warehouses.form.basicInfo')}</TabsTrigger>
-                <TabsTrigger value="address">{t('warehouses.form.addressInfo')}</TabsTrigger>
-                <TabsTrigger value="contact">{t('warehouses.form.contactInfo')}</TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="basic" className="space-y-4 mt-4">
+            {/* Step 1: Basic Info */}
+            {currentStep === 1 && (
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">{t('warehouses.form.basicInfo')}</h3>
                 <FormField
                   control={form.control}
                   name="name"
@@ -170,9 +225,13 @@ export function CreateWarehouseDialog({
                     </FormItem>
                   )}
                 />
-              </TabsContent>
+              </div>
+            )}
 
-              <TabsContent value="address" className="space-y-4 mt-4">
+            {/* Step 2: Address Info */}
+            {currentStep === 2 && (
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">{t('warehouses.form.addressInfo')}</h3>
                 <FormField
                   control={form.control}
                   name="address.city"
@@ -282,9 +341,13 @@ export function CreateWarehouseDialog({
                     )}
                   />
                 </div>
-              </TabsContent>
+              </div>
+            )}
 
-              <TabsContent value="contact" className="space-y-4 mt-4">
+            {/* Step 3: Contact Info */}
+            {currentStep === 3 && (
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">{t('warehouses.form.contactInfo')}</h3>
                 <FormField
                   control={form.control}
                   name="phoneNumber"
@@ -340,17 +403,29 @@ export function CreateWarehouseDialog({
                     </FormItem>
                   )}
                 />
-              </TabsContent>
-            </Tabs>
+              </div>
+            )}
 
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-                {t('warehouses.form.cancel')}
-              </Button>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {t('warehouses.form.saveChanges')}
-              </Button>
+            <DialogFooter className="flex gap-2">
+              {currentStep > 1 && (
+                <Button type="button" variant="outline" onClick={handleBack}>
+                  {t('actions.back')}
+                </Button>
+              )}
+              {currentStep < 3 ? (
+                <Button 
+                  type="button" 
+                  onClick={handleNext}
+                  disabled={!isStepValid()}
+                >
+                  Next
+                </Button>
+              ) : (
+                <Button type="submit" disabled={isSubmitting || !isStepValid()}>
+                  {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {t('warehouses.form.saveChanges')}
+                </Button>
+              )}
             </DialogFooter>
           </form>
         </Form>

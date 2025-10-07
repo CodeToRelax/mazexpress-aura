@@ -275,7 +275,8 @@
         "saturday": "Saturday",
         "sunday": "Sunday"
       },
-      "hours": {
+      "hours": "Operating Hours",
+      "times": {
         "open": "Open",
         "closed": "Closed",
         "openTime": "Opening Time",

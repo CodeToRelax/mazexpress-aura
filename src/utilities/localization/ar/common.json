@@ -219,7 +219,8 @@
         "saturday": "السبت",
         "sunday": "الأحد"
       },
-      "hours": {
+      "hours": "ساعات العمل",
+      "times": {
         "open": "مفتوح",
         "closed": "مغلق",
         "openTime": "وقت الافتتاح",

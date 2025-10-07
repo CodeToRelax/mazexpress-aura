@@ -43,7 +43,7 @@ export default function WarehouseDetail() {
   return (
     <div className="container mx-auto px-4 py-6 space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 relative z-10">
         <Button variant="outline" size="icon" onClick={() => navigate('/warehouses')} className="glass-card hover:shadow-glass-hover">
           <ArrowLeft className="h-5 w-5" />
         </Button>
@@ -188,7 +188,7 @@ export default function WarehouseDetail() {
                 </span>
               ) : (
                 <span className="text-sm text-muted-foreground">
-                  {t('warehouses.detail.hours.closed')}
+                  {t('warehouses.detail.times.closed')}
                 </span>
               )}
             </div>
