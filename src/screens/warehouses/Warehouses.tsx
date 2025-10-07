@@ -92,8 +92,12 @@ export default function Warehouses() {
         <Button
           variant="outline"
           size="icon"
-          onClick={() => refetch()}
-          className="shrink-0 relative z-20"
+          onClick={() => {
+            console.log('Refresh button clicked');
+            refetch();
+          }}
+          className="shrink-0 pointer-events-auto"
+          style={{ position: 'relative', zIndex: 9999 }}
           title={t('warehouses.actions.refresh')}
         >
           <RotateCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
