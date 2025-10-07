@@ -44,6 +44,8 @@ export interface ACLFlags {
   canViewDashboard: boolean;
   canManageConfig: boolean;
   canViewReports: boolean;
+  canViewWarehouses: boolean;
+  canManageWarehouses: boolean;
 }
 
 export interface UserACLData {

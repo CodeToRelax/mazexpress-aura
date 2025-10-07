@@ -1,4 +1,4 @@
-import { Home, Users, Settings, BarChart, Package, FileText, HelpCircle } from 'lucide-react';
+import { Home, Users, Settings, BarChart, Package, FileText, HelpCircle, Warehouse } from 'lucide-react';
 import type { NavItem } from '@/types/navigation';
 import type { ACLFlags } from '@/types/acl';
 
@@ -24,6 +24,14 @@ export const navigationItems: NavItemWithACL[] = [
     href: '/users',
     match: 'prefix',
     aclFlag: 'canViewUsers',
+  },
+  {
+    id: 'warehouses',
+    labelKey: 'nav.warehouses',
+    icon: Warehouse,
+    href: '/warehouses',
+    match: 'prefix',
+    aclFlag: 'canViewWarehouses',
   },
   {
     id: 'reports',

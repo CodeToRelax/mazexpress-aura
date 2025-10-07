@@ -13,6 +13,7 @@
     "close": "إغلاق القائمة",
     "dashboard": "لوحة التحكم",
     "users": "المستخدمون",
+    "warehouses": "المستودعات",
     "reports": "التقارير",
     "reports.sales": "تقارير المبيعات",
     "reports.analytics": "التحليلات",
@@ -129,6 +130,133 @@
       "admins": "المسؤولون",
       "active": "نشط",
       "inactive": "غير نشط"
+    }
+  },
+  "warehouses": {
+    "title": "إدارة المستودعات",
+    "subtitle": "إدارة المستودعات والمواقع",
+    "table": {
+      "columns": {
+        "name": "الاسم",
+        "city": "المدينة",
+        "country": "البلد",
+        "phone": "الهاتف",
+        "email": "البريد الإلكتروني",
+        "status": "الحالة",
+        "actions": "الإجراءات"
+      },
+      "status": {
+        "open": "مفتوح",
+        "closed": "مغلق"
+      },
+      "showingResults": "عرض {{from}}-{{to}} من {{total}} مستودع"
+    },
+    "actions": {
+      "create": "إنشاء مستودع",
+      "edit": "تعديل",
+      "delete": "حذف",
+      "view": "عرض التفاصيل",
+      "toggleStatus": "تبديل الحالة",
+      "refresh": "تحديث",
+      "clearFilters": "مسح الفلاتر"
+    },
+    "filters": {
+      "search": "البحث في المستودعات...",
+      "searchPlaceholder": "الاسم، المدينة، البلد...",
+      "status": "الحالة",
+      "city": "المدينة",
+      "country": "البلد",
+      "allStatuses": "جميع الحالات",
+      "allCities": "جميع المدن",
+      "allCountries": "جميع البلدان"
+    },
+    "empty": {
+      "title": "لا يوجد مستودعات",
+      "description": "لا يوجد مستودعات مطابقة للفلاتر الحالية.",
+      "noData": "لا توجد مستودعات في النظام بعد",
+      "noDataDescription": "ابدأ بإنشاء أول مستودع."
+    },
+    "stats": {
+      "total": "إجمالي المستودعات",
+      "open": "مفتوح",
+      "closed": "مغلق"
+    },
+    "detail": {
+      "title": "تفاصيل المستودع",
+      "overview": "نظرة عامة",
+      "address": "العنوان",
+      "contact": "معلومات الاتصال",
+      "hours": "ساعات العمل",
+      "generalInfo": "المعلومات العامة",
+      "fields": {
+        "name": "الاسم",
+        "status": "الحالة",
+        "phoneNumber": "رقم الهاتف",
+        "email": "البريد الإلكتروني",
+        "youtubeUrl": "رابط يوتيوب",
+        "imageUrl": "رابط الصورة",
+        "doorNumber": "رقم الباب",
+        "buildingNumber": "رقم المبنى",
+        "street": "الشارع",
+        "neighborhood": "الحي",
+        "district": "المنطقة",
+        "city": "المدينة",
+        "country": "البلد",
+        "zipCode": "الرمز البريدي",
+        "googleMapsUrl": "رابط خرائط جوجل",
+        "latitude": "خط العرض",
+        "longitude": "خط الطول",
+        "createdAt": "تاريخ الإنشاء",
+        "updatedAt": "آخر تحديث",
+        "updatedBy": "تم التحديث بواسطة"
+      },
+      "days": {
+        "monday": "الاثنين",
+        "tuesday": "الثلاثاء",
+        "wednesday": "الأربعاء",
+        "thursday": "الخميس",
+        "friday": "الجمعة",
+        "saturday": "السبت",
+        "sunday": "الأحد"
+      },
+      "hours": {
+        "open": "مفتوح",
+        "closed": "مغلق",
+        "openTime": "وقت الافتتاح",
+        "closeTime": "وقت الإغلاق",
+        "breakTime": "وقت الاستراحة"
+      }
+    },
+    "form": {
+      "createTitle": "إنشاء مستودع جديد",
+      "editTitle": "تعديل المستودع",
+      "basicInfo": "المعلومات الأساسية",
+      "addressInfo": "تفاصيل العنوان",
+      "contactInfo": "معلومات الاتصال",
+      "operatingHours": "ساعات العمل",
+      "saveChanges": "حفظ التغييرات",
+      "cancel": "إلغاء",
+      "saving": "جاري الحفظ...",
+      "validation": {
+        "required": "هذا الحقل مطلوب",
+        "nameMin": "يجب أن يكون الاسم على الأقل حرفين",
+        "emailInvalid": "يرجى إدخال بريد إلكتروني صحيح",
+        "phoneInvalid": "يرجى إدخال رقم هاتف صحيح",
+        "urlInvalid": "يرجى إدخال رابط صحيح",
+        "googleMapsInvalid": "يجب أن يكون رابط خرائط جوجل صحيح",
+        "youtubeInvalid": "يجب أن يكون رابط يوتيوب صحيح",
+        "timeInvalid": "استخدم صيغة HH:MM (24 ساعة)",
+        "zipCodeInvalid": "صيغة الرمز البريدي غير صحيحة"
+      }
+    },
+    "messages": {
+      "deleteConfirm": "هل أنت متأكد من حذف هذا المستودع؟ لا يمكن التراجع عن هذا الإجراء.",
+      "deleteSuccess": "تم حذف المستودع بنجاح",
+      "updateSuccess": "تم تحديث المستودع بنجاح",
+      "createSuccess": "تم إنشاء المستودع بنجاح",
+      "statusToggleSuccess": "تم تحديث حالة المستودع بنجاح",
+      "error": "حدث خطأ. يرجى المحاولة مرة أخرى.",
+      "loading": "جاري تحميل المستودعات..."
     }
   },
   "login": {
