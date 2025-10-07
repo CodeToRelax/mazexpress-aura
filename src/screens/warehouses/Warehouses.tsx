@@ -28,6 +28,7 @@ export default function Warehouses() {
   const {
     data: response,
     isLoading,
+    isFetching,
     error,
     refetch,
   } = useQuery({
@@ -101,14 +102,14 @@ export default function Warehouses() {
           className="shrink-0 pointer-events-auto"
           style={{ position: 'relative', zIndex: 9999 }}
           title={t('warehouses.actions.refresh')}
-          disabled={isLoading}
+          disabled={isFetching}
         >
-          <RotateCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+          <RotateCw className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
         </Button>
       </div>
 
       {/* Table */}
-      {isLoading ? (
+      {isLoading && !isFetching ? (
         <PageLoader />
       ) : (
         <Card className="p-0 overflow-hidden">
