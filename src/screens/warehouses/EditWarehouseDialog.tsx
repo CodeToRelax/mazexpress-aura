@@ -98,7 +98,7 @@ export function EditWarehouseDialog({
             <TabsTrigger value="basic">{t('warehouses.form.basicInfo')}</TabsTrigger>
             <TabsTrigger value="address">{t('warehouses.form.addressInfo')}</TabsTrigger>
             <TabsTrigger value="contact">{t('warehouses.form.contactInfo')}</TabsTrigger>
-            <TabsTrigger value="hours">{t('warehouses.detail.operatingHours')}</TabsTrigger>
+            <TabsTrigger value="hours">{t('warehouses.form.operatingHours')}</TabsTrigger>
           </TabsList>
 
               <TabsContent value="basic" className="space-y-4 mt-4">

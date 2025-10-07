@@ -85,7 +85,7 @@ export default function Warehouses() {
       <WarehousesStatsBar warehouses={warehouses} />
 
       {/* Filters */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 relative z-10">
         <Card className="p-4 flex-1">
           <WarehousesFilters filters={filters} onFilterChange={handleFilterChange} />
         </Card>
