@@ -116,25 +116,36 @@ export interface BulkDeletePayload {
 export interface ShipmentFilters {
   page?: number;
   limit?: number;
-  searchParam?: string;
+  search?: string; // General search term (ESN, CSN, ISN)
+  searchParam?: string; // Backend compatibility
   status?: string;
   csn?: string;
   esn?: string;
   isn?: string;
+  destination?: string; // Alias for shipmentDestination
   shipmentDestination?: string;
+  method?: string; // Alias for shippingMethod
   shippingMethod?: string;
   isDomestic?: boolean;
   from?: string;
   to?: string;
+  createdAfter?: string; // Date range start
+  createdBefore?: string; // Date range end
   sort?: string;
 }
 
 export interface ShipmentStats {
-  totalShipments: number;
-  pendingShipments: number;
-  inTransitShipments: number;
-  deliveredShipments: number;
-  overdueShipments: number;
+  total: number;
+  pending: number;
+  inTransit: number;
+  delivered: number;
+  overdue: number;
+  // Backend compatibility
+  totalShipments?: number;
+  pendingShipments?: number;
+  inTransitShipments?: number;
+  deliveredShipments?: number;
+  overdueShipments?: number;
 }
 
 export interface PriceCalculationPayload {

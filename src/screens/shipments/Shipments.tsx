@@ -48,11 +48,11 @@ export default function Shipments() {
   });
   
   const [shipmentStats, setShipmentStats] = useState({
-    totalShipments: 0,
-    pendingShipments: 0,
-    inTransitShipments: 0,
-    deliveredShipments: 0,
-    overdueShipments: 0,
+    total: 0,
+    pending: 0,
+    inTransit: 0,
+    delivered: 0,
+    overdue: 0,
   });
 
   // Initialize filters from localStorage
@@ -115,8 +115,15 @@ export default function Shipments() {
 
   const fetchStats = useCallback(async () => {
     try {
-      const stats = await shipmentsApi.getStats();
-      setShipmentStats(stats);
+      const response = await shipmentsApi.getStats();
+      // Map backend response to frontend format
+      setShipmentStats({
+        total: response.total || 0,
+        pending: response.pending || 0,
+        inTransit: response.inTransit || 0,
+        delivered: response.delivered || 0,
+        overdue: response.overdue || 0,
+      });
     } catch (err) {
       console.error('Failed to fetch stats:', err);
     }
@@ -155,7 +162,7 @@ export default function Shipments() {
     });
   };
 
-  const handleStatClick = (filterType: 'all' | 'pending' | 'inTransit' | 'delivered' | 'overdue') => {
+  const handleStatClick = (filterType: 'all' | 'pending' | 'in_transit' | 'delivered' | 'overdue') => {
     switch (filterType) {
       case 'all':
         setFilters({
@@ -172,7 +179,7 @@ export default function Shipments() {
           sort: '-createdAt',
         });
         break;
-      case 'inTransit':
+      case 'in_transit':
         setFilters({
           page: 1,
           limit: filters.limit,
@@ -254,6 +261,11 @@ export default function Shipments() {
     fetchShipments();
     fetchStats();
     setSelectedShipments(new Set());
+  };
+
+  const handleViewShipment = (shipment: IShipment) => {
+    // TODO: Navigate to shipment detail page or open detail dialog
+    console.log('View shipment:', shipment);
   };
 
   const handleBulkUpdate = () => {
@@ -397,6 +409,7 @@ export default function Shipments() {
               selectedShipments={selectedShipments}
               onSelectShipment={handleSelectShipment}
               onSelectAll={handleSelectAll}
+              onView={handleViewShipment}
               onEdit={handleEditShipment}
               onDelete={handleDeleteShipment}
             />
@@ -404,7 +417,10 @@ export default function Shipments() {
 
           {!showLoadingSkeleton && shipments.length > 0 && (
             <ShipmentsPagination
-              pagination={pagination}
+              currentPage={pagination.currentPage}
+              totalPages={pagination.totalPages}
+              totalItems={pagination.totalDocs}
+              itemsPerPage={pagination.limit}
               onPageChange={handlePageChange}
               onLimitChange={handleLimitChange}
             />
