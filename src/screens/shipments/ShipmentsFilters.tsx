@@ -40,7 +40,7 @@ export function ShipmentsFilters({
   const debouncedSearch = useDebounce(searchInput, 500);
 
   useEffect(() => {
-    const trimmedSearch = searchInput.trim();
+    const trimmedSearch = debouncedSearch.trim();
     if (debouncedSearch !== filters.search) {
       onFiltersChange({ ...filters, search: trimmedSearch, page: 1 });
     }
