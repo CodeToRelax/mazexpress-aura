@@ -15,6 +15,7 @@ import Users from "@/screens/users/Users";
 import UserDetail from "@/screens/users/UserDetail";
 import Warehouses from "@/screens/warehouses/Warehouses";
 import WarehouseDetail from "@/screens/warehouses/WarehouseDetail";
+import Shipments from "@/screens/shipments/Shipments";
 import SystemSettings from "@/screens/settings/SystemSettings";
 import NotFound from "./pages/NotFound";
 
@@ -44,6 +45,7 @@ const App = () => {
               <Route path="/users/:id" element={<UserDetail />} />
               <Route path="/warehouses" element={<Warehouses />} />
               <Route path="/warehouses/:id" element={<WarehouseDetail />} />
+              <Route path="/shipments" element={<Shipments />} />
               <Route path="/settings" element={<SystemSettings />} />
             </Route>
             <Route path="*" element={<NotFound />} />
