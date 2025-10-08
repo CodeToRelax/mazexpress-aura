@@ -26,6 +26,14 @@ export const navigationItems: NavItemWithACL[] = [
     aclFlag: 'canViewUsers',
   },
   {
+    id: 'shipments',
+    labelKey: 'nav.shipments',
+    icon: Package,
+    href: '/shipments',
+    match: 'prefix',
+    aclFlag: 'canViewShipments',
+  },
+  {
     id: 'warehouses',
     labelKey: 'nav.warehouses',
     icon: Warehouse,

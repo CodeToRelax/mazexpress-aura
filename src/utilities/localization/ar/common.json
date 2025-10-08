@@ -13,6 +13,7 @@
     "close": "إغلاق القائمة",
     "dashboard": "لوحة التحكم",
     "users": "المستخدمون",
+    "shipments": "الشحنات",
     "warehouses": "المستودعات",
     "reports": "التقارير",
     "reports.sales": "تقارير المبيعات",
@@ -305,5 +306,182 @@
   "dashboard": {
     "welcome": "مرحباً بك في إدارة مازإكسبرس",
     "placeholder": "لوحة التحكم قادمة في المرحلة الثانية"
+  },
+  "shipments": {
+    "title": "إدارة الشحنات",
+    "subtitle": "تتبع وإدارة الشحنات",
+    "table": {
+      "columns": {
+        "esn": "رقم الشحنة الخارجي",
+        "csn": "رقم شحنة العميل",
+        "isn": "رقم الشحنة الدولي",
+        "destination": "الوجهة",
+        "method": "طريقة الشحن",
+        "status": "الحالة",
+        "weight": "الوزن",
+        "dimensions": "الأبعاد",
+        "estimatedArrival": "الوصول المتوقع",
+        "extraCosts": "تكاليف إضافية",
+        "note": "ملاحظة",
+        "createdAt": "تاريخ الإنشاء",
+        "updatedAt": "تاريخ التحديث",
+        "actions": "الإجراءات"
+      },
+      "status": {
+        "pending": "قيد الانتظار",
+        "in_transit": "قيد النقل",
+        "ready_for_pick_up": "جاهز للاستلام",
+        "delivered": "تم التسليم",
+        "cancelled": "ملغى",
+        "returned": "مرتجع"
+      },
+      "method": {
+        "air": "جوي",
+        "sea": "بحري",
+        "land": "بري"
+      },
+      "selectAll": "تحديد الكل",
+      "selectedCount": "{{count}} محدد",
+      "showingResults": "عرض {{from}}-{{to}} من {{total}} شحنة",
+      "sortBy": "ترتيب حسب {{column}}"
+    },
+    "actions": {
+      "create": "إنشاء شحنة",
+      "edit": "تعديل",
+      "delete": "حذف",
+      "view": "عرض التفاصيل",
+      "track": "تتبع الشحنة",
+      "bulkUpdate": "تحديث جماعي",
+      "bulkDelete": "حذف جماعي",
+      "calculatePrice": "حساب السعر",
+      "refresh": "تحديث",
+      "clearFilters": "مسح الفلاتر"
+    },
+    "filters": {
+      "search": "البحث في الشحنات...",
+      "searchPlaceholder": "رقم الشحنة الخارجي، رقم شحنة العميل، رقم الشحنة الدولي...",
+      "status": "الحالة",
+      "method": "طريقة الشحن",
+      "destination": "الوجهة",
+      "dateRange": "النطاق الزمني",
+      "allStatuses": "جميع الحالات",
+      "allMethods": "جميع الطرق",
+      "allDestinations": "جميع الوجهات",
+      "from": "من",
+      "to": "إلى",
+      "domestic": "محلي فقط",
+      "international": "دولي فقط"
+    },
+    "stats": {
+      "total": "إجمالي الشحنات",
+      "pending": "قيد الانتظار",
+      "inTransit": "قيد النقل",
+      "delivered": "تم التسليم",
+      "overdue": "متأخر"
+    },
+    "form": {
+      "createTitle": "إنشاء شحنة جديدة",
+      "editTitle": "تعديل الشحنة",
+      "basicInfo": "المعلومات الأساسية",
+      "sizeInfo": "الحجم والأبعاد",
+      "shippingInfo": "تفاصيل الشحن",
+      "optionalInfo": "معلومات اختيارية",
+      "fields": {
+        "csn": "رقم شحنة العميل",
+        "isn": "رقم الشحنة الدولي (اختياري)",
+        "destination": "الوجهة",
+        "method": "طريقة الشحن",
+        "weight": "الوزن (كجم)",
+        "height": "الارتفاع (سم)",
+        "width": "العرض (سم)",
+        "length": "الطول (سم)",
+        "extraCosts": "تكاليف إضافية",
+        "note": "ملاحظة (اختياري)",
+        "estimatedArrival": "الوصول المتوقع",
+        "isDomestic": "شحنة محلية",
+        "status": "الحالة"
+      },
+      "placeholders": {
+        "csn": "مثال: BEN-828C",
+        "isn": "مثال: DHL123456789",
+        "note": "ملاحظات إضافية عن الشحنة...",
+        "weight": "أدخل الوزن بالكيلوغرام",
+        "height": "أدخل الارتفاع بالسنتيمتر",
+        "width": "أدخل العرض بالسنتيمتر",
+        "length": "أدخل الطول بالسنتيمتر"
+      },
+      "validation": {
+        "csnRequired": "رقم شحنة العميل مطلوب",
+        "csnFormat": "تنسيق رقم شحنة العميل غير صحيح (مثال: BEN-828C)",
+        "isnFormat": "تنسيق رقم الشحنة الدولي غير صحيح",
+        "weightOrDimensions": "يرجى إدخال الوزن أو الأبعاد",
+        "destinationRequired": "الوجهة مطلوبة",
+        "methodRequired": "طريقة الشحن مطلوبة",
+        "weightMin": "يجب أن يكون الوزن 0.1 كجم على الأقل",
+        "weightMax": "لا يمكن أن يتجاوز الوزن 1000 كجم",
+        "dimensionMin": "يجب أن يكون البعد 1 سم على الأقل",
+        "dimensionMax": "لا يمكن أن يتجاوز البعد 1000 سم",
+        "noteMax": "لا يمكن أن تتجاوز الملاحظة 500 حرف"
+      }
+    },
+    "messages": {
+      "createSuccess": "تم إنشاء الشحنة بنجاح",
+      "updateSuccess": "تم تحديث الشحنة بنجاح",
+      "deleteSuccess": "تم حذف الشحنة بنجاح",
+      "bulkUpdateSuccess": "تم تحديث {{count}} شحنة",
+      "bulkDeleteSuccess": "تم حذف {{count}} شحنة",
+      "error": "حدث خطأ",
+      "notFound": "لم يتم العثور على الشحنة",
+      "copySuccess": "تم النسخ إلى الحافظة"
+    },
+    "empty": {
+      "title": "لا توجد شحنات",
+      "description": "لا توجد شحنات مطابقة للفلاتر الحالية.",
+      "createFirst": "أنشئ أول شحنة"
+    },
+    "detail": {
+      "overview": "نظرة عامة",
+      "basicInfo": "المعلومات الأساسية",
+      "sizeInfo": "الحجم والأبعاد",
+      "shippingInfo": "تفاصيل الشحن",
+      "timeline": "الجدول الزمني",
+      "metadata": "البيانات الوصفية"
+    },
+    "delete": {
+      "title": "حذف الشحنة",
+      "description": "هل أنت متأكد من حذف هذه الشحنة؟",
+      "warning": "لا يمكن التراجع عن هذا الإجراء.",
+      "confirm": "اكتب DELETE للتأكيد",
+      "esn": "رقم الشحنة: {{esn}}"
+    },
+    "bulkDelete": {
+      "title": "حذف شحنات متعددة",
+      "description": "هل أنت متأكد من حذف {{count}} شحنة؟",
+      "warning": "لا يمكن التراجع عن هذا الإجراء.",
+      "confirm": "اكتب DELETE للتأكيد"
+    },
+    "bulkUpdate": {
+      "title": "تحديث شحنات متعددة",
+      "description": "تحديث حالة {{count}} شحنة محددة",
+      "selectStatus": "اختر الحالة الجديدة"
+    },
+    "track": {
+      "title": "تتبع شحنتك",
+      "description": "أدخل رقم الشحنة الخارجي لتتبع حالتها",
+      "placeholder": "أدخل رقم الشحنة (مثال: MAZ-ABC123)",
+      "search": "تتبع",
+      "notFound": "لم يتم العثور على الشحنة",
+      "publicAccess": "لا حاجة لتسجيل الدخول"
+    },
+    "calculator": {
+      "title": "حساب سعر الشحن",
+      "description": "احصل على تقدير لتكاليف الشحن",
+      "selectMethod": "اختر طريقة الشحن",
+      "selectDestination": "اختر الوجهة",
+      "selectCountry": "اختر الدولة",
+      "calculate": "احسب السعر",
+      "result": "السعر المقدر",
+      "notAvailable": "حساب السعر غير متاح في الوقت الحالي"
+    }
   }
 }

@@ -13,6 +13,7 @@
     "close": "Close navigation",
     "dashboard": "Dashboard",
     "users": "Users",
+    "shipments": "Shipments",
     "warehouses": "Warehouses",
     "reports": "Reports",
     "reports.sales": "Sales Reports",
@@ -364,5 +365,182 @@
   "dashboard": {
     "welcome": "Welcome to MazExpress Admin",
     "placeholder": "Dashboard coming in Phase 2"
+  },
+  "shipments": {
+    "title": "Shipments Management",
+    "subtitle": "Track and manage shipments",
+    "table": {
+      "columns": {
+        "esn": "ESN",
+        "csn": "CSN",
+        "isn": "ISN",
+        "destination": "Destination",
+        "method": "Method",
+        "status": "Status",
+        "weight": "Weight",
+        "dimensions": "Dimensions",
+        "estimatedArrival": "ETA",
+        "extraCosts": "Extra Costs",
+        "note": "Note",
+        "createdAt": "Created",
+        "updatedAt": "Updated",
+        "actions": "Actions"
+      },
+      "status": {
+        "pending": "Pending",
+        "in_transit": "In Transit",
+        "ready_for_pick_up": "Ready for Pickup",
+        "delivered": "Delivered",
+        "cancelled": "Cancelled",
+        "returned": "Returned"
+      },
+      "method": {
+        "air": "Air",
+        "sea": "Sea",
+        "land": "Land"
+      },
+      "selectAll": "Select all",
+      "selectedCount": "{{count}} selected",
+      "showingResults": "Showing {{from}}-{{to}} of {{total}} shipments",
+      "sortBy": "Sort by {{column}}"
+    },
+    "actions": {
+      "create": "Create Shipment",
+      "edit": "Edit",
+      "delete": "Delete",
+      "view": "View Details",
+      "track": "Track Shipment",
+      "bulkUpdate": "Bulk Update Status",
+      "bulkDelete": "Bulk Delete",
+      "calculatePrice": "Calculate Price",
+      "refresh": "Refresh",
+      "clearFilters": "Clear all filters"
+    },
+    "filters": {
+      "search": "Search shipments...",
+      "searchPlaceholder": "ESN, CSN, ISN...",
+      "status": "Status",
+      "method": "Shipping Method",
+      "destination": "Destination",
+      "dateRange": "Date Range",
+      "allStatuses": "All Statuses",
+      "allMethods": "All Methods",
+      "allDestinations": "All Destinations",
+      "from": "From",
+      "to": "To",
+      "domestic": "Domestic Only",
+      "international": "International Only"
+    },
+    "stats": {
+      "total": "Total Shipments",
+      "pending": "Pending",
+      "inTransit": "In Transit",
+      "delivered": "Delivered",
+      "overdue": "Overdue"
+    },
+    "form": {
+      "createTitle": "Create New Shipment",
+      "editTitle": "Edit Shipment",
+      "basicInfo": "Basic Information",
+      "sizeInfo": "Size & Dimensions",
+      "shippingInfo": "Shipping Details",
+      "optionalInfo": "Optional Information",
+      "fields": {
+        "csn": "Customer Shipping Number",
+        "isn": "International Shipping Number (Optional)",
+        "destination": "Destination",
+        "method": "Shipping Method",
+        "weight": "Weight (kg)",
+        "height": "Height (cm)",
+        "width": "Width (cm)",
+        "length": "Length (cm)",
+        "extraCosts": "Extra Costs",
+        "note": "Note (Optional)",
+        "estimatedArrival": "Estimated Arrival",
+        "isDomestic": "Domestic Shipment",
+        "status": "Status"
+      },
+      "placeholders": {
+        "csn": "e.g., BEN-828C",
+        "isn": "e.g., DHL123456789",
+        "note": "Additional notes about the shipment...",
+        "weight": "Enter weight in kg",
+        "height": "Enter height in cm",
+        "width": "Enter width in cm",
+        "length": "Enter length in cm"
+      },
+      "validation": {
+        "csnRequired": "Customer Shipping Number is required",
+        "csnFormat": "Invalid CSN format (e.g., BEN-828C)",
+        "isnFormat": "Invalid ISN format",
+        "weightOrDimensions": "Provide either weight or dimensions",
+        "destinationRequired": "Destination is required",
+        "methodRequired": "Shipping method is required",
+        "weightMin": "Weight must be at least 0.1 kg",
+        "weightMax": "Weight cannot exceed 1000 kg",
+        "dimensionMin": "Dimension must be at least 1 cm",
+        "dimensionMax": "Dimension cannot exceed 1000 cm",
+        "noteMax": "Note cannot exceed 500 characters"
+      }
+    },
+    "messages": {
+      "createSuccess": "Shipment created successfully",
+      "updateSuccess": "Shipment updated successfully",
+      "deleteSuccess": "Shipment deleted successfully",
+      "bulkUpdateSuccess": "{{count}} shipments updated",
+      "bulkDeleteSuccess": "{{count}} shipments deleted",
+      "error": "An error occurred",
+      "notFound": "Shipment not found",
+      "copySuccess": "Copied to clipboard"
+    },
+    "empty": {
+      "title": "No Shipments Found",
+      "description": "No shipments match the current filters.",
+      "createFirst": "Create your first shipment"
+    },
+    "detail": {
+      "overview": "Overview",
+      "basicInfo": "Basic Information",
+      "sizeInfo": "Size & Dimensions",
+      "shippingInfo": "Shipping Details",
+      "timeline": "Timeline",
+      "metadata": "Metadata"
+    },
+    "delete": {
+      "title": "Delete Shipment",
+      "description": "Are you sure you want to delete this shipment?",
+      "warning": "This action cannot be undone.",
+      "confirm": "Type DELETE to confirm",
+      "esn": "Shipment ESN: {{esn}}"
+    },
+    "bulkDelete": {
+      "title": "Delete Multiple Shipments",
+      "description": "Are you sure you want to delete {{count}} shipments?",
+      "warning": "This action cannot be undone.",
+      "confirm": "Type DELETE to confirm"
+    },
+    "bulkUpdate": {
+      "title": "Update Multiple Shipments",
+      "description": "Update status for {{count}} selected shipments",
+      "selectStatus": "Select new status"
+    },
+    "track": {
+      "title": "Track Your Shipment",
+      "description": "Enter your shipment ESN to track its status",
+      "placeholder": "Enter ESN (e.g., MAZ-ABC123)",
+      "search": "Track",
+      "notFound": "Shipment not found",
+      "publicAccess": "No login required"
+    },
+    "calculator": {
+      "title": "Calculate Shipping Price",
+      "description": "Get an estimate for your shipping costs",
+      "selectMethod": "Select shipping method",
+      "selectDestination": "Select destination",
+      "selectCountry": "Select country",
+      "calculate": "Calculate Price",
+      "result": "Estimated Price",
+      "notAvailable": "Price calculation not available at the moment"
+    }
   }
 }

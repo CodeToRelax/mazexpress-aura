@@ -39,6 +39,10 @@ export interface ACLFlags {
   canManageUsers: boolean;
   canViewShipments: boolean;
   canCreateShipments: boolean;
+  canUpdateShipments: boolean;
+  canDeleteShipments: boolean;
+  canBulkUpdateShipments: boolean;
+  canViewShipmentStats: boolean;
   canViewWallet: boolean;
   canManageWallet: boolean;
   canViewDashboard: boolean;
