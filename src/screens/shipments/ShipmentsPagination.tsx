@@ -19,23 +19,26 @@ interface ShipmentsPaginationProps {
 }
 
 export function ShipmentsPagination({
-  currentPage,
-  totalPages,
-  totalItems,
-  itemsPerPage,
+  currentPage = 1,
+  totalPages = 1,
+  totalItems = 0,
+  itemsPerPage = 10,
   onPageChange,
   onLimitChange,
 }: ShipmentsPaginationProps) {
   const { t } = useTranslation();
 
-  const startItem = (currentPage - 1) * itemsPerPage + 1;
+  const startItem = totalItems > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0;
   const endItem = Math.min(currentPage * itemsPerPage, totalItems);
 
   return (
     <div className="flex items-center justify-between gap-4 flex-wrap">
       <div className="flex items-center gap-2">
         <span className="text-sm text-muted-foreground">
-          {t('shipments.pagination.showing', { start: startItem, end: endItem, total: totalItems })}
+          {totalItems > 0 
+            ? t('shipments.pagination.showing', { start: startItem, end: endItem, total: totalItems })
+            : t('shipments.pagination.noItems', { defaultValue: 'No items to display' })
+          }
         </span>
       </div>
 
@@ -45,7 +48,7 @@ export function ShipmentsPagination({
             {t('shipments.pagination.perPage')}
           </span>
           <Select
-            value={itemsPerPage.toString()}
+            value={String(itemsPerPage || 10)}
             onValueChange={(value) => onLimitChange(Number(value))}
           >
             <SelectTrigger className="w-[70px]">
