@@ -390,6 +390,7 @@
         "pending": "Pending",
         "in_transit": "In Transit",
         "ready_for_pick_up": "Ready for Pickup",
+        "received_at_warehouse": "Received at Warehouse",
         "delivered": "Delivered",
         "cancelled": "Cancelled",
         "returned": "Returned"
@@ -419,17 +420,27 @@
     "filters": {
       "search": "Search shipments...",
       "searchPlaceholder": "ESN, CSN, ISN...",
+      "advanced": "Advanced Filters",
+      "description": "Filter shipments by status, method, destination, and date range",
       "status": "Status",
       "method": "Shipping Method",
       "destination": "Destination",
       "dateRange": "Date Range",
+      "dateFrom": "From Date",
+      "dateTo": "To Date",
       "allStatuses": "All Statuses",
       "allMethods": "All Methods",
       "allDestinations": "All Destinations",
       "from": "From",
       "to": "To",
       "domestic": "Domestic Only",
-      "international": "International Only"
+      "international": "International Only",
+      "destinations": {
+        "benghazi": "Benghazi",
+        "tripoli": "Tripoli",
+        "misurata": "Misurata",
+        "zawiya": "Zawiya"
+      }
     },
     "stats": {
       "total": "Total Shipments",
@@ -499,12 +510,16 @@
       "createFirst": "Create your first shipment"
     },
     "detail": {
+      "title": "Shipment Details",
       "overview": "Overview",
       "basicInfo": "Basic Information",
       "sizeInfo": "Size & Dimensions",
       "shippingInfo": "Shipping Details",
+      "shippingDetails": "Shipping Details",
+      "sizeWeight": "Size & Weight",
       "timeline": "Timeline",
-      "metadata": "Metadata"
+      "metadata": "Metadata",
+      "domestic": "Domestic Shipment"
     },
     "delete": {
       "title": "Delete Shipment",
@@ -532,15 +547,15 @@
       "notFound": "Shipment not found",
       "publicAccess": "No login required"
     },
-    "calculator": {
-      "title": "Calculate Shipping Price",
-      "description": "Get an estimate for your shipping costs",
-      "selectMethod": "Select shipping method",
-      "selectDestination": "Select destination",
-      "selectCountry": "Select country",
-      "calculate": "Calculate Price",
-      "result": "Estimated Price",
-      "notAvailable": "Price calculation not available at the moment"
+    "pagination": {
+      "showing": "Showing {{start}}-{{end}} of {{total}} shipments",
+      "noItems": "No items to display",
+      "perPage": "Per page",
+      "pageOf": "Page {{current}} of {{total}}"
     }
+  },
+  "common": {
+    "yes": "Yes",
+    "no": "No"
   }
 }

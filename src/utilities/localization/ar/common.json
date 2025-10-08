@@ -331,6 +331,7 @@
         "pending": "قيد الانتظار",
         "in_transit": "قيد النقل",
         "ready_for_pick_up": "جاهز للاستلام",
+        "received_at_warehouse": "تم الاستلام في المستودع",
         "delivered": "تم التسليم",
         "cancelled": "ملغى",
         "returned": "مرتجع"
@@ -360,17 +361,27 @@
     "filters": {
       "search": "البحث في الشحنات...",
       "searchPlaceholder": "رقم الشحنة الخارجي، رقم شحنة العميل، رقم الشحنة الدولي...",
+      "advanced": "فلاتر متقدمة",
+      "description": "فلترة الشحنات حسب الحالة، الطريقة، الوجهة، والتاريخ",
       "status": "الحالة",
       "method": "طريقة الشحن",
       "destination": "الوجهة",
       "dateRange": "النطاق الزمني",
+      "dateFrom": "من تاريخ",
+      "dateTo": "إلى تاريخ",
       "allStatuses": "جميع الحالات",
       "allMethods": "جميع الطرق",
       "allDestinations": "جميع الوجهات",
       "from": "من",
       "to": "إلى",
       "domestic": "محلي فقط",
-      "international": "دولي فقط"
+      "international": "دولي فقط",
+      "destinations": {
+        "benghazi": "بنغازي",
+        "tripoli": "طرابلس",
+        "misurata": "مصراتة",
+        "zawiya": "الزاوية"
+      }
     },
     "stats": {
       "total": "إجمالي الشحنات",
@@ -440,7 +451,12 @@
       "createFirst": "أنشئ أول شحنة"
     },
     "detail": {
+      "title": "تفاصيل الشحنة",
       "overview": "نظرة عامة",
+      "shippingDetails": "تفاصيل الشحن",
+      "sizeWeight": "الحجم والوزن",
+      "metadata": "البيانات الوصفية",
+      "domestic": "شحنة محلية",
       "basicInfo": "المعلومات الأساسية",
       "sizeInfo": "الحجم والأبعاد",
       "shippingInfo": "تفاصيل الشحن",

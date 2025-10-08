@@ -40,8 +40,9 @@ export function ShipmentsFilters({
   const debouncedSearch = useDebounce(searchInput, 500);
 
   useEffect(() => {
+    const trimmedSearch = searchInput.trim();
     if (debouncedSearch !== filters.search) {
-      onFiltersChange({ ...filters, search: debouncedSearch, page: 1 });
+      onFiltersChange({ ...filters, search: trimmedSearch, page: 1 });
     }
   }, [debouncedSearch]);
 
@@ -157,7 +158,7 @@ export function ShipmentsFilters({
                   <SelectItem value="all">{t('shipments.filters.allDestinations')}</SelectItem>
                   {destinations.map(destination => (
                     <SelectItem key={destination} value={destination} className="capitalize">
-                      {destination}
+                      {t(`shipments.filters.destinations.${destination}`, { defaultValue: destination })}
                     </SelectItem>
                   ))}
                 </SelectContent>

@@ -19,6 +19,7 @@ import { EditShipmentDialog } from './EditShipmentDialog';
 import { DeleteShipmentDialog } from './DeleteShipmentDialog';
 import { BulkUpdateDialog } from './BulkUpdateDialog';
 import { BulkDeleteDialog } from './BulkDeleteDialog';
+import { ShipmentDetailDialog } from './ShipmentDetailDialog';
 
 // localStorage keys
 const STORAGE_KEYS = {
@@ -136,6 +137,13 @@ export default function Shipments() {
   useEffect(() => {
     fetchStats();
   }, [fetchStats]);
+
+  // Sync filters.page with pagination.currentPage
+  useEffect(() => {
+    if (pagination.currentPage !== filters.page) {
+      setFilters(prev => ({ ...prev, page: pagination.currentPage }));
+    }
+  }, [pagination.currentPage]);
 
   // Persist filters to localStorage
   useEffect(() => {
@@ -263,9 +271,12 @@ export default function Shipments() {
     setSelectedShipments(new Set());
   };
 
+  const [shipmentToView, setShipmentToView] = useState<IShipment | null>(null);
+  const [showDetailDialog, setShowDetailDialog] = useState(false);
+
   const handleViewShipment = (shipment: IShipment) => {
-    // TODO: Navigate to shipment detail page or open detail dialog
-    console.log('View shipment:', shipment);
+    setShipmentToView(shipment);
+    setShowDetailDialog(true);
   };
 
   const handleBulkUpdate = () => {
@@ -465,6 +476,14 @@ export default function Shipments() {
           selectedShipmentIds={Array.from(selectedShipments)}
           onSuccess={handleBulkSuccess}
         />
+
+        {shipmentToView && (
+          <ShipmentDetailDialog
+            open={showDetailDialog}
+            onOpenChange={setShowDetailDialog}
+            shipment={shipmentToView}
+          />
+        )}
       </div>
     </ACLGuard>
   );
