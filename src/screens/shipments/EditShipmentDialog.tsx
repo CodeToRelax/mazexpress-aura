@@ -33,7 +33,7 @@ import {
 import { toast } from '@/hooks/use-toast';
 import { shipmentsApi } from '@/utilities/api/shipments.api';
 import { updateShipmentSchema, type UpdateShipmentFormData } from '@/utilities/zod/shipment.schemas';
-import { ShipmentDestination, ShippingMethod, ShipmentStatus } from '@/types/shipment';
+import { Cities, ShippingMethod, ShipmentStatus } from '@/types/shipment';
 
 interface EditShipmentDialogProps {
   open: boolean;
@@ -56,10 +56,10 @@ export function EditShipmentDialog({ open, onOpenChange, shipment, onSuccess }: 
       status: shipment.status as ShipmentStatus,
       isDomestic: shipment.isDomestic,
       size: {
-        weight: shipment.size?.weight || undefined,
-        height: shipment.size?.height || undefined,
-        width: shipment.size?.width || undefined,
-        length: shipment.size?.length || undefined,
+        weight: shipment.size?.weight || 1,
+        height: shipment.size?.height || 1,
+        width: shipment.size?.width || 1,
+        length: shipment.size?.length || 1,
       },
       extraCosts: shipment.extraCosts || 0,
       note: shipment.note || '',
@@ -77,10 +77,10 @@ export function EditShipmentDialog({ open, onOpenChange, shipment, onSuccess }: 
         status: shipment.status as ShipmentStatus,
         isDomestic: shipment.isDomestic,
         size: {
-          weight: shipment.size?.weight || undefined,
-          height: shipment.size?.height || undefined,
-          width: shipment.size?.width || undefined,
-          length: shipment.size?.length || undefined,
+          weight: shipment.size?.weight || 1,
+          height: shipment.size?.height || 1,
+          width: shipment.size?.width || 1,
+          length: shipment.size?.length || 1,
         },
         extraCosts: shipment.extraCosts || 0,
         note: shipment.note || '',
@@ -212,9 +212,9 @@ export function EditShipmentDialog({ open, onOpenChange, shipment, onSuccess }: 
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {Object.values(ShipmentDestination).map((dest) => (
-                            <SelectItem key={dest} value={dest}>
-                              {dest}
+                          {Object.values(Cities).map((city) => (
+                            <SelectItem key={city} value={city}>
+                              {city.charAt(0).toUpperCase() + city.slice(1).replace(/ /g, ' ')}
                             </SelectItem>
                           ))}
                         </SelectContent>

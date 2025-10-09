@@ -52,12 +52,13 @@ export function ShipmentsFilters({
 
   const statuses = [
     'pending',
-    'in_transit',
-    'ready_for_pick_up',
+    'in transit',
+    'ready for pick up',
     'delivered',
     'cancelled',
     'returned',
-    'received at warehouse'
+    'received at warehouse',
+    'shipped to destination'
   ];
 
   const methods = ['air', 'sea', 'land'];

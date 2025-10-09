@@ -5,7 +5,7 @@ import type { ShipmentStats } from '@/types/shipment';
 
 interface ShipmentsStatsBarProps {
   stats: ShipmentStats;
-  onStatClick: (filterType: 'all' | 'pending' | 'in_transit' | 'delivered' | 'overdue') => void;
+  onStatClick: (filterType: 'all' | 'pending' | 'in transit' | 'delivered' | 'overdue') => void;
 }
 
 export function ShipmentsStatsBar({ stats, onStatClick }: ShipmentsStatsBarProps) {
@@ -34,7 +34,7 @@ export function ShipmentsStatsBar({ stats, onStatClick }: ShipmentsStatsBarProps
       value: stats.inTransit,
       color: 'text-blue-600 dark:text-blue-400',
       bgColor: 'bg-blue-500/10',
-      filterType: 'in_transit' as const,
+      filterType: 'in transit' as const,
     },
     {
       icon: CheckCircle2,

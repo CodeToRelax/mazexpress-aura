@@ -52,9 +52,19 @@ class ShipmentsApi {
   async getShipments(filters: ShipmentFilters): Promise<ShipmentsListResponse> {
     const queryParams = new URLSearchParams();
     
+    // Map frontend filter names to backend parameter names
+    const paramMapping: Record<string, string> = {
+      search: 'searchParam',
+      destination: 'shipmentDestination',
+      method: 'shippingMethod',
+      createdAfter: 'from',
+      createdBefore: 'to',
+    };
+    
     Object.entries(filters).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== '') {
-        queryParams.append(key, String(value));
+        const backendKey = paramMapping[key] || key;
+        queryParams.append(backendKey, String(value));
       }
     });
 

@@ -33,7 +33,7 @@ import {
 import { toast } from '@/hooks/use-toast';
 import { shipmentsApi } from '@/utilities/api/shipments.api';
 import { createShipmentSchema, type CreateShipmentFormData } from '@/utilities/zod/shipment.schemas';
-import { ShipmentDestination, ShippingMethod } from '@/types/shipment';
+import { Cities, ShippingMethod } from '@/types/shipment';
 
 interface CreateShipmentDialogProps {
   open: boolean;
@@ -54,10 +54,10 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess }: CreateSh
       shippingMethod: undefined,
       isDomestic: false,
       size: {
-        weight: undefined,
-        height: undefined,
-        width: undefined,
-        length: undefined,
+        weight: 1,
+        height: 1,
+        width: 1,
+        length: 1,
       },
       extraCosts: 0,
       note: '',
@@ -170,9 +170,9 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess }: CreateSh
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {Object.values(ShipmentDestination).map((dest) => (
-                            <SelectItem key={dest} value={dest}>
-                              {dest}
+                          {Object.values(Cities).map((city) => (
+                            <SelectItem key={city} value={city}>
+                              {city.charAt(0).toUpperCase() + city.slice(1).replace(/ /g, ' ')}
                             </SelectItem>
                           ))}
                         </SelectContent>

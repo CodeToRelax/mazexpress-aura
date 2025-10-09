@@ -1,33 +1,20 @@
 import { z } from 'zod';
-import { ShipmentStatus, ShippingMethod, ShipmentDestination } from '@/types/shipment';
+import { ShipmentStatus, ShippingMethod, Cities } from '@/types/shipment';
 
-// Shipment Size Schema
+// Shipment Size Schema - ALL fields required per backend validation
 export const shipmentSizeSchema = z.object({
-  weight: z.number().min(0.1).max(1000).optional(),
-  height: z.number().min(1).max(1000).optional(),
-  width: z.number().min(1).max(1000).optional(),
-  length: z.number().min(1).max(1000).optional(),
-}).refine(
-  (data) => {
-    // Either weight OR all dimensions must be provided
-    const hasWeight = data.weight !== undefined;
-    const hasDimensions = 
-      data.height !== undefined && 
-      data.width !== undefined && 
-      data.length !== undefined;
-    return hasWeight || hasDimensions;
-  },
-  {
-    message: 'Provide either weight or dimensions (height, width, length)',
-  }
-);
+  weight: z.number().min(0.1).max(1000),
+  height: z.number().min(1).max(200),
+  width: z.number().min(1).max(200),
+  length: z.number().min(1).max(200),
+});
 
 // Create Shipment Schema
 export const createShipmentSchema = z.object({
   isn: z.string().regex(/^[A-Z0-9]{8,20}$/, 'Invalid ISN format').optional().or(z.literal('')),
   csn: z.string().regex(/^[A-Z]{3}-[A-Z0-9]{3,4}$/, 'Invalid CSN format (e.g., BEN-828C)'),
   size: shipmentSizeSchema,
-  shipmentDestination: z.nativeEnum(ShipmentDestination, {
+  shipmentDestination: z.nativeEnum(Cities, {
     errorMap: () => ({ message: 'Invalid destination' }),
   }),
   shippingMethod: z.nativeEnum(ShippingMethod, {
@@ -43,13 +30,8 @@ export const createShipmentSchema = z.object({
 export const updateShipmentSchema = z.object({
   isn: z.string().regex(/^[A-Z0-9]{8,20}$/, 'Invalid ISN format').optional().or(z.literal('')),
   csn: z.string().regex(/^[A-Z]{3}-[A-Z0-9]{3,4}$/, 'Invalid CSN format').optional(),
-  size: z.object({
-    weight: z.number().min(0.1).max(1000).optional(),
-    height: z.number().min(1).max(1000).optional(),
-    width: z.number().min(1).max(1000).optional(),
-    length: z.number().min(1).max(1000).optional(),
-  }).optional(),
-  shipmentDestination: z.nativeEnum(ShipmentDestination).optional(),
+  size: shipmentSizeSchema.optional(),
+  shipmentDestination: z.nativeEnum(Cities).optional(),
   shippingMethod: z.nativeEnum(ShippingMethod).optional(),
   extraCosts: z.number().min(0).max(10000).optional(),
   note: z.string().max(500).optional().or(z.literal('')),
@@ -58,10 +40,16 @@ export const updateShipmentSchema = z.object({
   isDomestic: z.boolean().optional(),
 });
 
-// Search Shipment Schema
+// Search Shipment Schema - Support both ESN formats
 export const searchShipmentSchema = z.object({
   searchParam: z.string().min(1, 'Search term is required'),
 });
+
+// ESN Validation Schema - Support both old and new formats
+export const esnSchema = z.string().regex(
+  /^([A-Z]{3}-[A-Z0-9]{6,8}|\d{10})$/,
+  'Invalid ESN format. Must be either ABC-123456 format or 10-digit numeric format'
+);
 
 // Price Calculation Schema
 export const priceCalculationSchema = z.object({

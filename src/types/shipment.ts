@@ -5,9 +5,11 @@
 
 export enum ShipmentStatus {
   PENDING = 'pending',
-  IN_TRANSIT = 'in_transit',
-  READY_FOR_PICKUP = 'ready_for_pick_up',
+  RECEIVED_AT_WAREHOUSE = 'received at warehouse',
+  SHIPPED_TO_DESTINATION = 'shipped to destination',
+  READY_FOR_PICK_UP = 'ready for pick up',
   DELIVERED = 'delivered',
+  IN_TRANSIT = 'in transit',
   CANCELLED = 'cancelled',
   RETURNED = 'returned',
 }
@@ -18,42 +20,42 @@ export enum ShippingMethod {
   LAND = 'land',
 }
 
-export enum ShipmentDestination {
-  LIBYA = 'libya',
-  TURKEY = 'turkey',
-  CHINA = 'china',
-  UAE = 'uae',
-  USA = 'usa',
-  UK = 'uk',
-  GERMANY = 'germany',
-  FRANCE = 'france',
-  ITALY = 'italy',
-  SPAIN = 'spain',
-  CANADA = 'canada',
-  AUSTRALIA = 'australia',
-  JAPAN = 'japan',
-  SOUTH_KOREA = 'south_korea',
-  INDIA = 'india',
-  BRAZIL = 'brazil',
-  MEXICO = 'mexico',
-  RUSSIA = 'russia',
-  SAUDI_ARABIA = 'saudi_arabia',
-  EGYPT = 'egypt',
-  MOROCCO = 'morocco',
-  TUNISIA = 'tunisia',
-  ALGERIA = 'algeria',
-  SUDAN = 'sudan',
-  ETHIOPIA = 'ethiopia',
-  KENYA = 'kenya',
-  NIGERIA = 'nigeria',
-  SOUTH_AFRICA = 'south_africa',
+export enum Cities {
+  BENGHAZI = 'benghazi',
+  TRIPOLI = 'tripoli',
+  MUSRATA = 'musrata',
+  ALBAYDA = 'al bayda',
+  ZAWIYA = 'zawiya',
+  GHARYAN = 'gharyan',
+  TOBRUK = 'tobruk',
+  AJDABIYA = 'ajdabiya',
+  ZLITEN = 'zliten',
+  DERNA = 'derna',
+  SIRTE = 'sirte',
+  SABHA = 'sabha',
+  KHOMS = 'khoms',
+  BANI_WALID = 'bani walid',
+  SABRATHA = 'sabratha',
+  ZUWARA = 'zuwara',
+  KUFRA = 'kufra',
+  AL_MARJ = 'al marj',
+  TARHUNA = 'tarhuna',
+  UBARI = 'ubari',
+  GADAMES = 'gadames',
+  GHAT = 'ghat',
+  NALUT = 'nalut',
+  JALU = 'jalu',
+  BREGA = 'brega',
+  ISTANBUL = 'istanbul',
+  DUBAI = 'dubai',
+  HONGKONG = 'hongkong',
 }
 
 export interface IShipmentSize {
-  weight?: number;
-  height?: number;
-  width?: number;
-  length?: number;
+  weight: number;
+  height: number;
+  width: number;
+  length: number;
 }
 
 export interface IShipment {

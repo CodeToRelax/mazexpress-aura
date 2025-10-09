@@ -170,7 +170,7 @@ export default function Shipments() {
     });
   };
 
-  const handleStatClick = (filterType: 'all' | 'pending' | 'in_transit' | 'delivered' | 'overdue') => {
+  const handleStatClick = (filterType: 'all' | 'pending' | 'in transit' | 'delivered' | 'overdue') => {
     switch (filterType) {
       case 'all':
         setFilters({
@@ -187,11 +187,11 @@ export default function Shipments() {
           sort: '-createdAt',
         });
         break;
-      case 'in_transit':
+      case 'in transit':
         setFilters({
           page: 1,
           limit: filters.limit,
-          status: 'in_transit',
+          status: 'in transit',
           sort: '-createdAt',
         });
         break;

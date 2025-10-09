@@ -23,12 +23,13 @@ export function ShipmentDetailDialog({ open, onOpenChange, shipment }: ShipmentD
   const getStatusBadge = (status: string) => {
     const statusMap: Record<string, 'default' | 'secondary' | 'destructive'> = {
       'pending': 'secondary',
-      'in_transit': 'default',
-      'ready_for_pick_up': 'default',
+      'in transit': 'default',
+      'ready for pick up': 'default',
       'delivered': 'default',
       'cancelled': 'destructive',
       'returned': 'secondary',
-      'received at warehouse': 'default'
+      'received at warehouse': 'default',
+      'shipped to destination': 'default'
     };
 
     return (
