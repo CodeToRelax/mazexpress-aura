@@ -96,7 +96,16 @@ export function EditShipmentDialog({ open, onOpenChange, shipment, onSuccess }: 
   const onSubmit = async (data: UpdateShipmentFormData) => {
     try {
       setIsSubmitting(true);
-      await shipmentsApi.updateShipment(shipment._id, data as any);
+      
+      // If in weight-only mode, ensure dimensions are set to default values
+      const submitData = {
+        ...data,
+        size: sizeInputMode === 'weight' 
+          ? { ...data.size, height: 1, width: 1, length: 1 }
+          : data.size
+      };
+      
+      await shipmentsApi.updateShipment(shipment._id, submitData as any);
       toast({
         title: t('status.success'),
         description: t('shipments.messages.updateSuccess'),
@@ -150,7 +159,9 @@ export function EditShipmentDialog({ open, onOpenChange, shipment, onSuccess }: 
                   name="isn"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('shipments.form.fields.isn')} <span className="text-muted-foreground text-xs">({t('common.optional', { defaultValue: 'Optional' })})</span></FormLabel>
+                      <FormLabel>
+                        {t('shipments.form.fields.isn')} <span className="text-muted-foreground text-xs">({t('common.optional', { defaultValue: 'Optional' })})</span>
+                      </FormLabel>
                       <FormControl>
                         <Input {...field} placeholder={t('shipments.form.placeholders.isn')} />
                       </FormControl>
@@ -174,7 +185,7 @@ export function EditShipmentDialog({ open, onOpenChange, shipment, onSuccess }: 
                         <SelectContent>
                           {Object.values(ShipmentStatus).map((status) => (
                             <SelectItem key={status} value={status}>
-                              {t(`shipments.table.status.${status}`)}
+                              {t(`shipments.table.status.${status.replace(/ /g, '_')}`)}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -221,7 +232,7 @@ export function EditShipmentDialog({ open, onOpenChange, shipment, onSuccess }: 
                         <SelectContent>
                           {Object.values(Cities).map((city) => (
                             <SelectItem key={city} value={city}>
-                              {city.charAt(0).toUpperCase() + city.slice(1).replace(/ /g, ' ')}
+                              {city.charAt(0).toUpperCase() + city.slice(1).replace(/_/g, ' ')}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -277,7 +288,7 @@ export function EditShipmentDialog({ open, onOpenChange, shipment, onSuccess }: 
                     <FormItem>
                       <FormLabel>{t('shipments.form.fields.extraCosts')}</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input type="number" step="0.01" {...field} onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -346,15 +357,6 @@ export function EditShipmentDialog({ open, onOpenChange, shipment, onSuccess }: 
                         </FormItem>
                       )}
                     />
-                          {...field}
-                          value={field.value || ''}
-                          onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
 
                     <FormField
                       control={form.control}
@@ -420,45 +422,6 @@ export function EditShipmentDialog({ open, onOpenChange, shipment, onSuccess }: 
                     />
                   </>
                 )}
-              </div>
-            </div>
-                  name="size.width"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('shipments.form.fields.width')}</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          step="0.1"
-                          {...field}
-                          value={field.value || ''}
-                          onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="size.length"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('shipments.form.fields.length')}</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          step="0.1"
-                          {...field}
-                          value={field.value || ''}
-                          onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
               </div>
             </div>
 
