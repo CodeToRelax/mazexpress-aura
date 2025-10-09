@@ -14,6 +14,7 @@ import { ShipmentsTable } from './ShipmentsTable';
 import { ShipmentsFilters } from './ShipmentsFilters';
 import { ShipmentsPagination } from './ShipmentsPagination';
 import { ShipmentsStatsBar } from './ShipmentsStatsBar';
+import { ColumnVisibilityToggle } from './ColumnVisibilityToggle';
 import { CreateShipmentDialog } from './CreateShipmentDialog';
 import { EditShipmentDialog } from './EditShipmentDialog';
 import { DeleteShipmentDialog } from './DeleteShipmentDialog';
@@ -85,6 +86,37 @@ export default function Shipments() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showBulkUpdateDialog, setShowBulkUpdateDialog] = useState(false);
   const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false);
+  
+  // Column visibility state
+  const [visibleColumns, setVisibleColumns] = useState<Set<string>>(() => {
+    try {
+      const saved = localStorage.getItem('shipments-visible-columns');
+      return saved ? new Set(JSON.parse(saved)) : new Set(['isn', 'destination', 'method', 'status', 'weight', 'extraCosts', 'estimatedArrival']);
+    } catch {
+      return new Set(['isn', 'destination', 'method', 'status', 'weight', 'extraCosts', 'estimatedArrival']);
+    }
+  });
+
+  // Persist column visibility
+  useEffect(() => {
+    localStorage.setItem('shipments-visible-columns', JSON.stringify(Array.from(visibleColumns)));
+  }, [visibleColumns]);
+
+  const handleToggleColumn = (column: string) => {
+    setVisibleColumns(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(column)) {
+        newSet.delete(column);
+      } else {
+        newSet.add(column);
+      }
+      return newSet;
+    });
+  };
+
+  const handleResetColumns = () => {
+    setVisibleColumns(new Set(['isn', 'destination', 'method', 'status', 'weight', 'extraCosts', 'estimatedArrival']));
+  };
 
   const fetchShipments = useCallback(async () => {
     try {
@@ -169,7 +201,7 @@ export default function Shipments() {
     });
   };
 
-  const handleStatClick = (filterType: 'all' | 'pending' | 'in transit' | 'delivered' | 'overdue') => {
+  const handleStatClick = (filterType: 'all' | 'pending' | 'in transit' | 'delivered') => {
     switch (filterType) {
       case 'all':
         setFilters({
@@ -200,13 +232,6 @@ export default function Shipments() {
           limit: filters.limit,
           status: 'delivered',
           sort: '-createdAt',
-        });
-        break;
-      case 'overdue':
-        // Will need backend support for this
-        toast({
-          title: t('shipments.messages.error'),
-          description: 'Overdue filter not yet implemented',
         });
         break;
     }
@@ -368,6 +393,11 @@ export default function Shipments() {
                 activeFilterCount={activeFilterCount}
               />
             </div>
+            <ColumnVisibilityToggle
+              visibleColumns={visibleColumns}
+              onToggleColumn={handleToggleColumn}
+              onReset={handleResetColumns}
+            />
             <Button
               type="button"
               variant="outline"
@@ -413,6 +443,7 @@ export default function Shipments() {
               onSelectAll={handleSelectAll}
               onEdit={handleEditShipment}
               onDelete={handleDeleteShipment}
+              visibleColumns={visibleColumns}
             />
           )}
 
@@ -424,6 +455,8 @@ export default function Shipments() {
               itemsPerPage={pagination.limit}
               onPageChange={handlePageChange}
               onLimitChange={handleLimitChange}
+              hasNextPage={pagination.hasNextPage}
+              hasPrevPage={pagination.hasPrevPage}
             />
           )}
         </motion.div>

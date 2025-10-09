@@ -16,6 +16,8 @@ interface ShipmentsPaginationProps {
   itemsPerPage: number;
   onPageChange: (page: number) => void;
   onLimitChange: (limit: number) => void;
+  hasNextPage?: boolean;
+  hasPrevPage?: boolean;
 }
 
 export function ShipmentsPagination({
@@ -25,67 +27,112 @@ export function ShipmentsPagination({
   itemsPerPage = 10,
   onPageChange,
   onLimitChange,
+  hasNextPage = true,
+  hasPrevPage = false,
 }: ShipmentsPaginationProps) {
   const { t } = useTranslation();
 
-  const startItem = totalItems > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0;
-  const endItem = Math.min(currentPage * itemsPerPage, totalItems);
+  const startIndex = totalItems > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0;
+  const endIndex = Math.min(currentPage * itemsPerPage, totalItems);
+
+  const getPageNumbers = () => {
+    const pages: (number | string)[] = [];
+    const maxVisible = 5;
+
+    if (totalPages <= maxVisible) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      if (currentPage <= 3) {
+        for (let i = 1; i <= 4; i++) pages.push(i);
+        pages.push('...');
+        pages.push(totalPages);
+      } else if (currentPage >= totalPages - 2) {
+        pages.push(1);
+        pages.push('...');
+        for (let i = totalPages - 3; i <= totalPages; i++) pages.push(i);
+      } else {
+        pages.push(1);
+        pages.push('...');
+        for (let i = currentPage - 1; i <= currentPage + 1; i++) pages.push(i);
+        pages.push('...');
+        pages.push(totalPages);
+      }
+    }
+
+    return pages;
+  };
 
   return (
-    <div className="flex items-center justify-between gap-4 flex-wrap">
-      <div className="flex items-center gap-2">
-        <span className="text-sm text-muted-foreground">
-          {totalItems > 0 
-            ? t('shipments.pagination.showing', { start: startItem, end: endItem, total: totalItems })
-            : t('shipments.pagination.noItems', { defaultValue: 'No items to display' })
+    <div className="flex items-center justify-between bg-card px-6 py-4 rounded-2xl shadow-sm border relative z-20">
+      <div className="flex items-center gap-4">
+        <div className="text-sm text-muted-foreground">
+          {totalItems > 0
+            ? t('shipments.table.showingResults', { 
+                from: startIndex, 
+                to: endIndex, 
+                total: totalItems,
+                defaultValue: `Showing ${startIndex} to ${endIndex} of ${totalItems} results`
+              })
+            : t('shipments.table.noResults', { defaultValue: 'No results' })
           }
-        </span>
+        </div>
+        
+        <Select
+          value={String(itemsPerPage)}
+          onValueChange={(value) => onLimitChange(Number(value))}
+        >
+          <SelectTrigger className="w-[100px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="10">10 / page</SelectItem>
+            <SelectItem value="25">25 / page</SelectItem>
+            <SelectItem value="50">50 / page</SelectItem>
+            <SelectItem value="100">100 / page</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
-      <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">
-            {t('shipments.pagination.perPage')}
-          </span>
-          <Select
-            value={String(itemsPerPage || 10)}
-            onValueChange={(value) => onLimitChange(Number(value))}
-          >
-            <SelectTrigger className="w-[70px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="10">10</SelectItem>
-              <SelectItem value="20">20</SelectItem>
-              <SelectItem value="50">50</SelectItem>
-              <SelectItem value="100">100</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+      <div className="flex items-center gap-2">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => onPageChange(currentPage - 1)}
+          disabled={!hasPrevPage || currentPage === 1}
+          className="cursor-pointer"
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
 
-        <div className="flex items-center gap-1">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => onPageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          
-          <span className="text-sm text-muted-foreground px-2">
-            {t('shipments.pagination.pageOf', { current: currentPage, total: totalPages })}
-          </span>
+        {getPageNumbers().map((page, index) => (
+          page === '...' ? (
+            <span key={`ellipsis-${index}`} className="px-2 text-muted-foreground">
+              ...
+            </span>
+          ) : (
+            <Button
+              key={page}
+              variant={page === currentPage ? 'default' : 'outline'}
+              size="icon"
+              onClick={() => onPageChange(page as number)}
+              className="cursor-pointer"
+            >
+              {page}
+            </Button>
+          )
+        ))}
 
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => onPageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </div>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => onPageChange(currentPage + 1)}
+          disabled={!hasNextPage || currentPage === totalPages}
+          className="cursor-pointer"
+        >
+          <ChevronRight className="h-4 w-4" />
+        </Button>
       </div>
     </div>
   );

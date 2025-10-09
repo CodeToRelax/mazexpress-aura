@@ -5,7 +5,7 @@ import type { ShipmentStats } from '@/types/shipment';
 
 interface ShipmentsStatsBarProps {
   stats: ShipmentStats;
-  onStatClick: (filterType: 'all' | 'pending' | 'in transit' | 'delivered' | 'overdue') => void;
+  onStatClick: (filterType: 'all' | 'pending' | 'in transit' | 'delivered') => void;
 }
 
 export function ShipmentsStatsBar({ stats, onStatClick }: ShipmentsStatsBarProps) {
@@ -44,18 +44,10 @@ export function ShipmentsStatsBar({ stats, onStatClick }: ShipmentsStatsBarProps
       bgColor: 'bg-green-500/10',
       filterType: 'delivered' as const,
     },
-    {
-      icon: AlertCircle,
-      label: t('shipments.stats.overdue'),
-      value: stats.overdue,
-      color: 'text-red-600 dark:text-red-400',
-      bgColor: 'bg-red-500/10',
-      filterType: 'overdue' as const,
-    },
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
       {statCards.map((stat, index) => (
         <motion.div
           key={stat.label}

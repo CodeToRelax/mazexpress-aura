@@ -41,6 +41,7 @@ interface ShipmentsTableProps {
   onSelectAll: (checked: boolean) => void;
   onEdit: (shipment: IShipment) => void;
   onDelete: (shipment: IShipment) => void;
+  visibleColumns: Set<string>;
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
   onSort?: (column: string) => void;
@@ -53,6 +54,7 @@ export function ShipmentsTable({
   onSelectAll,
   onEdit,
   onDelete,
+  visibleColumns,
   sortBy,
   sortOrder,
   onSort,
@@ -111,12 +113,12 @@ export function ShipmentsTable({
             </TableHead>
             <TableHead>{renderSortableHeader('esn', t('shipments.table.columns.esn'))}</TableHead>
             <TableHead>{renderSortableHeader('csn', t('shipments.table.columns.csn'))}</TableHead>
-            <TableHead>{t('shipments.table.columns.isn')}</TableHead>
-            <TableHead>{t('shipments.table.columns.destination')}</TableHead>
-            <TableHead>{t('shipments.table.columns.method')}</TableHead>
-            <TableHead>{renderSortableHeader('status', t('shipments.table.columns.status'))}</TableHead>
-            <TableHead>{t('shipments.table.columns.weight')}</TableHead>
-            <TableHead>{t('shipments.table.columns.estimatedArrival')}</TableHead>
+            {visibleColumns.has('isn') && <TableHead>{t('shipments.table.columns.isn')}</TableHead>}
+            {visibleColumns.has('destination') && <TableHead>{t('shipments.table.columns.destination')}</TableHead>}
+            {visibleColumns.has('method') && <TableHead>{t('shipments.table.columns.method')}</TableHead>}
+            {visibleColumns.has('status') && <TableHead>{renderSortableHeader('status', t('shipments.table.columns.status'))}</TableHead>}
+            {visibleColumns.has('weight') && <TableHead>{t('shipments.table.columns.weight')}</TableHead>}
+            {visibleColumns.has('estimatedArrival') && <TableHead>{t('shipments.table.columns.estimatedArrival')}</TableHead>}
             <TableHead>{renderSortableHeader('createdAt', t('shipments.table.columns.createdAt'))}</TableHead>
             <TableHead className="w-12"></TableHead>
           </TableRow>
@@ -143,27 +145,39 @@ export function ShipmentsTable({
               <TableCell>
                 <span className="font-mono text-sm">{shipment.csn}</span>
               </TableCell>
-              <TableCell className="text-muted-foreground">
-                {shipment.isn && shipment.isn !== '-' ? shipment.isn : 'N/A'}
-              </TableCell>
-              <TableCell className="capitalize">
-                {shipment.shipmentDestination || 'N/A'}
-              </TableCell>
-              <TableCell>
-                <Badge variant="outline" className="capitalize">
-                  {shipment.shippingMethod ? t(`shipments.table.method.${shipment.shippingMethod}`) : 'N/A'}
-                </Badge>
-              </TableCell>
-              <TableCell>{getStatusBadge(shipment.status)}</TableCell>
-              <TableCell className="text-muted-foreground">
-                {shipment.size?.weight ? `${shipment.size.weight} kg` : 'N/A'}
-              </TableCell>
-              <TableCell className="text-muted-foreground">
-                {shipment.estimatedArrival 
-                  ? format(new Date(shipment.estimatedArrival), 'MMM dd, yyyy')
-                  : 'N/A'
-                }
-              </TableCell>
+              {visibleColumns.has('isn') && (
+                <TableCell className="text-muted-foreground">
+                  {shipment.isn && shipment.isn !== '-' ? shipment.isn : 'N/A'}
+                </TableCell>
+              )}
+              {visibleColumns.has('destination') && (
+                <TableCell className="capitalize">
+                  {shipment.shipmentDestination || 'N/A'}
+                </TableCell>
+              )}
+              {visibleColumns.has('method') && (
+                <TableCell>
+                  <Badge variant="outline" className="capitalize">
+                    {shipment.shippingMethod ? t(`shipments.table.method.${shipment.shippingMethod}`) : 'N/A'}
+                  </Badge>
+                </TableCell>
+              )}
+              {visibleColumns.has('status') && (
+                <TableCell>{getStatusBadge(shipment.status)}</TableCell>
+              )}
+              {visibleColumns.has('weight') && (
+                <TableCell className="text-muted-foreground">
+                  {shipment.size?.weight ? `${shipment.size.weight} kg` : 'N/A'}
+                </TableCell>
+              )}
+              {visibleColumns.has('estimatedArrival') && (
+                <TableCell className="text-muted-foreground">
+                  {shipment.estimatedArrival 
+                    ? format(new Date(shipment.estimatedArrival), 'MMM dd, yyyy')
+                    : 'N/A'
+                  }
+                </TableCell>
+              )}
               <TableCell className="text-muted-foreground">
                 {format(new Date(shipment.createdAt), 'MMM dd, yyyy')}
               </TableCell>

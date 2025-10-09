@@ -32,6 +32,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { CustomerSearchCombobox } from '@/components/shipments/CustomerSearchCombobox';
 import { toast } from '@/hooks/use-toast';
 import { shipmentsApi } from '@/utilities/api/shipments.api';
 import { createShipmentSchema, type CreateShipmentFormData } from '@/utilities/zod/shipment.schemas';
@@ -78,7 +79,16 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess }: CreateSh
   const onSubmit = async (data: CreateShipmentFormData) => {
     try {
       setIsSubmitting(true);
-      await shipmentsApi.createShipment(data as any);
+      
+      // If in weight-only mode, ensure dimensions are set to default values
+      const submitData = {
+        ...data,
+        size: sizeInputMode === 'weight' 
+          ? { ...data.size, height: 1, width: 1, length: 1 }
+          : data.size
+      };
+      
+      await shipmentsApi.createShipment(submitData as any);
       toast({
         title: t('status.success'),
         description: t('shipments.messages.createSuccess'),
@@ -118,8 +128,15 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess }: CreateSh
                     <FormItem>
                       <FormLabel>{t('shipments.form.fields.csn')}</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder={t('shipments.form.placeholders.csn')} />
+                        <CustomerSearchCombobox
+                          value={field.value}
+                          onChange={field.onChange}
+                          disabled={isSubmitting}
+                        />
                       </FormControl>
+                      <FormDescription>
+                        {t('shipments.form.descriptions.csnSearch', { defaultValue: 'Search for a customer by name, email, or CSN' })}
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
