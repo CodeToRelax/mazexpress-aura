@@ -19,7 +19,6 @@ import { EditShipmentDialog } from './EditShipmentDialog';
 import { DeleteShipmentDialog } from './DeleteShipmentDialog';
 import { BulkUpdateDialog } from './BulkUpdateDialog';
 import { BulkDeleteDialog } from './BulkDeleteDialog';
-import { ShipmentDetailDialog } from './ShipmentDetailDialog';
 
 // localStorage keys
 const STORAGE_KEYS = {
@@ -271,14 +270,6 @@ export default function Shipments() {
     setSelectedShipments(new Set());
   };
 
-  const [shipmentToView, setShipmentToView] = useState<IShipment | null>(null);
-  const [showDetailDialog, setShowDetailDialog] = useState(false);
-
-  const handleViewShipment = (shipment: IShipment) => {
-    setShipmentToView(shipment);
-    setShowDetailDialog(true);
-  };
-
   const handleBulkUpdate = () => {
     setShowBulkUpdateDialog(true);
   };
@@ -420,7 +411,6 @@ export default function Shipments() {
               selectedShipments={selectedShipments}
               onSelectShipment={handleSelectShipment}
               onSelectAll={handleSelectAll}
-              onView={handleViewShipment}
               onEdit={handleEditShipment}
               onDelete={handleDeleteShipment}
             />
@@ -476,14 +466,6 @@ export default function Shipments() {
           selectedShipmentIds={Array.from(selectedShipments)}
           onSuccess={handleBulkSuccess}
         />
-
-        {shipmentToView && (
-          <ShipmentDetailDialog
-            open={showDetailDialog}
-            onOpenChange={setShowDetailDialog}
-            shipment={shipmentToView}
-          />
-        )}
       </div>
     </ACLGuard>
   );

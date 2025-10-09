@@ -65,3 +65,15 @@ export const formatESN = (esn: string): string => {
   }
   return esn;
 };
+
+/**
+ * Calculate volumetric weight (dimensional weight)
+ * Formula: (L × W × H) / 5000
+ */
+export const calculateVolumetricWeight = (
+  length: number,
+  width: number,
+  height: number
+): number => {
+  return Math.round((length * width * height) / 5000 * 100) / 100;
+};

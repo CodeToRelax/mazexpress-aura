@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { 
   MoreVertical, 
@@ -31,13 +32,13 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { ACLGuard } from '@/components/guards/ACLGuard';
+import { StatusBadge } from '@/components/shipments/StatusBadge';
 
 interface ShipmentsTableProps {
   shipments: IShipment[];
   selectedShipments: Set<string>;
   onSelectShipment: (shipmentId: string) => void;
   onSelectAll: (checked: boolean) => void;
-  onView: (shipment: IShipment) => void;
   onEdit: (shipment: IShipment) => void;
   onDelete: (shipment: IShipment) => void;
   sortBy?: string;
@@ -50,7 +51,6 @@ export function ShipmentsTable({
   selectedShipments,
   onSelectShipment,
   onSelectAll,
-  onView,
   onEdit,
   onDelete,
   sortBy,
@@ -58,6 +58,7 @@ export function ShipmentsTable({
   onSort,
 }: ShipmentsTableProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const getSortIcon = (column: string) => {
     if (sortBy !== column) {
@@ -90,22 +91,7 @@ export function ShipmentsTable({
   };
 
   const getStatusBadge = (status: string) => {
-    const statusMap: Record<string, 'default' | 'secondary' | 'destructive'> = {
-      'pending': 'secondary',
-      'in transit': 'default',
-      'ready for pick up': 'default',
-      'delivered': 'default',
-      'cancelled': 'destructive',
-      'returned': 'secondary',
-      'received at warehouse': 'default',
-      'shipped to destination': 'default'
-    };
-
-    return (
-      <Badge variant={statusMap[status] || 'secondary'}>
-        {t(`shipments.table.status.${status.replace(/ /g, '_')}`)}
-      </Badge>
-    );
+    return <StatusBadge status={status} />;
   };
 
   const allSelected = shipments.length > 0 && shipments.every(s => selectedShipments.has(s._id));
@@ -140,7 +126,7 @@ export function ShipmentsTable({
             <TableRow 
               key={shipment._id}
               className="cursor-pointer hover:bg-accent/20 transition-colors duration-150"
-              onClick={() => onView(shipment)}
+              onClick={() => navigate(`/shipments/${shipment._id}`)}
             >
               <TableCell onClick={(e) => e.stopPropagation()}>
                 <Checkbox
@@ -191,7 +177,7 @@ export function ShipmentsTable({
                   <DropdownMenuContent align="end">
                     <DropdownMenuLabel>{t('shipments.table.columns.actions')}</DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => onView(shipment)}>
+                    <DropdownMenuItem onClick={() => navigate(`/shipments/${shipment._id}`)}>
                       <Eye className="h-4 w-4 mr-2" />
                       {t('shipments.actions.view')}
                     </DropdownMenuItem>

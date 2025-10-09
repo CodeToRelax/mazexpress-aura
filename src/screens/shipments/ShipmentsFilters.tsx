@@ -39,6 +39,13 @@ export function ShipmentsFilters({
   const [searchInput, setSearchInput] = useState(filters.search || '');
   const debouncedSearch = useDebounce(searchInput, 500);
 
+  // Sync search input when filters are cleared
+  useEffect(() => {
+    if (filters.search === undefined || filters.search === '') {
+      setSearchInput('');
+    }
+  }, [filters.search]);
+
   useEffect(() => {
     const trimmedSearch = debouncedSearch.trim();
     if (debouncedSearch !== filters.search) {

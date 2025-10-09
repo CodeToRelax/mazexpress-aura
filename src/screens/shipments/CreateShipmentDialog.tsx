@@ -14,6 +14,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import {
   Form,
   FormControl,
@@ -44,6 +46,7 @@ interface CreateShipmentDialogProps {
 export function CreateShipmentDialog({ open, onOpenChange, onSuccess }: CreateShipmentDialogProps) {
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [sizeInputMode, setSizeInputMode] = useState<'weight' | 'dimensions'>('weight');
 
   const form = useForm<CreateShipmentFormData>({
     resolver: zodResolver(createShipmentSchema),
@@ -68,6 +71,7 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess }: CreateSh
   useEffect(() => {
     if (!open) {
       form.reset();
+      setSizeInputMode('weight');
     }
   }, [open, form]);
 
@@ -126,7 +130,7 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess }: CreateSh
                   name="isn"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('shipments.form.fields.isn')}</FormLabel>
+                      <FormLabel>{t('shipments.form.fields.isn')} <span className="text-muted-foreground text-xs">({t('common.optional', { defaultValue: 'Optional' })})</span></FormLabel>
                       <FormControl>
                         <Input {...field} placeholder={t('shipments.form.placeholders.isn')} />
                       </FormControl>
@@ -239,29 +243,64 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess }: CreateSh
 
             {/* Size & Dimensions */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold">{t('shipments.form.sizeInfo')}</h3>
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold">{t('shipments.form.sizeInfo')}</h3>
+                <div className="flex items-center gap-3">
+                  <Label htmlFor="size-mode" className="text-sm">
+                    {sizeInputMode === 'weight' ? t('shipments.form.weightOnly', { defaultValue: 'Weight Only' }) : t('shipments.form.dimensions', { defaultValue: 'Dimensions' })}
+                  </Label>
+                  <Switch
+                    id="size-mode"
+                    checked={sizeInputMode === 'dimensions'}
+                    onCheckedChange={(checked) => setSizeInputMode(checked ? 'dimensions' : 'weight')}
+                  />
+                </div>
+              </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="size.weight"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('shipments.form.fields.weight')}</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          step="0.1"
-                          {...field}
-                          value={field.value || ''}
-                          onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
-                          placeholder={t('shipments.form.placeholders.weight')}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                {sizeInputMode === 'weight' ? (
+                  <FormField
+                    control={form.control}
+                    name="size.weight"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('shipments.form.fields.weight')}</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            step="0.1"
+                            {...field}
+                            value={field.value || ''}
+                            onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
+                            placeholder={t('shipments.form.placeholders.weight')}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                ) : (
+                  <>
+                    <FormField
+                      control={form.control}
+                      name="size.weight"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('shipments.form.fields.weight')}</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              step="0.1"
+                              {...field}
+                              value={field.value || ''}
+                              onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
+                              placeholder={t('shipments.form.placeholders.weight')}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
                 <FormField
                   control={form.control}
@@ -305,26 +344,28 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess }: CreateSh
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name="size.length"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('shipments.form.fields.length')}</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          step="0.1"
-                          {...field}
-                          value={field.value || ''}
-                          onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
-                          placeholder={t('shipments.form.placeholders.length')}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                    <FormField
+                      control={form.control}
+                      name="size.length"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('shipments.form.fields.length')}</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              step="0.1"
+                              {...field}
+                              value={field.value || ''}
+                              onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
+                              placeholder={t('shipments.form.placeholders.length')}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </>
+                )}
               </div>
             </div>
 
