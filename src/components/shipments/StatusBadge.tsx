@@ -28,7 +28,7 @@ export function StatusBadge({ status, className }: StatusBadgeProps) {
       colorClass,
       className
     )}>
-      {t(`shipments.table.status.${status.replace(/ /g, '_')}`)}
+      {t(`shipments.table.status.${status}`)}
     </span>
   );
 }

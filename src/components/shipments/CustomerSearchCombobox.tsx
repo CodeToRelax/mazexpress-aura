@@ -73,7 +73,7 @@ export function CustomerSearchCombobox({ value, onChange, disabled }: CustomerSe
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between"
+          className="w-full justify-between bg-background hover:bg-accent"
           disabled={disabled}
         >
           {value ? (
