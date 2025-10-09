@@ -389,7 +389,12 @@
       "pending": "قيد الانتظار",
       "inTransit": "قيد النقل",
       "delivered": "تم التسليم",
-      "overdue": "متأخر"
+      "overdue": "متأخر",
+      "receivedAtWarehouse": "تم الاستلام في المستودع",
+      "shippedToDestination": "تم الشحن إلى الوجهة",
+      "readyForPickUp": "جاهز للاستلام",
+      "cancelled": "ملغى",
+      "returned": "مرتجع"
     },
     "form": {
       "createTitle": "إنشاء شحنة جديدة",

@@ -142,6 +142,11 @@ export interface ShipmentStats {
   inTransit: number;
   delivered: number;
   overdue: number;
+  receivedAtWarehouse: number;
+  shippedToDestination: number;
+  readyForPickUp: number;
+  cancelled: number;
+  returned: number;
   // Backend compatibility
   totalShipments?: number;
   pendingShipments?: number;

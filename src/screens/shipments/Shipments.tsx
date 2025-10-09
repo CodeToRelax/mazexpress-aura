@@ -54,6 +54,11 @@ export default function Shipments() {
     inTransit: 0,
     delivered: 0,
     overdue: 0,
+    receivedAtWarehouse: 0,
+    shippedToDestination: 0,
+    readyForPickUp: 0,
+    cancelled: 0,
+    returned: 0,
   });
 
   // Initialize filters from localStorage
@@ -155,6 +160,11 @@ export default function Shipments() {
         inTransit: response.inTransit || 0,
         delivered: response.delivered || 0,
         overdue: response.overdue || 0,
+        receivedAtWarehouse: response.receivedAtWarehouse || 0,
+        shippedToDestination: response.shippedToDestination || 0,
+        readyForPickUp: response.readyForPickUp || 0,
+        cancelled: response.cancelled || 0,
+        returned: response.returned || 0,
       });
     } catch (err) {
       console.error('Failed to fetch stats:', err);
@@ -201,7 +211,7 @@ export default function Shipments() {
     });
   };
 
-  const handleStatClick = (filterType: 'all' | 'pending' | 'in transit' | 'delivered') => {
+  const handleStatClick = (filterType: 'all' | 'pending' | 'in transit' | 'delivered' | 'received at warehouse' | 'shipped to destination' | 'ready for pick up' | 'cancelled' | 'returned') => {
     switch (filterType) {
       case 'all':
         setFilters({
@@ -231,6 +241,46 @@ export default function Shipments() {
           page: 1,
           limit: filters.limit,
           status: 'delivered',
+          sort: '-createdAt',
+        });
+        break;
+      case 'received at warehouse':
+        setFilters({
+          page: 1,
+          limit: filters.limit,
+          status: 'received at warehouse',
+          sort: '-createdAt',
+        });
+        break;
+      case 'shipped to destination':
+        setFilters({
+          page: 1,
+          limit: filters.limit,
+          status: 'shipped to destination',
+          sort: '-createdAt',
+        });
+        break;
+      case 'ready for pick up':
+        setFilters({
+          page: 1,
+          limit: filters.limit,
+          status: 'ready for pick up',
+          sort: '-createdAt',
+        });
+        break;
+      case 'cancelled':
+        setFilters({
+          page: 1,
+          limit: filters.limit,
+          status: 'cancelled',
+          sort: '-createdAt',
+        });
+        break;
+      case 'returned':
+        setFilters({
+          page: 1,
+          limit: filters.limit,
+          status: 'returned',
           sort: '-createdAt',
         });
         break;

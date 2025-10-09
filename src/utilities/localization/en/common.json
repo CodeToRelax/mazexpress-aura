@@ -448,7 +448,12 @@
       "pending": "Pending",
       "inTransit": "In Transit",
       "delivered": "Delivered",
-      "overdue": "Overdue"
+      "overdue": "Overdue",
+      "receivedAtWarehouse": "Received at Warehouse",
+      "shippedToDestination": "Shipped to Destination",
+      "readyForPickUp": "Ready for Pick Up",
+      "cancelled": "Cancelled",
+      "returned": "Returned"
     },
     "form": {
       "createTitle": "Create New Shipment",

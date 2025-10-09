@@ -1,11 +1,11 @@
 import { useTranslation } from 'react-i18next';
-import { Package, Clock, Truck, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Package, Clock, Truck, CheckCircle2, PackageCheck, Ship, MapPin, XCircle, Undo2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { ShipmentStats } from '@/types/shipment';
 
 interface ShipmentsStatsBarProps {
   stats: ShipmentStats;
-  onStatClick: (filterType: 'all' | 'pending' | 'in transit' | 'delivered') => void;
+  onStatClick: (filterType: 'all' | 'pending' | 'in transit' | 'delivered' | 'received at warehouse' | 'shipped to destination' | 'ready for pick up' | 'cancelled' | 'returned') => void;
 }
 
 export function ShipmentsStatsBar({ stats, onStatClick }: ShipmentsStatsBarProps) {
@@ -44,10 +44,50 @@ export function ShipmentsStatsBar({ stats, onStatClick }: ShipmentsStatsBarProps
       bgColor: 'bg-green-500/10',
       filterType: 'delivered' as const,
     },
+    {
+      icon: PackageCheck,
+      label: t('shipments.stats.receivedAtWarehouse'),
+      value: stats.receivedAtWarehouse,
+      color: 'text-cyan-600 dark:text-cyan-400',
+      bgColor: 'bg-cyan-500/10',
+      filterType: 'received at warehouse' as const,
+    },
+    {
+      icon: Ship,
+      label: t('shipments.stats.shippedToDestination'),
+      value: stats.shippedToDestination,
+      color: 'text-indigo-600 dark:text-indigo-400',
+      bgColor: 'bg-indigo-500/10',
+      filterType: 'shipped to destination' as const,
+    },
+    {
+      icon: MapPin,
+      label: t('shipments.stats.readyForPickUp'),
+      value: stats.readyForPickUp,
+      color: 'text-purple-600 dark:text-purple-400',
+      bgColor: 'bg-purple-500/10',
+      filterType: 'ready for pick up' as const,
+    },
+    {
+      icon: XCircle,
+      label: t('shipments.stats.cancelled'),
+      value: stats.cancelled,
+      color: 'text-red-600 dark:text-red-400',
+      bgColor: 'bg-red-500/10',
+      filterType: 'cancelled' as const,
+    },
+    {
+      icon: Undo2,
+      label: t('shipments.stats.returned'),
+      value: stats.returned,
+      color: 'text-orange-600 dark:text-orange-400',
+      bgColor: 'bg-orange-500/10',
+      filterType: 'returned' as const,
+    },
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
       {statCards.map((stat, index) => (
         <motion.div
           key={stat.label}
