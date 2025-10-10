@@ -92,7 +92,7 @@ export function CustomerSearchCombobox({ value, onChange, disabled }: CustomerSe
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[400px] p-0" align="start">
+      <PopoverContent className="w-[400px] p-0 bg-popover border-border z-50" align="start">
         <Command shouldFilter={false}>
           <CommandInput
             placeholder={t('shipments.form.placeholders.searchCustomer', { defaultValue: 'Search by name, email, or CSN...' })}
