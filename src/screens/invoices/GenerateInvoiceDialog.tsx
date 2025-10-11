@@ -108,7 +108,7 @@ export function GenerateInvoiceDialog({
             {t('invoice.generateDialog.title')}
           </DialogTitle>
           <DialogDescription>
-            {t('invoice.generateDialog.description', { count: shipmentIds.length })}
+            {t('invoice.generateDialog.description')}
           </DialogDescription>
         </DialogHeader>
 
