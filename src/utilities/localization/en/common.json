@@ -18,9 +18,11 @@
     "reports": "Reports",
     "reports.sales": "Sales Reports",
     "reports.analytics": "Analytics",
-    "inventory": "Inventory",
-    "settings": "Settings",
-    "help": "Help"
+    "wallet": "Wallet",
+    "wallet.dashboard": "Dashboard",
+    "wallet.transactions": "Transactions",
+    "invoices": "Invoices",
+    "settings": "Settings"
   },
   "users": {
     "title": "Users Management",
@@ -582,6 +584,225 @@
       "noItems": "No items to display",
       "perPage": "Per page",
       "pageOf": "Page {{current}} of {{total}}"
+    }
+  },
+  "wallet": {
+    "title": "Wallet Management",
+    "subtitle": "Manage your wallet and transactions",
+    "balance": "Balance",
+    "currentBalance": "Current Balance",
+    "availableBalance": "Available Balance",
+    "deposit": "Deposit",
+    "withdraw": "Withdraw",
+    "topUp": "Top Up",
+    "transactions": "Transactions",
+    "transactionHistory": "Transaction History",
+    "recentTransactions": "Recent Transactions",
+    "viewAll": "View All Transactions",
+    "stats": {
+      "balance": "Current Balance",
+      "depositsThisMonth": "Deposits This Month",
+      "withdrawalsThisMonth": "Withdrawals This Month",
+      "pendingTransactions": "Pending Transactions"
+    },
+    "transaction": {
+      "type": "Transaction Type",
+      "amount": "Amount",
+      "description": "Description",
+      "date": "Date",
+      "status": "Status",
+      "reference": "Reference",
+      "balanceBefore": "Balance Before",
+      "balanceAfter": "Balance After",
+      "transactionNumber": "Transaction Number",
+      "type.deposit": "Deposit",
+      "type.withdrawal": "Withdrawal",
+      "type.deduction": "Deduction",
+      "type.refund": "Refund",
+      "status.pending": "Pending",
+      "status.completed": "Completed",
+      "status.failed": "Failed"
+    },
+    "form": {
+      "depositTitle": "Deposit Funds",
+      "withdrawTitle": "Withdraw Funds",
+      "amount": "Amount",
+      "amountPlaceholder": "Enter amount in LYD",
+      "description": "Description",
+      "descriptionPlaceholder": "Enter description...",
+      "currentBalance": "Current balance: {{balance}} LYD",
+      "submit": "Submit",
+      "cancel": "Cancel",
+      "saving": "Processing..."
+    },
+    "messages": {
+      "depositSuccess": "Deposit successful",
+      "withdrawSuccess": "Withdrawal successful",
+      "insufficientBalance": "Insufficient balance",
+      "error": "An error occurred. Please try again.",
+      "walletNotFound": "Wallet not found",
+      "transactionFailed": "Transaction failed"
+    },
+    "filters": {
+      "type": "Type",
+      "status": "Status",
+      "dateRange": "Date Range",
+      "dateFrom": "From Date",
+      "dateTo": "To Date",
+      "allTypes": "All Types",
+      "allStatuses": "All Statuses",
+      "search": "Search transactions..."
+    },
+    "empty": {
+      "title": "No Transactions Yet",
+      "description": "You haven't made any transactions yet.",
+      "action": "Make a Deposit"
+    },
+    "admin": {
+      "createWallet": "Create Wallet",
+      "processTransaction": "Process Transaction",
+      "manageWallets": "Manage Wallets",
+      "allWallets": "All Wallets",
+      "searchByUser": "Search by User"
+    }
+  },
+  "invoices": {
+    "title": "Invoice Management",
+    "subtitle": "Manage and track invoices",
+    "invoiceNumber": "Invoice Number",
+    "dueDate": "Due Date",
+    "issueDate": "Issue Date",
+    "total": "Total",
+    "paid": "Paid",
+    "due": "Due",
+    "items": "Items",
+    "customer": "Customer",
+    "notes": "Notes",
+    "payNow": "Pay Now",
+    "downloadPdf": "Download PDF",
+    "markAsPaid": "Mark as Paid",
+    "cancel": "Cancel Invoice",
+    "generate": "Generate Invoice",
+    "createInvoice": "Create Invoice",
+    "status": {
+      "draft": "Draft",
+      "unpaid": "Unpaid",
+      "partially_paid": "Partially Paid",
+      "paid": "Paid",
+      "overdue": "Overdue",
+      "cancelled": "Cancelled"
+    },
+    "stats": {
+      "total": "Total Invoices",
+      "unpaid": "Unpaid",
+      "overdue": "Overdue",
+      "paidThisMonth": "Paid This Month",
+      "totalAmount": "Total Amount",
+      "paidAmount": "Paid Amount",
+      "dueAmount": "Due Amount"
+    },
+    "table": {
+      "columns": {
+        "invoiceNumber": "Invoice #",
+        "customer": "Customer",
+        "amount": "Amount",
+        "dueDate": "Due Date",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "showingResults": "Showing {{from}}-{{to}} of {{total}} invoices"
+    },
+    "filters": {
+      "search": "Search invoices...",
+      "searchPlaceholder": "Invoice number, customer name...",
+      "status": "Status",
+      "dateRange": "Date Range",
+      "dateFrom": "From Date",
+      "dateTo": "To Date",
+      "allStatuses": "All Statuses"
+    },
+    "form": {
+      "generateTitle": "Generate Invoice",
+      "selectShipments": "Select Shipments",
+      "shipmentSelection": "Shipment Selection",
+      "selectedCount": "{{count}} shipments selected",
+      "dueDate": "Due Date",
+      "notes": "Notes (Optional)",
+      "notesPlaceholder": "Additional notes for this invoice...",
+      "preview": "Preview",
+      "totalAmount": "Total Amount",
+      "submit": "Generate Invoice",
+      "cancel": "Cancel",
+      "saving": "Generating...",
+      "dueDatePlaceholder": "Select due date"
+    },
+    "payment": {
+      "title": "Process Payment",
+      "subtitle": "Pay invoice {{invoiceNumber}}",
+      "amount": "Payment Amount",
+      "source": "Payment Source",
+      "method": "Payment Method",
+      "notes": "Notes (Optional)",
+      "source.wallet": "Wallet Balance",
+      "source.cash": "Cash",
+      "source.bank_transfer": "Bank Transfer",
+      "totalDue": "Total Due",
+      "partialPayment": "Allow Partial Payment",
+      "remainingBalance": "Remaining Balance",
+      "walletBalance": "Wallet Balance: {{balance}} LYD",
+      "submit": "Process Payment",
+      "cancel": "Cancel",
+      "processing": "Processing...",
+      "success": "Payment processed successfully",
+      "insufficientBalance": "Insufficient wallet balance",
+      "error": "Payment failed. Please try again."
+    },
+    "detail": {
+      "title": "Invoice Details",
+      "summary": "Invoice Summary",
+      "items": "Invoice Items",
+      "payments": "Payment History",
+      "shipmentDetails": "Shipment Details",
+      "customerInfo": "Customer Information",
+      "totals": {
+        "net": "Net Amount",
+        "gross": "Gross Amount",
+        "paid": "Paid",
+        "due": "Due"
+      },
+      "item": {
+        "description": "Description",
+        "quantity": "Quantity",
+        "unitPrice": "Unit Price",
+        "total": "Total"
+      }
+    },
+    "messages": {
+      "generateSuccess": "Invoice generated successfully",
+      "paymentSuccess": "Payment processed successfully",
+      "updateSuccess": "Invoice updated successfully",
+      "cancelSuccess": "Invoice cancelled successfully",
+      "error": "An error occurred. Please try again.",
+      "notFound": "Invoice not found",
+      "alreadyPaid": "Invoice is already paid",
+      "noShipmentsSelected": "Please select at least one shipment"
+    },
+    "empty": {
+      "title": "No Invoices Found",
+      "description": "No invoices match your current filters.",
+      "noData": "No invoices yet",
+      "noDataDescription": "Generate your first invoice from completed shipments.",
+      "action": "Generate Invoice"
+    },
+    "actions": {
+      "view": "View Details",
+      "pay": "Pay Invoice",
+      "download": "Download PDF",
+      "markPaid": "Mark as Paid",
+      "cancel": "Cancel Invoice",
+      "refresh": "Refresh",
+      "clearFilters": "Clear Filters",
+      "generateFromShipments": "Generate from Shipments"
     }
   },
   "common": {

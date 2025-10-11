@@ -18,9 +18,11 @@
     "reports": "التقارير",
     "reports.sales": "تقارير المبيعات",
     "reports.analytics": "التحليلات",
-    "inventory": "المخزون",
-    "settings": "الإعدادات",
-    "help": "المساعدة"
+    "wallet": "المحفظة",
+    "wallet.dashboard": "لوحة التحكم",
+    "wallet.transactions": "المعاملات",
+    "invoices": "الفواتير",
+    "settings": "الإعدادات"
   },
   "users": {
     "title": "إدارة المستخدمين",
@@ -518,6 +520,225 @@
       "totalPrice": "السعر الإجمالي",
       "breakdown": "تفصيل السعر",
       "enterDetails": "أدخل تفاصيل الشحنة لحساب السعر"
+    }
+  },
+  "wallet": {
+    "title": "إدارة المحفظة",
+    "subtitle": "إدارة محفظتك ومعاملاتك",
+    "balance": "الرصيد",
+    "currentBalance": "الرصيد الحالي",
+    "availableBalance": "الرصيد المتاح",
+    "deposit": "إيداع",
+    "withdraw": "سحب",
+    "topUp": "شحن الرصيد",
+    "transactions": "المعاملات",
+    "transactionHistory": "سجل المعاملات",
+    "recentTransactions": "المعاملات الأخيرة",
+    "viewAll": "عرض جميع المعاملات",
+    "stats": {
+      "balance": "الرصيد الحالي",
+      "depositsThisMonth": "الإيداعات هذا الشهر",
+      "withdrawalsThisMonth": "السحوبات هذا الشهر",
+      "pendingTransactions": "المعاملات قيد الانتظار"
+    },
+    "transaction": {
+      "type": "نوع المعاملة",
+      "amount": "المبلغ",
+      "description": "الوصف",
+      "date": "التاريخ",
+      "status": "الحالة",
+      "reference": "المرجع",
+      "balanceBefore": "الرصيد قبل",
+      "balanceAfter": "الرصيد بعد",
+      "transactionNumber": "رقم المعاملة",
+      "type.deposit": "إيداع",
+      "type.withdrawal": "سحب",
+      "type.deduction": "خصم",
+      "type.refund": "استرداد",
+      "status.pending": "قيد الانتظار",
+      "status.completed": "مكتمل",
+      "status.failed": "فشل"
+    },
+    "form": {
+      "depositTitle": "إيداع أموال",
+      "withdrawTitle": "سحب أموال",
+      "amount": "المبلغ",
+      "amountPlaceholder": "أدخل المبلغ بالدينار الليبي",
+      "description": "الوصف",
+      "descriptionPlaceholder": "أدخل الوصف...",
+      "currentBalance": "الرصيد الحالي: {{balance}} د.ل",
+      "submit": "إرسال",
+      "cancel": "إلغاء",
+      "saving": "جاري المعالجة..."
+    },
+    "messages": {
+      "depositSuccess": "تم الإيداع بنجاح",
+      "withdrawSuccess": "تم السحب بنجاح",
+      "insufficientBalance": "رصيد غير كافٍ",
+      "error": "حدث خطأ. يرجى المحاولة مرة أخرى.",
+      "walletNotFound": "المحفظة غير موجودة",
+      "transactionFailed": "فشلت المعاملة"
+    },
+    "filters": {
+      "type": "النوع",
+      "status": "الحالة",
+      "dateRange": "النطاق الزمني",
+      "dateFrom": "من تاريخ",
+      "dateTo": "إلى تاريخ",
+      "allTypes": "جميع الأنواع",
+      "allStatuses": "جميع الحالات",
+      "search": "البحث في المعاملات..."
+    },
+    "empty": {
+      "title": "لا توجد معاملات بعد",
+      "description": "لم تقم بأي معاملات بعد.",
+      "action": "قم بالإيداع"
+    },
+    "admin": {
+      "createWallet": "إنشاء محفظة",
+      "processTransaction": "معالجة معاملة",
+      "manageWallets": "إدارة المحافظ",
+      "allWallets": "جميع المحافظ",
+      "searchByUser": "البحث حسب المستخدم"
+    }
+  },
+  "invoices": {
+    "title": "إدارة الفواتير",
+    "subtitle": "إدارة وتتبع الفواتير",
+    "invoiceNumber": "رقم الفاتورة",
+    "dueDate": "تاريخ الاستحقاق",
+    "issueDate": "تاريخ الإصدار",
+    "total": "الإجمالي",
+    "paid": "المدفوع",
+    "due": "المستحق",
+    "items": "العناصر",
+    "customer": "العميل",
+    "notes": "ملاحظات",
+    "payNow": "ادفع الآن",
+    "downloadPdf": "تحميل PDF",
+    "markAsPaid": "تعيين كمدفوع",
+    "cancel": "إلغاء الفاتورة",
+    "generate": "إنشاء فاتورة",
+    "createInvoice": "إنشاء فاتورة",
+    "status": {
+      "draft": "مسودة",
+      "unpaid": "غير مدفوعة",
+      "partially_paid": "مدفوعة جزئيًا",
+      "paid": "مدفوعة",
+      "overdue": "متأخرة",
+      "cancelled": "ملغاة"
+    },
+    "stats": {
+      "total": "إجمالي الفواتير",
+      "unpaid": "غير مدفوعة",
+      "overdue": "متأخرة",
+      "paidThisMonth": "مدفوعة هذا الشهر",
+      "totalAmount": "المبلغ الإجمالي",
+      "paidAmount": "المبلغ المدفوع",
+      "dueAmount": "المبلغ المستحق"
+    },
+    "table": {
+      "columns": {
+        "invoiceNumber": "رقم الفاتورة",
+        "customer": "العميل",
+        "amount": "المبلغ",
+        "dueDate": "تاريخ الاستحقاق",
+        "status": "الحالة",
+        "actions": "الإجراءات"
+      },
+      "showingResults": "عرض {{from}}-{{to}} من {{total}} فاتورة"
+    },
+    "filters": {
+      "search": "البحث في الفواتير...",
+      "searchPlaceholder": "رقم الفاتورة، اسم العميل...",
+      "status": "الحالة",
+      "dateRange": "النطاق الزمني",
+      "dateFrom": "من تاريخ",
+      "dateTo": "إلى تاريخ",
+      "allStatuses": "جميع الحالات"
+    },
+    "form": {
+      "generateTitle": "إنشاء فاتورة",
+      "selectShipments": "اختر الشحنات",
+      "shipmentSelection": "اختيار الشحنات",
+      "selectedCount": "{{count}} شحنة محددة",
+      "dueDate": "تاريخ الاستحقاق",
+      "notes": "ملاحظات (اختياري)",
+      "notesPlaceholder": "ملاحظات إضافية لهذه الفاتورة...",
+      "preview": "معاينة",
+      "totalAmount": "المبلغ الإجمالي",
+      "submit": "إنشاء الفاتورة",
+      "cancel": "إلغاء",
+      "saving": "جاري الإنشاء...",
+      "dueDatePlaceholder": "اختر تاريخ الاستحقاق"
+    },
+    "payment": {
+      "title": "معالجة الدفع",
+      "subtitle": "دفع الفاتورة {{invoiceNumber}}",
+      "amount": "مبلغ الدفع",
+      "source": "مصدر الدفع",
+      "method": "طريقة الدفع",
+      "notes": "ملاحظات (اختياري)",
+      "source.wallet": "رصيد المحفظة",
+      "source.cash": "نقدًا",
+      "source.bank_transfer": "تحويل بنكي",
+      "totalDue": "إجمالي المستحق",
+      "partialPayment": "السماح بالدفع الجزئي",
+      "remainingBalance": "الرصيد المتبقي",
+      "walletBalance": "رصيد المحفظة: {{balance}} د.ل",
+      "submit": "معالجة الدفع",
+      "cancel": "إلغاء",
+      "processing": "جاري المعالجة...",
+      "success": "تمت معالجة الدفع بنجاح",
+      "insufficientBalance": "رصيد المحفظة غير كافٍ",
+      "error": "فشل الدفع. يرجى المحاولة مرة أخرى."
+    },
+    "detail": {
+      "title": "تفاصيل الفاتورة",
+      "summary": "ملخص الفاتورة",
+      "items": "عناصر الفاتورة",
+      "payments": "سجل الدفع",
+      "shipmentDetails": "تفاصيل الشحنة",
+      "customerInfo": "معلومات العميل",
+      "totals": {
+        "net": "المبلغ الصافي",
+        "gross": "المبلغ الإجمالي",
+        "paid": "المدفوع",
+        "due": "المستحق"
+      },
+      "item": {
+        "description": "الوصف",
+        "quantity": "الكمية",
+        "unitPrice": "السعر للوحدة",
+        "total": "الإجمالي"
+      }
+    },
+    "messages": {
+      "generateSuccess": "تم إنشاء الفاتورة بنجاح",
+      "paymentSuccess": "تمت معالجة الدفع بنجاح",
+      "updateSuccess": "تم تحديث الفاتورة بنجاح",
+      "cancelSuccess": "تم إلغاء الفاتورة بنجاح",
+      "error": "حدث خطأ. يرجى المحاولة مرة أخرى.",
+      "notFound": "الفاتورة غير موجودة",
+      "alreadyPaid": "الفاتورة مدفوعة بالفعل",
+      "noShipmentsSelected": "يرجى اختيار شحنة واحدة على الأقل"
+    },
+    "empty": {
+      "title": "لا توجد فواتير",
+      "description": "لا توجد فواتير مطابقة للفلاتر الحالية.",
+      "noData": "لا توجد فواتير بعد",
+      "noDataDescription": "أنشئ أول فاتورة من الشحنات المكتملة.",
+      "action": "إنشاء فاتورة"
+    },
+    "actions": {
+      "view": "عرض التفاصيل",
+      "pay": "دفع الفاتورة",
+      "download": "تحميل PDF",
+      "markPaid": "تعيين كمدفوع",
+      "cancel": "إلغاء الفاتورة",
+      "refresh": "تحديث",
+      "clearFilters": "مسح الفلاتر",
+      "generateFromShipments": "إنشاء من الشحنات"
     }
   }
 }

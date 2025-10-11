@@ -1,4 +1,4 @@
-import { Home, Users, Settings, BarChart, Package, FileText, HelpCircle, Warehouse } from 'lucide-react';
+import { Home, Users, Settings, BarChart, Package, FileText, Warehouse, Wallet } from 'lucide-react';
 import type { NavItem } from '@/types/navigation';
 import type { ACLFlags } from '@/types/acl';
 
@@ -66,23 +66,26 @@ export const navigationItems: NavItemWithACL[] = [
     ],
   },
   {
-    id: 'inventory',
-    labelKey: 'nav.inventory',
-    icon: Package,
-    href: '/inventory',
+    id: 'wallet',
+    labelKey: 'nav.wallet',
+    icon: Warehouse,
+    href: '/wallet',
     match: 'prefix',
-    badge: {
-      text: 'Beta',
-      tone: 'info',
-    },
-    // No ACL flag - placeholder for future feature
+    aclFlag: 'canViewWallet',
   },
   {
-    id: 'help',
-    labelKey: 'nav.help',
-    icon: HelpCircle,
-    href: '/help',
+    id: 'invoices',
+    labelKey: 'nav.invoices',
+    icon: FileText,
+    href: '/invoices',
+    match: 'prefix',
+    aclFlag: 'canViewInvoices',
+  },
+  {
+    id: 'settings',
+    labelKey: 'nav.settings',
+    icon: Settings,
+    href: '/settings',
     match: 'exact',
-    // No ACL flag - placeholder for future feature
   },
 ];

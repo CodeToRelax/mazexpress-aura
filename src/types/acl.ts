@@ -50,6 +50,9 @@ export interface ACLFlags {
   canViewReports: boolean;
   canViewWarehouses: boolean;
   canManageWarehouses: boolean;
+  canViewInvoices: boolean;
+  canCreateInvoices: boolean;
+  canManageInvoices: boolean;
 }
 
 export interface UserACLData {
