@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
-import { X, Mail, Phone, MapPin, Calendar, User as UserIcon, Package, Wallet as WalletIcon, Shield, Receipt, Loader2 } from 'lucide-react';
+import { X, Mail, Phone, MapPin, Calendar, User as UserIcon, Package, Wallet as WalletIcon, Shield, Receipt, Loader2, Plus } from 'lucide-react';
 import type { User } from '@/types/user';
 import type { Wallet } from '@/types/wallet';
 import type { Transaction } from '@/types/wallet';
@@ -21,7 +21,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
 import { ACLManagementTab } from './ACLManagementTab';
 import { WalletBalance } from '@/components/wallet/WalletBalance';
-import { TransactionCard } from '@/components/wallet/TransactionCard';
+import { TransactionsTable } from '@/components/wallet/TransactionsTable';
+import { CreateTransactionDialog } from './CreateTransactionDialog';
+import { EditTransactionDialog } from './EditTransactionDialog';
+import { DeleteTransactionDialog } from './DeleteTransactionDialog';
 import { getInvoices } from '@/utilities/api/invoice.api';
 import { getWalletByUserId, getUserTransactions } from '@/utilities/api/wallet.api';
 import { toast } from '@/hooks/use-toast';
@@ -42,6 +45,10 @@ export function UserDetailDialog({ user, open, onClose, onEdit }: UserDetailDial
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [isLoadingWallet, setIsLoadingWallet] = useState(false);
   const [isLoadingInvoices, setIsLoadingInvoices] = useState(false);
+  const [isCreateTransactionOpen, setIsCreateTransactionOpen] = useState(false);
+  const [isEditTransactionOpen, setIsEditTransactionOpen] = useState(false);
+  const [isDeleteTransactionOpen, setIsDeleteTransactionOpen] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
 
   const fetchWalletData = async () => {
     if (!user?._id) return;
@@ -106,6 +113,20 @@ export function UserDetailDialog({ user, open, onClose, onEdit }: UserDetailDial
     if (isNaN(date.getTime())) return 'N/A';
     
     return format(date, formatString);
+  };
+
+  const handleEditTransaction = (transaction: Transaction) => {
+    setSelectedTransaction(transaction);
+    setIsEditTransactionOpen(true);
+  };
+
+  const handleDeleteTransaction = (transaction: Transaction) => {
+    setSelectedTransaction(transaction);
+    setIsDeleteTransactionOpen(true);
+  };
+
+  const handleTransactionSuccess = () => {
+    fetchWalletData();
   };
 
   return (
@@ -320,24 +341,29 @@ export function UserDetailDialog({ user, open, onClose, onEdit }: UserDetailDial
                 
                 <div className="glass-card p-4 rounded-xl space-y-3">
                   <div className="flex items-center justify-between">
-                    <h3 className="font-semibold">Recent Transactions</h3>
-                    <Button variant="link" size="sm" onClick={() => { onClose(); navigate(`/wallet/transactions?userId=${user._id}`); }}>
-                      View All
-                    </Button>
+                    <h3 className="font-semibold">Transactions</h3>
+                    <div className="flex gap-2">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => setIsCreateTransactionOpen(true)}
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add
+                      </Button>
+                      <Button variant="link" size="sm" onClick={() => { onClose(); navigate(`/wallet/transactions?userId=${user._id}`); }}>
+                        View All
+                      </Button>
+                    </div>
                   </div>
                   <Separator />
                   
-                  {transactions.length > 0 ? (
-                    <div className="space-y-2">
-                      {transactions.slice(0, 5).map((transaction) => (
-                        <TransactionCard key={transaction._id} transaction={transaction} />
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-6 text-sm text-muted-foreground">
-                      No transactions found
-                    </div>
-                  )}
+                  <TransactionsTable
+                    transactions={transactions}
+                    onEdit={handleEditTransaction}
+                    onDelete={handleDeleteTransaction}
+                    isAdmin={true}
+                  />
                 </div>
               </>
             ) : (
@@ -464,6 +490,44 @@ export function UserDetailDialog({ user, open, onClose, onEdit }: UserDetailDial
           )}
         </Tabs>
       </DialogContent>
+
+      <CreateTransactionDialog
+        open={isCreateTransactionOpen}
+        onClose={() => setIsCreateTransactionOpen(false)}
+        walletId={wallet?._id}
+        onSuccess={() => {
+          handleTransactionSuccess();
+          setIsCreateTransactionOpen(false);
+        }}
+      />
+
+      <EditTransactionDialog
+        open={isEditTransactionOpen}
+        onClose={() => {
+          setIsEditTransactionOpen(false);
+          setSelectedTransaction(null);
+        }}
+        transaction={selectedTransaction}
+        onSuccess={() => {
+          handleTransactionSuccess();
+          setIsEditTransactionOpen(false);
+          setSelectedTransaction(null);
+        }}
+      />
+
+      <DeleteTransactionDialog
+        open={isDeleteTransactionOpen}
+        onClose={() => {
+          setIsDeleteTransactionOpen(false);
+          setSelectedTransaction(null);
+        }}
+        transaction={selectedTransaction}
+        onSuccess={() => {
+          handleTransactionSuccess();
+          setIsDeleteTransactionOpen(false);
+          setSelectedTransaction(null);
+        }}
+      />
     </Dialog>
   );
 }

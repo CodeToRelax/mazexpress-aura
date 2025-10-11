@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
-import { ArrowLeft, Mail, Phone, MapPin, Calendar, User as UserIcon, Package, Wallet as WalletIcon, Shield, Loader2, Receipt, TrendingUp } from 'lucide-react';
+import { ArrowLeft, Mail, Phone, MapPin, Calendar, User as UserIcon, Package, Wallet as WalletIcon, Shield, Loader2, Receipt, TrendingUp, Plus } from 'lucide-react';
 import type { User } from '@/types/user';
 import type { Wallet } from '@/types/wallet';
 import type { Transaction } from '@/types/wallet';
@@ -15,7 +15,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
 import { ACLManagementTab } from './ACLManagementTab';
 import { WalletBalance } from '@/components/wallet/WalletBalance';
-import { TransactionCard } from '@/components/wallet/TransactionCard';
+import { TransactionsTable } from '@/components/wallet/TransactionsTable';
+import { CreateTransactionDialog } from './CreateTransactionDialog';
+import { EditTransactionDialog } from './EditTransactionDialog';
+import { DeleteTransactionDialog } from './DeleteTransactionDialog';
 import { usersApi } from '@/utilities/api/users.api';
 import { getInvoices } from '@/utilities/api/invoice.api';
 import { getWalletByUserId, getUserTransactions } from '@/utilities/api/wallet.api';
@@ -33,6 +36,10 @@ export default function UserDetail() {
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingWallet, setIsLoadingWallet] = useState(false);
   const [isLoadingInvoices, setIsLoadingInvoices] = useState(false);
+  const [isCreateTransactionOpen, setIsCreateTransactionOpen] = useState(false);
+  const [isEditTransactionOpen, setIsEditTransactionOpen] = useState(false);
+  const [isDeleteTransactionOpen, setIsDeleteTransactionOpen] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -116,6 +123,20 @@ export default function UserDetail() {
     if (isNaN(date.getTime())) return 'N/A';
     
     return format(date, formatString);
+  };
+
+  const handleEditTransaction = (transaction: Transaction) => {
+    setSelectedTransaction(transaction);
+    setIsEditTransactionOpen(true);
+  };
+
+  const handleDeleteTransaction = (transaction: Transaction) => {
+    setSelectedTransaction(transaction);
+    setIsDeleteTransactionOpen(true);
+  };
+
+  const handleTransactionSuccess = () => {
+    fetchWalletData();
   };
 
   if (isLoading) {
@@ -349,24 +370,29 @@ export default function UserDetail() {
               
               <div className="glass-card p-6 rounded-2xl space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-semibold text-lg">Recent Transactions</h3>
-                  <Button variant="outline" size="sm" onClick={() => navigate(`/wallet/transactions?userId=${user._id}`)}>
-                    View All
-                  </Button>
+                  <h3 className="font-semibold text-lg">Transactions</h3>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => setIsCreateTransactionOpen(true)}
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Transaction
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => navigate(`/wallet/transactions?userId=${user._id}`)}>
+                      View All
+                    </Button>
+                  </div>
                 </div>
                 <Separator />
                 
-                {transactions.length > 0 ? (
-                  <div className="space-y-2">
-                    {transactions.slice(0, 5).map((transaction) => (
-                      <TransactionCard key={transaction._id} transaction={transaction} />
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-8 text-muted-foreground">
-                    No transactions found
-                  </div>
-                )}
+                <TransactionsTable
+                  transactions={transactions}
+                  onEdit={handleEditTransaction}
+                  onDelete={handleDeleteTransaction}
+                  isAdmin={true}
+                />
               </div>
             </>
           ) : (
@@ -491,6 +517,44 @@ export default function UserDetail() {
           </TabsContent>
         )}
       </Tabs>
+
+      <CreateTransactionDialog
+        open={isCreateTransactionOpen}
+        onClose={() => setIsCreateTransactionOpen(false)}
+        walletId={wallet?._id}
+        onSuccess={() => {
+          handleTransactionSuccess();
+          setIsCreateTransactionOpen(false);
+        }}
+      />
+
+      <EditTransactionDialog
+        open={isEditTransactionOpen}
+        onClose={() => {
+          setIsEditTransactionOpen(false);
+          setSelectedTransaction(null);
+        }}
+        transaction={selectedTransaction}
+        onSuccess={() => {
+          handleTransactionSuccess();
+          setIsEditTransactionOpen(false);
+          setSelectedTransaction(null);
+        }}
+      />
+
+      <DeleteTransactionDialog
+        open={isDeleteTransactionOpen}
+        onClose={() => {
+          setIsDeleteTransactionOpen(false);
+          setSelectedTransaction(null);
+        }}
+        transaction={selectedTransaction}
+        onSuccess={() => {
+          handleTransactionSuccess();
+          setIsDeleteTransactionOpen(false);
+          setSelectedTransaction(null);
+        }}
+      />
     </div>
   );
 }

@@ -181,3 +181,29 @@ export async function getUserTransactions(
   });
   return handleResponse<{ transactions: Transaction[]; pagination: any }>(response);
 }
+
+export async function updateTransaction(
+  transactionId: string,
+  data: { description?: string; reference?: string },
+  locale?: string
+): Promise<Transaction> {
+  const headers = await getAuthHeaders(locale);
+  const response = await fetch(`${API_BASE_URL}/api/wallet/admin/transaction/${transactionId}`, {
+    method: 'PUT',
+    headers,
+    body: JSON.stringify(data),
+  });
+  return handleResponse<Transaction>(response);
+}
+
+export async function deleteTransaction(
+  transactionId: string,
+  locale?: string
+): Promise<{ success: boolean; message: string }> {
+  const headers = await getAuthHeaders(locale);
+  const response = await fetch(`${API_BASE_URL}/api/wallet/admin/transaction/${transactionId}`, {
+    method: 'DELETE',
+    headers,
+  });
+  return handleResponse<{ success: boolean; message: string }>(response);
+}
