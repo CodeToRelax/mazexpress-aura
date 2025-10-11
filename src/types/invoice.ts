@@ -60,7 +60,10 @@ export interface PaymentAllocation {
 
 export interface GenerateInvoiceRequest {
   userId: string;
-  shipmentIds: string[];
+  shipmentIds?: string[];
+  shipmentStatus?: string;
+  dateFrom?: string;
+  dateTo?: string;
 }
 
 export interface ProcessPaymentRequest {

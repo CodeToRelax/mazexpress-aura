@@ -785,7 +785,10 @@
       "error": "An error occurred. Please try again.",
       "notFound": "Invoice not found",
       "alreadyPaid": "Invoice is already paid",
-      "noShipmentsSelected": "Please select at least one shipment"
+      "noShipmentsSelected": "Please select at least one shipment",
+      "filterRequired": "At least one filter must be selected (status or date range)",
+      "invoiceNumber": "Invoice Number: {{number}}",
+      "userRequired": "User ID is required"
     },
     "empty": {
       "title": "No Invoices Found",
@@ -802,11 +805,34 @@
       "cancel": "Cancel Invoice",
       "refresh": "Refresh",
       "clearFilters": "Clear Filters",
-      "generateFromShipments": "Generate from Shipments"
+      "generateFromShipments": "Generate from Shipments",
+      "generate": "Generate Invoice"
+    },
+    "generateDialog": {
+      "title": "Generate Invoice",
+      "description": "Create a new invoice for this user's shipments",
+      "mode": {
+        "label": "Generation Mode",
+        "filter": "Filter by Status/Date",
+        "specific": "Select Specific Shipments"
+      },
+      "filters": {
+        "status": "Shipment Status",
+        "statusPlaceholder": "Select status",
+        "dateFrom": "From Date",
+        "dateTo": "To Date"
+      },
+      "shipmentCount": "Shipment Count",
+      "status": "Status",
+      "warning": "This will create a DRAFT invoice. You can review and modify it before sending.",
+      "submit": "Generate Invoice"
     }
   },
   "common": {
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "cancel": "Cancel",
+    "error": "Error",
+    "processing": "Processing..."
   }
 }

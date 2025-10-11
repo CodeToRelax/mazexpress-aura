@@ -9,28 +9,46 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { FileText, AlertCircle } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { generateInvoice } from '@/utilities/api/invoice.api';
 import type { GenerateInvoiceRequest } from '@/types/invoice';
-import { useAppSelector } from '@/utilities/redux';
 
 interface GenerateInvoiceDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  shipmentIds: string[];
+  userId: string;
+  shipmentIds?: string[];
+  onSuccess?: () => void;
 }
+
+const SHIPMENT_STATUSES = [
+  'ready for pick up',
+  'received at warehouse',
+  'in transit',
+  'shipped to destination',
+  'delivered',
+] as const;
 
 export function GenerateInvoiceDialog({ 
   open, 
   onOpenChange, 
-  shipmentIds 
+  userId,
+  shipmentIds,
+  onSuccess,
 }: GenerateInvoiceDialogProps) {
   const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
-  const acl = useAppSelector((state) => state.acl.acl);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [mode, setMode] = useState<'filter' | 'specific'>(shipmentIds ? 'specific' : 'filter');
+  const [selectedStatus, setSelectedStatus] = useState<string>('ready for pick up');
+  const [dateFrom, setDateFrom] = useState<string>('');
+  const [dateTo, setDateTo] = useState<string>('');
 
   const generateMutation = useMutation({
     mutationFn: (data: GenerateInvoiceRequest) => generateInvoice(data, i18n.language),
@@ -39,9 +57,10 @@ export function GenerateInvoiceDialog({
       queryClient.invalidateQueries({ queryKey: ['shipments'] });
       toast({
         title: t('invoice.messages.generateSuccess'),
-        description: t('invoice.messages.invoiceNumber', { number: invoice.invoiceNumber }),
+        description: t('invoice.messages.invoiceNumber', { number: invoice.invoiceNumber || 'DRAFT' }),
         variant: 'default',
       });
+      onSuccess?.();
       onOpenChange(false);
     },
     onError: (error: Error) => {
@@ -57,20 +76,27 @@ export function GenerateInvoiceDialog({
   });
 
   const handleGenerate = () => {
-    if (!acl?.userId) {
+    if (mode === 'filter' && !selectedStatus && !dateFrom && !dateTo) {
       toast({
         title: t('common.error'),
-        description: t('invoice.messages.userRequired'),
+        description: t('invoice.messages.filterRequired'),
         variant: 'destructive',
       });
       return;
     }
 
     setIsSubmitting(true);
-    generateMutation.mutate({
-      userId: acl.userId,
-      shipmentIds,
-    });
+    const payload: GenerateInvoiceRequest = {
+      userId,
+      ...(mode === 'specific' && shipmentIds ? { shipmentIds } : {}),
+      ...(mode === 'filter' ? {
+        shipmentStatus: selectedStatus,
+        ...(dateFrom ? { dateFrom } : {}),
+        ...(dateTo ? { dateTo } : {}),
+      } : {}),
+    };
+    
+    generateMutation.mutate(payload);
   };
 
   return (
@@ -94,16 +120,67 @@ export function GenerateInvoiceDialog({
             </AlertDescription>
           </Alert>
 
-          <div className="bg-muted p-4 rounded-lg space-y-2">
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">{t('invoice.generateDialog.shipmentCount')}</span>
-              <span className="font-medium">{shipmentIds.length}</span>
+          {!shipmentIds && (
+            <div className="space-y-3">
+              <Label>{t('invoice.generateDialog.mode.label')}</Label>
+              <RadioGroup value={mode} onValueChange={(v) => setMode(v as 'filter' | 'specific')}>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="filter" id="filter" />
+                  <Label htmlFor="filter" className="font-normal cursor-pointer">
+                    {t('invoice.generateDialog.mode.filter')}
+                  </Label>
+                </div>
+              </RadioGroup>
             </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">{t('invoice.generateDialog.status')}</span>
-              <span className="font-medium">{t('invoice.status.unpaid')}</span>
+          )}
+
+          {mode === 'filter' ? (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="status">{t('invoice.generateDialog.filters.status')}</Label>
+                <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+                  <SelectTrigger id="status">
+                    <SelectValue placeholder={t('invoice.generateDialog.filters.statusPlaceholder')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SHIPMENT_STATUSES.map((status) => (
+                      <SelectItem key={status} value={status}>
+                        {t(`shipments.table.status.${status}`)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="dateFrom">{t('invoice.generateDialog.filters.dateFrom')}</Label>
+                  <Input
+                    id="dateFrom"
+                    type="date"
+                    value={dateFrom}
+                    onChange={(e) => setDateFrom(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="dateTo">{t('invoice.generateDialog.filters.dateTo')}</Label>
+                  <Input
+                    id="dateTo"
+                    type="date"
+                    value={dateTo}
+                    onChange={(e) => setDateTo(e.target.value)}
+                  />
+                </div>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="bg-muted p-4 rounded-lg space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">{t('invoice.generateDialog.shipmentCount')}</span>
+                <span className="font-medium">{shipmentIds?.length || 0}</span>
+              </div>
+            </div>
+          )}
 
           <div className="flex justify-end gap-2 pt-4">
             <Button
@@ -116,7 +193,7 @@ export function GenerateInvoiceDialog({
             </Button>
             <Button 
               onClick={handleGenerate}
-              disabled={isSubmitting || shipmentIds.length === 0}
+              disabled={isSubmitting || (mode === 'specific' && (!shipmentIds || shipmentIds.length === 0))}
             >
               {isSubmitting ? t('common.processing') : t('invoice.generateDialog.submit')}
             </Button>

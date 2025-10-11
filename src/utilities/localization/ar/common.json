@@ -721,7 +721,10 @@
       "error": "حدث خطأ. يرجى المحاولة مرة أخرى.",
       "notFound": "الفاتورة غير موجودة",
       "alreadyPaid": "الفاتورة مدفوعة بالفعل",
-      "noShipmentsSelected": "يرجى اختيار شحنة واحدة على الأقل"
+      "noShipmentsSelected": "يرجى اختيار شحنة واحدة على الأقل",
+      "filterRequired": "يجب اختيار فلتر واحد على الأقل (الحالة أو النطاق الزمني)",
+      "invoiceNumber": "رقم الفاتورة: {{number}}",
+      "userRequired": "معرف المستخدم مطلوب"
     },
     "empty": {
       "title": "لا توجد فواتير",
@@ -738,7 +741,34 @@
       "cancel": "إلغاء الفاتورة",
       "refresh": "تحديث",
       "clearFilters": "مسح الفلاتر",
-      "generateFromShipments": "إنشاء من الشحنات"
+      "generateFromShipments": "إنشاء من الشحنات",
+      "generate": "إنشاء فاتورة"
+    },
+    "generateDialog": {
+      "title": "إنشاء فاتورة",
+      "description": "إنشاء فاتورة جديدة لشحنات هذا المستخدم",
+      "mode": {
+        "label": "وضع الإنشاء",
+        "filter": "الفلترة حسب الحالة/التاريخ",
+        "specific": "اختيار شحنات محددة"
+      },
+      "filters": {
+        "status": "حالة الشحنة",
+        "statusPlaceholder": "اختر الحالة",
+        "dateFrom": "من تاريخ",
+        "dateTo": "إلى تاريخ"
+      },
+      "shipmentCount": "عدد الشحنات",
+      "status": "الحالة",
+      "warning": "سيتم إنشاء فاتورة كمسودة. يمكنك مراجعتها وتعديلها قبل الإرسال.",
+      "submit": "إنشاء الفاتورة"
     }
+  },
+  "common": {
+    "yes": "نعم",
+    "no": "لا",
+    "cancel": "إلغاء",
+    "error": "خطأ",
+    "processing": "جاري المعالجة..."
   }
 }

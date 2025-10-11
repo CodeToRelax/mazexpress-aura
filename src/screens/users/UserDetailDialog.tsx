@@ -25,6 +25,7 @@ import { TransactionsTable } from '@/components/wallet/TransactionsTable';
 import { CreateTransactionDialog } from './CreateTransactionDialog';
 import { EditTransactionDialog } from './EditTransactionDialog';
 import { DeleteTransactionDialog } from './DeleteTransactionDialog';
+import { GenerateInvoiceDialog } from '@/screens/invoices/GenerateInvoiceDialog';
 import { getInvoices } from '@/utilities/api/invoice.api';
 import { getWalletByUserId, getUserTransactions } from '@/utilities/api/wallet.api';
 import { toast } from '@/hooks/use-toast';
@@ -49,6 +50,7 @@ export function UserDetailDialog({ user, open, onClose, onEdit }: UserDetailDial
   const [isEditTransactionOpen, setIsEditTransactionOpen] = useState(false);
   const [isDeleteTransactionOpen, setIsDeleteTransactionOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
+  const [isGenerateInvoiceOpen, setIsGenerateInvoiceOpen] = useState(false);
 
   const fetchWalletData = async () => {
     if (!user?._id) return;
@@ -386,9 +388,19 @@ export function UserDetailDialog({ user, open, onClose, onEdit }: UserDetailDial
               <div className="glass-card p-4 rounded-xl space-y-3">
                 <div className="flex items-center justify-between">
                   <h3 className="font-semibold">Invoices</h3>
-                  <Button variant="link" size="sm" onClick={() => { onClose(); navigate(`/invoices?userId=${user._id}`); }}>
-                    View All
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="default" 
+                      size="sm" 
+                      onClick={() => setIsGenerateInvoiceOpen(true)}
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      {t('invoice.actions.generate')}
+                    </Button>
+                    <Button variant="link" size="sm" onClick={() => { onClose(); navigate(`/invoices?userId=${user._id}`); }}>
+                      View All
+                    </Button>
+                  </div>
                 </div>
                 <Separator />
                 
@@ -526,6 +538,16 @@ export function UserDetailDialog({ user, open, onClose, onEdit }: UserDetailDial
           handleTransactionSuccess();
           setIsDeleteTransactionOpen(false);
           setSelectedTransaction(null);
+        }}
+      />
+
+      <GenerateInvoiceDialog
+        open={isGenerateInvoiceOpen}
+        onOpenChange={setIsGenerateInvoiceOpen}
+        userId={user._id}
+        onSuccess={() => {
+          fetchInvoices();
+          setIsGenerateInvoiceOpen(false);
         }}
       />
     </Dialog>
