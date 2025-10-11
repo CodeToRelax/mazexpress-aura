@@ -359,6 +359,27 @@ export default function Shipments() {
     setSelectedShipments(new Set());
   };
 
+  const handleSort = (column: string) => {
+    const currentSort = filters.sort || '-createdAt';
+    const currentColumn = currentSort.startsWith('-') ? currentSort.substring(1) : currentSort;
+    const currentOrder = currentSort.startsWith('-') ? 'desc' : 'asc';
+
+    // Toggle order if same column, otherwise default to ascending
+    let newSort: string;
+    if (currentColumn === column) {
+      newSort = currentOrder === 'asc' ? `-${column}` : column;
+    } else {
+      newSort = column;
+    }
+
+    setFilters(prev => ({ ...prev, sort: newSort, page: 1 }));
+  };
+
+  // Parse current sort state
+  const currentSort = filters.sort || '-createdAt';
+  const sortBy = currentSort.startsWith('-') ? currentSort.substring(1) : currentSort;
+  const sortOrder = currentSort.startsWith('-') ? 'desc' : 'asc';
+
   const activeFilterCount = Object.entries(filters).filter(
     ([key, value]) => 
       value !== undefined && 
@@ -494,6 +515,9 @@ export default function Shipments() {
               onEdit={handleEditShipment}
               onDelete={handleDeleteShipment}
               visibleColumns={visibleColumns}
+              sortBy={sortBy}
+              sortOrder={sortOrder}
+              onSort={handleSort}
             />
           )}
 
