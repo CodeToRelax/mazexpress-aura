@@ -80,7 +80,7 @@ export default function UserDetail() {
         page: 1,
       });
       console.log('[UserDetail] Transactions fetched:', transactionData);
-      setTransactions(transactionData.transactions || []);
+      setTransactions(transactionData.docs || []);
     } catch (error) {
       console.error('[UserDetail] Error fetching wallet data:', error);
       toast({

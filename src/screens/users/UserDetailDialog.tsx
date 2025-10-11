@@ -64,7 +64,7 @@ export function UserDetailDialog({ user, open, onClose, onEdit }: UserDetailDial
         limit: 5,
         page: 1,
       });
-      setTransactions(transactionData.transactions || []);
+      setTransactions(transactionData.docs || []);
     } catch (error) {
       console.error('Error fetching wallet data:', error);
       toast({

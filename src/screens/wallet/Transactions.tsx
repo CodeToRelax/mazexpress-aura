@@ -34,8 +34,11 @@ export default function Transactions() {
   if (isLoading) return <PageLoader />;
   if (error) return <InlineError message={error.message} />;
 
-  const transactions = data?.transactions || [];
-  const pagination = data?.pagination || { page: 1, totalPages: 1 };
+  const transactions = data?.docs || [];
+  const pagination = { 
+    page: data?.page || 1, 
+    totalPages: data?.totalPages || 1 
+  };
 
   return (
     <div className="space-y-6">

@@ -92,7 +92,7 @@ export async function withdraw(
 export async function getTransactions(
   filters: TransactionFilters = {},
   locale?: string
-): Promise<{ transactions: Transaction[]; pagination: any }> {
+): Promise<{ docs: Transaction[]; totalDocs: number; limit: number; totalPages: number; page: number; pagingCounter: number; hasPrevPage: boolean; hasNextPage: boolean; prevPage: number | null; nextPage: number | null }> {
   const headers = await getAuthHeaders(locale);
   
   // Build query string
@@ -111,7 +111,7 @@ export async function getTransactions(
     method: 'GET',
     headers,
   });
-  return handleResponse<{ transactions: Transaction[]; pagination: any }>(response);
+  return handleResponse<{ docs: Transaction[]; totalDocs: number; limit: number; totalPages: number; page: number; pagingCounter: number; hasPrevPage: boolean; hasNextPage: boolean; prevPage: number | null; nextPage: number | null }>(response);
 }
 
 /**
@@ -160,7 +160,7 @@ export async function getUserTransactions(
   userId: string,
   filters: TransactionFilters = {},
   locale?: string
-): Promise<{ transactions: Transaction[]; pagination: any }> {
+): Promise<{ docs: Transaction[]; totalDocs: number; limit: number; totalPages: number; page: number; pagingCounter: number; hasPrevPage: boolean; hasNextPage: boolean; prevPage: number | null; nextPage: number | null }> {
   const headers = await getAuthHeaders(locale);
   
   // Build query string
@@ -179,7 +179,7 @@ export async function getUserTransactions(
     method: 'GET',
     headers,
   });
-  return handleResponse<{ transactions: Transaction[]; pagination: any }>(response);
+  return handleResponse<{ docs: Transaction[]; totalDocs: number; limit: number; totalPages: number; page: number; pagingCounter: number; hasPrevPage: boolean; hasNextPage: boolean; prevPage: number | null; nextPage: number | null }>(response);
 }
 
 export async function updateTransaction(
