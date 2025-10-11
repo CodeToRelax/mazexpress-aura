@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
@@ -50,7 +50,7 @@ export function CreateTransactionDialog({
   const form = useForm<AdminTransactionInput>({
     resolver: zodResolver(adminTransactionSchema),
     defaultValues: {
-      walletId: walletId || '',
+      walletId: '',
       type: 'DEPOSIT',
       amount: 0,
       description: '',
@@ -58,8 +58,22 @@ export function CreateTransactionDialog({
     },
   });
 
+  // Update form when walletId prop changes or dialog opens
+  useEffect(() => {
+    if (open && walletId) {
+      console.log('[CreateTransactionDialog] Setting walletId in form:', walletId);
+      form.reset({
+        walletId: walletId,
+        type: 'DEPOSIT',
+        amount: 0,
+        description: '',
+        reference: '',
+      });
+    }
+  }, [open, walletId, form]);
+
   console.log('[CreateTransactionDialog] Current form values:', form.watch());
-  console.log('[CreateTransactionDialog] Wallet ID:', walletId);
+  console.log('[CreateTransactionDialog] Wallet ID prop:', walletId);
   console.log('[CreateTransactionDialog] Form errors:', form.formState.errors);
 
   const onSubmit = async (data: AdminTransactionInput) => {
