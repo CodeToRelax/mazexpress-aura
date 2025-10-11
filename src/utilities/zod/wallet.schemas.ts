@@ -28,7 +28,7 @@ export const adminTransactionSchema = z.object({
   type: z.enum(['DEPOSIT', 'WITHDRAWAL', 'DEDUCTION', 'REFUND'], {
     errorMap: () => ({ message: 'Type must be DEPOSIT, WITHDRAWAL, DEDUCTION, or REFUND' }),
   }),
-  amount: z.number()
+  amount: z.coerce.number()
     .min(1, 'Amount must be at least 1 LYD')
     .max(1000000, 'Amount cannot exceed 1,000,000 LYD'),
   description: z.string()

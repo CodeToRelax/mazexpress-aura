@@ -52,7 +52,7 @@ export function CreateTransactionDialog({
     defaultValues: {
       walletId: walletId || '',
       type: 'DEPOSIT',
-      amount: '' as any,
+      amount: undefined as any,
       description: '',
       reference: '',
     },
@@ -147,8 +147,11 @@ export function CreateTransactionDialog({
                       type="number"
                       step="0.01"
                       placeholder="0.00"
-                      {...field}
-                      onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                      value={field.value ?? ''}
+                      onChange={(e) => {
+                        const value = e.target.value === '' ? undefined : parseFloat(e.target.value);
+                        field.onChange(value);
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
