@@ -777,18 +777,47 @@
         "total": "Total"
       }
     },
+    "fields": {
+      "status": "Status",
+      "notes": "Notes",
+      "notesPlaceholder": "Add notes about this status change...",
+      "selectStatus": "Select status",
+      "cancellationReason": "Cancellation Reason",
+      "cancellationReasonPlaceholder": "Explain why this invoice is being cancelled..."
+    },
+    "paymentSource": {
+      "wallet": "Wallet",
+      "cash": "Cash",
+      "bankTransfer": "Bank Transfer"
+    },
+    "paymentHistory": {
+      "title": "Payment History",
+      "empty": "No payments have been made on this invoice yet.",
+      "source": "Source",
+      "amount": "Amount",
+      "date": "Date"
+    },
     "messages": {
       "generateSuccess": "Invoice generated successfully",
       "paymentSuccess": "Payment processed successfully",
       "updateSuccess": "Invoice updated successfully",
+      "statusUpdated": "Invoice status updated successfully",
+      "markedAsPaid": "Invoice marked as paid",
+      "cancelled": "Invoice cancelled",
       "cancelSuccess": "Invoice cancelled successfully",
       "error": "An error occurred. Please try again.",
+      "updateError": "Failed to update invoice status",
       "notFound": "Invoice not found",
       "alreadyPaid": "Invoice is already paid",
       "noShipmentsSelected": "Please select at least one shipment",
       "filterRequired": "At least one filter must be selected (status or date range)",
       "invoiceNumber": "Invoice Number: {{number}}",
-      "userRequired": "User ID is required"
+      "userRequired": "User ID is required",
+      "markAsPaidConfirm": "Are you sure you want to mark invoice {{invoiceNumber}} as fully paid?",
+      "cancelConfirm": "Are you sure you want to cancel invoice {{invoiceNumber}}? This action cannot be undone.",
+      "updateStatusDescription": "Update the status of invoice {{invoiceNumber}}",
+      "notesRequired": "Cancellation reason is required",
+      "cancellationReasonRequired": "Please provide a reason for cancellation"
     },
     "empty": {
       "title": "No Invoices Found",
@@ -802,7 +831,11 @@
       "pay": "Pay Invoice",
       "download": "Download PDF",
       "markPaid": "Mark as Paid",
+      "markAsPaid": "Mark as Paid",
       "cancel": "Cancel Invoice",
+      "cancelInvoice": "Cancel Invoice",
+      "updateStatus": "Update Status",
+      "print": "Print Invoice",
       "refresh": "Refresh",
       "clearFilters": "Clear Filters",
       "generateFromShipments": "Generate from Shipments",
@@ -833,6 +866,7 @@
     "no": "No",
     "cancel": "Cancel",
     "error": "Error",
-    "processing": "Processing..."
+    "processing": "Processing...",
+    "optional": "Optional"
   }
 }

@@ -261,4 +261,25 @@
   .interactive-scale:active {
     transform: scale(0.98);
   }
+  
+  /* Print Styles */
+  @media print {
+    .no-print {
+      display: none !important;
+    }
+    
+    body {
+      background: white;
+    }
+    
+    .invoice-content {
+      max-width: 100%;
+      box-shadow: none;
+      border: none;
+    }
+    
+    @page {
+      margin: 2cm;
+    }
+  }
 }

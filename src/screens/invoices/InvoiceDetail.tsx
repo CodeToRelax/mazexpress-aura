@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Printer, CheckCircle, XCircle, Edit } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -11,13 +11,23 @@ import { getInvoiceById } from '@/utilities/api/invoice.api';
 import { PageLoader } from '@/components/feedback/PageLoader';
 import { InlineError } from '@/components/feedback/InlineError';
 import { PaymentDialog } from './PaymentDialog';
+import { MarkAsPaidDialog } from './MarkAsPaidDialog';
+import { CancelInvoiceDialog } from './CancelInvoiceDialog';
+import { UpdateStatusDialog } from './UpdateStatusDialog';
+import { PaymentHistory } from './PaymentHistory';
+import { ACLGuard } from '@/components/guards/ACLGuard';
+import { useACL } from '@/hooks/useACL';
 import { format } from 'date-fns';
 
 export default function InvoiceDetail() {
   const { id } = useParams<{ id: string }>();
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const { hasFlag } = useACL();
   const [paymentOpen, setPaymentOpen] = useState(false);
+  const [markPaidOpen, setMarkPaidOpen] = useState(false);
+  const [cancelOpen, setCancelOpen] = useState(false);
+  const [updateStatusOpen, setUpdateStatusOpen] = useState(false);
 
   const { data: invoice, isLoading, error } = useQuery({
     queryKey: ['invoice', id],
@@ -55,17 +65,53 @@ export default function InvoiceDetail() {
   if (!invoice) return <InlineError message={t('invoice.notFound')} />;
 
   const canPay = invoice.status === 'UNPAID' || invoice.status === 'PARTIALLY_PAID';
+  const canManageInvoices = hasFlag('canManageInvoices');
+  const canMarkAsPaid = canManageInvoices && (invoice.status === 'UNPAID' || invoice.status === 'PARTIALLY_PAID');
+  const canCancel = canManageInvoices && invoice.status !== 'CANCELLED' && invoice.status !== 'PAID';
+  
+  const handlePrint = () => {
+    window.print();
+  };
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => navigate('/invoices')}>
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
-        <h1 className="text-3xl font-bold">{invoice.invoiceNumber}</h1>
-        <Badge className={getStatusColor(invoice.status)}>
-          {t(`invoice.status.${invoice.status.toLowerCase()}`)}
-        </Badge>
+      <div className="flex items-center justify-between no-print">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" onClick={() => navigate('/invoices')}>
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <h1 className="text-3xl font-bold">{invoice.invoiceNumber}</h1>
+          <Badge className={getStatusColor(invoice.status)}>
+            {t(`invoice.status.${invoice.status.toLowerCase()}`)}
+          </Badge>
+        </div>
+
+        <ACLGuard flag="canManageInvoices">
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={handlePrint}>
+              <Printer className="h-4 w-4 mr-2" />
+              {t('invoice.actions.print')}
+            </Button>
+            {canMarkAsPaid && (
+              <Button variant="default" size="sm" onClick={() => setMarkPaidOpen(true)}>
+                <CheckCircle className="h-4 w-4 mr-2" />
+                {t('invoice.actions.markAsPaid')}
+              </Button>
+            )}
+            {canCancel && (
+              <Button variant="destructive" size="sm" onClick={() => setCancelOpen(true)}>
+                <XCircle className="h-4 w-4 mr-2" />
+                {t('invoice.actions.cancelInvoice')}
+              </Button>
+            )}
+            {canManageInvoices && (
+              <Button variant="outline" size="sm" onClick={() => setUpdateStatusOpen(true)}>
+                <Edit className="h-4 w-4 mr-2" />
+                {t('invoice.actions.updateStatus')}
+              </Button>
+            )}
+          </div>
+        </ACLGuard>
       </div>
 
       <div className="grid gap-6 md:grid-cols-3">
@@ -149,9 +195,31 @@ export default function InvoiceDetail() {
         </div>
       </div>
 
+      <ACLGuard flag="canManageInvoices">
+        <PaymentHistory invoice={invoice} />
+      </ACLGuard>
+
       <PaymentDialog
         open={paymentOpen}
         onOpenChange={setPaymentOpen}
+        invoice={invoice}
+      />
+
+      <MarkAsPaidDialog
+        open={markPaidOpen}
+        onOpenChange={setMarkPaidOpen}
+        invoice={invoice}
+      />
+
+      <CancelInvoiceDialog
+        open={cancelOpen}
+        onOpenChange={setCancelOpen}
+        invoice={invoice}
+      />
+
+      <UpdateStatusDialog
+        open={updateStatusOpen}
+        onOpenChange={setUpdateStatusOpen}
         invoice={invoice}
       />
     </div>

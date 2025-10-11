@@ -713,18 +713,47 @@
         "total": "الإجمالي"
       }
     },
+    "fields": {
+      "status": "الحالة",
+      "notes": "ملاحظات",
+      "notesPlaceholder": "أضف ملاحظات حول هذا التغيير في الحالة...",
+      "selectStatus": "اختر الحالة",
+      "cancellationReason": "سبب الإلغاء",
+      "cancellationReasonPlaceholder": "اشرح سبب إلغاء هذه الفاتورة..."
+    },
+    "paymentSource": {
+      "wallet": "المحفظة",
+      "cash": "نقداً",
+      "bankTransfer": "تحويل بنكي"
+    },
+    "paymentHistory": {
+      "title": "سجل الدفع",
+      "empty": "لم يتم إجراء أي دفعات على هذه الفاتورة بعد.",
+      "source": "المصدر",
+      "amount": "المبلغ",
+      "date": "التاريخ"
+    },
     "messages": {
       "generateSuccess": "تم إنشاء الفاتورة بنجاح",
       "paymentSuccess": "تمت معالجة الدفع بنجاح",
       "updateSuccess": "تم تحديث الفاتورة بنجاح",
+      "statusUpdated": "تم تحديث حالة الفاتورة بنجاح",
+      "markedAsPaid": "تم تعيين الفاتورة كمدفوعة",
+      "cancelled": "تم إلغاء الفاتورة",
       "cancelSuccess": "تم إلغاء الفاتورة بنجاح",
       "error": "حدث خطأ. يرجى المحاولة مرة أخرى.",
+      "updateError": "فشل تحديث حالة الفاتورة",
       "notFound": "الفاتورة غير موجودة",
       "alreadyPaid": "الفاتورة مدفوعة بالفعل",
       "noShipmentsSelected": "يرجى اختيار شحنة واحدة على الأقل",
       "filterRequired": "يجب اختيار فلتر واحد على الأقل (الحالة أو النطاق الزمني)",
       "invoiceNumber": "رقم الفاتورة: {{number}}",
-      "userRequired": "معرف المستخدم مطلوب"
+      "userRequired": "معرف المستخدم مطلوب",
+      "markAsPaidConfirm": "هل أنت متأكد من تعيين الفاتورة {{invoiceNumber}} كمدفوعة بالكامل؟",
+      "cancelConfirm": "هل أنت متأكد من إلغاء الفاتورة {{invoiceNumber}}؟ لا يمكن التراجع عن هذا الإجراء.",
+      "updateStatusDescription": "تحديث حالة الفاتورة {{invoiceNumber}}",
+      "notesRequired": "سبب الإلغاء مطلوب",
+      "cancellationReasonRequired": "يرجى تقديم سبب للإلغاء"
     },
     "empty": {
       "title": "لا توجد فواتير",
@@ -738,7 +767,11 @@
       "pay": "دفع الفاتورة",
       "download": "تحميل PDF",
       "markPaid": "تعيين كمدفوع",
+      "markAsPaid": "تعيين كمدفوع",
       "cancel": "إلغاء الفاتورة",
+      "cancelInvoice": "إلغاء الفاتورة",
+      "updateStatus": "تحديث الحالة",
+      "print": "طباعة الفاتورة",
       "refresh": "تحديث",
       "clearFilters": "مسح الفلاتر",
       "generateFromShipments": "إنشاء من الشحنات",
@@ -769,6 +802,8 @@
     "no": "لا",
     "cancel": "إلغاء",
     "error": "خطأ",
-    "processing": "جاري المعالجة..."
+    "processing": "جاري المعالجة...",
+    "optional": "اختياري"
   }
 }
+
