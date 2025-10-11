@@ -23,7 +23,7 @@ export default function InvoiceDetail() {
   const { id } = useParams<{ id: string }>();
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const { hasFlag } = useACL();
+  const { hasFlag, acl } = useACL();
   const [paymentOpen, setPaymentOpen] = useState(false);
   const [markPaidOpen, setMarkPaidOpen] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
@@ -68,7 +68,6 @@ export default function InvoiceDetail() {
   if (!invoice) return <InlineError message={t('invoice.notFound')} />;
 
   const canPay = invoice.status === 'UNPAID' || invoice.status === 'PARTIALLY_PAID';
-  const { acl } = useACL();
   const canManageInvoices = hasFlag('canManageInvoices') || acl?.userType === 'admin';
   const canMarkAsPaid = canManageInvoices && (invoice.status === 'UNPAID' || invoice.status === 'PARTIALLY_PAID');
   const canCancel = canManageInvoices && invoice.status !== 'CANCELLED' && invoice.status !== 'PAID';
