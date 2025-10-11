@@ -21,7 +21,7 @@ import { EditTransactionDialog } from './EditTransactionDialog';
 import { DeleteTransactionDialog } from './DeleteTransactionDialog';
 import { GenerateInvoiceDialog } from '@/screens/invoices/GenerateInvoiceDialog';
 import { usersApi } from '@/utilities/api/users.api';
-import { getInvoices } from '@/utilities/api/invoice.api';
+import { getUserInvoices } from '@/utilities/api/invoice.api';
 import { getWalletByUserId, getUserTransactions } from '@/utilities/api/wallet.api';
 import { toast } from '@/hooks/use-toast';
 import { formatLYD } from '@/utilities/helpers/currencyHelpers';
@@ -95,12 +95,14 @@ export default function UserDetail() {
     
     setIsLoadingInvoices(true);
     try {
-      const response = await getInvoices({ 
-        userId: id,
-        limit: 10,
-        sortBy: 'createdAt',
-        sortOrder: 'desc'
-      });
+      const response = await getUserInvoices(
+        id,
+        { 
+          limit: 10,
+          sortBy: 'createdAt',
+          sortOrder: 'desc'
+        }
+      );
       setInvoices(response.docs || []);
     } catch (error) {
       toast({

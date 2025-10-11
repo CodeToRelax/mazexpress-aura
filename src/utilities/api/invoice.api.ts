@@ -90,6 +90,42 @@ export async function getInvoices(
   return handleResponse(response);
 }
 
+export async function getUserInvoices(
+  userId: string,
+  filters: Omit<InvoiceFilters, 'userId'> = {},
+  locale?: string
+): Promise<{
+  docs: Invoice[];
+  totalDocs: number;
+  limit: number;
+  totalPages: number;
+  page: number;
+  pagingCounter: number;
+  hasPrevPage: boolean;
+  hasNextPage: boolean;
+}> {
+  const headers = await getAuthHeaders(locale);
+  
+  // Build query string
+  const params = new URLSearchParams();
+  if (filters.page) params.append('page', filters.page.toString());
+  if (filters.limit) params.append('limit', filters.limit.toString());
+  if (filters.status) params.append('status', filters.status);
+  if (filters.dateFrom) params.append('dateFrom', filters.dateFrom);
+  if (filters.dateTo) params.append('dateTo', filters.dateTo);
+  if (filters.sortBy) params.append('sortBy', filters.sortBy);
+  if (filters.sortOrder) params.append('sortOrder', filters.sortOrder);
+  
+  const queryString = params.toString();
+  const url = `${API_BASE_URL}/api/invoice/user/${userId}${queryString ? `?${queryString}` : ''}`;
+  
+  const response = await fetch(url, {
+    method: 'GET',
+    headers,
+  });
+  return handleResponse(response);
+}
+
 export async function getInvoiceById(
   id: string,
   locale?: string
