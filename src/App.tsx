@@ -18,6 +18,8 @@ import WarehouseDetail from "@/screens/warehouses/WarehouseDetail";
 import Shipments from "@/screens/shipments/Shipments";
 import ShipmentDetail from "@/screens/shipments/ShipmentDetail";
 import SystemSettings from "@/screens/settings/SystemSettings";
+import TrackShipment from "@/pages/TrackShipment";
+import PriceCalculator from "@/pages/PriceCalculator";
 import NotFound from "./pages/NotFound";
 
 // Initialize Firebase on app start
@@ -39,7 +41,12 @@ const App = () => {
           <Sonner position="bottom-center" />
           <BrowserRouter>
           <Routes>
+            {/* Public Routes */}
             <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+            <Route path="/track" element={<TrackShipment />} />
+            <Route path="/calculate-price" element={<PriceCalculator />} />
+            
+            {/* Protected Routes */}
             <Route element={<PrivateRoute><AppLayout /></PrivateRoute>}>
               <Route path="/" element={<Dashboard />} />
               <Route path="/users" element={<Users />} />
@@ -50,6 +57,8 @@ const App = () => {
               <Route path="/shipments/:id" element={<ShipmentDetail />} />
               <Route path="/settings" element={<SystemSettings />} />
             </Route>
+            
+            {/* 404 */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

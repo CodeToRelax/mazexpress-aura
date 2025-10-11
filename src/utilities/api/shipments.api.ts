@@ -1,4 +1,6 @@
 import { getFirebaseAuth } from '../firebase/firebase';
+import { normalizeShipment, normalizeShipments } from '../helpers/shipmentNormalizer';
+import i18n from '../localization';
 import type {
   IShipment,
   CreateShipmentPayload,
@@ -12,6 +14,7 @@ import type {
   ShipmentStatsResponse,
   ShipmentStats,
   PriceCalculationPayload,
+  ShipmentStatus,
 } from '@/types/shipment';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
@@ -36,7 +39,8 @@ class ShipmentsApi {
       ...options,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
+        'Authorization': `Bearer ${token}`,
+        'Accept-Language': i18n.language, // Add localization support
         ...options.headers,
       },
     });
@@ -68,30 +72,65 @@ class ShipmentsApi {
       }
     });
 
-    return this.request<ShipmentsListResponse>(
+    const response = await this.request<ShipmentsListResponse>(
       `/api/shipments?${queryParams.toString()}`
     );
+    
+    // Normalize shipment data
+    return {
+      ...response,
+      data: {
+        ...response.data,
+        shipments: normalizeShipments(response.data.shipments),
+      },
+    };
   }
 
   async getShipmentById(id: string): Promise<ShipmentResponse> {
-    return this.request<ShipmentResponse>(`/api/shipments/${id}`);
+    const response = await this.request<ShipmentResponse>(`/api/shipments/${id}`);
+    return {
+      ...response,
+      data: normalizeShipment(response.data),
+    };
   }
 
   async createShipment(payload: CreateShipmentPayload): Promise<ShipmentResponse> {
-    return this.request<ShipmentResponse>('/api/shipments', {
+    const response = await this.request<ShipmentResponse>('/api/shipments', {
       method: 'POST',
       body: JSON.stringify(payload),
     });
+    return {
+      ...response,
+      data: normalizeShipment(response.data),
+    };
   }
 
   async updateShipment(
     id: string,
     payload: UpdateShipmentPayload
   ): Promise<ShipmentResponse> {
-    return this.request<ShipmentResponse>(`/api/shipments/${id}`, {
+    const response = await this.request<ShipmentResponse>(`/api/shipments/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(payload),
     });
+    return {
+      ...response,
+      data: normalizeShipment(response.data),
+    };
+  }
+
+  async updateShipmentStatus(
+    id: string,
+    status: ShipmentStatus
+  ): Promise<ShipmentResponse> {
+    const response = await this.request<ShipmentResponse>(`/api/shipments/${id}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    });
+    return {
+      ...response,
+      data: normalizeShipment(response.data),
+    };
   }
 
   async bulkUpdateShipments(payload: BulkUpdatePayload): Promise<{ success: boolean; message: string }> {
@@ -104,7 +143,10 @@ class ShipmentsApi {
   async bulkUpdateShipmentsByEsn(payload: BulkUpdateEsnPayload): Promise<{ success: boolean; message: string }> {
     return this.request<{ success: boolean; message: string }>('/api/shipments/bulk/esn', {
       method: 'PATCH',
-      body: JSON.stringify(payload),
+      body: JSON.stringify({
+        esns: payload.shipmentsEsn, // Map to correct field name
+        status: payload.shipmentStatus,
+      }),
     });
   }
 
@@ -122,14 +164,22 @@ class ShipmentsApi {
 
   // Public endpoints (no authentication required)
   async trackShipment(esn: string): Promise<ShipmentResponse> {
-    const response = await fetch(`${API_BASE_URL}/api/shipments/track/${esn}`);
+    const response = await fetch(`${API_BASE_URL}/api/shipments/track/${esn}`, {
+      headers: {
+        'Accept-Language': i18n.language,
+      },
+    });
     
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       throw new Error(errorData.error?.message || `Request failed with status ${response.status}`);
     }
 
-    return response.json();
+    const data = await response.json();
+    return {
+      ...data,
+      data: normalizeShipment(data.data),
+    };
   }
 
   async calculatePrice(payload: PriceCalculationPayload): Promise<{ success: boolean; data: any; message: string }> {
@@ -137,6 +187,7 @@ class ShipmentsApi {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Accept-Language': i18n.language,
       },
       body: JSON.stringify(payload),
     });

@@ -447,6 +447,8 @@
       "deleteSuccess": "تم حذف الشحنة بنجاح",
       "bulkUpdateSuccess": "تم تحديث {{count}} شحنة",
       "bulkDeleteSuccess": "تم حذف {{count}} شحنة",
+      "trackSuccess": "تم العثور على الشحنة!",
+      "priceCalculated": "تم حساب السعر بنجاح!",
       "error": "حدث خطأ",
       "notFound": "لم يتم العثور على الشحنة",
       "copySuccess": "تم النسخ إلى الحافظة"
@@ -495,15 +497,27 @@
       "notFound": "لم يتم العثور على الشحنة",
       "publicAccess": "لا حاجة لتسجيل الدخول"
     },
+    "tracking": {
+      "subtitle": "أدخل رقم الشحنة الخارجي لتتبع شحنتك",
+      "searchTitle": "تتبع شحنتك",
+      "searchDescription": "أدخل رقم الشحنة الخارجي (ESN) لعرض تفاصيل الشحنة وحالتها",
+      "esnPlaceholder": "مثال: BEN-123456 أو 1234567890",
+      "details": "تفاصيل الشحنة",
+      "timeline": "الجدول الزمني"
+    },
     "calculator": {
-      "title": "حساب سعر الشحن",
-      "description": "احصل على تقدير لتكاليف الشحن",
-      "selectMethod": "اختر طريقة الشحن",
-      "selectDestination": "اختر الوجهة",
-      "selectCountry": "اختر الدولة",
-      "calculate": "احسب السعر",
-      "result": "السعر المقدر",
-      "notAvailable": "حساب السعر غير متاح في الوقت الحالي"
+      "subtitle": "احصل على عرض أسعار فوري",
+      "formTitle": "تفاصيل الشحنة",
+      "formDescription": "أدخل معلومات شحنتك لحساب تكلفة الشحن",
+      "country": "الدولة",
+      "sizeMode": "وضع إدخال الحجم",
+      "weightOnly": "الوزن فقط",
+      "fullDimensions": "الأبعاد الكاملة",
+      "weightHint": "أدخل الوزن بالكيلوغرام",
+      "estimatedCost": "التكلفة المقدرة",
+      "totalPrice": "السعر الإجمالي",
+      "breakdown": "تفصيل السعر",
+      "enterDetails": "أدخل تفاصيل الشحنة لحساب السعر"
     }
   }
 }

@@ -506,6 +506,8 @@
       "deleteSuccess": "Shipment deleted successfully",
       "bulkUpdateSuccess": "{{count}} shipments updated",
       "bulkDeleteSuccess": "{{count}} shipments deleted",
+      "trackSuccess": "Shipment found!",
+      "priceCalculated": "Price calculated successfully!",
       "error": "An error occurred",
       "notFound": "Shipment not found",
       "copySuccess": "Copied to clipboard"
@@ -552,6 +554,28 @@
       "search": "Track",
       "notFound": "Shipment not found",
       "publicAccess": "No login required"
+    },
+    "tracking": {
+      "subtitle": "Enter your ESN to track your shipment",
+      "searchTitle": "Track Your Shipment",
+      "searchDescription": "Enter your External Shipping Number (ESN) to view shipment details and status",
+      "esnPlaceholder": "e.g., BEN-123456 or 1234567890",
+      "details": "Shipment Details",
+      "timeline": "Timeline"
+    },
+    "calculator": {
+      "subtitle": "Get an instant shipping quote",
+      "formTitle": "Shipment Details",
+      "formDescription": "Enter your shipment information to calculate the shipping cost",
+      "country": "Country",
+      "sizeMode": "Size Input Mode",
+      "weightOnly": "Weight only",
+      "fullDimensions": "Full dimensions",
+      "weightHint": "Enter weight in kilograms",
+      "estimatedCost": "Estimated Cost",
+      "totalPrice": "Total Price",
+      "breakdown": "Price Breakdown",
+      "enterDetails": "Enter shipment details to calculate price"
     },
     "pagination": {
       "showing": "Showing {{start}}-{{end}} of {{total}} shipments",

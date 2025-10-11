@@ -80,15 +80,7 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess }: CreateSh
     try {
       setIsSubmitting(true);
       
-      // If in weight-only mode, ensure dimensions are set to default values
-      const submitData = {
-        ...data,
-        size: sizeInputMode === 'weight' 
-          ? { ...data.size, height: 1, width: 1, length: 1 }
-          : data.size
-      };
-      
-      await shipmentsApi.createShipment(submitData as any);
+      await shipmentsApi.createShipment(data as any);
       toast({
         title: t('status.success'),
         description: t('shipments.messages.createSuccess'),

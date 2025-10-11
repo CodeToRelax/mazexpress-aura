@@ -1,18 +1,21 @@
 import { z } from 'zod';
 import { ShipmentStatus, ShippingMethod, Cities } from '@/types/shipment';
 
-// Shipment Size Schema - ALL fields required per backend validation
+// Shipment Size Schema - Either weight OR all dimensions required
 export const shipmentSizeSchema = z.object({
-  weight: z.number().min(0.1).max(1000),
-  height: z.number().min(1).max(200),
-  width: z.number().min(1).max(200),
-  length: z.number().min(1).max(200),
-});
+  weight: z.number().min(0.1).max(1000).optional(),
+  height: z.number().min(1).max(200).optional(),
+  width: z.number().min(1).max(200).optional(),
+  length: z.number().min(1).max(200).optional(),
+}).refine(
+  (data) => data.weight || (data.height && data.width && data.length),
+  { message: 'Either weight OR all dimensions must be provided' }
+);
 
 // Create Shipment Schema
 export const createShipmentSchema = z.object({
-  isn: z.string().regex(/^[A-Z0-9]{8,20}$/, 'Invalid ISN format').optional().or(z.literal('')),
-  csn: z.string().regex(/^[A-Z]{3}-[A-Z0-9]{3,4}$/, 'Invalid CSN format (e.g., BEN-828C)'),
+  isn: z.string().regex(/^[A-Z0-9]{8,20}$/i, 'Invalid ISN format').optional().or(z.literal('')),
+  csn: z.string().regex(/^[A-Za-z]{3}-[A-Za-z0-9]{3,4}$/i, 'Invalid CSN format (e.g., BEN-828C or ben-test)'),
   size: shipmentSizeSchema,
   shipmentDestination: z.nativeEnum(Cities, {
     errorMap: () => ({ message: 'Invalid destination' }),
@@ -28,8 +31,8 @@ export const createShipmentSchema = z.object({
 
 // Update Shipment Schema
 export const updateShipmentSchema = z.object({
-  isn: z.string().regex(/^[A-Z0-9]{8,20}$/, 'Invalid ISN format').optional().or(z.literal('')),
-  csn: z.string().regex(/^[A-Z]{3}-[A-Z0-9]{3,4}$/, 'Invalid CSN format').optional(),
+  isn: z.string().regex(/^[A-Z0-9]{8,20}$/i, 'Invalid ISN format').optional().or(z.literal('')),
+  csn: z.string().regex(/^[A-Za-z]{3}-[A-Za-z0-9]{3,4}$/i, 'Invalid CSN format').optional(),
   size: shipmentSizeSchema.optional(),
   shipmentDestination: z.nativeEnum(Cities).optional(),
   shippingMethod: z.nativeEnum(ShippingMethod).optional(),
