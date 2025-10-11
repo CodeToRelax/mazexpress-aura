@@ -28,7 +28,7 @@ export interface Transaction {
   balanceBefore: number;
   balanceAfter: number;
   description: string;
-  status: 'PENDING' | 'COMPLETED' | 'FAILED';
+  status: 'pending' | 'completed' | 'failed';
   reference?: string;
   createdAt: string;
 }

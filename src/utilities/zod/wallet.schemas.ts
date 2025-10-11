@@ -46,7 +46,7 @@ export const transactionFiltersSchema = z.object({
   page: z.number().min(1).optional(),
   limit: z.number().min(1).max(100).optional(),
   type: z.enum(['deposit', 'withdrawal', 'deduction', 'refund']).optional(),
-  status: z.enum(['PENDING', 'COMPLETED', 'FAILED']).optional(),
+  status: z.enum(['pending', 'completed', 'failed']).optional(),
   dateFrom: z.string().optional(),
   dateTo: z.string().optional(),
 });

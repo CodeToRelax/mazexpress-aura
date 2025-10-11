@@ -39,9 +39,9 @@ export function TransactionCard({ transaction, onClick, className = '' }: Transa
 
   const getStatusBadge = () => {
     const statusColors = {
-      PENDING: 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400',
-      COMPLETED: 'bg-green-500/10 text-green-700 dark:text-green-400',
-      FAILED: 'bg-red-500/10 text-red-700 dark:text-red-400',
+      pending: 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400',
+      completed: 'bg-green-500/10 text-green-700 dark:text-green-400',
+      failed: 'bg-red-500/10 text-red-700 dark:text-red-400',
     };
 
     return (

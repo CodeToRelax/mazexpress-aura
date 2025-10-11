@@ -34,10 +34,10 @@ export function TransactionsTable({
 }: TransactionsTableProps) {
   const getTypeIcon = (type: string) => {
     const icons: Record<string, any> = {
-      DEPOSIT: ArrowDownCircle,
-      WITHDRAWAL: ArrowUpCircle,
-      DEDUCTION: MinusCircle,
-      REFUND: RefreshCcw,
+      deposit: ArrowDownCircle,
+      withdrawal: ArrowUpCircle,
+      deduction: MinusCircle,
+      refund: RefreshCcw,
     };
     const Icon = icons[type] || ArrowDownCircle;
     return <Icon className="h-4 w-4" />;
@@ -45,29 +45,29 @@ export function TransactionsTable({
 
   const getTypeColor = (type: string) => {
     const colors: Record<string, string> = {
-      DEPOSIT: 'text-green-600 dark:text-green-400',
-      WITHDRAWAL: 'text-orange-600 dark:text-orange-400',
-      DEDUCTION: 'text-red-600 dark:text-red-400',
-      REFUND: 'text-blue-600 dark:text-blue-400',
+      deposit: 'text-green-600 dark:text-green-400',
+      withdrawal: 'text-orange-600 dark:text-orange-400',
+      deduction: 'text-red-600 dark:text-red-400',
+      refund: 'text-blue-600 dark:text-blue-400',
     };
     return colors[type] || 'text-foreground';
   };
 
   const getTypeVariant = (type: string) => {
     const variants: Record<string, 'default' | 'secondary' | 'destructive'> = {
-      DEPOSIT: 'default',
-      WITHDRAWAL: 'secondary',
-      DEDUCTION: 'destructive',
-      REFUND: 'default',
+      deposit: 'default',
+      withdrawal: 'secondary',
+      deduction: 'destructive',
+      refund: 'default',
     };
     return variants[type] || 'default';
   };
 
   const getStatusVariant = (status: string) => {
     const variants: Record<string, 'default' | 'secondary' | 'destructive'> = {
-      COMPLETED: 'default',
-      PENDING: 'secondary',
-      FAILED: 'destructive',
+      completed: 'default',
+      pending: 'secondary',
+      failed: 'destructive',
     };
     return variants[status] || 'secondary';
   };
