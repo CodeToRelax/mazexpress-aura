@@ -51,7 +51,7 @@ export function CreateTransactionDialog({
     resolver: zodResolver(adminTransactionSchema),
     defaultValues: {
       walletId: '',
-      type: 'DEPOSIT',
+      type: 'deposit',
       amount: 0,
       description: '',
       reference: '',
@@ -64,7 +64,7 @@ export function CreateTransactionDialog({
       console.log('[CreateTransactionDialog] Setting walletId in form:', walletId);
       form.reset({
         walletId: walletId,
-        type: 'DEPOSIT',
+        type: 'deposit',
         amount: 0,
         description: '',
         reference: '',
@@ -98,7 +98,7 @@ export function CreateTransactionDialog({
         type: data.type,
         amount: data.amount,
         description: data.description,
-        reference: data.reference,
+        reference: data.reference && data.reference.trim() !== '' ? data.reference : undefined,
       };
       console.log('[CreateTransactionDialog] Sending payload:', payload);
       
@@ -153,10 +153,10 @@ export function CreateTransactionDialog({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="DEPOSIT">Deposit</SelectItem>
-                      <SelectItem value="WITHDRAWAL">Withdrawal</SelectItem>
-                      <SelectItem value="DEDUCTION">Deduction</SelectItem>
-                      <SelectItem value="REFUND">Refund</SelectItem>
+                      <SelectItem value="deposit">Deposit</SelectItem>
+                      <SelectItem value="withdrawal">Withdrawal</SelectItem>
+                      <SelectItem value="deduction">Deduction</SelectItem>
+                      <SelectItem value="refund">Refund</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

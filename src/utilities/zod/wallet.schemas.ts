@@ -25,8 +25,8 @@ export const withdrawalSchema = z.object({
 
 export const adminTransactionSchema = z.object({
   walletId: z.string().min(1, 'Wallet ID is required'),
-  type: z.enum(['DEPOSIT', 'WITHDRAWAL', 'DEDUCTION', 'REFUND'], {
-    errorMap: () => ({ message: 'Type must be DEPOSIT, WITHDRAWAL, DEDUCTION, or REFUND' }),
+  type: z.enum(['deposit', 'withdrawal', 'deduction', 'refund'], {
+    errorMap: () => ({ message: 'Type must be deposit, withdrawal, deduction, or refund' }),
   }),
   amount: z.coerce.number()
     .min(1, 'Amount must be at least 1 LYD')
@@ -45,7 +45,7 @@ export const createWalletSchema = z.object({
 export const transactionFiltersSchema = z.object({
   page: z.number().min(1).optional(),
   limit: z.number().min(1).max(100).optional(),
-  type: z.enum(['DEPOSIT', 'WITHDRAWAL', 'DEDUCTION', 'REFUND']).optional(),
+  type: z.enum(['deposit', 'withdrawal', 'deduction', 'refund']).optional(),
   status: z.enum(['PENDING', 'COMPLETED', 'FAILED']).optional(),
   dateFrom: z.string().optional(),
   dateTo: z.string().optional(),

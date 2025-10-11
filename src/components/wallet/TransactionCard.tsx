@@ -24,13 +24,13 @@ export function TransactionCard({ transaction, onClick, className = '' }: Transa
 
   const getTypeIcon = () => {
     switch (transaction.type) {
-      case 'DEPOSIT':
+      case 'deposit':
         return <ArrowDownCircle className="h-5 w-5 text-green-500" />;
-      case 'WITHDRAWAL':
+      case 'withdrawal':
         return <ArrowUpCircle className="h-5 w-5 text-red-500" />;
-      case 'DEDUCTION':
+      case 'deduction':
         return <MinusCircle className="h-5 w-5 text-orange-500" />;
-      case 'REFUND':
+      case 'refund':
         return <RefreshCcw className="h-5 w-5 text-blue-500" />;
       default:
         return null;
@@ -53,11 +53,11 @@ export function TransactionCard({ transaction, onClick, className = '' }: Transa
 
   const getAmountColor = () => {
     switch (transaction.type) {
-      case 'DEPOSIT':
-      case 'REFUND':
+      case 'deposit':
+      case 'refund':
         return 'text-green-600 dark:text-green-400';
-      case 'WITHDRAWAL':
-      case 'DEDUCTION':
+      case 'withdrawal':
+      case 'deduction':
         return 'text-red-600 dark:text-red-400';
       default:
         return 'text-foreground';
@@ -65,7 +65,7 @@ export function TransactionCard({ transaction, onClick, className = '' }: Transa
   };
 
   const getAmountSign = () => {
-    return ['DEPOSIT', 'REFUND'].includes(transaction.type) ? '+' : '-';
+    return ['deposit', 'refund'].includes(transaction.type) ? '+' : '-';
   };
 
   return (
