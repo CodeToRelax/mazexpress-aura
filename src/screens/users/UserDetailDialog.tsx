@@ -1,7 +1,12 @@
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
-import { X, Mail, Phone, MapPin, Calendar, User as UserIcon, Package, Wallet, Shield } from 'lucide-react';
+import { X, Mail, Phone, MapPin, Calendar, User as UserIcon, Package, Wallet as WalletIcon, Shield, Receipt, Loader2 } from 'lucide-react';
 import type { User } from '@/types/user';
+import type { Wallet } from '@/types/wallet';
+import type { Transaction } from '@/types/wallet';
+import type { Invoice } from '@/types/invoice';
 import {
   Dialog,
   DialogContent,
@@ -13,7 +18,13 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent } from '@/components/ui/card';
 import { ACLManagementTab } from './ACLManagementTab';
+import { WalletBalance } from '@/components/wallet/WalletBalance';
+import { TransactionCard } from '@/components/wallet/TransactionCard';
+import { getInvoices } from '@/utilities/api/invoice.api';
+import { toast } from '@/hooks/use-toast';
+import { formatLYD } from '@/utilities/helpers/currencyHelpers';
 
 interface UserDetailDialogProps {
   user: User | null;
@@ -24,6 +35,55 @@ interface UserDetailDialogProps {
 
 export function UserDetailDialog({ user, open, onClose, onEdit }: UserDetailDialogProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const [wallet, setWallet] = useState<Wallet | null>(null);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [isLoadingWallet, setIsLoadingWallet] = useState(false);
+  const [isLoadingInvoices, setIsLoadingInvoices] = useState(false);
+
+  const fetchWalletData = async () => {
+    if (!user?.walletId) return;
+    
+    setIsLoadingWallet(true);
+    try {
+      // TODO: Replace with admin API call to get user's wallet
+      // const walletData = await getWalletByUserId(user._id);
+      // setWallet(walletData.wallet);
+      // setTransactions(walletData.transactions);
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to load wallet data',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoadingWallet(false);
+    }
+  };
+
+  const fetchInvoices = async () => {
+    if (!user?._id) return;
+    
+    setIsLoadingInvoices(true);
+    try {
+      const response = await getInvoices({ 
+        userId: user._id,
+        limit: 10,
+        sortBy: 'createdAt',
+        sortOrder: 'desc'
+      });
+      setInvoices(response.docs || []);
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to load invoices',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoadingInvoices(false);
+    }
+  };
 
   if (!user) return null;
 
@@ -74,10 +134,18 @@ export function UserDetailDialog({ user, open, onClose, onEdit }: UserDetailDial
         </DialogHeader>
 
         <Tabs defaultValue="overview" className="mt-6">
-          <TabsList className={`grid w-full ${user.userType === 'admin' ? 'grid-cols-4' : 'grid-cols-3'}`}>
+          <TabsList className={`grid w-full ${user.userType === 'admin' ? 'grid-cols-6' : 'grid-cols-5'}`}>
             <TabsTrigger value="overview">{t('users.detail.overview')}</TabsTrigger>
             <TabsTrigger value="profile">{t('users.detail.profile')}</TabsTrigger>
-            <TabsTrigger value="metadata">{t('users.detail.metadata')}</TabsTrigger>
+            <TabsTrigger value="wallet" onClick={fetchWalletData}>
+              <WalletIcon className="h-4 w-4 mr-2" />
+              Wallet
+            </TabsTrigger>
+            <TabsTrigger value="invoices" onClick={fetchInvoices}>
+              <Receipt className="h-4 w-4 mr-2" />
+              Invoices
+            </TabsTrigger>
+            <TabsTrigger value="metadata">Metadata</TabsTrigger>
             {user.userType === 'admin' && (
               <TabsTrigger value="acl">
                 <Shield className="h-4 w-4 mr-2" />
@@ -136,7 +204,7 @@ export function UserDetailDialog({ user, open, onClose, onEdit }: UserDetailDial
 
                 {user.walletId && (
                   <div className="flex items-start gap-3">
-                    <Wallet className="h-5 w-5 text-muted-foreground mt-0.5" />
+                    <WalletIcon className="h-5 w-5 text-muted-foreground mt-0.5" />
                     <div>
                       <div className="text-sm text-muted-foreground">{t('users.detail.fields.walletId')}</div>
                       <div className="font-medium font-mono text-sm">{user.walletId}</div>
@@ -198,6 +266,155 @@ export function UserDetailDialog({ user, open, onClose, onEdit }: UserDetailDial
                 </div>
               </div>
             </div>
+          </TabsContent>
+
+          <TabsContent value="metadata" className="space-y-4 mt-4">
+            <div className="glass-card p-4 rounded-xl space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm text-muted-foreground">{t('users.detail.fields.firebaseId')}</label>
+                  <div className="font-mono text-sm mt-1 break-all">{user.firebaseId}</div>
+                </div>
+                <div>
+                  <label className="text-sm text-muted-foreground">User ID</label>
+                  <div className="font-mono text-sm mt-1 break-all">{user._id}</div>
+                </div>
+                <div>
+                  <label className="text-sm text-muted-foreground">{t('users.detail.fields.createdAt')}</label>
+                  <div className="font-medium mt-1">
+                    {formatDate(user.createdAt, 'MMMM dd, yyyy HH:mm')}
+                  </div>
+                </div>
+                <div>
+                  <label className="text-sm text-muted-foreground">{t('users.detail.fields.updatedAt')}</label>
+                  <div className="font-medium mt-1">
+                    {formatDate(user.updatedAt, 'MMMM dd, yyyy HH:mm')}
+                  </div>
+                </div>
+                <div>
+                  <label className="text-sm text-muted-foreground">{t('users.detail.fields.privacyAgreement')}</label>
+                  <div className="mt-1">
+                    <Badge variant={user.privacyPolicy.usageAgreement ? 'default' : 'destructive'}>
+                      {user.privacyPolicy.usageAgreement ? 'Agreed' : 'Not Agreed'}
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="wallet" className="space-y-4 mt-4">
+            {isLoadingWallet ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              </div>
+            ) : user.walletId ? (
+              <>
+                {wallet && (
+                  <WalletBalance balance={wallet.balance} currency={wallet.currency} />
+                )}
+                
+                <div className="glass-card p-4 rounded-xl space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-semibold">Recent Transactions</h3>
+                    <Button variant="link" size="sm" onClick={() => { onClose(); navigate(`/wallet/transactions?userId=${user._id}`); }}>
+                      View All
+                    </Button>
+                  </div>
+                  <Separator />
+                  
+                  {transactions.length > 0 ? (
+                    <div className="space-y-2">
+                      {transactions.slice(0, 5).map((transaction) => (
+                        <TransactionCard key={transaction._id} transaction={transaction} />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-6 text-sm text-muted-foreground">
+                      No transactions found
+                    </div>
+                  )}
+                </div>
+              </>
+            ) : (
+              <Card>
+                <CardContent className="flex flex-col items-center justify-center py-12">
+                  <WalletIcon className="h-12 w-12 text-muted-foreground mb-4" />
+                  <p className="font-medium mb-2">No Wallet</p>
+                  <p className="text-sm text-muted-foreground">This user does not have a wallet yet</p>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
+          <TabsContent value="invoices" className="space-y-4 mt-4">
+            {isLoadingInvoices ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              </div>
+            ) : (
+              <div className="glass-card p-4 rounded-xl space-y-3">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold">Invoices</h3>
+                  <Button variant="link" size="sm" onClick={() => { onClose(); navigate(`/invoices?userId=${user._id}`); }}>
+                    View All
+                  </Button>
+                </div>
+                <Separator />
+                
+                {invoices.length > 0 ? (
+                  <div className="space-y-2">
+                    {invoices.map((invoice) => {
+                      const getStatusColor = (status: string) => {
+                        const colors = {
+                          PAID: 'bg-green-500/10 text-green-700 dark:text-green-400',
+                          UNPAID: 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400',
+                          OVERDUE: 'bg-red-500/10 text-red-700 dark:text-red-400',
+                          PARTIALLY_PAID: 'bg-blue-500/10 text-blue-700 dark:text-blue-400',
+                          DRAFT: 'bg-gray-500/10 text-gray-700 dark:text-gray-400',
+                          CANCELLED: 'bg-gray-500/10 text-gray-700 dark:text-gray-400',
+                        };
+                        return colors[status as keyof typeof colors] || colors.DRAFT;
+                      };
+
+                      return (
+                        <Card 
+                          key={invoice._id}
+                          className="cursor-pointer transition-colors hover:bg-accent/50"
+                          onClick={() => { onClose(); navigate(`/invoices/${invoice._id}`); }}
+                        >
+                          <CardContent className="p-3">
+                            <div className="flex items-center justify-between">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <p className="font-medium text-sm">{invoice.invoiceNumber}</p>
+                                  <Badge variant="secondary" className={getStatusColor(invoice.status)}>
+                                    {invoice.status.replace('_', ' ')}
+                                  </Badge>
+                                </div>
+                                <p className="text-xs text-muted-foreground">
+                                  {format(new Date(invoice.createdAt), 'MMM dd, yyyy')}
+                                </p>
+                              </div>
+                              <div className="text-right">
+                                <p className="font-semibold">{formatLYD(invoice.totals.gross)}</p>
+                                <p className="text-xs text-muted-foreground">
+                                  Due: {formatLYD(invoice.totals.due)}
+                                </p>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="text-center py-6 text-sm text-muted-foreground">
+                    No invoices found
+                  </div>
+                )}
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="metadata" className="space-y-4 mt-4">

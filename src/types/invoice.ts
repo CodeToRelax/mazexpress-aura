@@ -44,6 +44,9 @@ export interface InvoiceFilters {
   status?: string;
   dateFrom?: string;
   dateTo?: string;
+  userId?: string;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
 }
 
 export interface PaymentAllocation {

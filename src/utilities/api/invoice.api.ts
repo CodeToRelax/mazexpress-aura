@@ -76,6 +76,9 @@ export async function getInvoices(
   if (filters.status) params.append('status', filters.status);
   if (filters.dateFrom) params.append('dateFrom', filters.dateFrom);
   if (filters.dateTo) params.append('dateTo', filters.dateTo);
+  if (filters.userId) params.append('userId', filters.userId);
+  if (filters.sortBy) params.append('sortBy', filters.sortBy);
+  if (filters.sortOrder) params.append('sortOrder', filters.sortOrder);
   
   const queryString = params.toString();
   const url = `${API_BASE_URL}/api/invoice/my-invoices${queryString ? `?${queryString}` : ''}`;
