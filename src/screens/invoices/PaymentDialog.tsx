@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -28,7 +29,7 @@ import { toast } from '@/hooks/use-toast';
 import { processPayment } from '@/utilities/api/invoice.api';
 import { getWallet } from '@/utilities/api/wallet.api';
 import { processPaymentSchema, type ProcessPaymentInput } from '@/utilities/zod/invoice.schemas';
-import type { Invoice } from '@/types/invoice';
+import type { Invoice, ProcessPaymentRequest } from '@/types/invoice';
 
 interface PaymentDialogProps {
   open: boolean;
@@ -39,9 +40,8 @@ interface PaymentDialogProps {
 export function PaymentDialog({ open, onOpenChange, invoice }: PaymentDialogProps) {
   const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { data: wallet } = useQuery({
+  const { data: walletData } = useQuery({
     queryKey: ['wallet'],
     queryFn: () => getWallet(i18n.language),
     enabled: open,
@@ -50,20 +50,15 @@ export function PaymentDialog({ open, onOpenChange, invoice }: PaymentDialogProp
   const form = useForm<ProcessPaymentInput>({
     resolver: zodResolver(processPaymentSchema),
     defaultValues: {
-      amount: invoice.totals.due,
-      source: 'wallet',
-      paymentMethod: '',
-      notes: '',
+      amount: typeof invoice.userId === 'object' ? invoice.totals.due / 100 : 0,
+      source: 'WALLET' as const,
+      description: '',
     },
   });
 
-  const paymentMutation = useMutation({
-    mutationFn: (data: ProcessPaymentInput) => processPayment(invoice._id, {
-      amount: data.amount,
-      source: data.source,
-      paymentMethod: data.paymentMethod,
-      notes: data.notes,
-    }, i18n.language),
+  const mutation = useMutation({
+    mutationFn: (data: ProcessPaymentRequest) => 
+      processPayment(invoice._id, data, i18n.language),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['invoice', invoice._id] });
       queryClient.invalidateQueries({ queryKey: ['invoices'] });
@@ -82,26 +77,29 @@ export function PaymentDialog({ open, onOpenChange, invoice }: PaymentDialogProp
         variant: 'destructive',
       });
     },
-    onSettled: () => {
-      setIsSubmitting(false);
-    },
   });
 
-  const onSubmit = (data: ProcessPaymentInput) => {
-    setIsSubmitting(true);
-    paymentMutation.mutate(data);
+  const onSubmit = async (data: ProcessPaymentInput) => {
+    const paymentData: ProcessPaymentRequest = {
+      amount: Math.round(data.amount * 100), // Convert to cents
+      source: data.source,
+      description: data.description,
+    };
+
+    mutation.mutate(paymentData);
   };
 
-  const formatCurrency = (amount: number) => {
+  const formatCurrency = (amountInCents: number) => {
+    const amountInLYD = amountInCents / 100;
     return new Intl.NumberFormat('en-US', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-    }).format(amount);
+    }).format(amountInLYD);
   };
 
-  const watchAmount = form.watch('amount');
   const watchSource = form.watch('source');
-  const showInsufficientWarning = wallet && watchSource === 'wallet' && watchAmount > wallet.balance;
+  const watchAmount = form.watch('amount');
+  const showInsufficientWarning = watchSource === 'WALLET' && walletData && (watchAmount * 100) > walletData.balance;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -152,22 +150,27 @@ export function PaymentDialog({ open, onOpenChange, invoice }: PaymentDialogProp
               name="source"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('invoice.paymentDialog.source')}</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormLabel>Payment Source</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder={t('invoice.paymentDialog.selectSource')} />
+                        <SelectValue placeholder="Select payment source" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="wallet">
-                        {t('invoice.paymentDialog.sourceWallet')}
-                        {wallet && ` (${formatCurrency(wallet.balance)} LYD)`}
-                      </SelectItem>
-                      <SelectItem value="cash">{t('invoice.paymentDialog.sourceCash')}</SelectItem>
-                      <SelectItem value="bank_transfer">{t('invoice.paymentDialog.sourceBankTransfer')}</SelectItem>
+                      <SelectItem value="WALLET">Wallet</SelectItem>
+                      <SelectItem value="CASH">Cash</SelectItem>
+                      <SelectItem value="BANK_TRANSFER">Bank Transfer</SelectItem>
                     </SelectContent>
                   </Select>
+                  <FormDescription>
+                    {watchSource === 'WALLET' && walletData && (
+                      <span>Current balance: {formatCurrency(walletData.balance)} LYD</span>
+                    )}
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -175,31 +178,14 @@ export function PaymentDialog({ open, onOpenChange, invoice }: PaymentDialogProp
 
             <FormField
               control={form.control}
-              name="paymentMethod"
+              name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('invoice.paymentDialog.paymentMethod')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t('invoice.paymentDialog.paymentMethodPlaceholder')}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="notes"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('invoice.paymentDialog.notes')}</FormLabel>
+                  <FormLabel>Description</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder={t('invoice.paymentDialog.notesPlaceholder')}
-                      rows={3}
+                      placeholder="Enter payment description"
+                      className="resize-none"
                       {...field}
                     />
                   </FormControl>
@@ -213,15 +199,15 @@ export function PaymentDialog({ open, onOpenChange, invoice }: PaymentDialogProp
                 type="button"
                 variant="outline"
                 onClick={() => onOpenChange(false)}
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               >
                 {t('common.cancel')}
               </Button>
               <Button 
                 type="submit" 
-                disabled={isSubmitting || showInsufficientWarning}
+                disabled={mutation.isPending || showInsufficientWarning}
               >
-                {isSubmitting ? t('common.processing') : t('invoice.paymentDialog.submit')}
+                {mutation.isPending ? t('common.processing') : t('invoice.paymentDialog.submit')}
               </Button>
             </div>
           </form>

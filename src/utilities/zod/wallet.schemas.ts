@@ -25,7 +25,7 @@ export const withdrawalSchema = z.object({
 
 export const adminTransactionSchema = z.object({
   walletId: z.string().min(1, 'Wallet ID is required'),
-  type: z.enum(['deduction', 'refund'], {
+  type: z.enum(['DEDUCTION', 'REFUND'], {
     errorMap: () => ({ message: 'Type must be either deduction or refund' }),
   }),
   amount: z.number()
@@ -45,8 +45,8 @@ export const createWalletSchema = z.object({
 export const transactionFiltersSchema = z.object({
   page: z.number().min(1).optional(),
   limit: z.number().min(1).max(100).optional(),
-  type: z.enum(['deposit', 'withdrawal', 'deduction', 'refund']).optional(),
-  status: z.enum(['pending', 'completed', 'failed']).optional(),
+  type: z.enum(['DEPOSIT', 'WITHDRAWAL', 'DEDUCTION', 'REFUND']).optional(),
+  status: z.enum(['PENDING', 'COMPLETED', 'FAILED']).optional(),
   dateFrom: z.string().optional(),
   dateTo: z.string().optional(),
 });

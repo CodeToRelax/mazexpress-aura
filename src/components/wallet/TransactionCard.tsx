@@ -14,22 +14,23 @@ interface TransactionCardProps {
 export function TransactionCard({ transaction, onClick, className = '' }: TransactionCardProps) {
   const { t } = useTranslation();
 
-  const formatCurrency = (amount: number) => {
+  const formatCurrency = (amountInCents: number) => {
+    const amountInLYD = amountInCents / 100;
     return new Intl.NumberFormat('en-US', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-    }).format(amount);
+    }).format(amountInLYD);
   };
 
   const getTypeIcon = () => {
     switch (transaction.type) {
-      case 'deposit':
+      case 'DEPOSIT':
         return <ArrowDownCircle className="h-5 w-5 text-green-500" />;
-      case 'withdrawal':
+      case 'WITHDRAWAL':
         return <ArrowUpCircle className="h-5 w-5 text-red-500" />;
-      case 'deduction':
+      case 'DEDUCTION':
         return <MinusCircle className="h-5 w-5 text-orange-500" />;
-      case 'refund':
+      case 'REFUND':
         return <RefreshCcw className="h-5 w-5 text-blue-500" />;
       default:
         return null;
@@ -38,25 +39,25 @@ export function TransactionCard({ transaction, onClick, className = '' }: Transa
 
   const getStatusBadge = () => {
     const statusColors = {
-      pending: 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400',
-      completed: 'bg-green-500/10 text-green-700 dark:text-green-400',
-      failed: 'bg-red-500/10 text-red-700 dark:text-red-400',
+      PENDING: 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400',
+      COMPLETED: 'bg-green-500/10 text-green-700 dark:text-green-400',
+      FAILED: 'bg-red-500/10 text-red-700 dark:text-red-400',
     };
 
     return (
       <Badge variant="secondary" className={statusColors[transaction.status]}>
-        {t(`wallet.transaction.status.${transaction.status}`)}
+        {t(`wallet.transaction.status.${transaction.status.toLowerCase()}`)}
       </Badge>
     );
   };
 
   const getAmountColor = () => {
     switch (transaction.type) {
-      case 'deposit':
-      case 'refund':
+      case 'DEPOSIT':
+      case 'REFUND':
         return 'text-green-600 dark:text-green-400';
-      case 'withdrawal':
-      case 'deduction':
+      case 'WITHDRAWAL':
+      case 'DEDUCTION':
         return 'text-red-600 dark:text-red-400';
       default:
         return 'text-foreground';
@@ -64,7 +65,7 @@ export function TransactionCard({ transaction, onClick, className = '' }: Transa
   };
 
   const getAmountSign = () => {
-    return ['deposit', 'refund'].includes(transaction.type) ? '+' : '-';
+    return ['DEPOSIT', 'REFUND'].includes(transaction.type) ? '+' : '-';
   };
 
   return (
@@ -80,9 +81,9 @@ export function TransactionCard({ transaction, onClick, className = '' }: Transa
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
-                <p className="font-medium text-sm">
-                  {t(`wallet.transaction.type.${transaction.type}`)}
-                </p>
+            <p className="font-medium text-sm">
+              {t(`wallet.transaction.type.${transaction.type.toLowerCase()}`)}
+            </p>
                 {getStatusBadge()}
               </div>
               <p className="text-xs text-muted-foreground truncate">

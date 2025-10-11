@@ -34,24 +34,25 @@ export default function Invoices() {
     setFilters((prev) => ({ ...prev, page: newPage }));
   };
 
-  const formatCurrency = (amount: number) => {
+  const formatCurrency = (amountInCents: number) => {
+    const amountInLYD = amountInCents / 100;
     return new Intl.NumberFormat('en-US', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-    }).format(amount);
+    }).format(amountInLYD);
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'paid':
+      case 'PAID':
         return 'bg-green-500/10 text-green-500 border-green-500/20';
-      case 'unpaid':
+      case 'UNPAID':
         return 'bg-red-500/10 text-red-500 border-red-500/20';
-      case 'partially_paid':
+      case 'PARTIALLY_PAID':
         return 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20';
-      case 'overdue':
+      case 'OVERDUE':
         return 'bg-red-500/10 text-red-500 border-red-500/20';
-      case 'cancelled':
+      case 'CANCELLED':
         return 'bg-muted text-muted-foreground border-muted';
       default:
         return 'bg-muted text-muted-foreground border-muted';
@@ -83,10 +84,10 @@ export default function Invoices() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">{t('invoice.filter.allStatuses')}</SelectItem>
-                <SelectItem value="unpaid">{t('invoice.status.unpaid')}</SelectItem>
-                <SelectItem value="partially_paid">{t('invoice.status.partially_paid')}</SelectItem>
-                <SelectItem value="paid">{t('invoice.status.paid')}</SelectItem>
-                <SelectItem value="overdue">{t('invoice.status.overdue')}</SelectItem>
+                <SelectItem value="UNPAID">{t('invoice.status.unpaid')}</SelectItem>
+                <SelectItem value="PARTIALLY_PAID">{t('invoice.status.partially_paid')}</SelectItem>
+                <SelectItem value="PAID">{t('invoice.status.paid')}</SelectItem>
+                <SelectItem value="OVERDUE">{t('invoice.status.overdue')}</SelectItem>
               </SelectContent>
             </Select>
 
@@ -123,7 +124,7 @@ export default function Invoices() {
                         <div className="flex items-center gap-3 mb-2">
                           <span className="font-semibold">{invoice.invoiceNumber}</span>
                           <Badge className={getStatusColor(invoice.status)}>
-                            {t(`invoice.status.${invoice.status}`)}
+                            {t(`invoice.status.${invoice.status.toLowerCase()}`)}
                           </Badge>
                         </div>
                         <p className="text-sm text-muted-foreground">

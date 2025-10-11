@@ -25,24 +25,25 @@ export default function InvoiceDetail() {
     enabled: !!id,
   });
 
-  const formatCurrency = (amount: number) => {
+  const formatCurrency = (amountInCents: number) => {
+    const amountInLYD = amountInCents / 100;
     return new Intl.NumberFormat('en-US', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-    }).format(amount);
+    }).format(amountInLYD);
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'paid':
+      case 'PAID':
         return 'bg-green-500/10 text-green-500 border-green-500/20';
-      case 'unpaid':
+      case 'UNPAID':
         return 'bg-red-500/10 text-red-500 border-red-500/20';
-      case 'partially_paid':
+      case 'PARTIALLY_PAID':
         return 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20';
-      case 'overdue':
+      case 'OVERDUE':
         return 'bg-red-500/10 text-red-500 border-red-500/20';
-      case 'cancelled':
+      case 'CANCELLED':
         return 'bg-muted text-muted-foreground border-muted';
       default:
         return 'bg-muted text-muted-foreground border-muted';
@@ -53,7 +54,7 @@ export default function InvoiceDetail() {
   if (error) return <InlineError message={error.message} />;
   if (!invoice) return <InlineError message={t('invoice.notFound')} />;
 
-  const canPay = invoice.status === 'unpaid' || invoice.status === 'partially_paid';
+  const canPay = invoice.status === 'UNPAID' || invoice.status === 'PARTIALLY_PAID';
 
   return (
     <div className="space-y-6">
@@ -63,7 +64,7 @@ export default function InvoiceDetail() {
         </Button>
         <h1 className="text-3xl font-bold">{invoice.invoiceNumber}</h1>
         <Badge className={getStatusColor(invoice.status)}>
-          {t(`invoice.status.${invoice.status}`)}
+          {t(`invoice.status.${invoice.status.toLowerCase()}`)}
         </Badge>
       </div>
 

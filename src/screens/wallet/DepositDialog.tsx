@@ -72,16 +72,17 @@ export function DepositDialog({ open, onOpenChange, wallet }: DepositDialogProps
   const onSubmit = (data: DepositInput) => {
     setIsSubmitting(true);
     depositMutation.mutate({
-      amount: data.amount,
+      amount: Math.round(data.amount * 100), // Convert to cents
       description: data.description,
     });
   };
 
-  const formatCurrency = (amount: number) => {
+  const formatCurrency = (amountInCents: number) => {
+    const amountInLYD = amountInCents / 100;
     return new Intl.NumberFormat('en-US', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-    }).format(amount);
+    }).format(amountInLYD);
   };
 
   return (

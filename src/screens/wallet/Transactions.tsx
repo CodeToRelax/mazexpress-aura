@@ -53,10 +53,10 @@ export default function Transactions() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">{t('wallet.filter.allTypes')}</SelectItem>
-                <SelectItem value="deposit">{t('wallet.transaction.type.deposit')}</SelectItem>
-                <SelectItem value="withdrawal">{t('wallet.transaction.type.withdrawal')}</SelectItem>
-                <SelectItem value="deduction">{t('wallet.transaction.type.deduction')}</SelectItem>
-                <SelectItem value="refund">{t('wallet.transaction.type.refund')}</SelectItem>
+                <SelectItem value="DEPOSIT">{t('wallet.transaction.type.deposit')}</SelectItem>
+                <SelectItem value="WITHDRAWAL">{t('wallet.transaction.type.withdrawal')}</SelectItem>
+                <SelectItem value="DEDUCTION">{t('wallet.transaction.type.deduction')}</SelectItem>
+                <SelectItem value="REFUND">{t('wallet.transaction.type.refund')}</SelectItem>
               </SelectContent>
             </Select>
 
@@ -69,9 +69,9 @@ export default function Transactions() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">{t('wallet.filter.allStatuses')}</SelectItem>
-                <SelectItem value="pending">{t('wallet.transaction.status.pending')}</SelectItem>
-                <SelectItem value="completed">{t('wallet.transaction.status.completed')}</SelectItem>
-                <SelectItem value="failed">{t('wallet.transaction.status.failed')}</SelectItem>
+                <SelectItem value="PENDING">{t('wallet.transaction.status.pending')}</SelectItem>
+                <SelectItem value="COMPLETED">{t('wallet.transaction.status.completed')}</SelectItem>
+                <SelectItem value="FAILED">{t('wallet.transaction.status.failed')}</SelectItem>
               </SelectContent>
             </Select>
 

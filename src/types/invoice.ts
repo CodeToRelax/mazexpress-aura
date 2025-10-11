@@ -13,7 +13,7 @@ export interface Invoice {
     email: string;
     uniqueShippingNumber: string;
   };
-  status: 'draft' | 'unpaid' | 'partially_paid' | 'paid' | 'overdue' | 'cancelled';
+  status: 'DRAFT' | 'UNPAID' | 'PARTIALLY_PAID' | 'PAID' | 'OVERDUE' | 'CANCELLED';
   totals: {
     net: number;
     gross: number;
@@ -50,27 +50,24 @@ export interface PaymentAllocation {
   _id: string;
   invoiceId: string;
   amount: number;
-  source: 'wallet' | 'cash' | 'bank_transfer';
-  paymentMethod: string;
+  source: 'WALLET' | 'CASH' | 'BANK_TRANSFER';
   processedAt: string;
-  notes?: string;
+  description?: string;
 }
 
 export interface GenerateInvoiceRequest {
+  userId: string;
   shipmentIds: string[];
-  dueDate: string;
-  notes?: string;
 }
 
 export interface ProcessPaymentRequest {
   amount: number;
-  source: 'wallet' | 'cash' | 'bank_transfer';
-  paymentMethod: string;
-  notes?: string;
+  source: 'WALLET' | 'CASH' | 'BANK_TRANSFER';
+  description: string;
 }
 
 export interface UpdateInvoiceStatusRequest {
-  status: 'draft' | 'unpaid' | 'partially_paid' | 'paid' | 'overdue' | 'cancelled';
+  status: 'DRAFT' | 'UNPAID' | 'PARTIALLY_PAID' | 'PAID' | 'OVERDUE' | 'CANCELLED';
   notes?: string;
 }
 

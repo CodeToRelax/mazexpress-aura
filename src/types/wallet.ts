@@ -23,12 +23,12 @@ export interface Transaction {
   walletId: string | { _id: string; currency: string };
   userId: string;
   transactionNumber: string;
-  type: 'deposit' | 'withdrawal' | 'deduction' | 'refund';
+  type: 'DEPOSIT' | 'WITHDRAWAL' | 'DEDUCTION' | 'REFUND';
   amount: number;
   balanceBefore: number;
   balanceAfter: number;
   description: string;
-  status: 'pending' | 'completed' | 'failed';
+  status: 'PENDING' | 'COMPLETED' | 'FAILED';
   reference?: string;
   createdAt: string;
 }
@@ -61,7 +61,7 @@ export type WithdrawRequest = {
 
 export interface AdminTransactionRequest {
   walletId: string;
-  type: 'deduction' | 'refund';
+  type: 'DEDUCTION' | 'REFUND';
   amount: number;
   description: string;
   reference?: string;

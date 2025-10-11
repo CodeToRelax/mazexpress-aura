@@ -6,39 +6,26 @@ import { z } from 'zod';
  */
 
 export const generateInvoiceSchema = z.object({
+  userId: z.string().min(1, 'User ID is required'),
   shipmentIds: z.array(z.string())
     .min(1, 'At least one shipment must be selected')
     .max(50, 'Cannot generate invoice for more than 50 shipments at once'),
-  dueDate: z.string()
-    .min(1, 'Due date is required')
-    .refine((date) => {
-      const dueDate = new Date(date);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      return dueDate >= today;
-    }, 'Due date must be today or in the future'),
-  notes: z.string()
-    .max(500, 'Notes cannot exceed 500 characters')
-    .optional(),
 });
 
 export const processPaymentSchema = z.object({
-  amount: z.number()
+  amount: z.coerce.number()
     .min(1, 'Amount must be at least 1 LYD')
     .max(10000000, 'Amount cannot exceed 10,000,000 LYD'),
-  source: z.enum(['wallet', 'cash', 'bank_transfer'], {
+  source: z.enum(['WALLET', 'CASH', 'BANK_TRANSFER'], {
     errorMap: () => ({ message: 'Invalid payment source' }),
   }),
-  paymentMethod: z.string()
-    .min(1, 'Payment method is required')
-    .max(100, 'Payment method cannot exceed 100 characters'),
-  notes: z.string()
-    .max(500, 'Notes cannot exceed 500 characters')
-    .optional(),
+  description: z.string()
+    .min(3, 'Description must be at least 3 characters')
+    .max(500, 'Description cannot exceed 500 characters'),
 });
 
 export const updateInvoiceStatusSchema = z.object({
-  status: z.enum(['draft', 'unpaid', 'partially_paid', 'paid', 'overdue', 'cancelled'], {
+  status: z.enum(['DRAFT', 'UNPAID', 'PARTIALLY_PAID', 'PAID', 'OVERDUE', 'CANCELLED'], {
     errorMap: () => ({ message: 'Invalid status' }),
   }),
   notes: z.string()
@@ -49,7 +36,7 @@ export const updateInvoiceStatusSchema = z.object({
 export const invoiceFiltersSchema = z.object({
   page: z.number().min(1).optional(),
   limit: z.number().min(1).max(100).optional(),
-  status: z.enum(['draft', 'unpaid', 'partially_paid', 'paid', 'overdue', 'cancelled']).optional(),
+  status: z.enum(['DRAFT', 'UNPAID', 'PARTIALLY_PAID', 'PAID', 'OVERDUE', 'CANCELLED']).optional(),
   dateFrom: z.string().optional(),
   dateTo: z.string().optional(),
 });

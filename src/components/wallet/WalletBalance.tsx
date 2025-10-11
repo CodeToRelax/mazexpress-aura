@@ -1,6 +1,7 @@
 import { Wallet as WalletIcon } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useTranslation } from 'react-i18next';
+import { formatLYD } from '@/utilities/helpers/currencyHelpers';
 
 interface WalletBalanceProps {
   balance: number;
@@ -16,13 +17,6 @@ export function WalletBalance({
   showIcon = true 
 }: WalletBalanceProps) {
   const { t } = useTranslation();
-  
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(amount);
-  };
 
   return (
     <Card className={className}>
@@ -38,7 +32,7 @@ export function WalletBalance({
               {t('wallet.currentBalance')}
             </p>
             <p className="text-2xl font-bold">
-              {formatCurrency(balance)} {currency}
+              {formatLYD(balance)}
             </p>
           </div>
         </div>
