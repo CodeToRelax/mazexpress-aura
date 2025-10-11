@@ -498,13 +498,7 @@ export default function Shipments() {
             <div className="text-center py-12 glass-card rounded-2xl">
               <Package className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
               <h3 className="text-lg font-semibold mb-2">{t('shipments.empty.title')}</h3>
-              <p className="text-muted-foreground mb-4">{t('shipments.empty.description')}</p>
-              <ACLGuard flag="canCreateShipments">
-                <Button onClick={handleCreateShipment}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  {t('shipments.empty.createFirst')}
-                </Button>
-              </ACLGuard>
+              <p className="text-muted-foreground">{t('shipments.empty.description')}</p>
             </div>
           ) : (
             <ShipmentsTable
