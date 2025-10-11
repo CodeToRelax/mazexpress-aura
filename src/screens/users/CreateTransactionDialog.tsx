@@ -52,14 +52,23 @@ export function CreateTransactionDialog({
     defaultValues: {
       walletId: walletId || '',
       type: 'DEPOSIT',
-      amount: undefined as any,
+      amount: 0,
       description: '',
       reference: '',
     },
   });
 
+  console.log('[CreateTransactionDialog] Current form values:', form.watch());
+  console.log('[CreateTransactionDialog] Wallet ID:', walletId);
+  console.log('[CreateTransactionDialog] Form errors:', form.formState.errors);
+
   const onSubmit = async (data: AdminTransactionInput) => {
+    console.log('[CreateTransactionDialog] onSubmit called');
+    console.log('[CreateTransactionDialog] Form data:', data);
+    console.log('[CreateTransactionDialog] Wallet ID:', walletId);
+
     if (!walletId) {
+      console.error('[CreateTransactionDialog] Wallet ID is missing');
       toast({
         title: 'Error',
         description: 'Wallet ID is missing',
@@ -77,7 +86,11 @@ export function CreateTransactionDialog({
         description: data.description,
         reference: data.reference,
       };
-      await processTransaction(payload);
+      console.log('[CreateTransactionDialog] Sending payload:', payload);
+      
+      const result = await processTransaction(payload);
+      console.log('[CreateTransactionDialog] Transaction created successfully:', result);
+      
       toast({
         title: 'Success',
         description: 'Transaction created successfully',
@@ -85,6 +98,7 @@ export function CreateTransactionDialog({
       form.reset();
       onSuccess();
     } catch (error: any) {
+      console.error('[CreateTransactionDialog] Error creating transaction:', error);
       toast({
         title: 'Error',
         description: error.message || 'Failed to create transaction',
@@ -147,9 +161,10 @@ export function CreateTransactionDialog({
                       type="number"
                       step="0.01"
                       placeholder="0.00"
-                      value={field.value ?? ''}
+                      {...field}
                       onChange={(e) => {
-                        const value = e.target.value === '' ? undefined : parseFloat(e.target.value);
+                        const value = e.target.value === '' ? 0 : parseFloat(e.target.value);
+                        console.log('[CreateTransactionDialog] Amount changed to:', value);
                         field.onChange(value);
                       }}
                     />
