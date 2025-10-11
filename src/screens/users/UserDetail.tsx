@@ -57,7 +57,7 @@ export default function UserDetail() {
   }, [id, navigate]);
 
   const fetchWalletData = async () => {
-    if (!user?.walletId) return;
+    if (!user?._id) return;
     
     setIsLoadingWallet(true);
     try {
@@ -343,11 +343,9 @@ export default function UserDetail() {
             <div className="flex items-center justify-center py-12">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
-          ) : user.walletId ? (
+          ) : wallet ? (
             <>
-              {wallet && (
-                <WalletBalance balance={wallet.balance} currency={wallet.currency} />
-              )}
+              <WalletBalance balance={wallet.balance} currency={wallet.currency} />
               
               <div className="glass-card p-6 rounded-2xl space-y-4">
                 <div className="flex items-center justify-between">
