@@ -18,6 +18,10 @@ import WarehouseDetail from "@/screens/warehouses/WarehouseDetail";
 import Shipments from "@/screens/shipments/Shipments";
 import ShipmentDetail from "@/screens/shipments/ShipmentDetail";
 import SystemSettings from "@/screens/settings/SystemSettings";
+import WalletDashboard from "@/screens/wallet/WalletDashboard";
+import Transactions from "@/screens/wallet/Transactions";
+import Invoices from "@/screens/invoices/Invoices";
+import InvoiceDetail from "@/screens/invoices/InvoiceDetail";
 import TrackShipment from "@/pages/TrackShipment";
 import PriceCalculator from "@/pages/PriceCalculator";
 import NotFound from "./pages/NotFound";
@@ -55,6 +59,10 @@ const App = () => {
               <Route path="/warehouses/:id" element={<WarehouseDetail />} />
               <Route path="/shipments" element={<Shipments />} />
               <Route path="/shipments/:id" element={<ShipmentDetail />} />
+              <Route path="/wallet" element={<WalletDashboard />} />
+              <Route path="/wallet/transactions" element={<Transactions />} />
+              <Route path="/invoices" element={<Invoices />} />
+              <Route path="/invoices/:id" element={<InvoiceDetail />} />
               <Route path="/settings" element={<SystemSettings />} />
             </Route>
             
