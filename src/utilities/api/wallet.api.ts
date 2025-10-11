@@ -143,3 +143,41 @@ export async function processTransaction(
   });
   return handleResponse<{ wallet: Wallet; transaction: Transaction }>(response);
 }
+
+export async function getWalletByUserId(
+  userId: string,
+  locale?: string
+): Promise<Wallet> {
+  const headers = await getAuthHeaders(locale);
+  const response = await fetch(`${API_BASE_URL}/api/wallet/admin/user/${userId}`, {
+    method: 'GET',
+    headers,
+  });
+  return handleResponse<Wallet>(response);
+}
+
+export async function getUserTransactions(
+  userId: string,
+  filters: TransactionFilters = {},
+  locale?: string
+): Promise<{ transactions: Transaction[]; pagination: any }> {
+  const headers = await getAuthHeaders(locale);
+  
+  // Build query string
+  const params = new URLSearchParams();
+  if (filters.page) params.append('page', filters.page.toString());
+  if (filters.limit) params.append('limit', filters.limit.toString());
+  if (filters.type) params.append('type', filters.type);
+  if (filters.status) params.append('status', filters.status);
+  if (filters.dateFrom) params.append('dateFrom', filters.dateFrom);
+  if (filters.dateTo) params.append('dateTo', filters.dateTo);
+  
+  const queryString = params.toString();
+  const url = `${API_BASE_URL}/api/wallet/admin/user/${userId}/transactions${queryString ? `?${queryString}` : ''}`;
+  
+  const response = await fetch(url, {
+    method: 'GET',
+    headers,
+  });
+  return handleResponse<{ transactions: Transaction[]; pagination: any }>(response);
+}

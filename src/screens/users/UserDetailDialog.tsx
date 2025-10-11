@@ -23,6 +23,7 @@ import { ACLManagementTab } from './ACLManagementTab';
 import { WalletBalance } from '@/components/wallet/WalletBalance';
 import { TransactionCard } from '@/components/wallet/TransactionCard';
 import { getInvoices } from '@/utilities/api/invoice.api';
+import { getWalletByUserId, getUserTransactions } from '@/utilities/api/wallet.api';
 import { toast } from '@/hooks/use-toast';
 import { formatLYD } from '@/utilities/helpers/currencyHelpers';
 
@@ -47,11 +48,16 @@ export function UserDetailDialog({ user, open, onClose, onEdit }: UserDetailDial
     
     setIsLoadingWallet(true);
     try {
-      // TODO: Replace with admin API call to get user's wallet
-      // const walletData = await getWalletByUserId(user._id);
-      // setWallet(walletData.wallet);
-      // setTransactions(walletData.transactions);
+      const walletData = await getWalletByUserId(user._id);
+      setWallet(walletData);
+      
+      const transactionData = await getUserTransactions(user._id, {
+        limit: 5,
+        page: 1,
+      });
+      setTransactions(transactionData.transactions || []);
     } catch (error) {
+      console.error('Error fetching wallet data:', error);
       toast({
         title: 'Error',
         description: 'Failed to load wallet data',
