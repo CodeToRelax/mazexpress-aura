@@ -1,4 +1,4 @@
-import { Home, Users, Settings, BarChart, Package, FileText, Warehouse } from 'lucide-react';
+import { Home, Users, BarChart, Package, FileText, Warehouse } from 'lucide-react';
 import type { NavItem } from '@/types/navigation';
 import type { ACLFlags } from '@/types/acl';
 
@@ -72,12 +72,5 @@ export const navigationItems: NavItemWithACL[] = [
     href: '/invoices',
     match: 'prefix',
     aclFlag: 'canViewInvoices',
-  },
-  {
-    id: 'settings',
-    labelKey: 'nav.settings',
-    icon: Settings,
-    href: '/settings',
-    match: 'exact',
   },
 ];
