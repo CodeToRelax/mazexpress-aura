@@ -35,7 +35,10 @@ export default function InvoiceDetail() {
     enabled: !!id,
   });
 
-  const formatCurrency = (amountInCents: number) => {
+  const formatCurrency = (amountInCents: number | undefined) => {
+    if (amountInCents === undefined || amountInCents === null || isNaN(amountInCents)) {
+      return '0.00';
+    }
     const amountInLYD = amountInCents / 100;
     return new Intl.NumberFormat('en-US', {
       minimumFractionDigits: 2,
@@ -65,7 +68,8 @@ export default function InvoiceDetail() {
   if (!invoice) return <InlineError message={t('invoice.notFound')} />;
 
   const canPay = invoice.status === 'UNPAID' || invoice.status === 'PARTIALLY_PAID';
-  const canManageInvoices = hasFlag('canManageInvoices');
+  const { acl } = useACL();
+  const canManageInvoices = hasFlag('canManageInvoices') || acl?.userType === 'admin';
   const canMarkAsPaid = canManageInvoices && (invoice.status === 'UNPAID' || invoice.status === 'PARTIALLY_PAID');
   const canCancel = canManageInvoices && invoice.status !== 'CANCELLED' && invoice.status !== 'PAID';
   
@@ -86,7 +90,7 @@ export default function InvoiceDetail() {
           </Badge>
         </div>
 
-        <ACLGuard flag="canManageInvoices">
+        {canManageInvoices && (
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" onClick={handlePrint}>
               <Printer className="h-4 w-4 mr-2" />
@@ -111,7 +115,7 @@ export default function InvoiceDetail() {
               </Button>
             )}
           </div>
-        </ACLGuard>
+        )}
       </div>
 
       <div className="grid gap-6 md:grid-cols-3">
@@ -129,7 +133,7 @@ export default function InvoiceDetail() {
                       {t('invoice.quantity')}: {item.quantity} × {formatCurrency(item.unitPrice)} LYD
                     </p>
                   </div>
-                  <p className="font-semibold">{formatCurrency(item.totalPrice)} LYD</p>
+                  <p className="font-semibold">{formatCurrency(item.totalGross || item.totalNet || item.totalPrice)} LYD</p>
                 </div>
               ))}
             </div>
@@ -166,7 +170,7 @@ export default function InvoiceDetail() {
             <CardContent className="space-y-3">
               <div>
                 <p className="text-sm text-muted-foreground">{t('invoice.createdAt')}</p>
-                <p className="font-medium">{format(new Date(invoice.createdAt), 'MMM dd, yyyy')}</p>
+                <p className="font-medium">{format(new Date(invoice.issueDate || invoice.createdAt), 'MMM dd, yyyy')}</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">{t('invoice.dueDate')}</p>
@@ -195,9 +199,7 @@ export default function InvoiceDetail() {
         </div>
       </div>
 
-      <ACLGuard flag="canManageInvoices">
-        <PaymentHistory invoice={invoice} />
-      </ACLGuard>
+      {canManageInvoices && <PaymentHistory invoice={invoice} />}
 
       <PaymentDialog
         open={paymentOpen}

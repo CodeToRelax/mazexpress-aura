@@ -22,20 +22,24 @@ export interface Invoice {
   };
   items: InvoiceItem[];
   createdAt: string;
+  issueDate?: string; // API returns issueDate
   dueDate: string;
   closedAt?: string;
   notes?: string;
+  paymentAllocations?: PaymentAllocation[];
 }
 
 export interface InvoiceItem {
   _id: string;
   invoiceId: string;
   shipmentId?: any; // Can be populated with full shipment data
-  kind: 'shipment' | 'custom';
+  kind: 'SHIPMENT' | 'CUSTOM' | 'shipment' | 'custom'; // API may return uppercase
   description: string;
   quantity: number;
   unitPrice: number;
-  totalPrice: number;
+  totalPrice?: number; // Frontend field
+  totalNet?: number; // API field
+  totalGross?: number; // API field
 }
 
 export interface InvoiceFilters {
