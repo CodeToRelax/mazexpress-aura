@@ -61,7 +61,7 @@ export type WithdrawRequest = {
 
 export interface AdminTransactionRequest {
   walletId: string;
-  type: 'DEDUCTION' | 'REFUND';
+  type: 'DEPOSIT' | 'WITHDRAWAL' | 'DEDUCTION' | 'REFUND';
   amount: number;
   description: string;
   reference?: string;

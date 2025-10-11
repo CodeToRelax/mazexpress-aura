@@ -106,7 +106,7 @@ export function CreateTransactionDialog({
         <DialogHeader>
           <DialogTitle>Add Transaction</DialogTitle>
           <DialogDescription>
-            Create a new deduction or refund transaction for this wallet
+            Create a new transaction for this wallet (deposit, withdrawal, deduction, or refund)
           </DialogDescription>
         </DialogHeader>
 
@@ -125,6 +125,8 @@ export function CreateTransactionDialog({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
+                      <SelectItem value="DEPOSIT">Deposit</SelectItem>
+                      <SelectItem value="WITHDRAWAL">Withdrawal</SelectItem>
                       <SelectItem value="DEDUCTION">Deduction</SelectItem>
                       <SelectItem value="REFUND">Refund</SelectItem>
                     </SelectContent>

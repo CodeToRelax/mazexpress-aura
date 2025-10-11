@@ -25,8 +25,8 @@ export const withdrawalSchema = z.object({
 
 export const adminTransactionSchema = z.object({
   walletId: z.string().min(1, 'Wallet ID is required'),
-  type: z.enum(['DEDUCTION', 'REFUND'], {
-    errorMap: () => ({ message: 'Type must be either deduction or refund' }),
+  type: z.enum(['DEPOSIT', 'WITHDRAWAL', 'DEDUCTION', 'REFUND'], {
+    errorMap: () => ({ message: 'Type must be DEPOSIT, WITHDRAWAL, DEDUCTION, or REFUND' }),
   }),
   amount: z.number()
     .min(1, 'Amount must be at least 1 LYD')
