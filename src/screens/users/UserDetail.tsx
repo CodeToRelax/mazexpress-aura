@@ -380,8 +380,13 @@ export default function UserDetail() {
                       variant="outline" 
                       size="sm" 
                       onClick={() => setIsCreateTransactionOpen(true)}
+                      disabled={isLoadingWallet || !wallet}
                     >
-                      <Plus className="h-4 w-4 mr-2" />
+                      {isLoadingWallet ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <Plus className="h-4 w-4 mr-2" />
+                      )}
                       Add Transaction
                     </Button>
                     <Button variant="outline" size="sm" onClick={() => navigate(`/wallet/transactions?userId=${user._id}`)}>

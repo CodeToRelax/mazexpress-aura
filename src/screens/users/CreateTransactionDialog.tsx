@@ -51,8 +51,8 @@ export function CreateTransactionDialog({
     resolver: zodResolver(adminTransactionSchema),
     defaultValues: {
       walletId: walletId || '',
-      type: 'DEDUCTION',
-      amount: 0,
+      type: 'DEPOSIT',
+      amount: '' as any,
       description: '',
       reference: '',
     },
