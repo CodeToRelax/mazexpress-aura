@@ -109,7 +109,10 @@ export function CreateTransactionDialog({
         title: 'Success',
         description: 'Transaction created successfully',
       });
-      form.reset();
+      
+      // Close dialog first, then callback
+      setIsSubmitting(false);
+      handleClose();
       onSuccess();
     } catch (error: any) {
       console.error('[CreateTransactionDialog] Error creating transaction:', error);

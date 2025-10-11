@@ -68,18 +68,21 @@ export default function UserDetail() {
   const fetchWalletData = async () => {
     if (!user?._id) return;
     
+    console.log('[UserDetail] Fetching wallet data for user:', user._id);
     setIsLoadingWallet(true);
     try {
       const walletData = await getWalletByUserId(user._id);
+      console.log('[UserDetail] Wallet data fetched:', walletData);
       setWallet(walletData);
       
       const transactionData = await getUserTransactions(user._id, {
         limit: 5,
         page: 1,
       });
+      console.log('[UserDetail] Transactions fetched:', transactionData);
       setTransactions(transactionData.transactions || []);
     } catch (error) {
-      console.error('Error fetching wallet data:', error);
+      console.error('[UserDetail] Error fetching wallet data:', error);
       toast({
         title: 'Error',
         description: 'Failed to load wallet data',
@@ -140,6 +143,7 @@ export default function UserDetail() {
   };
 
   const handleTransactionSuccess = () => {
+    console.log('[UserDetail] Transaction success, refetching wallet data');
     fetchWalletData();
   };
 
