@@ -165,17 +165,21 @@ export function UserDetailDialog({ user, open, onClose, onEdit }: UserDetailDial
         </DialogHeader>
 
         <Tabs defaultValue="overview" className="mt-6">
-          <TabsList className={`grid w-full ${user.userType === 'admin' ? 'grid-cols-6' : 'grid-cols-5'}`}>
+          <TabsList className={`grid w-full ${user.userType === 'admin' ? 'grid-cols-4' : 'grid-cols-5'}`}>
             <TabsTrigger value="overview">{t('users.detail.overview')}</TabsTrigger>
             <TabsTrigger value="profile">{t('users.detail.profile')}</TabsTrigger>
-            <TabsTrigger value="wallet" onClick={fetchWalletData}>
-              <WalletIcon className="h-4 w-4 mr-2" />
-              Wallet
-            </TabsTrigger>
-            <TabsTrigger value="invoices" onClick={fetchInvoices}>
-              <Receipt className="h-4 w-4 mr-2" />
-              Invoices
-            </TabsTrigger>
+            {user.userType !== 'admin' && (
+              <>
+                <TabsTrigger value="wallet" onClick={fetchWalletData}>
+                  <WalletIcon className="h-4 w-4 mr-2" />
+                  Wallet
+                </TabsTrigger>
+                <TabsTrigger value="invoices" onClick={fetchInvoices}>
+                  <Receipt className="h-4 w-4 mr-2" />
+                  Invoices
+                </TabsTrigger>
+              </>
+            )}
             <TabsTrigger value="metadata">Metadata</TabsTrigger>
             {user.userType === 'admin' && (
               <TabsTrigger value="acl">
@@ -334,6 +338,7 @@ export function UserDetailDialog({ user, open, onClose, onEdit }: UserDetailDial
             </div>
           </TabsContent>
 
+          {user.userType !== 'admin' && (
           <TabsContent value="wallet" className="space-y-4 mt-4">
             {isLoadingWallet ? (
               <div className="flex items-center justify-center py-12">
@@ -380,7 +385,9 @@ export function UserDetailDialog({ user, open, onClose, onEdit }: UserDetailDial
               </Card>
             )}
           </TabsContent>
+          )}
 
+          {user.userType !== 'admin' && (
           <TabsContent value="invoices" className="space-y-4 mt-4">
             {isLoadingInvoices ? (
               <div className="flex items-center justify-center py-12">
@@ -460,6 +467,7 @@ export function UserDetailDialog({ user, open, onClose, onEdit }: UserDetailDial
               </div>
             )}
           </TabsContent>
+          )}
 
           <TabsContent value="metadata" className="space-y-4 mt-4">
             <div className="glass-card p-4 rounded-xl space-y-4">

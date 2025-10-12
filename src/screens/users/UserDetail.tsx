@@ -219,17 +219,21 @@ export default function UserDetail() {
 
       {/* Main Content */}
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className={`grid w-full ${user.userType === 'admin' ? 'grid-cols-6' : 'grid-cols-5'}`}>
+        <TabsList className={`grid w-full ${user.userType === 'admin' ? 'grid-cols-4' : 'grid-cols-5'}`}>
           <TabsTrigger value="overview">{t('users.detail.overview')}</TabsTrigger>
           <TabsTrigger value="profile">{t('users.detail.profile')}</TabsTrigger>
-          <TabsTrigger value="wallet" onClick={fetchWalletData}>
-            <WalletIcon className="h-4 w-4 mr-2" />
-            Wallet
-          </TabsTrigger>
-          <TabsTrigger value="invoices" onClick={fetchInvoices}>
-            <Receipt className="h-4 w-4 mr-2" />
-            Invoices
-          </TabsTrigger>
+          {user.userType !== 'admin' && (
+            <>
+              <TabsTrigger value="wallet" onClick={fetchWalletData}>
+                <WalletIcon className="h-4 w-4 mr-2" />
+                Wallet
+              </TabsTrigger>
+              <TabsTrigger value="invoices" onClick={fetchInvoices}>
+                <Receipt className="h-4 w-4 mr-2" />
+                Invoices
+              </TabsTrigger>
+            </>
+          )}
           <TabsTrigger value="metadata">Metadata</TabsTrigger>
           {user.userType === 'admin' && (
             <TabsTrigger value="acl">
@@ -388,12 +392,13 @@ export default function UserDetail() {
           </div>
         </TabsContent>
 
-        <TabsContent value="wallet" className="space-y-4 mt-6">
-          {isLoadingWallet ? (
-            <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            </div>
-          ) : wallet ? (
+        {user.userType !== 'admin' && (
+          <TabsContent value="wallet" className="space-y-4 mt-6">
+            {isLoadingWallet ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              </div>
+            ) : wallet ? (
             <>
               <WalletBalance balance={wallet.balance} currency={wallet.currency} />
               
@@ -439,7 +444,9 @@ export default function UserDetail() {
             </Card>
           )}
         </TabsContent>
+        )}
 
+        {user.userType !== 'admin' && (
         <TabsContent value="invoices" className="space-y-4 mt-6">
           {isLoadingInvoices ? (
             <div className="flex items-center justify-center py-12">
@@ -519,6 +526,7 @@ export default function UserDetail() {
             </div>
           )}
         </TabsContent>
+        )}
 
         <TabsContent value="metadata" className="space-y-4 mt-6">
           <div className="glass-card p-6 rounded-2xl space-y-4">
