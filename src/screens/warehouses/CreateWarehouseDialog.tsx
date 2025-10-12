@@ -1,17 +1,16 @@
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslation } from 'react-i18next';
 import { Loader2 } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
   Form,
   FormControl,
@@ -27,10 +26,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { toast } from '@/hooks/use-toast';
-import { createWarehouse } from '@/utilities/api/warehouses.api';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { createWarehouseSchema, type CreateWarehouseFormData } from '@/utilities/zod/warehouse.schemas';
+import { createWarehouse } from '@/utilities/api/warehouses.api';
+import { useToast } from '@/hooks/use-toast';
 import { WarehouseStatus, Cities, Countries } from '@/types/warehouse';
+import { OperatingHoursEditor } from './OperatingHoursEditor';
 
 interface CreateWarehouseDialogProps {
   open: boolean;
@@ -38,62 +46,60 @@ interface CreateWarehouseDialogProps {
   onSuccess: () => void;
 }
 
-const defaultDayHours = {
-  isOpen: false,
-  openTime: undefined,
-  closeTime: undefined,
-  breakStartTime: undefined,
-  breakEndTime: undefined,
-};
-
-const defaultOperatingHours = {
-  monday: defaultDayHours,
-  tuesday: defaultDayHours,
-  wednesday: defaultDayHours,
-  thursday: defaultDayHours,
-  friday: defaultDayHours,
-  saturday: { ...defaultDayHours, isOpen: false },
-  sunday: { ...defaultDayHours, isOpen: false },
-};
-
-export function CreateWarehouseDialog({
-  open,
-  onOpenChange,
-  onSuccess,
-}: CreateWarehouseDialogProps) {
+export function CreateWarehouseDialog({ open, onOpenChange, onSuccess }: CreateWarehouseDialogProps) {
   const { t } = useTranslation();
+  const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [currentStep, setCurrentStep] = useState(1);
+
+  const defaultDayHours = {
+    isOpen: true,
+    openTime: undefined,
+    closeTime: undefined,
+    breakStartTime: undefined,
+    breakEndTime: undefined,
+  };
 
   const form = useForm<CreateWarehouseFormData>({
     resolver: zodResolver(createWarehouseSchema),
     defaultValues: {
       name: '',
       status: WarehouseStatus.OPEN,
-      phoneNumber: '',
-      email: '',
-      youtubeUrl: '',
-      imageUrl: '',
       address: {
+        city: '' as any,
+        country: '' as any,
         doorNumber: '',
         buildingNumber: '',
         street: '',
         neighborhood: '',
         district: '',
-        city: '' as any,
-        country: '' as any,
-        googleMapsUrl: '',
         zipCode: '',
+        googleMapsUrl: '',
         coordinates: {
-          latitude: 0,
-          longitude: 0,
+          latitude: undefined,
+          longitude: undefined,
         },
       },
-      operatingHours: defaultOperatingHours,
+      phoneNumber: '',
+      email: '',
+      youtubeUrl: '',
+      imageUrl: '',
+      operatingHours: {
+        monday: defaultDayHours,
+        tuesday: defaultDayHours,
+        wednesday: defaultDayHours,
+        thursday: defaultDayHours,
+        friday: defaultDayHours,
+        saturday: defaultDayHours,
+        sunday: defaultDayHours,
+      },
     },
   });
 
   const onSubmit = async (data: CreateWarehouseFormData) => {
+    console.log('=== CREATE WAREHOUSE FORM SUBMITTED ===');
+    console.log('Form data:', data);
+    console.log('Form errors:', form.formState.errors);
+    
     try {
       setIsSubmitting(true);
       await createWarehouse(data as any);
@@ -102,105 +108,53 @@ export function CreateWarehouseDialog({
         description: t('warehouses.messages.createSuccess'),
       });
       form.reset();
-      setCurrentStep(1);
-      onSuccess();
-    } catch (error) {
+      onOpenChange(false);
+      onSuccess?.();
+    } catch (error: any) {
+      console.error('Create warehouse error:', error);
       toast({
-        title: t('status.error'),
-        description: error instanceof Error ? error.message : t('warehouses.messages.error'),
         variant: 'destructive',
+        title: t('status.error'),
+        description: error.message || t('warehouses.messages.error'),
       });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleNext = async () => {
-    const fields = getStepFields(currentStep);
-    const isValid = await form.trigger(fields);
-    if (isValid) {
-      setCurrentStep((prev) => prev + 1);
-    }
-  };
-
-  const handleBack = () => {
-    setCurrentStep((prev) => prev - 1);
-  };
-
-  const getStepFields = (step: number): any[] => {
-    switch (step) {
-      case 1:
-        return ['name', 'status'];
-      case 2:
-        return ['address.city', 'address.country', 'address.googleMapsUrl', 'address.zipCode', 'address.coordinates'];
-      case 3:
-        return [];
-      default:
-        return [];
-    }
-  };
-
-  const isStepValid = () => {
-    const values = form.getValues();
-    
-    switch (currentStep) {
-      case 1:
-        return !!values.name && !!values.status;
-      case 2:
-        return !!values.address.city && 
-               !!values.address.country && 
-               !!values.address.googleMapsUrl && 
-               !!values.address.zipCode &&
-               values.address.coordinates.latitude !== 0 &&
-               values.address.coordinates.longitude !== 0;
-      case 3:
-        return true; // Contact info is optional
-      default:
-        return true;
-    }
-  };
-
   return (
-    <Dialog open={open} onOpenChange={(isOpen) => { 
-      onOpenChange(isOpen); 
-      if (!isOpen) {
-        setCurrentStep(1);
-        form.reset();
-      }
+    <Dialog open={open} onOpenChange={(open) => {
+      onOpenChange(open);
+      if (!open) form.reset();
     }}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{t('warehouses.form.createTitle')}</DialogTitle>
-          <div className="flex gap-2 mt-4">
-            {[1, 2, 3].map((step) => (
-              <div
-                key={step}
-                className={`flex-1 h-2 rounded-full transition-colors ${
-                  step === currentStep
-                    ? 'bg-primary'
-                    : step < currentStep
-                    ? 'bg-primary/50'
-                    : 'bg-muted'
-                }`}
-              />
-            ))}
-          </div>
+          <DialogDescription>
+            Fill in the warehouse details. Fields marked with * are required.
+          </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Step 1: Basic Info */}
-            {currentStep === 1 && (
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">{t('warehouses.form.basicInfo')}</h3>
+            <Tabs defaultValue="basic" className="w-full">
+              <TabsList className="grid w-full grid-cols-4">
+                <TabsTrigger value="basic">{t('warehouses.form.basicInfo')}</TabsTrigger>
+                <TabsTrigger value="address">{t('warehouses.form.addressInfo')}</TabsTrigger>
+                <TabsTrigger value="contact">{t('warehouses.form.contactInfo')}</TabsTrigger>
+                <TabsTrigger value="hours">Operating Hours</TabsTrigger>
+              </TabsList>
+
+              {/* Basic Info Tab */}
+              <TabsContent value="basic" className="space-y-4">
                 <FormField
                   control={form.control}
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('warehouses.detail.fields.name')}</FormLabel>
+                      <FormLabel>{t('warehouses.detail.fields.name')} *</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input {...field} value={field.value || ''} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -212,8 +166,8 @@ export function CreateWarehouseDialog({
                   name="status"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('warehouses.detail.fields.status')}</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormLabel>{t('warehouses.detail.fields.status')} *</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue />
@@ -232,14 +186,84 @@ export function CreateWarehouseDialog({
                     </FormItem>
                   )}
                 />
-              </div>
-            )}
+              </TabsContent>
 
-            {/* Step 2: Address Info */}
-            {currentStep === 2 && (
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">{t('warehouses.form.addressInfo')}</h3>
-                
+              {/* Address Info Tab */}
+              <TabsContent value="address" className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="address.doorNumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('warehouses.detail.fields.doorNumber')} (Optional)</FormLabel>
+                        <FormControl>
+                          <Input {...field} value={field.value || ''} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="address.buildingNumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('warehouses.detail.fields.buildingNumber')} (Optional)</FormLabel>
+                        <FormControl>
+                          <Input {...field} value={field.value || ''} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <FormField
+                  control={form.control}
+                  name="address.street"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('warehouses.detail.fields.street')} (Optional)</FormLabel>
+                      <FormControl>
+                        <Input {...field} value={field.value || ''} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="address.neighborhood"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('warehouses.detail.fields.neighborhood')} (Optional)</FormLabel>
+                        <FormControl>
+                          <Input {...field} value={field.value || ''} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="address.district"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('warehouses.detail.fields.district')} (Optional)</FormLabel>
+                        <FormControl>
+                          <Input {...field} value={field.value || ''} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
@@ -247,16 +271,16 @@ export function CreateWarehouseDialog({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>{t('warehouses.detail.fields.city')} *</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="Select city" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent className="max-h-[300px]">
-                            {Object.entries(Cities).map(([key, value]) => (
-                              <SelectItem key={value} value={value}>
-                                {value.split(' ').map(word => 
+                            {Object.values(Cities).map((city) => (
+                              <SelectItem key={city} value={city}>
+                                {city.split(' ').map(word => 
                                   word.charAt(0).toUpperCase() + word.slice(1)
                                 ).join(' ')}
                               </SelectItem>
@@ -274,16 +298,16 @@ export function CreateWarehouseDialog({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>{t('warehouses.detail.fields.country')} *</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="Select country" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {Object.entries(Countries).map(([key, value]) => (
-                              <SelectItem key={value} value={value}>
-                                {value.charAt(0).toUpperCase() + value.slice(1)}
+                            {Object.values(Countries).map((country) => (
+                              <SelectItem key={country} value={country}>
+                                {country.charAt(0).toUpperCase() + country.slice(1)}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -296,26 +320,12 @@ export function CreateWarehouseDialog({
 
                 <FormField
                   control={form.control}
-                  name="address.street"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('warehouses.detail.fields.street')}</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
                   name="address.zipCode"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('warehouses.detail.fields.zipCode')}</FormLabel>
+                      <FormLabel>{t('warehouses.detail.fields.zipCode')} *</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input {...field} value={field.value || ''} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -327,9 +337,9 @@ export function CreateWarehouseDialog({
                   name="address.googleMapsUrl"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('warehouses.detail.fields.googleMapsUrl')}</FormLabel>
+                      <FormLabel>{t('warehouses.detail.fields.googleMapsUrl')} *</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="https://maps.google.com/..." />
+                        <Input {...field} value={field.value || ''} type="url" placeholder="https://maps.google.com/..." />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -342,13 +352,14 @@ export function CreateWarehouseDialog({
                     name="address.coordinates.latitude"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('warehouses.detail.fields.latitude')}</FormLabel>
+                        <FormLabel>{t('warehouses.detail.fields.latitude')} *</FormLabel>
                         <FormControl>
                           <Input
+                            {...field}
                             type="number"
                             step="any"
-                            {...field}
-                            onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                            value={field.value ?? ''}
+                            onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
                           />
                         </FormControl>
                         <FormMessage />
@@ -361,13 +372,14 @@ export function CreateWarehouseDialog({
                     name="address.coordinates.longitude"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('warehouses.detail.fields.longitude')}</FormLabel>
+                        <FormLabel>{t('warehouses.detail.fields.longitude')} *</FormLabel>
                         <FormControl>
                           <Input
+                            {...field}
                             type="number"
                             step="any"
-                            {...field}
-                            onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                            value={field.value ?? ''}
+                            onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
                           />
                         </FormControl>
                         <FormMessage />
@@ -375,21 +387,18 @@ export function CreateWarehouseDialog({
                     )}
                   />
                 </div>
-              </div>
-            )}
+              </TabsContent>
 
-            {/* Step 3: Contact Info */}
-            {currentStep === 3 && (
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">{t('warehouses.form.contactInfo')}</h3>
+              {/* Contact Info Tab */}
+              <TabsContent value="contact" className="space-y-4">
                 <FormField
                   control={form.control}
                   name="phoneNumber"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('warehouses.detail.fields.phoneNumber')}</FormLabel>
+                      <FormLabel>{t('warehouses.detail.fields.phoneNumber')} (Optional)</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input {...field} value={field.value || ''} type="tel" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -401,9 +410,9 @@ export function CreateWarehouseDialog({
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('warehouses.detail.fields.email')}</FormLabel>
+                      <FormLabel>{t('warehouses.detail.fields.email')} (Optional)</FormLabel>
                       <FormControl>
-                        <Input type="email" {...field} />
+                        <Input {...field} value={field.value || ''} type="email" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -415,9 +424,9 @@ export function CreateWarehouseDialog({
                   name="youtubeUrl"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('warehouses.detail.fields.youtubeUrl')}</FormLabel>
+                      <FormLabel>{t('warehouses.detail.fields.youtubeUrl')} (Optional)</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="https://youtube.com/..." />
+                        <Input {...field} value={field.value || ''} type="url" placeholder="https://youtube.com/..." />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -429,37 +438,34 @@ export function CreateWarehouseDialog({
                   name="imageUrl"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('warehouses.detail.fields.imageUrl')}</FormLabel>
+                      <FormLabel>{t('warehouses.detail.fields.imageUrl')} (Optional)</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="https://..." />
+                        <Input {...field} value={field.value || ''} type="url" placeholder="https://..." />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-              </div>
-            )}
+              </TabsContent>
 
-            <DialogFooter className="flex gap-2">
-              {currentStep > 1 && (
-                <Button type="button" variant="outline" onClick={handleBack}>
-                  {t('actions.back')}
-                </Button>
-              )}
-              {currentStep < 3 ? (
-                <Button 
-                  type="button" 
-                  onClick={handleNext}
-                  disabled={!isStepValid()}
-                >
-                  Next
-                </Button>
-              ) : (
-                <Button type="submit" disabled={isSubmitting || !isStepValid()}>
-                  {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Create Warehouse
-                </Button>
-              )}
+              {/* Operating Hours Tab */}
+              <TabsContent value="hours">
+                <OperatingHoursEditor form={form} />
+              </TabsContent>
+            </Tabs>
+
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+                {t('actions.cancel')}
+              </Button>
+              <Button 
+                type="submit" 
+                disabled={isSubmitting}
+                onClick={() => console.log('Create button clicked', form.formState.errors)}
+              >
+                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Create Warehouse
+              </Button>
             </DialogFooter>
           </form>
         </Form>
