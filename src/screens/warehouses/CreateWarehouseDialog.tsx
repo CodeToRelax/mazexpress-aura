@@ -458,7 +458,7 @@ export function CreateWarehouseDialog({ open, onOpenChange, onSuccess }: CreateW
           </Form>
         </div>
 
-        <DialogFooter className="flex gap-2 border-t pt-4 mt-0 bg-background sticky bottom-0 z-50 pointer-events-auto">
+        <DialogFooter className="flex gap-2 border-t pt-4 mt-0 bg-background pointer-events-auto">
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
             {t('actions.cancel')}
           </Button>
