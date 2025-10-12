@@ -201,6 +201,8 @@ export default function UserDetail() {
     depositAmount: transactions.filter(t => t.type === 'deposit').reduce((sum, t) => sum + t.amount, 0),
     totalWithdrawals: transactions.filter(t => t.type === 'withdrawal').length,
     withdrawalAmount: transactions.filter(t => t.type === 'withdrawal').reduce((sum, t) => sum + t.amount, 0),
+    totalRefunds: transactions.filter(t => t.type === 'refund').length,
+    refundAmount: transactions.filter(t => t.type === 'refund').reduce((sum, t) => sum + t.amount, 0),
     totalDeductions: transactions.filter(t => t.type === 'deduction').length,
     deductionAmount: transactions.filter(t => t.type === 'deduction').reduce((sum, t) => sum + t.amount, 0),
     completedCount: transactions.filter(t => t.status === 'completed').length,

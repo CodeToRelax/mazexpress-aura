@@ -78,6 +78,7 @@ export default function Transactions() {
     totalTransactions: data?.pagination.totalItems || 0,
     totalDeposits: data?.transactions.filter(t => t.type.toLowerCase() === 'deposit').length || 0,
     totalWithdrawals: data?.transactions.filter(t => t.type.toLowerCase() === 'withdrawal').length || 0,
+    totalRefunds: data?.transactions.filter(t => t.type.toLowerCase() === 'refund').length || 0,
     totalDeductions: data?.transactions.filter(t => t.type.toLowerCase() === 'deduction').length || 0,
     completedCount: data?.transactions.filter(t => t.status.toLowerCase() === 'completed').length || 0,
     depositAmount: data?.transactions
@@ -85,6 +86,9 @@ export default function Transactions() {
       .reduce((sum, t) => sum + t.amount, 0) || 0,
     withdrawalAmount: data?.transactions
       .filter(t => t.type.toLowerCase() === 'withdrawal' && t.status.toLowerCase() === 'completed')
+      .reduce((sum, t) => sum + t.amount, 0) || 0,
+    refundAmount: data?.transactions
+      .filter(t => t.type.toLowerCase() === 'refund' && t.status.toLowerCase() === 'completed')
       .reduce((sum, t) => sum + t.amount, 0) || 0,
     deductionAmount: data?.transactions
       .filter(t => t.type.toLowerCase() === 'deduction' && t.status.toLowerCase() === 'completed')
@@ -124,7 +128,7 @@ export default function Transactions() {
     });
   };
 
-  const handleStatClick = (filterType: 'all' | 'deposits' | 'withdrawals' | 'deductions' | 'completed') => {
+  const handleStatClick = (filterType: 'all' | 'deposits' | 'withdrawals' | 'refunds' | 'deductions' | 'completed') => {
     switch (filterType) {
       case 'all':
         setFilters({
@@ -143,6 +147,13 @@ export default function Transactions() {
         setFilters({
           ...filters,
           type: 'withdrawal',
+          page: 1,
+        });
+        break;
+      case 'refunds':
+        setFilters({
+          ...filters,
+          type: 'refund',
           page: 1,
         });
         break;

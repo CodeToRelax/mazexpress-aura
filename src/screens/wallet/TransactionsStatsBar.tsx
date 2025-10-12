@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Receipt, TrendingUp, TrendingDown, MinusCircle, CheckCircle } from 'lucide-react';
+import { Receipt, TrendingUp, TrendingDown, MinusCircle, CheckCircle, RefreshCcw } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { formatLYD } from '@/utilities/helpers/currencyHelpers';
 
@@ -7,16 +7,18 @@ interface TransactionStats {
   totalTransactions: number;
   totalDeposits: number;
   totalWithdrawals: number;
+  totalRefunds: number;
   totalDeductions: number;
   completedCount: number;
   depositAmount: number;
   withdrawalAmount: number;
+  refundAmount: number;
   deductionAmount: number;
 }
 
 interface TransactionsStatsBarProps {
   stats: TransactionStats;
-  onStatClick: (filterType: 'all' | 'deposits' | 'withdrawals' | 'deductions' | 'completed') => void;
+  onStatClick: (filterType: 'all' | 'deposits' | 'withdrawals' | 'refunds' | 'deductions' | 'completed') => void;
 }
 
 export function TransactionsStatsBar({ stats, onStatClick }: TransactionsStatsBarProps) {
@@ -50,6 +52,15 @@ export function TransactionsStatsBar({ stats, onStatClick }: TransactionsStatsBa
       filterType: 'withdrawals' as const,
     },
     {
+      icon: RefreshCcw,
+      label: t('wallet.stats.refunds'),
+      value: `${stats.totalRefunds}`,
+      subValue: formatLYD(stats.refundAmount),
+      color: 'text-purple-600 dark:text-purple-400',
+      bgColor: 'bg-purple-500/10',
+      filterType: 'refunds' as const,
+    },
+    {
       icon: MinusCircle,
       label: t('wallet.stats.deductions'),
       value: `${stats.totalDeductions}`,
@@ -69,7 +80,7 @@ export function TransactionsStatsBar({ stats, onStatClick }: TransactionsStatsBa
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
       {statCards.map((stat, index) => (
         <motion.div
           key={stat.label}
