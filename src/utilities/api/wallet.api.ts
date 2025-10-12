@@ -143,6 +143,7 @@ export async function getTransactions(
   if (filters.status) params.append('status', filters.status);
   if (filters.dateFrom) params.append('dateFrom', filters.dateFrom);
   if (filters.dateTo) params.append('dateTo', filters.dateTo);
+  if (filters.search) params.append('search', filters.search);
   
   const queryString = params.toString();
   const url = `${API_BASE_URL}/api/wallet/transactions${queryString ? `?${queryString}` : ''}`;
@@ -232,6 +233,7 @@ export async function getUserTransactions(
   if (filters.status) params.append('status', filters.status);
   if (filters.dateFrom) params.append('dateFrom', filters.dateFrom);
   if (filters.dateTo) params.append('dateTo', filters.dateTo);
+  if (filters.search) params.append('search', filters.search);
   
   const queryString = params.toString();
   const url = `${API_BASE_URL}/api/wallet/admin/user/${userId}/transactions${queryString ? `?${queryString}` : ''}`;

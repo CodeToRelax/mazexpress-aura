@@ -40,6 +40,7 @@ export interface TransactionFilters {
   status?: string;
   dateFrom?: string;
   dateTo?: string;
+  search?: string;
 }
 
 export interface WalletStats {

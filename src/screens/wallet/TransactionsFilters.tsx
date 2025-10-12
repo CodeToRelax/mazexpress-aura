@@ -36,14 +36,19 @@ export function TransactionsFilters({
   activeFilterCount 
 }: TransactionsFiltersProps) {
   const { t } = useTranslation();
-  const [searchInput, setSearchInput] = useState('');
+  const [searchInput, setSearchInput] = useState(filters.search || '');
   const debouncedSearch = useDebounce(searchInput, 500);
 
   useEffect(() => {
-    if (debouncedSearch !== searchInput) {
-      onFiltersChange({ ...filters, page: 1 });
-    }
+    onFiltersChange({ ...filters, search: debouncedSearch || undefined, page: 1 });
   }, [debouncedSearch]);
+
+  // Sync search input with filters when filters are cleared
+  useEffect(() => {
+    if (!filters.search && searchInput) {
+      setSearchInput('');
+    }
+  }, [filters.search]);
 
   const handleFilterChange = (key: keyof TransactionFilters, value: any) => {
     onFiltersChange({ ...filters, [key]: value, page: 1 });
