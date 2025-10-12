@@ -46,6 +46,40 @@ export enum Countries {
   UAE = 'uae',
 }
 
+// Mapping of countries to their supported cities
+export const COUNTRY_CITIES: Record<Countries, Cities[]> = {
+  [Countries.LIBYA]: [
+    Cities.BENGHAZI,
+    Cities.TRIPOLI,
+    Cities.MUSRATA,
+    Cities.ALBAYDA,
+    Cities.ZAWIYA,
+    Cities.GHARYAN,
+    Cities.TOBRUK,
+    Cities.AJDABIYA,
+    Cities.ZLITEN,
+    Cities.DERNA,
+    Cities.SIRTE,
+    Cities.SABHA,
+    Cities.KHOMS,
+    Cities.BANI_WALID,
+    Cities.SABRATHA,
+    Cities.ZUWARA,
+    Cities.KUFRA,
+    Cities.AL_MARJ,
+    Cities.TARHUNA,
+    Cities.UBARI,
+    Cities.GADAMES,
+    Cities.GHAT,
+    Cities.NALUT,
+    Cities.JALU,
+    Cities.BREGA,
+  ],
+  [Countries.TURKEY]: [Cities.ISTANBUL],
+  [Countries.UAE]: [Cities.DUBAI],
+  [Countries.CHINA]: [Cities.HONGKONG],
+};
+
 export interface WarehouseCoordinates {
   latitude: number;
   longitude: number;

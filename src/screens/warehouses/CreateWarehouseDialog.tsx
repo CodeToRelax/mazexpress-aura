@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
@@ -37,7 +37,7 @@ import { Button } from '@/components/ui/button';
 import { createWarehouseSchema, type CreateWarehouseFormData } from '@/utilities/zod/warehouse.schemas';
 import { createWarehouse } from '@/utilities/api/warehouses.api';
 import { useToast } from '@/hooks/use-toast';
-import { WarehouseStatus, Cities, Countries } from '@/types/warehouse';
+import { WarehouseStatus, Cities, Countries, COUNTRY_CITIES } from '@/types/warehouse';
 import { OperatingHoursEditor } from './OperatingHoursEditor';
 
 interface CreateWarehouseDialogProps {
@@ -51,6 +51,7 @@ export function CreateWarehouseDialog({ open, onOpenChange, onSuccess }: CreateW
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState('basic');
+  const [availableCities, setAvailableCities] = useState<Cities[]>([]);
 
   const defaultDayHours = {
     isOpen: true,
@@ -95,6 +96,24 @@ export function CreateWarehouseDialog({ open, onOpenChange, onSuccess }: CreateW
       },
     },
   });
+
+  // Watch country field to update available cities
+  const selectedCountry = form.watch('address.country');
+
+  useEffect(() => {
+    if (selectedCountry) {
+      const cities = COUNTRY_CITIES[selectedCountry];
+      setAvailableCities(cities);
+      
+      // Reset city if it doesn't belong to the new country
+      const currentCity = form.getValues('address.city');
+      if (currentCity && !cities.includes(currentCity)) {
+        form.setValue('address.city', '' as Cities);
+      }
+    } else {
+      setAvailableCities([]);
+    }
+  }, [selectedCountry, form]);
 
   const onSubmit = async (data: CreateWarehouseFormData) => {
     console.log('=== CREATE WAREHOUSE FORM SUBMITTED ===');
@@ -298,33 +317,6 @@ export function CreateWarehouseDialog({ open, onOpenChange, onSuccess }: CreateW
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
-                    name="address.city"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('warehouses.detail.fields.city')} *</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select city" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent className="max-h-[300px]">
-                            {Object.values(Cities).map((city) => (
-                              <SelectItem key={city} value={city}>
-                                {city.split(' ').map(word => 
-                                  word.charAt(0).toUpperCase() + word.slice(1)
-                                ).join(' ')}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
                     name="address.country"
                     render={({ field }) => (
                       <FormItem>
@@ -339,6 +331,37 @@ export function CreateWarehouseDialog({ open, onOpenChange, onSuccess }: CreateW
                             {Object.values(Countries).map((country) => (
                               <SelectItem key={country} value={country}>
                                 {country.charAt(0).toUpperCase() + country.slice(1)}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="address.city"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('warehouses.detail.fields.city')} *</FormLabel>
+                        <Select 
+                          onValueChange={field.onChange} 
+                          value={field.value}
+                          disabled={!selectedCountry}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder={selectedCountry ? "Select city" : "Select country first"} />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="max-h-[300px]">
+                            {availableCities.map((city) => (
+                              <SelectItem key={city} value={city}>
+                                {city.split(' ').map(word => 
+                                  word.charAt(0).toUpperCase() + word.slice(1)
+                                ).join(' ')}
                               </SelectItem>
                             ))}
                           </SelectContent>

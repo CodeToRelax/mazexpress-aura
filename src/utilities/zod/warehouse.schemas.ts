@@ -4,7 +4,7 @@
  */
 
 import { z } from 'zod';
-import { WarehouseStatus, Cities, Countries } from '@/types/warehouse';
+import { WarehouseStatus, Cities, Countries, COUNTRY_CITIES } from '@/types/warehouse';
 
 // Time format validation (HH:MM in 24-hour format)
 const timeSchema = z
@@ -58,11 +58,11 @@ const addressSchema = z.object({
   street: z.string().max(100, 'Street name too long').optional().or(z.literal('')),
   neighborhood: z.string().max(100, 'Neighborhood name too long').optional().or(z.literal('')),
   district: z.string().max(100, 'District name too long').optional().or(z.literal('')),
-  city: z.nativeEnum(Cities, {
-    errorMap: () => ({ message: 'Please select a valid city' }),
-  }),
   country: z.nativeEnum(Countries, {
     errorMap: () => ({ message: 'Please select a valid country' }),
+  }),
+  city: z.nativeEnum(Cities, {
+    errorMap: () => ({ message: 'Please select a valid city' }),
   }),
   googleMapsUrl: googleMapsUrlSchema,
   zipCode: z
@@ -71,6 +71,13 @@ const addressSchema = z.object({
     .max(20, 'ZIP code too long')
     .regex(/^[A-Za-z0-9\s-]{3,20}$/, 'Invalid ZIP code format'),
   coordinates: coordinatesSchema,
+}).refine((data) => {
+  // Validate city belongs to country
+  const validCities = COUNTRY_CITIES[data.country];
+  return validCities.includes(data.city);
+}, {
+  message: 'Selected city does not belong to the selected country',
+  path: ['city'],
 });
 
 // Day hours schema
