@@ -16,7 +16,7 @@ const timeSchema = z
 const googleMapsUrlSchema = z
   .string()
   .url('Invalid URL format')
-  .refine((url) => url.includes('google.com/maps'), {
+  .refine((url) => url.includes('google.com/maps') || url.includes('maps.app.goo.gl'), {
     message: 'Must be a valid Google Maps URL',
   });
 
