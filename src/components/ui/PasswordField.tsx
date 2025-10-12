@@ -15,7 +15,7 @@ export const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(
     const { t } = useTranslation();
     
     return (
-      <div className="relative">
+      <div className="relative z-0">
         <Input
           type={showPassword ? 'text' : 'password'}
           className={cn(
@@ -30,7 +30,7 @@ export const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(
           type="button"
           variant="ghost"
           size="icon"
-          className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+          className="absolute right-0 top-0 h-full px-3 hover:bg-transparent pointer-events-auto z-10"
           onClick={() => setShowPassword(!showPassword)}
           aria-label={showPassword ? t('login.hidePassword') : t('login.showPassword')}
         >

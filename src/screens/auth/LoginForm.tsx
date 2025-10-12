@@ -70,7 +70,7 @@ export function LoginForm({ onSubmit, isSubmitting, serverError }: LoginFormProp
           {t('login.password')}
         </Label>
         <div className="relative">
-          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
+          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
           <PasswordField
             id="password"
             placeholder={t('login.passwordPlaceholder')}
@@ -98,7 +98,7 @@ export function LoginForm({ onSubmit, isSubmitting, serverError }: LoginFormProp
       {/* Submit Button */}
       <Button
         type="submit"
-        className="w-full h-12 bg-primary hover:bg-primary-light shadow-glow-subtle hover:shadow-glow transition-smooth"
+        className="w-full h-12 bg-primary hover:bg-primary-light shadow-glow-subtle hover:shadow-glow transition-smooth relative z-20 pointer-events-auto"
         disabled={isSubmitting || !isFormValid}
       >
         {isSubmitting ? (
