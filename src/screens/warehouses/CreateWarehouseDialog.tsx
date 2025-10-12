@@ -30,7 +30,7 @@ import {
 import { toast } from '@/hooks/use-toast';
 import { createWarehouse } from '@/utilities/api/warehouses.api';
 import { createWarehouseSchema, type CreateWarehouseFormData } from '@/utilities/zod/warehouse.schemas';
-import { WarehouseStatus } from '@/types/warehouse';
+import { WarehouseStatus, Cities, Countries } from '@/types/warehouse';
 
 interface CreateWarehouseDialogProps {
   open: boolean;
@@ -40,10 +40,10 @@ interface CreateWarehouseDialogProps {
 
 const defaultDayHours = {
   isOpen: false,
-  openTime: '09:00',
-  closeTime: '17:00',
-  breakStartTime: '',
-  breakEndTime: '',
+  openTime: undefined,
+  closeTime: undefined,
+  breakStartTime: undefined,
+  breakEndTime: undefined,
 };
 
 const defaultOperatingHours = {
@@ -80,8 +80,8 @@ export function CreateWarehouseDialog({
         street: '',
         neighborhood: '',
         district: '',
-        city: '',
-        country: '',
+        city: '' as any,
+        country: '' as any,
         googleMapsUrl: '',
         zipCode: '',
         coordinates: {
@@ -132,25 +132,29 @@ export function CreateWarehouseDialog({
       case 1:
         return ['name', 'status'];
       case 2:
-        return ['address.city', 'address.country', 'address.street', 'address.zipCode'];
+        return ['address.city', 'address.country', 'address.googleMapsUrl', 'address.zipCode', 'address.coordinates'];
       case 3:
-        return ['phoneNumber', 'email'];
+        return [];
       default:
         return [];
     }
   };
 
   const isStepValid = () => {
-    const fields = getStepFields(currentStep);
     const values = form.getValues();
     
     switch (currentStep) {
       case 1:
         return !!values.name && !!values.status;
       case 2:
-        return !!values.address.city && !!values.address.country && !!values.address.street && !!values.address.zipCode;
+        return !!values.address.city && 
+               !!values.address.country && 
+               !!values.address.googleMapsUrl && 
+               !!values.address.zipCode &&
+               values.address.coordinates.latitude !== 0 &&
+               values.address.coordinates.longitude !== 0;
       case 3:
-        return !!values.phoneNumber && !!values.email;
+        return true; // Contact info is optional
       default:
         return true;
     }
@@ -159,7 +163,10 @@ export function CreateWarehouseDialog({
   return (
     <Dialog open={open} onOpenChange={(isOpen) => { 
       onOpenChange(isOpen); 
-      if (!isOpen) setCurrentStep(1); 
+      if (!isOpen) {
+        setCurrentStep(1);
+        form.reset();
+      }
     }}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
@@ -232,33 +239,60 @@ export function CreateWarehouseDialog({
             {currentStep === 2 && (
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold">{t('warehouses.form.addressInfo')}</h3>
-                <FormField
-                  control={form.control}
-                  name="address.city"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('warehouses.detail.fields.city')}</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="address.city"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('warehouses.detail.fields.city')} *</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select city" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="max-h-[300px]">
+                            {Object.entries(Cities).map(([key, value]) => (
+                              <SelectItem key={value} value={value}>
+                                {value.split(' ').map(word => 
+                                  word.charAt(0).toUpperCase() + word.slice(1)
+                                ).join(' ')}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                <FormField
-                  control={form.control}
-                  name="address.country"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('warehouses.detail.fields.country')}</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                  <FormField
+                    control={form.control}
+                    name="address.country"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('warehouses.detail.fields.country')} *</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select country" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {Object.entries(Countries).map(([key, value]) => (
+                              <SelectItem key={value} value={value}>
+                                {value.charAt(0).toUpperCase() + value.slice(1)}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
 
                 <FormField
                   control={form.control}

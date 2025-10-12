@@ -4,7 +4,7 @@
  */
 
 import { z } from 'zod';
-import { WarehouseStatus } from '@/types/warehouse';
+import { WarehouseStatus, Cities, Countries } from '@/types/warehouse';
 
 // Time format validation (HH:MM in 24-hour format)
 const timeSchema = z
@@ -23,18 +23,25 @@ const googleMapsUrlSchema = z
 const youtubeUrlSchema = z
   .string()
   .url('Invalid URL format')
-  .refine((url) => url.includes('youtube.com'), {
+  .max(500, 'YouTube URL must be less than 500 characters')
+  .refine((url) => url.includes('youtube.com') || url.includes('youtu.be'), {
     message: 'Must be a valid YouTube URL',
   })
   .optional()
   .or(z.literal(''));
 
-const imageUrlSchema = z.string().url('Invalid URL format').optional().or(z.literal(''));
+const imageUrlSchema = z
+  .string()
+  .url('Invalid URL format')
+  .max(500, 'Image URL must be less than 500 characters')
+  .optional()
+  .or(z.literal(''));
 
-// Phone number validation (international format)
+// Phone number validation (international format, max 20 characters)
 const phoneNumberSchema = z
   .string()
-  .regex(/^[\+]?[1-9][\d\s\-\(\)]{0,15}$/, 'Invalid phone number format')
+  .max(20, 'Phone number must be less than 20 characters')
+  .regex(/^[\+]?[1-9][\d\s\-\(\)]{0,18}$/, 'Invalid international phone number format')
   .optional()
   .or(z.literal(''));
 
@@ -51,8 +58,12 @@ const addressSchema = z.object({
   street: z.string().max(100, 'Street name too long').optional().or(z.literal('')),
   neighborhood: z.string().max(100, 'Neighborhood name too long').optional().or(z.literal('')),
   district: z.string().max(100, 'District name too long').optional().or(z.literal('')),
-  city: z.string().min(1, 'City is required').max(50, 'City name too long'),
-  country: z.string().min(1, 'Country is required').max(50, 'Country name too long'),
+  city: z.nativeEnum(Cities, {
+    errorMap: () => ({ message: 'Please select a valid city' }),
+  }),
+  country: z.nativeEnum(Countries, {
+    errorMap: () => ({ message: 'Please select a valid country' }),
+  }),
   googleMapsUrl: googleMapsUrlSchema,
   zipCode: z
     .string()
@@ -88,10 +99,16 @@ export const createWarehouseSchema = z.object({
     .string()
     .min(2, 'Name must be at least 2 characters')
     .max(100, 'Name must be less than 100 characters')
-    .trim(),
+    .trim()
+    .transform(val => val.toLowerCase()),
   address: addressSchema,
   phoneNumber: phoneNumberSchema,
-  email: z.string().email('Invalid email format').optional().or(z.literal('')),
+  email: z
+    .string()
+    .email('Invalid email format')
+    .max(100, 'Email must be less than 100 characters')
+    .optional()
+    .or(z.literal('')),
   youtubeUrl: youtubeUrlSchema,
   imageUrl: imageUrlSchema,
   status: z.nativeEnum(WarehouseStatus, {

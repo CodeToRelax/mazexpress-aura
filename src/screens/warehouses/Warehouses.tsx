@@ -185,8 +185,7 @@ export default function Warehouses() {
             await queryClient.invalidateQueries({ queryKey: ['warehouses'] });
             refetch();
           }}
-          className="shrink-0 pointer-events-auto"
-          style={{ position: 'relative', zIndex: 9999 }}
+          className="shrink-0"
           title={t('warehouses.actions.refresh')}
           disabled={isFetching}
         >

@@ -31,7 +31,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
 import { updateWarehouse } from '@/utilities/api/warehouses.api';
 import { updateWarehouseSchema, type UpdateWarehouseFormData } from '@/utilities/zod/warehouse.schemas';
-import { WarehouseStatus, type Warehouse } from '@/types/warehouse';
+import { WarehouseStatus, Cities, Countries, type Warehouse } from '@/types/warehouse';
 import { OperatingHoursEditor } from './OperatingHoursEditor';
 
 interface EditWarehouseDialogProps {
@@ -235,9 +235,22 @@ export function EditWarehouseDialog({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>{t('warehouses.detail.fields.city')}</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select city" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="max-h-[300px]">
+                            {Object.entries(Cities).map(([key, value]) => (
+                              <SelectItem key={value} value={value}>
+                                {value.split(' ').map(word => 
+                                  word.charAt(0).toUpperCase() + word.slice(1)
+                                ).join(' ')}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -249,9 +262,20 @@ export function EditWarehouseDialog({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>{t('warehouses.detail.fields.country')}</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select country" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {Object.entries(Countries).map(([key, value]) => (
+                              <SelectItem key={value} value={value}>
+                                {value.charAt(0).toUpperCase() + value.slice(1)}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}

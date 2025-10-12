@@ -8,6 +8,44 @@ export enum WarehouseStatus {
   CLOSED = 'closed',
 }
 
+export enum Cities {
+  BENGHAZI = 'benghazi',
+  TRIPOLI = 'tripoli',
+  MUSRATA = 'musrata',
+  ALBAYDA = 'al bayda',
+  ZAWIYA = 'zawiya',
+  GHARYAN = 'gharyan',
+  TOBRUK = 'tobruk',
+  AJDABIYA = 'ajdabiya',
+  ZLITEN = 'zliten',
+  DERNA = 'derna',
+  SIRTE = 'sirte',
+  SABHA = 'sabha',
+  KHOMS = 'khoms',
+  BANI_WALID = 'bani walid',
+  SABRATHA = 'sabratha',
+  ZUWARA = 'zuwara',
+  KUFRA = 'kufra',
+  AL_MARJ = 'al marj',
+  TARHUNA = 'tarhuna',
+  UBARI = 'ubari',
+  GADAMES = 'gadames',
+  GHAT = 'ghat',
+  NALUT = 'nalut',
+  JALU = 'jalu',
+  BREGA = 'brega',
+  ISTANBUL = 'istanbul',
+  DUBAI = 'dubai',
+  HONGKONG = 'hongkong',
+}
+
+export enum Countries {
+  LIBYA = 'libya',
+  TURKEY = 'turkey',
+  CHINA = 'china',
+  UAE = 'uae',
+}
+
 export interface WarehouseCoordinates {
   latitude: number;
   longitude: number;
@@ -19,8 +57,8 @@ export interface WarehouseAddress {
   street?: string;
   neighborhood?: string;
   district?: string;
-  city: string;
-  country: string;
+  city: Cities;
+  country: Countries;
   googleMapsUrl: string;
   zipCode: string;
   coordinates: WarehouseCoordinates;
