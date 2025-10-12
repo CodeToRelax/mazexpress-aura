@@ -19,9 +19,10 @@ interface MarkAsPaidDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   invoice: Invoice;
+  onSuccess?: () => void;
 }
 
-export function MarkAsPaidDialog({ open, onOpenChange, invoice }: MarkAsPaidDialogProps) {
+export function MarkAsPaidDialog({ open, onOpenChange, invoice, onSuccess }: MarkAsPaidDialogProps) {
   const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState(false);
@@ -44,6 +45,7 @@ export function MarkAsPaidDialog({ open, onOpenChange, invoice }: MarkAsPaidDial
       await queryClient.invalidateQueries({ queryKey: ['invoices'] });
       
       onOpenChange(false);
+      onSuccess?.();
     } catch (error: any) {
       toast({
         title: t('errors.error'),

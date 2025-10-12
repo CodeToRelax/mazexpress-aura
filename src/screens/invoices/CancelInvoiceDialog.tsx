@@ -19,9 +19,10 @@ interface CancelInvoiceDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   invoice: Invoice;
+  onSuccess?: () => void;
 }
 
-export function CancelInvoiceDialog({ open, onOpenChange, invoice }: CancelInvoiceDialogProps) {
+export function CancelInvoiceDialog({ open, onOpenChange, invoice, onSuccess }: CancelInvoiceDialogProps) {
   const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState(false);
@@ -44,6 +45,7 @@ export function CancelInvoiceDialog({ open, onOpenChange, invoice }: CancelInvoi
       await queryClient.invalidateQueries({ queryKey: ['invoices'] });
       
       onOpenChange(false);
+      onSuccess?.();
     } catch (error: any) {
       toast({
         title: t('errors.error'),

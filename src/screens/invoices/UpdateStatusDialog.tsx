@@ -37,11 +37,12 @@ interface UpdateStatusDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   invoice: Invoice;
+  onSuccess?: () => void;
 }
 
 const statuses = ['DRAFT', 'SENT', 'PENDING', 'PARTIALLY_PAID', 'PAID', 'OVERDUE', 'REFUNDED', 'DISPUTED', 'VOID', 'FAILED'] as const;
 
-export function UpdateStatusDialog({ open, onOpenChange, invoice }: UpdateStatusDialogProps) {
+export function UpdateStatusDialog({ open, onOpenChange, invoice, onSuccess }: UpdateStatusDialogProps) {
   const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState(false);
@@ -71,6 +72,7 @@ export function UpdateStatusDialog({ open, onOpenChange, invoice }: UpdateStatus
       await queryClient.invalidateQueries({ queryKey: ['invoices'] });
       
       onOpenChange(false);
+      onSuccess?.();
       form.reset();
     } catch (error: any) {
       toast({
