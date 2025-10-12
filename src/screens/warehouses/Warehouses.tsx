@@ -92,9 +92,21 @@ export default function Warehouses() {
   };
 
   // Handle PDF generation
-  const handleGeneratePDF = () => {
+  const handleGeneratePDF = async () => {
     try {
-      const openWarehouses = warehouses.filter((w) => w.status === 'open');
+      // Show loading toast
+      toast({
+        title: 'Loading...',
+        description: 'Fetching all warehouses...',
+      });
+
+      // Fetch all warehouses without pagination
+      const allWarehousesResponse = await getWarehouses({});
+      const allWarehouses = allWarehousesResponse.data.warehouses || [];
+      
+      // Filter for open warehouses
+      const openWarehouses = allWarehouses.filter((w) => w.status === 'open');
+      
       if (openWarehouses.length === 0) {
         toast({
           title: t('status.error'),
@@ -103,7 +115,8 @@ export default function Warehouses() {
         });
         return;
       }
-      generateWarehousesPDF(warehouses);
+      
+      generateWarehousesPDF(openWarehouses);
       toast({
         title: t('status.success'),
         description: `Generating PDF for ${openWarehouses.length} open warehouse(s)`,
