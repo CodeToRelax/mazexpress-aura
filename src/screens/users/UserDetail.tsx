@@ -431,6 +431,7 @@ export default function UserDetail() {
                   onEdit={handleEditTransaction}
                   onDelete={handleDeleteTransaction}
                   isAdmin={true}
+                  visibleColumns={new Set(['type', 'description', 'date', 'status'])}
                 />
               </div>
             </>

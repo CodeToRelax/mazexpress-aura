@@ -372,6 +372,7 @@ export function UserDetailDialog({ user, open, onClose, onEdit }: UserDetailDial
                     onEdit={handleEditTransaction}
                     onDelete={handleDeleteTransaction}
                     isAdmin={true}
+                    visibleColumns={new Set(['type', 'description', 'date', 'status'])}
                   />
                 </div>
               </>

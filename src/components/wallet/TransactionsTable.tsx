@@ -1,6 +1,18 @@
+import { useTranslation } from 'react-i18next';
+import { 
+  ArrowUp, 
+  ArrowDown, 
+  MinusCircle, 
+  RefreshCcw,
+  MoreVertical,
+  Edit,
+  Trash2,
+  ArrowUpDown
+} from 'lucide-react';
 import { format } from 'date-fns';
-import { MoreVertical, Pencil, Trash2, ArrowDownCircle, ArrowUpCircle, MinusCircle, RefreshCcw } from 'lucide-react';
 import type { Transaction } from '@/types/wallet';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Table,
   TableBody,
@@ -15,8 +27,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { formatLYD } from '@/utilities/helpers/currencyHelpers';
 
 interface TransactionsTableProps {
@@ -24,140 +34,211 @@ interface TransactionsTableProps {
   onEdit?: (transaction: Transaction) => void;
   onDelete?: (transaction: Transaction) => void;
   isAdmin?: boolean;
+  visibleColumns: Set<string>;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+  onSort?: (column: string) => void;
 }
 
-export function TransactionsTable({
-  transactions,
-  onEdit,
-  onDelete,
-  isAdmin = true,
+export function TransactionsTable({ 
+  transactions, 
+  onEdit, 
+  onDelete, 
+  isAdmin = false,
+  visibleColumns,
+  sortBy,
+  sortOrder,
+  onSort
 }: TransactionsTableProps) {
+  const { t } = useTranslation();
+
   const getTypeIcon = (type: string) => {
-    const icons: Record<string, any> = {
-      deposit: ArrowDownCircle,
-      withdrawal: ArrowUpCircle,
-      deduction: MinusCircle,
-      refund: RefreshCcw,
-    };
-    const Icon = icons[type] || ArrowDownCircle;
-    return <Icon className="h-4 w-4" />;
+    switch (type.toLowerCase()) {
+      case 'deposit': return ArrowUp;
+      case 'withdrawal': return ArrowDown;
+      case 'deduction': return MinusCircle;
+      case 'refund': return RefreshCcw;
+      default: return ArrowUp;
+    }
   };
 
   const getTypeColor = (type: string) => {
-    const colors: Record<string, string> = {
-      deposit: 'text-green-600 dark:text-green-400',
-      withdrawal: 'text-orange-600 dark:text-orange-400',
-      deduction: 'text-red-600 dark:text-red-400',
-      refund: 'text-blue-600 dark:text-blue-400',
-    };
-    return colors[type] || 'text-foreground';
+    switch (type.toLowerCase()) {
+      case 'deposit': return 'text-green-600 dark:text-green-400';
+      case 'withdrawal': return 'text-red-600 dark:text-red-400';
+      case 'deduction': return 'text-orange-600 dark:text-orange-400';
+      case 'refund': return 'text-blue-600 dark:text-blue-400';
+      default: return 'text-foreground';
+    }
   };
 
-  const getTypeVariant = (type: string) => {
-    const variants: Record<string, 'default' | 'secondary' | 'destructive'> = {
-      deposit: 'default',
-      withdrawal: 'secondary',
-      deduction: 'destructive',
-      refund: 'default',
-    };
-    return variants[type] || 'default';
+  const getTypeVariant = (type: string): "default" | "secondary" | "destructive" | "outline" => {
+    switch (type.toLowerCase()) {
+      case 'deposit': return 'default';
+      case 'withdrawal': return 'destructive';
+      case 'deduction': return 'secondary';
+      case 'refund': return 'outline';
+      default: return 'default';
+    }
   };
 
-  const getStatusVariant = (status: string) => {
-    const variants: Record<string, 'default' | 'secondary' | 'destructive'> = {
-      completed: 'default',
-      pending: 'secondary',
-      failed: 'destructive',
-    };
-    return variants[status] || 'secondary';
+  const getStatusVariant = (status: string): "default" | "secondary" | "destructive" | "outline" => {
+    switch (status.toLowerCase()) {
+      case 'completed': return 'default';
+      case 'pending': return 'secondary';
+      case 'failed': return 'destructive';
+      default: return 'outline';
+    }
   };
+
+  const renderSortIcon = (column: string) => {
+    if (!onSort) return null;
+    const isActive = sortBy === column;
+    return (
+      <Button
+        variant="ghost"
+        size="sm"
+        className="h-8 px-2 ml-2"
+        onClick={() => onSort(column)}
+      >
+        <ArrowUpDown className={`h-4 w-4 ${isActive ? 'text-primary' : 'text-muted-foreground'}`} />
+      </Button>
+    );
+  };
+
+  if (transactions.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-muted-foreground">{t('wallet.empty.title')}</p>
+        <p className="text-sm text-muted-foreground mt-2">{t('wallet.empty.description')}</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="rounded-lg border">
+    <div className="rounded-md border">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[50px]"></TableHead>
-            <TableHead>Type</TableHead>
-            <TableHead>Description</TableHead>
-            <TableHead>Date</TableHead>
-            <TableHead className="text-right">Amount</TableHead>
-            <TableHead>Status</TableHead>
-            {isAdmin && <TableHead className="w-[70px]">Actions</TableHead>}
+            <TableHead className="w-[150px]">{t('wallet.transaction.transactionNumber')}</TableHead>
+            {visibleColumns.has('type') && (
+              <TableHead>
+                {t('wallet.transaction.type')}
+                {renderSortIcon('type')}
+              </TableHead>
+            )}
+            {visibleColumns.has('description') && (
+              <TableHead className="min-w-[200px]">{t('wallet.transaction.description')}</TableHead>
+            )}
+            {visibleColumns.has('date') && (
+              <TableHead>
+                {t('wallet.transaction.date')}
+                {renderSortIcon('createdAt')}
+              </TableHead>
+            )}
+            <TableHead className="text-right">
+              {t('wallet.transaction.amount')}
+              {renderSortIcon('amount')}
+            </TableHead>
+            {visibleColumns.has('status') && (
+              <TableHead>
+                {t('wallet.transaction.status')}
+                {renderSortIcon('status')}
+              </TableHead>
+            )}
+            {visibleColumns.has('reference') && (
+              <TableHead>{t('wallet.transaction.reference')}</TableHead>
+            )}
+            {visibleColumns.has('balanceBefore') && (
+              <TableHead className="text-right">{t('wallet.transaction.balanceBefore')}</TableHead>
+            )}
+            {visibleColumns.has('balanceAfter') && (
+              <TableHead className="text-right">{t('wallet.transaction.balanceAfter')}</TableHead>
+            )}
+            {isAdmin && <TableHead className="w-[50px]" />}
           </TableRow>
         </TableHeader>
         <TableBody>
-          {transactions.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={isAdmin ? 7 : 6} className="text-center py-8 text-muted-foreground">
-                No transactions found
-              </TableCell>
-            </TableRow>
-          ) : (
-            transactions.map((transaction) => (
+          {transactions.map((transaction) => {
+            const TypeIcon = getTypeIcon(transaction.type);
+            return (
               <TableRow key={transaction._id}>
-                <TableCell>
-                  <div className={getTypeColor(transaction.type)}>
-                    {getTypeIcon(transaction.type)}
-                  </div>
+                <TableCell className="font-mono text-xs">
+                  {transaction.transactionNumber}
                 </TableCell>
-                <TableCell>
-                  <Badge variant={getTypeVariant(transaction.type)}>
-                    {transaction.type}
-                  </Badge>
-                </TableCell>
-                <TableCell className="max-w-[200px]">
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium truncate">{transaction.description}</p>
-                    {transaction.reference && (
-                      <p className="text-xs text-muted-foreground font-mono">
-                        Ref: {transaction.reference}
-                      </p>
-                    )}
-                  </div>
-                </TableCell>
-                <TableCell className="text-sm">
-                  {format(new Date(transaction.createdAt), 'MMM dd, yyyy')}
-                  <br />
-                  <span className="text-xs text-muted-foreground">
-                    {format(new Date(transaction.createdAt), 'HH:mm')}
-                  </span>
-                </TableCell>
-                <TableCell className="text-right font-semibold">
+                {visibleColumns.has('type') && (
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <TypeIcon className={`h-4 w-4 ${getTypeColor(transaction.type)}`} />
+                      <Badge variant={getTypeVariant(transaction.type)}>
+                        {t(`wallet.transaction.type.${transaction.type.toLowerCase()}`)}
+                      </Badge>
+                    </div>
+                  </TableCell>
+                )}
+                {visibleColumns.has('description') && (
+                  <TableCell className="max-w-[300px] truncate">
+                    {transaction.description}
+                  </TableCell>
+                )}
+                {visibleColumns.has('date') && (
+                  <TableCell>
+                    {format(new Date(transaction.createdAt), 'MMM dd, yyyy HH:mm')}
+                  </TableCell>
+                )}
+                <TableCell className={`text-right font-semibold ${getTypeColor(transaction.type)}`}>
+                  {transaction.type.toLowerCase() === 'withdrawal' || transaction.type.toLowerCase() === 'deduction' ? '-' : '+'}
                   {formatLYD(transaction.amount)}
                 </TableCell>
-                <TableCell>
-                  <Badge variant={getStatusVariant(transaction.status)}>
-                    {transaction.status}
-                  </Badge>
-                </TableCell>
-                {isAdmin && (
+                {visibleColumns.has('status') && (
+                  <TableCell>
+                    <Badge variant={getStatusVariant(transaction.status)}>
+                      {t(`wallet.transaction.status.${transaction.status.toLowerCase()}`)}
+                    </Badge>
+                  </TableCell>
+                )}
+                {visibleColumns.has('reference') && (
+                  <TableCell className="text-muted-foreground">
+                    {transaction.reference || '-'}
+                  </TableCell>
+                )}
+                {visibleColumns.has('balanceBefore') && (
+                  <TableCell className="text-right text-muted-foreground">
+                    {formatLYD(transaction.balanceBefore)}
+                  </TableCell>
+                )}
+                {visibleColumns.has('balanceAfter') && (
+                  <TableCell className="text-right text-muted-foreground">
+                    {formatLYD(transaction.balanceAfter)}
+                  </TableCell>
+                )}
+                {isAdmin && onEdit && onDelete && (
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <Button variant="ghost" size="icon">
                           <MoreVertical className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => onEdit?.(transaction)}>
-                          <Pencil className="h-4 w-4 mr-2" />
-                          Edit
+                        <DropdownMenuItem onClick={() => onEdit(transaction)}>
+                          <Edit className="h-4 w-4 mr-2" />
+                          {t('common.edit')}
                         </DropdownMenuItem>
                         <DropdownMenuItem 
-                          onClick={() => onDelete?.(transaction)}
+                          onClick={() => onDelete(transaction)}
                           className="text-destructive"
                         >
                           <Trash2 className="h-4 w-4 mr-2" />
-                          Delete
+                          {t('common.delete')}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
                 )}
               </TableRow>
-            ))
-          )}
+            );
+          })}
         </TableBody>
       </Table>
     </div>

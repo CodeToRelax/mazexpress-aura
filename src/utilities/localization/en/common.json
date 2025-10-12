@@ -618,7 +618,37 @@
       "balance": "Current Balance",
       "depositsThisMonth": "Deposits This Month",
       "withdrawalsThisMonth": "Withdrawals This Month",
-      "pendingTransactions": "Pending Transactions"
+      "pendingTransactions": "Pending Transactions",
+      "totalTransactions": "Total Transactions",
+      "deposits": "Deposits",
+      "withdrawals": "Withdrawals",
+      "pending": "Pending",
+      "completed": "Completed",
+      "failed": "Failed"
+    },
+    "table": {
+      "columns": {
+        "transactionNumber": "Transaction #",
+        "type": "Type",
+        "description": "Description",
+        "date": "Date",
+        "amount": "Amount",
+        "status": "Status",
+        "reference": "Reference",
+        "balanceBefore": "Balance Before",
+        "balanceAfter": "Balance After"
+      },
+      "showingResults": "Showing {{from}}-{{to}} of {{total}} transactions"
+    },
+    "columns": {
+      "visibility": "Columns",
+      "showHide": "Show/Hide Columns",
+      "hiddenCount": "{{count}} hidden",
+      "resetDefault": "Reset to Default"
+    },
+    "actions": {
+      "refresh": "Refresh",
+      "resetFilters": "Reset Filters"
     },
     "transaction": {
       "type": "Transaction Type",
@@ -656,7 +686,9 @@
       "insufficientBalance": "Insufficient balance",
       "error": "An error occurred. Please try again.",
       "walletNotFound": "Wallet not found",
-      "transactionFailed": "Transaction failed"
+      "transactionFailed": "Transaction failed",
+      "updateSuccess": "Transaction updated successfully",
+      "deleteSuccess": "Transaction deleted successfully"
     },
     "filters": {
       "type": "Type",
@@ -666,7 +698,10 @@
       "dateTo": "To Date",
       "allTypes": "All Types",
       "allStatuses": "All Statuses",
-      "search": "Search transactions..."
+      "search": "Search transactions...",
+      "searchPlaceholder": "Transaction number, description...",
+      "advanced": "Advanced Filters",
+      "description": "Filter transactions by type, status, and date range"
     },
     "empty": {
       "title": "No Transactions Yet",
