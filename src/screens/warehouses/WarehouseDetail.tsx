@@ -91,11 +91,13 @@ export default function WarehouseDetail() {
           <Button 
             variant="outline" 
             size="icon" 
-            onClick={() => window.open(warehouse.address.googleMapsUrl, '_blank', 'noopener,noreferrer')}
+            asChild
             className="glass-card hover:shadow-glass-hover"
             title="View on Google Maps"
           >
-            <MapPin className="h-5 w-5" />
+            <a href={warehouse.address.googleMapsUrl} target="_blank" rel="noopener noreferrer">
+              <MapPin className="h-5 w-5" />
+            </a>
           </Button>
         )}
       </div>
