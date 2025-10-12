@@ -127,7 +127,7 @@ export function CreateWarehouseDialog({ open, onOpenChange, onSuccess }: CreateW
       onOpenChange(open);
       if (!open) form.reset();
     }}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col pointer-events-auto">
         <DialogHeader>
           <DialogTitle>{t('warehouses.form.createTitle')}</DialogTitle>
           <DialogDescription>
@@ -135,18 +135,19 @@ export function CreateWarehouseDialog({ open, onOpenChange, onSuccess }: CreateW
           </DialogDescription>
         </DialogHeader>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <Tabs defaultValue="basic" className="w-full">
-              <TabsList className="grid w-full grid-cols-4">
-                <TabsTrigger value="basic">{t('warehouses.form.basicInfo')}</TabsTrigger>
-                <TabsTrigger value="address">{t('warehouses.form.addressInfo')}</TabsTrigger>
-                <TabsTrigger value="contact">{t('warehouses.form.contactInfo')}</TabsTrigger>
-                <TabsTrigger value="hours">Operating Hours</TabsTrigger>
-              </TabsList>
+        <div className="flex-1 overflow-y-auto pr-1">
+          <Form {...form}>
+            <form id="create-warehouse-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <Tabs defaultValue="basic" className="w-full">
+                <TabsList className="grid w-full grid-cols-4">
+                  <TabsTrigger value="basic">{t('warehouses.form.basicInfo')}</TabsTrigger>
+                  <TabsTrigger value="address">{t('warehouses.form.addressInfo')}</TabsTrigger>
+                  <TabsTrigger value="contact">{t('warehouses.form.contactInfo')}</TabsTrigger>
+                  <TabsTrigger value="hours">Operating Hours</TabsTrigger>
+                </TabsList>
 
-              {/* Basic Info Tab */}
-              <TabsContent value="basic" className="space-y-4">
+                {/* Basic Info Tab */}
+                <TabsContent value="basic" className="space-y-4">
                 <FormField
                   control={form.control}
                   name="name"
@@ -453,22 +454,24 @@ export function CreateWarehouseDialog({ open, onOpenChange, onSuccess }: CreateW
                 <OperatingHoursEditor form={form} />
               </TabsContent>
             </Tabs>
+            </form>
+          </Form>
+        </div>
 
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-                {t('actions.cancel')}
-              </Button>
-              <Button 
-                type="submit" 
-                disabled={isSubmitting}
-                onClick={() => console.log('Create button clicked', form.formState.errors)}
-              >
-                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Create Warehouse
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
+        <DialogFooter className="flex gap-2 border-t pt-4 mt-0 bg-background sticky bottom-0 z-50 pointer-events-auto">
+          <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            {t('actions.cancel')}
+          </Button>
+          <Button 
+            type="submit"
+            form="create-warehouse-form"
+            disabled={isSubmitting}
+            onClick={() => console.log('Create button clicked', form.formState.errors)}
+          >
+            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Create Warehouse
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
