@@ -1,14 +1,13 @@
-import { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Receipt, RotateCw, Download, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
-import { PageLoader } from '@/components/feedback/PageLoader';
-import { InlineError } from '@/components/feedback/InlineError';
+import { Skeleton } from '@/components/ui/skeleton';
 import type { InvoiceFilters, Invoice } from '@/types/invoice';
-import { getInvoices } from '@/utilities/api/invoice.api';
+import { getAllInvoices } from '@/utilities/api/invoice.api';
 import { InvoicesTable } from '@/components/invoices/InvoicesTable';
 import { InvoicesFilters } from './InvoicesFilters';
 import { InvoicesPagination } from './InvoicesPagination';
@@ -30,7 +29,19 @@ const STORAGE_KEYS = {
 
 export default function Invoices() {
   const { t, i18n } = useTranslation();
-  const { hasPermission } = useACL();
+  const navigate = useNavigate();
+  const { hasFlag } = useACL();
+  
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [pagination, setPagination] = useState({
+    totalDocs: 0,
+    limit: 10,
+    totalPages: 0,
+    page: 1,
+    hasPrevPage: false,
+    hasNextPage: false,
+  });
   
   // Initialize from localStorage
   const [filters, setFilters] = useState<InvoiceFilters>(() => {
@@ -41,7 +52,9 @@ export default function Invoices() {
       
       return {
         page: 1,
-        limit: savedLimit ? parseInt(savedLimit) : 20,
+        limit: savedLimit ? parseInt(savedLimit) : 10,
+        sortBy: parsedFilters.sortBy || 'createdAt',
+        sortOrder: parsedFilters.sortOrder || 'desc',
         status: parsedFilters.status,
         from: parsedFilters.from,
         to: parsedFilters.to,
@@ -49,7 +62,9 @@ export default function Invoices() {
     } catch {
       return {
         page: 1,
-        limit: 20,
+        limit: 10,
+        sortBy: 'createdAt',
+        sortOrder: 'desc',
       };
     }
   });
@@ -62,37 +77,58 @@ export default function Invoices() {
         return new Set(parsed);
       }
     } catch {}
-    return new Set(['user', 'dueDate', 'status', 'grossAmount', 'paidAmount', 'dueAmount']);
+    return new Set(['user', 'issueDate', 'dueDate', 'status', 'grossAmount', 'paidAmount', 'dueAmount']);
   });
 
-  const [sortBy, setSortBy] = useState<string>('createdAt');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [showGenerateDialog, setShowGenerateDialog] = useState(false);
   const [invoiceToMarkAsPaid, setInvoiceToMarkAsPaid] = useState<Invoice | null>(null);
   const [invoiceToVoid, setInvoiceToVoid] = useState<Invoice | null>(null);
   const [invoiceToUpdateStatus, setInvoiceToUpdateStatus] = useState<Invoice | null>(null);
 
-  const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ['invoices', filters, i18n.language],
-    queryFn: () => getInvoices(filters, i18n.language),
-  });
-
   // Calculate stats from invoices
   const invoiceStats = {
-    totalInvoices: data?.totalDocs || 0,
-    draftCount: data?.docs?.filter(i => i.status === 'DRAFT').length || 0,
-    sentCount: data?.docs?.filter(i => i.status === 'SENT').length || 0,
-    pendingCount: data?.docs?.filter(i => ['PENDING', 'OVERDUE'].includes(i.status)).length || 0,
-    partiallyPaidCount: data?.docs?.filter(i => i.status === 'PARTIALLY_PAID').length || 0,
-    paidCount: data?.docs?.filter(i => i.status === 'PAID').length || 0,
-    totalGrossAmount: data?.docs?.reduce((sum, i) => sum + i.totals.gross, 0) || 0,
-    totalDueAmount: data?.docs?.reduce((sum, i) => sum + i.totals.due, 0) || 0,
+    totalInvoices: pagination.totalDocs,
+    draftCount: invoices.filter(i => i.status === 'DRAFT').length,
+    sentCount: invoices.filter(i => i.status === 'SENT').length,
+    pendingCount: invoices.filter(i => ['PENDING', 'OVERDUE'].includes(i.status)).length,
+    partiallyPaidCount: invoices.filter(i => i.status === 'PARTIALLY_PAID').length,
+    paidCount: invoices.filter(i => i.status === 'PAID').length,
+    totalGrossAmount: invoices.reduce((sum, i) => sum + i.totals.gross, 0),
+    totalDueAmount: invoices.reduce((sum, i) => sum + i.totals.due, 0),
   };
+
+  const fetchInvoices = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await getAllInvoices(filters, i18n.language);
+      setInvoices(response.docs);
+      setPagination({
+        totalDocs: response.totalDocs,
+        limit: response.limit,
+        totalPages: response.totalPages,
+        page: response.page,
+        hasPrevPage: response.hasPrevPage,
+        hasNextPage: response.hasNextPage,
+      });
+    } catch (error) {
+      toast({
+        title: t('errors.error'),
+        description: error instanceof Error ? error.message : 'Failed to load invoices',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, [filters, i18n.language, t]);
+
+  useEffect(() => {
+    fetchInvoices();
+  }, [fetchInvoices]);
 
   // Persist filters to localStorage
   useEffect(() => {
     try {
-      const { page, limit, ...persistableFilters } = filters;
+      const { page, search, limit, ...persistableFilters } = filters;
       localStorage.setItem(STORAGE_KEYS.FILTERS, JSON.stringify(persistableFilters));
       if (limit) {
         localStorage.setItem(STORAGE_KEYS.TABLE_LIMIT, limit.toString());
@@ -112,68 +148,40 @@ export default function Invoices() {
   }, [visibleColumns]);
 
   const handleFiltersChange = (newFilters: InvoiceFilters) => {
-    setFilters(newFilters);
+    setFilters({ ...newFilters, page: 1 });
   };
 
   const handleClearFilters = () => {
     setFilters({
       page: 1,
       limit: filters.limit,
+      sortBy: 'createdAt',
+      sortOrder: 'desc',
     });
   };
 
-  const handleStatClick = (filterType: 'all' | 'draft' | 'sent' | 'pending' | 'partiallyPaid' | 'paid') => {
-    switch (filterType) {
-      case 'all':
-        setFilters({
-          page: 1,
-          limit: filters.limit,
-        });
-        break;
-      case 'draft':
-        setFilters({
-          ...filters,
-          status: 'DRAFT',
-          page: 1,
-        });
-        break;
-      case 'sent':
-        setFilters({
-          ...filters,
-          status: 'SENT',
-          page: 1,
-        });
-        break;
-      case 'pending':
-        setFilters({
-          ...filters,
-          status: 'PENDING',
-          page: 1,
-        });
-        break;
-      case 'partiallyPaid':
-        setFilters({
-          ...filters,
-          status: 'PARTIALLY_PAID',
-          page: 1,
-        });
-        break;
-      case 'paid':
-        setFilters({
-          ...filters,
-          status: 'PAID',
-          page: 1,
-        });
-        break;
+  const handleStatClick = (filterType: string) => {
+    if (filterType === 'all') {
+      handleClearFilters();
+    } else if (filterType === 'draft') {
+      setFilters({ ...filters, status: 'DRAFT', page: 1 });
+    } else if (filterType === 'sent') {
+      setFilters({ ...filters, status: 'SENT', page: 1 });
+    } else if (filterType === 'pending') {
+      setFilters({ ...filters, status: 'PENDING', page: 1 });
+    } else if (filterType === 'partiallyPaid') {
+      setFilters({ ...filters, status: 'PARTIALLY_PAID', page: 1 });
+    } else if (filterType === 'paid') {
+      setFilters({ ...filters, status: 'PAID', page: 1 });
     }
   };
 
   const handlePageChange = (page: number) => {
-    setFilters(prev => ({ ...prev, page }));
+    setFilters({ ...filters, page });
   };
 
   const handleLimitChange = (limit: number) => {
-    setFilters(prev => ({ ...prev, limit, page: 1 }));
+    setFilters({ ...filters, limit, page: 1 });
   };
 
   const handleToggleColumn = (column: string) => {
@@ -189,66 +197,69 @@ export default function Invoices() {
   };
 
   const handleResetColumns = () => {
-    setVisibleColumns(new Set(['user', 'dueDate', 'status', 'grossAmount', 'paidAmount', 'dueAmount']));
+    setVisibleColumns(new Set(['user', 'issueDate', 'dueDate', 'status', 'grossAmount', 'paidAmount', 'dueAmount']));
   };
 
   const handleSort = (column: string) => {
-    if (sortBy === column) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortBy(column);
-      setSortOrder('asc');
-    }
+    const columnMap: Record<string, string> = {
+      invoiceNumber: 'invoiceNumber',
+      issueDate: 'issueDate',
+      dueDate: 'dueDate',
+      status: 'status',
+      createdAt: 'createdAt',
+    };
+
+    const apiColumn = columnMap[column];
+    if (!apiColumn) return;
+
+    setFilters(prev => {
+      if (prev.sortBy === apiColumn) {
+        return {
+          ...prev,
+          sortOrder: prev.sortOrder === 'asc' ? 'desc' : 'asc',
+        };
+      }
+      return {
+        ...prev,
+        sortBy: apiColumn,
+        sortOrder: 'asc',
+      };
+    });
+  };
+
+  const handleRowClick = (invoice: Invoice) => {
+    navigate(`/invoices/${invoice._id}`);
+  };
+
+  const handleMarkAsPaid = (invoice: Invoice) => {
+    setInvoiceToMarkAsPaid(invoice);
+  };
+
+  const handleUpdateStatus = (invoice: Invoice) => {
+    setInvoiceToUpdateStatus(invoice);
+  };
+
+  const handleVoid = (invoice: Invoice) => {
+    setInvoiceToVoid(invoice);
   };
 
   const handleExportCSV = async () => {
     try {
-      toast({
-        title: t('invoice.messages.exportingCSV'),
-      });
       await exportInvoicesToCSV(filters, i18n.language);
       toast({
-        title: t('invoice.messages.exportSuccess'),
+        title: 'Export successful',
       });
     } catch (error) {
       toast({
-        title: t('invoice.messages.exportError'),
+        title: 'Export failed',
         description: error instanceof Error ? error.message : 'Failed to export',
         variant: 'destructive',
       });
     }
   };
 
-  const handleMarkAsPaidSuccess = () => {
-    setInvoiceToMarkAsPaid(null);
-    refetch();
-    toast({
-      title: t('invoice.messages.markAsPaidSuccess'),
-    });
-  };
-
-  const handleVoidSuccess = () => {
-    setInvoiceToVoid(null);
-    refetch();
-    toast({
-      title: t('invoice.messages.voidSuccess'),
-    });
-  };
-
-  const handleUpdateStatusSuccess = () => {
-    setInvoiceToUpdateStatus(null);
-    refetch();
-    toast({
-      title: t('invoice.messages.updateSuccess'),
-    });
-  };
-
-  const handleGenerateSuccess = () => {
-    setShowGenerateDialog(false);
-    refetch();
-    toast({
-      title: t('invoice.messages.generateSuccess'),
-    });
+  const handleSuccess = () => {
+    fetchInvoices();
   };
 
   const activeFilterCount = Object.entries(filters).filter(
@@ -256,23 +267,8 @@ export default function Invoices() {
       value !== undefined && 
       value !== null && 
       value !== '' && 
-      !['page', 'limit'].includes(key)
+      !['page', 'limit', 'sortBy', 'sortOrder'].includes(key)
   ).length;
-
-  const canManageInvoices = hasPermission('invoices', 'update');
-
-  if (isLoading) return <PageLoader />;
-  if (error) return <InlineError message={error.message} />;
-
-  const invoices = data?.docs || [];
-  const pagination = {
-    currentPage: data?.page || 1,
-    totalPages: data?.totalPages || 1,
-    totalDocs: data?.totalDocs || 0,
-    limit: data?.limit || 20,
-    hasNextPage: data?.hasNextPage || false,
-    hasPrevPage: data?.hasPrevPage || false,
-  };
 
   return (
     <div className="space-y-6">
@@ -292,16 +288,27 @@ export default function Invoices() {
                 {t('invoice.title')}
               </h1>
               <p className="text-muted-foreground">
-                {t('invoice.myInvoices')}
+                {t('invoice.subtitle')}
               </p>
             </div>
           </div>
-          {canManageInvoices && (
-            <Button onClick={() => setShowGenerateDialog(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              {t('invoice.actions.generate')}
+          
+          <div className="flex items-center gap-2">
+            <Button 
+              variant="outline" 
+              className="gap-2"
+              onClick={handleExportCSV}
+            >
+              <Download className="h-4 w-4" />
+              {t('invoice.actions.export')}
             </Button>
-          )}
+            {hasFlag('canCreateInvoices') && (
+              <Button className="gap-2" onClick={() => setShowGenerateDialog(true)}>
+                <Plus className="h-4 w-4" />
+                {t('invoice.actions.generate')}
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Stats Bar */}
@@ -339,53 +346,51 @@ export default function Invoices() {
             type="button"
             variant="outline"
             size="icon"
-            onClick={handleExportCSV}
-            title={t('invoice.actions.exportCSV')}
-          >
-            <Download className="h-4 w-4" />
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            onClick={() => refetch()}
-            title={t('invoice.actions.refresh')}
+            onClick={fetchInvoices}
           >
             <RotateCw className="h-4 w-4" />
           </Button>
         </div>
 
+        {/* Table */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3, delay: 0.3 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
         >
-          <InvoicesTable
-            invoices={invoices}
-            onMarkAsPaid={canManageInvoices ? setInvoiceToMarkAsPaid : undefined}
-            onUpdateStatus={canManageInvoices ? setInvoiceToUpdateStatus : undefined}
-            onVoid={canManageInvoices ? setInvoiceToVoid : undefined}
-            isAdmin={canManageInvoices}
-            visibleColumns={visibleColumns}
-            sortBy={sortBy}
-            sortOrder={sortOrder}
-            onSort={handleSort}
-          />
+          {loading ? (
+            <div className="space-y-3">
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
+            </div>
+          ) : (
+            <InvoicesTable
+              invoices={invoices}
+              visibleColumns={visibleColumns}
+              sortBy={filters.sortBy}
+              sortOrder={filters.sortOrder}
+              onSort={handleSort}
+              onRowClick={handleRowClick}
+              onMarkAsPaid={handleMarkAsPaid}
+              onUpdateStatus={handleUpdateStatus}
+              onVoid={handleVoid}
+              isAdmin={hasFlag('canManageInvoices')}
+            />
+          )}
         </motion.div>
 
+        {/* Pagination */}
         {pagination.totalPages > 1 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.4 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
           >
             <InvoicesPagination
-              currentPage={pagination.currentPage}
-              totalPages={pagination.totalPages}
-              totalDocs={pagination.totalDocs}
-              limit={pagination.limit}
-              hasNextPage={pagination.hasNextPage}
-              hasPrevPage={pagination.hasPrevPage}
+              pagination={pagination}
               onPageChange={handlePageChange}
               onLimitChange={handleLimitChange}
             />
@@ -393,21 +398,21 @@ export default function Invoices() {
         )}
       </motion.div>
 
+      {/* Dialogs */}
+      {showGenerateDialog && (
+        <GenerateInvoiceDialog
+          open={showGenerateDialog}
+          onOpenChange={setShowGenerateDialog}
+          onSuccess={handleSuccess}
+        />
+      )}
+
       {invoiceToMarkAsPaid && (
         <MarkAsPaidDialog
           invoice={invoiceToMarkAsPaid}
           open={!!invoiceToMarkAsPaid}
           onOpenChange={(open) => !open && setInvoiceToMarkAsPaid(null)}
-          onSuccess={handleMarkAsPaidSuccess}
-        />
-      )}
-
-      {invoiceToVoid && (
-        <CancelInvoiceDialog
-          invoice={invoiceToVoid}
-          open={!!invoiceToVoid}
-          onOpenChange={(open) => !open && setInvoiceToVoid(null)}
-          onSuccess={handleVoidSuccess}
+          onSuccess={handleSuccess}
         />
       )}
 
@@ -416,7 +421,16 @@ export default function Invoices() {
           invoice={invoiceToUpdateStatus}
           open={!!invoiceToUpdateStatus}
           onOpenChange={(open) => !open && setInvoiceToUpdateStatus(null)}
-          onSuccess={handleUpdateStatusSuccess}
+          onSuccess={handleSuccess}
+        />
+      )}
+
+      {invoiceToVoid && (
+        <CancelInvoiceDialog
+          invoice={invoiceToVoid}
+          open={!!invoiceToVoid}
+          onOpenChange={(open) => !open && setInvoiceToVoid(null)}
+          onSuccess={handleSuccess}
         />
       )}
     </div>

@@ -137,7 +137,8 @@ export async function exportInvoicesToCSV(
     const pageLimit = 100; // Use a reasonable page size
     
     while (hasMore) {
-      const response = await getInvoices(
+      const { getAllInvoices } = await import('@/utilities/api/invoice.api');
+      const response = await getAllInvoices(
         { ...filters, limit: pageLimit, page: currentPage },
         locale
       );

@@ -22,7 +22,7 @@ import type { GenerateInvoiceRequest } from '@/types/invoice';
 interface GenerateInvoiceDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  userId: string;
+  userId?: string;
   shipmentIds?: string[];
   onSuccess?: () => void;
 }
@@ -76,6 +76,15 @@ export function GenerateInvoiceDialog({
   });
 
   const handleGenerate = () => {
+    if (!userId) {
+      toast({
+        title: t('common.error'),
+        description: t('invoice.messages.userRequired'),
+        variant: 'destructive',
+      });
+      return;
+    }
+    
     if (mode === 'filter' && !selectedStatus && !dateFrom && !dateTo) {
       toast({
         title: t('common.error'),

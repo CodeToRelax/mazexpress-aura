@@ -10,60 +10,57 @@ import {
 } from '@/components/ui/select';
 
 interface InvoicesPaginationProps {
-  currentPage: number;
-  totalPages: number;
-  totalDocs: number;
-  limit: number;
-  hasNextPage: boolean;
-  hasPrevPage: boolean;
+  pagination: {
+    totalDocs: number;
+    limit: number;
+    totalPages: number;
+    page: number;
+    hasPrevPage: boolean;
+    hasNextPage: boolean;
+  };
   onPageChange: (page: number) => void;
   onLimitChange: (limit: number) => void;
 }
 
 export function InvoicesPagination({
-  currentPage,
-  totalPages,
-  totalDocs,
-  limit,
-  hasNextPage,
-  hasPrevPage,
+  pagination,
   onPageChange,
   onLimitChange,
 }: InvoicesPaginationProps) {
   const { t } = useTranslation();
 
-  const startItem = (currentPage - 1) * limit + 1;
-  const endItem = Math.min(currentPage * limit, totalDocs);
+  const startItem = (pagination.page - 1) * pagination.limit + 1;
+  const endItem = Math.min(pagination.page * pagination.limit, pagination.totalDocs);
 
   const getPageNumbers = () => {
     const pages: (number | string)[] = [];
     const maxVisible = 5;
 
-    if (totalPages <= maxVisible) {
-      for (let i = 1; i <= totalPages; i++) {
+    if (pagination.totalPages <= maxVisible) {
+      for (let i = 1; i <= pagination.totalPages; i++) {
         pages.push(i);
       }
     } else {
-      if (currentPage <= 3) {
+      if (pagination.page <= 3) {
         for (let i = 1; i <= 4; i++) {
           pages.push(i);
         }
         pages.push('...');
-        pages.push(totalPages);
-      } else if (currentPage >= totalPages - 2) {
+        pages.push(pagination.totalPages);
+      } else if (pagination.page >= pagination.totalPages - 2) {
         pages.push(1);
         pages.push('...');
-        for (let i = totalPages - 3; i <= totalPages; i++) {
+        for (let i = pagination.totalPages - 3; i <= pagination.totalPages; i++) {
           pages.push(i);
         }
       } else {
         pages.push(1);
         pages.push('...');
-        pages.push(currentPage - 1);
-        pages.push(currentPage);
-        pages.push(currentPage + 1);
+        pages.push(pagination.page - 1);
+        pages.push(pagination.page);
+        pages.push(pagination.page + 1);
         pages.push('...');
-        pages.push(totalPages);
+        pages.push(pagination.totalPages);
       }
     }
 
@@ -74,11 +71,11 @@ export function InvoicesPagination({
     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6">
       <div className="flex items-center gap-4">
         <p className="text-sm text-muted-foreground">
-          {t('common.showing')} {startItem}-{endItem} {t('common.of')} {totalDocs}
+          {t('common.showing')} {startItem}-{endItem} {t('common.of')} {pagination.totalDocs}
         </p>
         <div className="flex items-center gap-2">
           <label className="text-sm text-muted-foreground">{t('common.perPage')}:</label>
-          <Select value={limit.toString()} onValueChange={(value) => onLimitChange(parseInt(value))}>
+          <Select value={pagination.limit.toString()} onValueChange={(value) => onLimitChange(parseInt(value))}>
             <SelectTrigger className="w-20">
               <SelectValue />
             </SelectTrigger>
@@ -96,8 +93,8 @@ export function InvoicesPagination({
         <Button
           variant="outline"
           size="sm"
-          onClick={() => onPageChange(currentPage - 1)}
-          disabled={!hasPrevPage}
+          onClick={() => onPageChange(pagination.page - 1)}
+          disabled={!pagination.hasPrevPage}
         >
           <ChevronLeft className="h-4 w-4 mr-1" />
           {t('common.previous')}
@@ -108,7 +105,7 @@ export function InvoicesPagination({
             typeof page === 'number' ? (
               <Button
                 key={index}
-                variant={page === currentPage ? 'default' : 'outline'}
+                variant={page === pagination.page ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => onPageChange(page)}
                 className="w-10"
@@ -126,8 +123,8 @@ export function InvoicesPagination({
         <Button
           variant="outline"
           size="sm"
-          onClick={() => onPageChange(currentPage + 1)}
-          disabled={!hasNextPage}
+          onClick={() => onPageChange(pagination.page + 1)}
+          disabled={!pagination.hasNextPage}
         >
           {t('common.next')}
           <ChevronRight className="h-4 w-4 ml-1" />

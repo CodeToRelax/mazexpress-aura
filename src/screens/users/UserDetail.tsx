@@ -2,11 +2,10 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
-import { ArrowLeft, Mail, Phone, MapPin, Calendar, User as UserIcon, Package, Wallet as WalletIcon, Shield, Loader2, Receipt, TrendingUp, Plus, Download } from 'lucide-react';
+import { ArrowLeft, Mail, Phone, MapPin, Calendar, User as UserIcon, Package, Wallet as WalletIcon, Shield, Loader2, TrendingUp, Plus, Download } from 'lucide-react';
 import type { User } from '@/types/user';
 import type { Wallet } from '@/types/wallet';
 import type { Transaction } from '@/types/wallet';
-import type { Invoice } from '@/types/invoice';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -23,10 +22,8 @@ import { TransactionsColumnVisibilityToggle } from '@/screens/wallet/Transaction
 import { CreateTransactionDialog } from './CreateTransactionDialog';
 import { EditTransactionDialog } from './EditTransactionDialog';
 import { RefundTransactionDialog } from './RefundTransactionDialog';
-import { GenerateInvoiceDialog } from '@/screens/invoices/GenerateInvoiceDialog';
 import { EditUserDialog } from './EditUserDialog';
 import { usersApi } from '@/utilities/api/users.api';
-import { getUserInvoices } from '@/utilities/api/invoice.api';
 import { getWalletByUserId, getUserTransactions } from '@/utilities/api/wallet.api';
 import { exportUserTransactionsToCSV } from '@/utilities/helpers/transactionExport';
 import { toast } from '@/hooks/use-toast';
@@ -54,15 +51,12 @@ export default function UserDetail() {
     hasPrevPage: false,
     hasNextPage: false,
   });
-  const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingWallet, setIsLoadingWallet] = useState(false);
-  const [isLoadingInvoices, setIsLoadingInvoices] = useState(false);
   const [isCreateTransactionOpen, setIsCreateTransactionOpen] = useState(false);
   const [isEditTransactionOpen, setIsEditTransactionOpen] = useState(false);
   const [isRefundTransactionOpen, setIsRefundTransactionOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
-  const [isGenerateInvoiceOpen, setIsGenerateInvoiceOpen] = useState(false);
   const [isEditUserOpen, setIsEditUserOpen] = useState(false);
   
   // Transaction filters and settings
@@ -133,30 +127,6 @@ export default function UserDetail() {
     }
   };
 
-  const fetchInvoices = async () => {
-    if (!id) return;
-    
-    setIsLoadingInvoices(true);
-    try {
-      const response = await getUserInvoices(
-        id,
-        { 
-          limit: 10,
-          sortBy: 'createdAt',
-          sortOrder: 'desc'
-        }
-      );
-      setInvoices(response.docs || []);
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Failed to load invoices',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsLoadingInvoices(false);
-    }
-  };
 
   const getInitials = (firstName: string, lastName: string) => {
     return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
@@ -349,20 +319,14 @@ export default function UserDetail() {
 
       {/* Main Content */}
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className={`grid w-full ${user.userType === 'admin' ? 'grid-cols-4' : 'grid-cols-5'}`}>
+        <TabsList className={`grid w-full ${user.userType === 'admin' ? 'grid-cols-4' : 'grid-cols-4'}`}>
           <TabsTrigger value="overview">{t('users.detail.overview')}</TabsTrigger>
           <TabsTrigger value="profile">{t('users.detail.profile')}</TabsTrigger>
           {user.userType !== 'admin' && (
-            <>
-              <TabsTrigger value="wallet" onClick={fetchWalletData}>
-                <WalletIcon className="h-4 w-4 mr-2" />
-                Wallet
-              </TabsTrigger>
-              <TabsTrigger value="invoices" onClick={fetchInvoices}>
-                <Receipt className="h-4 w-4 mr-2" />
-                Invoices
-              </TabsTrigger>
-            </>
+            <TabsTrigger value="wallet" onClick={fetchWalletData}>
+              <WalletIcon className="h-4 w-4 mr-2" />
+              Wallet
+            </TabsTrigger>
           )}
           <TabsTrigger value="metadata">Metadata</TabsTrigger>
           {user.userType === 'admin' && (
@@ -615,88 +579,6 @@ export default function UserDetail() {
         </TabsContent>
         )}
 
-        {user.userType !== 'admin' && (
-        <TabsContent value="invoices" className="space-y-4 mt-6">
-          {isLoadingInvoices ? (
-            <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            </div>
-          ) : (
-            <div className="glass-card p-6 rounded-2xl space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-lg">Invoices</h3>
-                <div className="flex gap-2">
-                  <Button 
-                    variant="default" 
-                    size="sm" 
-                    onClick={() => setIsGenerateInvoiceOpen(true)}
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    {t('invoice.actions.generate')}
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={() => navigate(`/invoices?userId=${user._id}`)}>
-                    View All
-                  </Button>
-                </div>
-              </div>
-              <Separator />
-              
-              {invoices.length > 0 ? (
-                <div className="space-y-3">
-                  {invoices.map((invoice) => {
-                    const getStatusColor = (status: string) => {
-                      const colors = {
-                        PAID: 'bg-green-500/10 text-green-700 dark:text-green-400',
-                        UNPAID: 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400',
-                        OVERDUE: 'bg-red-500/10 text-red-700 dark:text-red-400',
-                        PARTIALLY_PAID: 'bg-blue-500/10 text-blue-700 dark:text-blue-400',
-                        DRAFT: 'bg-gray-500/10 text-gray-700 dark:text-gray-400',
-                        CANCELLED: 'bg-gray-500/10 text-gray-700 dark:text-gray-400',
-                      };
-                      return colors[status as keyof typeof colors] || colors.DRAFT;
-                    };
-
-                    return (
-                      <Card 
-                        key={invoice._id}
-                        className="cursor-pointer transition-colors hover:bg-accent/50"
-                        onClick={() => navigate(`/invoices/${invoice._id}`)}
-                      >
-                        <CardContent className="p-4">
-                          <div className="flex items-center justify-between">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-1">
-                                <p className="font-medium">{invoice.invoiceNumber}</p>
-                                <Badge variant="secondary" className={getStatusColor(invoice.status)}>
-                                  {invoice.status.replace('_', ' ')}
-                                </Badge>
-                              </div>
-                              <p className="text-sm text-muted-foreground">
-                                {format(new Date(invoice.createdAt), 'MMM dd, yyyy')}
-                              </p>
-                            </div>
-                            <div className="text-right">
-                              <p className="font-semibold text-lg">{formatLYD(invoice.totals.gross)}</p>
-                              <p className="text-sm text-muted-foreground">
-                                Due: {formatLYD(invoice.totals.due)}
-                              </p>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  No invoices found
-                </div>
-              )}
-            </div>
-          )}
-        </TabsContent>
-        )}
-
         {user.userType === 'admin' && (
           <TabsContent value="acl" className="mt-6">
             <ACLManagementTab userId={user._id} userType={user.userType} />
@@ -739,16 +621,6 @@ export default function UserDetail() {
           handleTransactionSuccess();
           setIsRefundTransactionOpen(false);
           setSelectedTransaction(null);
-        }}
-      />
-
-      <GenerateInvoiceDialog
-        open={isGenerateInvoiceOpen}
-        onOpenChange={setIsGenerateInvoiceOpen}
-        userId={user._id}
-        onSuccess={() => {
-          fetchInvoices();
-          setIsGenerateInvoiceOpen(false);
         }}
       />
 

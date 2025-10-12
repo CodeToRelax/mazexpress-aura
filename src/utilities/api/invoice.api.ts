@@ -54,6 +54,43 @@ async function handleResponse<T>(response: Response): Promise<T> {
  * Invoice API Functions
  */
 
+export async function getAllInvoices(
+  filters: InvoiceFilters = {},
+  locale?: string
+): Promise<{
+  docs: Invoice[];
+  totalDocs: number;
+  limit: number;
+  totalPages: number;
+  page: number;
+  pagingCounter: number;
+  hasPrevPage: boolean;
+  hasNextPage: boolean;
+}> {
+  const headers = await getAuthHeaders(locale);
+  
+  // Build query string
+  const params = new URLSearchParams();
+  if (filters.page) params.append('page', filters.page.toString());
+  if (filters.limit) params.append('limit', filters.limit.toString());
+  if (filters.status) params.append('status', filters.status);
+  if (filters.from) params.append('from', filters.from);
+  if (filters.to) params.append('to', filters.to);
+  if (filters.sortBy) params.append('sortBy', filters.sortBy);
+  if (filters.sortOrder) params.append('sortOrder', filters.sortOrder);
+  if (filters.search) params.append('search', filters.search);
+  if (filters.userId) params.append('userId', filters.userId);
+  
+  const queryString = params.toString();
+  const url = `${API_BASE_URL}/api/invoice${queryString ? `?${queryString}` : ''}`;
+  
+  const response = await fetch(url, {
+    method: 'GET',
+    headers,
+  });
+  return handleResponse(response);
+}
+
 export async function getInvoices(
   filters: InvoiceFilters = {},
   locale?: string

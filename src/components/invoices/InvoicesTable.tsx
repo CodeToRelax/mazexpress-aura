@@ -5,7 +5,6 @@ import {
   MoreVertical,
   Edit,
   XCircle,
-  Printer
 } from 'lucide-react';
 import { format } from 'date-fns';
 import type { Invoice } from '@/types/invoice';
@@ -37,6 +36,7 @@ interface InvoicesTableProps {
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
   onSort?: (column: string) => void;
+  onRowClick?: (invoice: Invoice) => void;
 }
 
 export function InvoicesTable({ 
@@ -48,10 +48,23 @@ export function InvoicesTable({
   visibleColumns,
   sortBy,
   sortOrder,
-  onSort
+  onSort,
+  onRowClick,
 }: InvoicesTableProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+
+  const handleRowClick = (invoice: Invoice, e: React.MouseEvent) => {
+    // Don't navigate if clicking on action buttons
+    if ((e.target as HTMLElement).closest('button')) {
+      return;
+    }
+    if (onRowClick) {
+      onRowClick(invoice);
+    } else {
+      navigate(`/invoices/${invoice._id}`);
+    }
+  };
 
   const getStatusVariant = (status: string): "default" | "secondary" | "destructive" | "outline" => {
     switch (status) {
@@ -66,22 +79,6 @@ export function InvoicesTable({
       case 'REFUNDED': return 'outline';
       case 'DISPUTED': return 'destructive';
       default: return 'outline';
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'PAID': return 'text-green-600 dark:text-green-400';
-      case 'SENT': return 'text-cyan-600 dark:text-cyan-400';
-      case 'PENDING': return 'text-yellow-600 dark:text-yellow-400';
-      case 'PARTIALLY_PAID': return 'text-orange-600 dark:text-orange-400';
-      case 'OVERDUE': return 'text-red-600 dark:text-red-400';
-      case 'DRAFT': return 'text-gray-600 dark:text-gray-400';
-      case 'VOID': return 'text-gray-600 dark:text-gray-400';
-      case 'FAILED': return 'text-red-600 dark:text-red-400';
-      case 'REFUNDED': return 'text-blue-600 dark:text-blue-400';
-      case 'DISPUTED': return 'text-purple-600 dark:text-purple-400';
-      default: return 'text-foreground';
     }
   };
 
@@ -101,14 +98,6 @@ export function InvoicesTable({
         <ArrowUpDown className={`h-4 w-4 ${isActive ? 'text-primary' : 'text-muted-foreground'}`} />
       </Button>
     );
-  };
-
-  const handleRowClick = (invoiceId: string, e: React.MouseEvent) => {
-    // Don't navigate if clicking on action buttons
-    if ((e.target as HTMLElement).closest('button')) {
-      return;
-    }
-    navigate(`/invoices/${invoiceId}`);
   };
 
   const getUserDisplay = (userId: Invoice['userId']) => {
@@ -186,7 +175,7 @@ export function InvoicesTable({
             <TableRow 
               key={invoice._id}
               className="cursor-pointer hover:bg-muted/50"
-              onClick={(e) => handleRowClick(invoice._id, e)}
+              onClick={(e) => handleRowClick(invoice, e)}
             >
               <TableCell className="font-mono text-xs">
                 {invoice.invoiceNumber}
