@@ -16,6 +16,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { ACLManagementTab } from './ACLManagementTab';
 import { WalletBalance } from '@/components/wallet/WalletBalance';
 import { TransactionsTable } from '@/components/wallet/TransactionsTable';
+import { TransactionsStatsBar } from '@/screens/wallet/TransactionsStatsBar';
+import { TransactionsFilters } from '@/screens/wallet/TransactionsFilters';
+import { TransactionsPagination } from '@/screens/wallet/TransactionsPagination';
+import { TransactionsColumnVisibilityToggle } from '@/screens/wallet/TransactionsColumnVisibilityToggle';
 import { CreateTransactionDialog } from './CreateTransactionDialog';
 import { EditTransactionDialog } from './EditTransactionDialog';
 import { DeleteTransactionDialog } from './DeleteTransactionDialog';
@@ -34,6 +38,21 @@ export default function UserDetail() {
   const [user, setUser] = useState<User | null>(null);
   const [wallet, setWallet] = useState<Wallet | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [transactionsPagination, setTransactionsPagination] = useState<{
+    totalDocs: number;
+    limit: number;
+    totalPages: number;
+    page: number;
+    hasPrevPage: boolean;
+    hasNextPage: boolean;
+  }>({
+    totalDocs: 0,
+    limit: 10,
+    totalPages: 0,
+    page: 1,
+    hasPrevPage: false,
+    hasNextPage: false,
+  });
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingWallet, setIsLoadingWallet] = useState(false);
@@ -44,6 +63,17 @@ export default function UserDetail() {
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [isGenerateInvoiceOpen, setIsGenerateInvoiceOpen] = useState(false);
   const [isEditUserOpen, setIsEditUserOpen] = useState(false);
+  
+  // Transaction filters and settings
+  const [transactionFilters, setTransactionFilters] = useState<any>({
+    page: 1,
+    limit: 10,
+  });
+  const [visibleColumns, setVisibleColumns] = useState<Set<string>>(
+    new Set(['transactionNumber', 'type', 'description', 'date', 'amount', 'status'])
+  );
+  const [sortBy, setSortBy] = useState<string>('createdAt');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -78,11 +108,20 @@ export default function UserDetail() {
       setWallet(walletData);
       
       const transactionData = await getUserTransactions(user._id, {
-        limit: 5,
-        page: 1,
+        ...transactionFilters,
+        sortBy,
+        sortOrder,
       });
       console.log('[UserDetail] Transactions fetched:', transactionData);
       setTransactions(transactionData.docs || []);
+      setTransactionsPagination({
+        totalDocs: transactionData.totalDocs,
+        limit: transactionData.limit,
+        totalPages: transactionData.totalPages,
+        page: transactionData.page,
+        hasPrevPage: transactionData.hasPrevPage,
+        hasNextPage: transactionData.hasNextPage,
+      });
     } catch (error) {
       console.error('[UserDetail] Error fetching wallet data:', error);
       toast({
@@ -148,6 +187,76 @@ export default function UserDetail() {
     console.log('[UserDetail] Transaction success, refetching wallet data');
     fetchWalletData();
   };
+
+  // Calculate transaction stats
+  const transactionStats = {
+    totalTransactions: transactionsPagination.totalDocs,
+    totalDeposits: transactions.filter(t => t.type === 'deposit').length,
+    depositAmount: transactions.filter(t => t.type === 'deposit').reduce((sum, t) => sum + t.amount, 0),
+    totalWithdrawals: transactions.filter(t => t.type === 'withdrawal').length,
+    withdrawalAmount: transactions.filter(t => t.type === 'withdrawal').reduce((sum, t) => sum + t.amount, 0),
+    pendingCount: transactions.filter(t => t.status === 'pending').length,
+    completedCount: transactions.filter(t => t.status === 'completed').length,
+    failedCount: transactions.filter(t => t.status === 'failed').length,
+  };
+
+  const handleFiltersChange = (newFilters: any) => {
+    setTransactionFilters({ ...newFilters, page: 1 });
+  };
+
+  const handleClearFilters = () => {
+    setTransactionFilters({ page: 1, limit: transactionFilters.limit });
+  };
+
+  const handlePageChange = (page: number) => {
+    setTransactionFilters({ ...transactionFilters, page });
+  };
+
+  const handleLimitChange = (limit: number) => {
+    setTransactionFilters({ ...transactionFilters, limit, page: 1 });
+  };
+
+  const handleToggleColumn = (columnKey: string) => {
+    const newVisibleColumns = new Set(visibleColumns);
+    if (newVisibleColumns.has(columnKey)) {
+      newVisibleColumns.delete(columnKey);
+    } else {
+      newVisibleColumns.add(columnKey);
+    }
+    setVisibleColumns(newVisibleColumns);
+  };
+
+  const handleResetColumns = () => {
+    setVisibleColumns(new Set(['transactionNumber', 'type', 'description', 'date', 'amount', 'status']));
+  };
+
+  const handleSort = (column: string) => {
+    if (sortBy === column) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortBy(column);
+      setSortOrder('desc');
+    }
+  };
+
+  const handleStatClick = (filterType: string) => {
+    if (filterType === 'all') {
+      handleClearFilters();
+    } else if (filterType === 'deposits') {
+      setTransactionFilters({ ...transactionFilters, type: 'deposit', page: 1 });
+    } else if (filterType === 'withdrawals') {
+      setTransactionFilters({ ...transactionFilters, type: 'withdrawal', page: 1 });
+    } else if (filterType === 'pending' || filterType === 'completed' || filterType === 'failed') {
+      setTransactionFilters({ ...transactionFilters, status: filterType, page: 1 });
+    }
+  };
+
+  // Refetch when filters change
+  useEffect(() => {
+    if (wallet) {
+      fetchWalletData();
+    }
+  }, [transactionFilters, sortBy, sortOrder]);
 
   const handleEditUserSuccess = async () => {
     setIsEditUserOpen(false);
@@ -402,12 +511,22 @@ export default function UserDetail() {
             <>
               <WalletBalance balance={wallet.balance} currency={wallet.currency} />
               
+              <TransactionsStatsBar 
+                stats={transactionStats}
+                onStatClick={handleStatClick}
+              />
+
               <div className="glass-card p-6 rounded-2xl space-y-4">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
                   <h3 className="font-semibold text-lg">Transactions</h3>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 flex-wrap">
+                    <TransactionsColumnVisibilityToggle
+                      visibleColumns={visibleColumns}
+                      onToggleColumn={handleToggleColumn}
+                      onReset={handleResetColumns}
+                    />
                     <Button 
-                      variant="outline" 
+                      variant="default" 
                       size="sm" 
                       onClick={() => setIsCreateTransactionOpen(true)}
                       disabled={isLoadingWallet || !wallet}
@@ -419,19 +538,38 @@ export default function UserDetail() {
                       )}
                       Add Transaction
                     </Button>
-                    <Button variant="outline" size="sm" onClick={() => navigate(`/wallet/transactions?userId=${user._id}`)}>
-                      View All
-                    </Button>
                   </div>
                 </div>
-                <Separator />
+                
+                <TransactionsFilters
+                  filters={transactionFilters}
+                  onFiltersChange={handleFiltersChange}
+                  onClearFilters={handleClearFilters}
+                  activeFilterCount={Object.keys(transactionFilters).filter(
+                    key => key !== 'page' && key !== 'limit' && transactionFilters[key]
+                  ).length}
+                />
                 
                 <TransactionsTable
                   transactions={transactions}
                   onEdit={handleEditTransaction}
                   onDelete={handleDeleteTransaction}
                   isAdmin={true}
-                  visibleColumns={new Set(['type', 'description', 'date', 'status'])}
+                  visibleColumns={visibleColumns}
+                  sortBy={sortBy}
+                  sortOrder={sortOrder}
+                  onSort={handleSort}
+                />
+
+                <TransactionsPagination
+                  currentPage={transactionsPagination.page}
+                  totalPages={transactionsPagination.totalPages}
+                  totalDocs={transactionsPagination.totalDocs}
+                  limit={transactionsPagination.limit}
+                  hasPrevPage={transactionsPagination.hasPrevPage}
+                  hasNextPage={transactionsPagination.hasNextPage}
+                  onPageChange={handlePageChange}
+                  onLimitChange={handleLimitChange}
                 />
               </div>
             </>
