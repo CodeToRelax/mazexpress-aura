@@ -7,34 +7,45 @@ import { z } from 'zod';
 
 export const depositSchema = z.object({
   amount: z.coerce.number()
-    .min(1, 'Amount must be at least 1 LYD')
-    .max(1000000, 'Amount cannot exceed 1,000,000 LYD'),
+    .min(0.01, 'Amount must be at least 0.01 LYD')
+    .max(100000, 'Amount cannot exceed 100,000 LYD'),
   description: z.string()
-    .min(3, 'Description must be at least 3 characters')
-    .max(200, 'Description cannot exceed 200 characters'),
+    .min(1, 'Description must be at least 1 character')
+    .max(500, 'Description cannot exceed 500 characters'),
+  reference: z.string()
+    .min(1, 'Reference must be at least 1 character')
+    .max(100, 'Reference cannot exceed 100 characters')
+    .optional(),
 }).required();
 
 export const withdrawalSchema = z.object({
   amount: z.coerce.number()
-    .min(1, 'Amount must be at least 1 LYD')
-    .max(1000000, 'Amount cannot exceed 1,000,000 LYD'),
+    .min(0.01, 'Amount must be at least 0.01 LYD')
+    .max(100000, 'Amount cannot exceed 100,000 LYD'),
   description: z.string()
-    .min(3, 'Description must be at least 3 characters')
-    .max(200, 'Description cannot exceed 200 characters'),
+    .min(1, 'Description must be at least 1 character')
+    .max(500, 'Description cannot exceed 500 characters'),
+  reference: z.string()
+    .min(1, 'Reference must be at least 1 character')
+    .max(100, 'Reference cannot exceed 100 characters')
+    .optional(),
 }).required();
 
 export const adminTransactionSchema = z.object({
   walletId: z.string().min(1, 'Wallet ID is required'),
-  type: z.enum(['deposit', 'withdrawal', 'deduction', 'refund'], {
-    errorMap: () => ({ message: 'Type must be deposit, withdrawal, deduction, or refund' }),
+  type: z.enum(['deposit', 'withdrawal', 'deduction', 'refund', 'transfer'], {
+    errorMap: () => ({ message: 'Type must be deposit, withdrawal, deduction, refund, or transfer' }),
   }),
   amount: z.coerce.number()
-    .min(1, 'Amount must be at least 1 LYD')
-    .max(1000000, 'Amount cannot exceed 1,000,000 LYD'),
+    .min(0.01, 'Amount must be at least 0.01 LYD')
+    .max(100000, 'Amount cannot exceed 100,000 LYD'),
   description: z.string()
-    .min(3, 'Description must be at least 3 characters')
-    .max(200, 'Description cannot exceed 200 characters'),
-  reference: z.string().optional(),
+    .min(1, 'Description must be at least 1 character')
+    .max(500, 'Description cannot exceed 500 characters'),
+  reference: z.string()
+    .min(1, 'Reference must be at least 1 character')
+    .max(100, 'Reference cannot exceed 100 characters')
+    .optional(),
 });
 
 export const createWalletSchema = z.object({
@@ -45,14 +56,43 @@ export const createWalletSchema = z.object({
 export const transactionFiltersSchema = z.object({
   page: z.number().min(1).optional(),
   limit: z.number().min(1).max(100).optional(),
-  type: z.enum(['deposit', 'withdrawal', 'deduction', 'refund']).optional(),
-  status: z.enum(['pending', 'completed', 'failed']).optional(),
+  type: z.enum(['deposit', 'withdrawal', 'deduction', 'refund', 'transfer']).optional(),
+  status: z.enum(['pending', 'completed', 'failed', 'cancelled']).optional(),
   dateFrom: z.string().optional(),
   dateTo: z.string().optional(),
 });
+
+export const refundSchema = z.object({
+  amount: z.coerce.number()
+    .min(0.01, 'Amount must be at least 0.01 LYD')
+    .max(100000, 'Amount cannot exceed 100,000 LYD'),
+  description: z.string()
+    .min(1, 'Description must be at least 1 character')
+    .max(500, 'Description cannot exceed 500 characters'),
+  reference: z.string()
+    .min(1, 'Reference must be at least 1 character')
+    .max(100, 'Reference cannot exceed 100 characters')
+    .optional(),
+}).required();
+
+export const transferSchema = z.object({
+  toWalletId: z.string().min(1, 'Destination wallet ID is required'),
+  amount: z.coerce.number()
+    .min(0.01, 'Amount must be at least 0.01 LYD')
+    .max(100000, 'Amount cannot exceed 100,000 LYD'),
+  description: z.string()
+    .min(1, 'Description must be at least 1 character')
+    .max(500, 'Description cannot exceed 500 characters'),
+  reference: z.string()
+    .min(1, 'Reference must be at least 1 character')
+    .max(100, 'Reference cannot exceed 100 characters')
+    .optional(),
+}).required();
 
 export type DepositInput = z.infer<typeof depositSchema>;
 export type WithdrawalInput = z.infer<typeof withdrawalSchema>;
 export type AdminTransactionInput = z.infer<typeof adminTransactionSchema>;
 export type CreateWalletInput = z.infer<typeof createWalletSchema>;
 export type TransactionFiltersInput = z.infer<typeof transactionFiltersSchema>;
+export type RefundInput = z.infer<typeof refundSchema>;
+export type TransferInput = z.infer<typeof transferSchema>;

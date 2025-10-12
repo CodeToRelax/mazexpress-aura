@@ -573,17 +573,25 @@
       "type.withdrawal": "سحب",
       "type.deduction": "خصم",
       "type.refund": "استرداد",
+      "type.transfer": "تحويل",
       "status.pending": "قيد الانتظار",
       "status.completed": "مكتمل",
-      "status.failed": "فشل"
+      "status.failed": "فشل",
+      "status.cancelled": "ملغي"
     },
     "form": {
       "depositTitle": "إيداع أموال",
       "withdrawTitle": "سحب أموال",
+      "refundTitle": "معالجة استرداد",
+      "transferTitle": "تحويل أموال",
       "amount": "المبلغ",
       "amountPlaceholder": "أدخل المبلغ بالدينار الليبي",
       "description": "الوصف",
       "descriptionPlaceholder": "أدخل الوصف...",
+      "reference": "المرجع (اختياري)",
+      "referencePlaceholder": "أدخل الرقم المرجعي...",
+      "toWalletId": "معرف المحفظة المستلمة",
+      "toWalletIdPlaceholder": "أدخل معرف المحفظة...",
       "currentBalance": "الرصيد الحالي: {{balance}} د.ل",
       "submit": "إرسال",
       "cancel": "إلغاء",
@@ -592,10 +600,18 @@
     "messages": {
       "depositSuccess": "تم الإيداع بنجاح",
       "withdrawSuccess": "تم السحب بنجاح",
+      "refundSuccess": "تم معالجة الاسترداد بنجاح",
+      "transferSuccess": "تم إتمام التحويل بنجاح",
       "insufficientBalance": "رصيد غير كافٍ",
       "error": "حدث خطأ. يرجى المحاولة مرة أخرى.",
       "walletNotFound": "المحفظة غير موجودة",
-      "transactionFailed": "فشلت المعاملة"
+      "transactionFailed": "فشلت المعاملة",
+      "updateSuccess": "تم تحديث المعاملة بنجاح",
+      "deleteSuccess": "تم حذف المعاملة بنجاح",
+      "exportingCSV": "جاري تصدير المعاملات...",
+      "exportSuccess": "تم تصدير المعاملات بنجاح",
+      "exportError": "فشل تصدير المعاملات",
+      "invalidWalletId": "معرف محفظة غير صالح"
     },
     "filters": {
       "type": "النوع",

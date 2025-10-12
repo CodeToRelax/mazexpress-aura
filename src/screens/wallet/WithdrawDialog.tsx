@@ -44,6 +44,7 @@ export function WithdrawDialog({ open, onOpenChange, wallet }: WithdrawDialogPro
     defaultValues: {
       amount: 100,
       description: '',
+      reference: '',
     },
   });
 
@@ -154,6 +155,23 @@ export function WithdrawDialog({ open, onOpenChange, wallet }: WithdrawDialogPro
                     <Textarea
                       placeholder={t('wallet.form.descriptionPlaceholder')}
                       rows={3}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="reference"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('wallet.form.reference')}</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={t('wallet.form.referencePlaceholder')}
                       {...field}
                     />
                   </FormControl>

@@ -32,7 +32,7 @@ export default function WalletDashboard() {
   if (walletLoading) return <PageLoader />;
   if (walletError) return <InlineError message={walletError.message} />;
 
-  const recentTransactions = transactionsData?.docs || [];
+  const recentTransactions = transactionsData?.transactions || [];
 
   return (
     <div className="space-y-6">

@@ -75,16 +75,16 @@ export default function Transactions() {
 
   // Calculate stats from transactions
   const transactionStats = {
-    totalTransactions: data?.totalDocs || 0,
-    totalDeposits: data?.docs.filter(t => t.type.toLowerCase() === 'deposit').length || 0,
-    totalWithdrawals: data?.docs.filter(t => t.type.toLowerCase() === 'withdrawal').length || 0,
-    pendingCount: data?.docs.filter(t => t.status.toLowerCase() === 'pending').length || 0,
-    completedCount: data?.docs.filter(t => t.status.toLowerCase() === 'completed').length || 0,
-    failedCount: data?.docs.filter(t => t.status.toLowerCase() === 'failed').length || 0,
-    depositAmount: data?.docs
+    totalTransactions: data?.pagination.totalItems || 0,
+    totalDeposits: data?.transactions.filter(t => t.type.toLowerCase() === 'deposit').length || 0,
+    totalWithdrawals: data?.transactions.filter(t => t.type.toLowerCase() === 'withdrawal').length || 0,
+    pendingCount: data?.transactions.filter(t => t.status.toLowerCase() === 'pending').length || 0,
+    completedCount: data?.transactions.filter(t => t.status.toLowerCase() === 'completed').length || 0,
+    failedCount: data?.transactions.filter(t => t.status.toLowerCase() === 'failed').length || 0,
+    depositAmount: data?.transactions
       .filter(t => t.type.toLowerCase() === 'deposit' && t.status.toLowerCase() === 'completed')
       .reduce((sum, t) => sum + t.amount, 0) || 0,
-    withdrawalAmount: data?.docs
+    withdrawalAmount: data?.transactions
       .filter(t => t.type.toLowerCase() === 'withdrawal' && t.status.toLowerCase() === 'completed')
       .reduce((sum, t) => sum + t.amount, 0) || 0,
   };
@@ -254,14 +254,14 @@ export default function Transactions() {
   if (isLoading) return <PageLoader />;
   if (error) return <InlineError message={error.message} />;
 
-  const transactions = data?.docs || [];
+  const transactions = data?.transactions || [];
   const pagination = {
-    currentPage: data?.page || 1,
-    totalPages: data?.totalPages || 1,
-    totalDocs: data?.totalDocs || 0,
-    limit: data?.limit || 20,
-    hasNextPage: data?.hasNextPage || false,
-    hasPrevPage: data?.hasPrevPage || false,
+    currentPage: data?.pagination.currentPage || 1,
+    totalPages: data?.pagination.totalPages || 1,
+    totalDocs: data?.pagination.totalItems || 0,
+    limit: data?.pagination.itemsPerPage || 20,
+    hasNextPage: data?.pagination.hasNextPage || false,
+    hasPrevPage: data?.pagination.hasPrevPage || false,
   };
 
   return (

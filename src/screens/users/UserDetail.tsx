@@ -114,14 +114,14 @@ export default function UserDetail() {
         sortOrder,
       });
       console.log('[UserDetail] Transactions fetched:', transactionData);
-      setTransactions(transactionData.docs || []);
+      setTransactions(transactionData.transactions || []);
       setTransactionsPagination({
-        totalDocs: transactionData.totalDocs,
-        limit: transactionData.limit,
-        totalPages: transactionData.totalPages,
-        page: transactionData.page,
-        hasPrevPage: transactionData.hasPrevPage,
-        hasNextPage: transactionData.hasNextPage,
+        totalDocs: transactionData.pagination.totalItems,
+        limit: transactionData.pagination.itemsPerPage,
+        totalPages: transactionData.pagination.totalPages,
+        page: transactionData.pagination.currentPage,
+        hasPrevPage: transactionData.pagination.hasPrevPage,
+        hasNextPage: transactionData.pagination.hasNextPage,
       });
     } catch (error) {
       console.error('[UserDetail] Error fetching wallet data:', error);

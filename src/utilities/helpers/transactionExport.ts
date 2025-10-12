@@ -129,16 +129,17 @@ export async function exportTransactionsToCSV(
       locale
     );
     
-    if (!allTransactionsResponse.docs || allTransactionsResponse.docs.length === 0) {
+    if (!allTransactionsResponse.transactions || allTransactionsResponse.transactions.length === 0) {
       throw new Error('No transactions found to export');
     }
 
     // Convert to CSV
-    const csvContent = transactionsToCSV(allTransactionsResponse.docs);
+    const csvContent = transactionsToCSV(allTransactionsResponse.transactions);
     
     // Generate filename and download
     const filename = generateFilename(filters);
     downloadCSV(csvContent, filename);
+    
     
   } catch (error) {
     console.error('Failed to export transactions to CSV:', error);
@@ -162,12 +163,12 @@ export async function exportUserTransactionsToCSV(
       locale
     );
     
-    if (!allTransactionsResponse.docs || allTransactionsResponse.docs.length === 0) {
+    if (!allTransactionsResponse.transactions || allTransactionsResponse.transactions.length === 0) {
       throw new Error('No transactions found to export');
     }
 
     // Convert to CSV
-    const csvContent = transactionsToCSV(allTransactionsResponse.docs);
+    const csvContent = transactionsToCSV(allTransactionsResponse.transactions);
     
     // Generate filename and download
     const filename = generateFilename(filters, userId);

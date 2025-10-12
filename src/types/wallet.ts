@@ -23,12 +23,12 @@ export interface Transaction {
   walletId: string | { _id: string; currency: string };
   userId: string;
   transactionNumber: string;
-  type: 'deposit' | 'withdrawal' | 'deduction' | 'refund';
+  type: 'deposit' | 'withdrawal' | 'deduction' | 'refund' | 'transfer';
   amount: number;
   balanceBefore: number;
   balanceAfter: number;
   description: string;
-  status: 'pending' | 'completed' | 'failed';
+  status: 'pending' | 'completed' | 'failed' | 'cancelled';
   reference?: string;
   createdAt: string;
 }
@@ -52,16 +52,31 @@ export interface WalletStats {
 export type DepositRequest = {
   amount: number;
   description: string;
+  reference?: string;
 };
 
 export type WithdrawRequest = {
   amount: number;
   description: string;
+  reference?: string;
+};
+
+export type RefundRequest = {
+  amount: number;
+  description: string;
+  reference?: string;
+};
+
+export type TransferRequest = {
+  toWalletId: string;
+  amount: number;
+  description: string;
+  reference?: string;
 };
 
 export interface AdminTransactionRequest {
   walletId: string;
-  type: 'deposit' | 'withdrawal' | 'deduction' | 'refund';
+  type: 'deposit' | 'withdrawal' | 'deduction' | 'refund' | 'transfer';
   amount: number;
   description: string;
   reference?: string;
@@ -70,4 +85,28 @@ export interface AdminTransactionRequest {
 export interface CreateWalletRequest {
   userId: string;
   currency: string;
+}
+
+export interface WalletBalance {
+  balance: number;
+  currency: string;
+}
+
+export interface TransferResponse {
+  fromWallet: Wallet;
+  toWallet: Wallet;
+  fromTransaction: Transaction;
+  toTransaction: Transaction;
+}
+
+export interface TransactionPaginationResponse {
+  transactions: Transaction[];
+  pagination: {
+    currentPage: number;
+    totalPages: number;
+    totalItems: number;
+    itemsPerPage: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+  };
 }

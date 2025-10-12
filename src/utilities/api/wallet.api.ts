@@ -4,8 +4,13 @@ import {
   TransactionFilters,
   DepositRequest,
   WithdrawRequest,
+  RefundRequest,
+  TransferRequest,
   AdminTransactionRequest,
   CreateWalletRequest,
+  WalletBalance,
+  TransferResponse,
+  TransactionPaginationResponse,
 } from '@/types/wallet';
 import { getFirebaseAuth } from '@/utilities/firebase/firebase';
 
@@ -63,6 +68,15 @@ export async function getWallet(locale?: string): Promise<Wallet> {
   return handleResponse<Wallet>(response);
 }
 
+export async function getWalletBalance(locale?: string): Promise<WalletBalance> {
+  const headers = await getAuthHeaders(locale);
+  const response = await fetch(`${API_BASE_URL}/api/wallet/balance`, {
+    method: 'GET',
+    headers,
+  });
+  return handleResponse<WalletBalance>(response);
+}
+
 export async function deposit(
   data: DepositRequest,
   locale?: string
@@ -89,10 +103,36 @@ export async function withdraw(
   return handleResponse<{ wallet: Wallet; transaction: Transaction }>(response);
 }
 
+export async function refund(
+  data: RefundRequest,
+  locale?: string
+): Promise<{ wallet: Wallet; transaction: Transaction }> {
+  const headers = await getAuthHeaders(locale);
+  const response = await fetch(`${API_BASE_URL}/api/wallet/refund`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(data),
+  });
+  return handleResponse<{ wallet: Wallet; transaction: Transaction }>(response);
+}
+
+export async function transfer(
+  data: TransferRequest,
+  locale?: string
+): Promise<TransferResponse> {
+  const headers = await getAuthHeaders(locale);
+  const response = await fetch(`${API_BASE_URL}/api/wallet/transfer`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(data),
+  });
+  return handleResponse<TransferResponse>(response);
+}
+
 export async function getTransactions(
   filters: TransactionFilters = {},
   locale?: string
-): Promise<{ docs: Transaction[]; totalDocs: number; limit: number; totalPages: number; page: number; pagingCounter: number; hasPrevPage: boolean; hasNextPage: boolean; prevPage: number | null; nextPage: number | null }> {
+): Promise<TransactionPaginationResponse> {
   const headers = await getAuthHeaders(locale);
   
   // Build query string
@@ -111,7 +151,7 @@ export async function getTransactions(
     method: 'GET',
     headers,
   });
-  return handleResponse<{ docs: Transaction[]; totalDocs: number; limit: number; totalPages: number; page: number; pagingCounter: number; hasPrevPage: boolean; hasNextPage: boolean; prevPage: number | null; nextPage: number | null }>(response);
+  return handleResponse<TransactionPaginationResponse>(response);
 }
 
 /**
@@ -160,7 +200,7 @@ export async function getUserTransactions(
   userId: string,
   filters: TransactionFilters = {},
   locale?: string
-): Promise<{ docs: Transaction[]; totalDocs: number; limit: number; totalPages: number; page: number; pagingCounter: number; hasPrevPage: boolean; hasNextPage: boolean; prevPage: number | null; nextPage: number | null }> {
+): Promise<TransactionPaginationResponse> {
   const headers = await getAuthHeaders(locale);
   
   // Build query string
@@ -179,7 +219,7 @@ export async function getUserTransactions(
     method: 'GET',
     headers,
   });
-  return handleResponse<{ docs: Transaction[]; totalDocs: number; limit: number; totalPages: number; page: number; pagingCounter: number; hasPrevPage: boolean; hasNextPage: boolean; prevPage: number | null; nextPage: number | null }>(response);
+  return handleResponse<TransactionPaginationResponse>(response);
 }
 
 export async function updateTransaction(

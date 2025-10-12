@@ -665,17 +665,25 @@
       "type.withdrawal": "Withdrawal",
       "type.deduction": "Deduction",
       "type.refund": "Refund",
+      "type.transfer": "Transfer",
       "status.pending": "Pending",
       "status.completed": "Completed",
-      "status.failed": "Failed"
+      "status.failed": "Failed",
+      "status.cancelled": "Cancelled"
     },
     "form": {
       "depositTitle": "Deposit Funds",
       "withdrawTitle": "Withdraw Funds",
+      "refundTitle": "Process Refund",
+      "transferTitle": "Transfer Funds",
       "amount": "Amount",
       "amountPlaceholder": "Enter amount in LYD",
       "description": "Description",
       "descriptionPlaceholder": "Enter description...",
+      "reference": "Reference (Optional)",
+      "referencePlaceholder": "Enter reference number...",
+      "toWalletId": "Recipient Wallet ID",
+      "toWalletIdPlaceholder": "Enter wallet ID...",
       "currentBalance": "Current balance: {{balance}} LYD",
       "submit": "Submit",
       "cancel": "Cancel",
@@ -684,6 +692,8 @@
     "messages": {
       "depositSuccess": "Deposit successful",
       "withdrawSuccess": "Withdrawal successful",
+      "refundSuccess": "Refund processed successfully",
+      "transferSuccess": "Transfer completed successfully",
       "insufficientBalance": "Insufficient balance",
       "error": "An error occurred. Please try again.",
       "walletNotFound": "Wallet not found",
@@ -692,7 +702,8 @@
       "deleteSuccess": "Transaction deleted successfully",
       "exportingCSV": "Exporting transactions...",
       "exportSuccess": "Transactions exported successfully",
-      "exportError": "Failed to export transactions"
+      "exportError": "Failed to export transactions",
+      "invalidWalletId": "Invalid wallet ID"
     },
     "filters": {
       "type": "Type",
