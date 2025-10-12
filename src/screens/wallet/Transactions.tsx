@@ -78,14 +78,16 @@ export default function Transactions() {
     totalTransactions: data?.pagination.totalItems || 0,
     totalDeposits: data?.transactions.filter(t => t.type.toLowerCase() === 'deposit').length || 0,
     totalWithdrawals: data?.transactions.filter(t => t.type.toLowerCase() === 'withdrawal').length || 0,
-    pendingCount: data?.transactions.filter(t => t.status.toLowerCase() === 'pending').length || 0,
+    totalDeductions: data?.transactions.filter(t => t.type.toLowerCase() === 'deduction').length || 0,
     completedCount: data?.transactions.filter(t => t.status.toLowerCase() === 'completed').length || 0,
-    failedCount: data?.transactions.filter(t => t.status.toLowerCase() === 'failed').length || 0,
     depositAmount: data?.transactions
       .filter(t => t.type.toLowerCase() === 'deposit' && t.status.toLowerCase() === 'completed')
       .reduce((sum, t) => sum + t.amount, 0) || 0,
     withdrawalAmount: data?.transactions
       .filter(t => t.type.toLowerCase() === 'withdrawal' && t.status.toLowerCase() === 'completed')
+      .reduce((sum, t) => sum + t.amount, 0) || 0,
+    deductionAmount: data?.transactions
+      .filter(t => t.type.toLowerCase() === 'deduction' && t.status.toLowerCase() === 'completed')
       .reduce((sum, t) => sum + t.amount, 0) || 0,
   };
 
@@ -122,7 +124,7 @@ export default function Transactions() {
     });
   };
 
-  const handleStatClick = (filterType: 'all' | 'deposits' | 'withdrawals' | 'pending' | 'completed' | 'failed') => {
+  const handleStatClick = (filterType: 'all' | 'deposits' | 'withdrawals' | 'deductions' | 'completed') => {
     switch (filterType) {
       case 'all':
         setFilters({
@@ -144,10 +146,10 @@ export default function Transactions() {
           page: 1,
         });
         break;
-      case 'pending':
+      case 'deductions':
         setFilters({
           ...filters,
-          status: 'pending',
+          type: 'deduction',
           page: 1,
         });
         break;
@@ -155,13 +157,6 @@ export default function Transactions() {
         setFilters({
           ...filters,
           status: 'completed',
-          page: 1,
-        });
-        break;
-      case 'failed':
-        setFilters({
-          ...filters,
-          status: 'failed',
           page: 1,
         });
         break;

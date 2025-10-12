@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Receipt, TrendingUp, TrendingDown, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { Receipt, TrendingUp, TrendingDown, MinusCircle, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { formatLYD } from '@/utilities/helpers/currencyHelpers';
 
@@ -7,16 +7,16 @@ interface TransactionStats {
   totalTransactions: number;
   totalDeposits: number;
   totalWithdrawals: number;
-  pendingCount: number;
+  totalDeductions: number;
   completedCount: number;
-  failedCount: number;
   depositAmount: number;
   withdrawalAmount: number;
+  deductionAmount: number;
 }
 
 interface TransactionsStatsBarProps {
   stats: TransactionStats;
-  onStatClick: (filterType: 'all' | 'deposits' | 'withdrawals' | 'pending' | 'completed' | 'failed') => void;
+  onStatClick: (filterType: 'all' | 'deposits' | 'withdrawals' | 'deductions' | 'completed') => void;
 }
 
 export function TransactionsStatsBar({ stats, onStatClick }: TransactionsStatsBarProps) {
@@ -50,12 +50,13 @@ export function TransactionsStatsBar({ stats, onStatClick }: TransactionsStatsBa
       filterType: 'withdrawals' as const,
     },
     {
-      icon: Clock,
-      label: t('wallet.stats.pending'),
-      value: stats.pendingCount,
-      color: 'text-yellow-600 dark:text-yellow-400',
-      bgColor: 'bg-yellow-500/10',
-      filterType: 'pending' as const,
+      icon: MinusCircle,
+      label: t('wallet.stats.deductions'),
+      value: `${stats.totalDeductions}`,
+      subValue: formatLYD(stats.deductionAmount),
+      color: 'text-orange-600 dark:text-orange-400',
+      bgColor: 'bg-orange-500/10',
+      filterType: 'deductions' as const,
     },
     {
       icon: CheckCircle,
@@ -65,18 +66,10 @@ export function TransactionsStatsBar({ stats, onStatClick }: TransactionsStatsBa
       bgColor: 'bg-blue-500/10',
       filterType: 'completed' as const,
     },
-    {
-      icon: XCircle,
-      label: t('wallet.stats.failed'),
-      value: stats.failedCount,
-      color: 'text-gray-600 dark:text-gray-400',
-      bgColor: 'bg-gray-500/10',
-      filterType: 'failed' as const,
-    },
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
       {statCards.map((stat, index) => (
         <motion.div
           key={stat.label}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -62,15 +62,15 @@ export function RefundTransactionDialog({
   });
 
   // Reset form when transaction changes
-  useState(() => {
-    if (transaction) {
+  useEffect(() => {
+    if (transaction && open) {
       form.reset({
         amount: transaction.amount,
         description: `Refund for: ${transaction.description}`,
         reference: transaction.reference || '',
       });
     }
-  });
+  }, [transaction, open, form]);
 
   const onSubmit = async (data: RefundFormValues) => {
     if (!transaction) return;
@@ -156,8 +156,10 @@ export function RefundTransactionDialog({
                     <Input
                       type="number"
                       placeholder="Enter refund amount"
+                      disabled={true}
                       {...field}
                       onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                      className="bg-muted cursor-not-allowed"
                     />
                   </FormControl>
                   <FormMessage />

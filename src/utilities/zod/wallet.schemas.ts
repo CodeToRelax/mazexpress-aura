@@ -13,9 +13,9 @@ export const depositSchema = z.object({
     .min(1, 'Description must be at least 1 character')
     .max(500, 'Description cannot exceed 500 characters'),
   reference: z.string()
-    .min(1, 'Reference must be at least 1 character')
     .max(100, 'Reference cannot exceed 100 characters')
-    .optional(),
+    .optional()
+    .or(z.literal('')),
 }).required();
 
 export const withdrawalSchema = z.object({
@@ -26,9 +26,9 @@ export const withdrawalSchema = z.object({
     .min(1, 'Description must be at least 1 character')
     .max(500, 'Description cannot exceed 500 characters'),
   reference: z.string()
-    .min(1, 'Reference must be at least 1 character')
     .max(100, 'Reference cannot exceed 100 characters')
-    .optional(),
+    .optional()
+    .or(z.literal('')),
 }).required();
 
 export const adminTransactionSchema = z.object({
@@ -43,9 +43,9 @@ export const adminTransactionSchema = z.object({
     .min(1, 'Description must be at least 1 character')
     .max(500, 'Description cannot exceed 500 characters'),
   reference: z.string()
-    .min(1, 'Reference must be at least 1 character')
     .max(100, 'Reference cannot exceed 100 characters')
-    .optional(),
+    .optional()
+    .or(z.literal('')),
 });
 
 export const createWalletSchema = z.object({
@@ -70,9 +70,9 @@ export const refundSchema = z.object({
     .min(1, 'Description must be at least 1 character')
     .max(500, 'Description cannot exceed 500 characters'),
   reference: z.string()
-    .min(1, 'Reference must be at least 1 character')
     .max(100, 'Reference cannot exceed 100 characters')
-    .optional(),
+    .optional()
+    .or(z.literal('')),
 }).required();
 
 export const transferSchema = z.object({
@@ -84,9 +84,9 @@ export const transferSchema = z.object({
     .min(1, 'Description must be at least 1 character')
     .max(500, 'Description cannot exceed 500 characters'),
   reference: z.string()
-    .min(1, 'Reference must be at least 1 character')
     .max(100, 'Reference cannot exceed 100 characters')
-    .optional(),
+    .optional()
+    .or(z.literal('')),
 }).required();
 
 export type DepositInput = z.infer<typeof depositSchema>;
