@@ -87,6 +87,17 @@ export default function WarehouseDetail() {
             <FileText className="h-5 w-5" />
           </Button>
         )}
+        {warehouse.address.googleMapsUrl && (
+          <Button 
+            variant="outline" 
+            size="icon" 
+            onClick={() => window.open(warehouse.address.googleMapsUrl, '_blank', 'noopener,noreferrer')}
+            className="glass-card hover:shadow-glass-hover"
+            title="View on Google Maps"
+          >
+            <MapPin className="h-5 w-5" />
+          </Button>
+        )}
       </div>
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -157,17 +168,6 @@ export default function WarehouseDetail() {
               </span>{' '}
               {warehouse.address.zipCode}
             </p>
-            {warehouse.address.googleMapsUrl && (
-              <Button variant="link" asChild className="p-0 h-auto">
-                <a
-                  href={warehouse.address.googleMapsUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {t('actions.viewOnMaps')} <ExternalLink className="h-3 w-3 ml-1" />
-                </a>
-              </Button>
-            )}
           </div>
         </Card>
 
