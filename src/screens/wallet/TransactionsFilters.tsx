@@ -46,7 +46,7 @@ export function TransactionsFilters({
       lastSearchRef.current = debouncedSearch;
       onFiltersChange({ ...filters, search: debouncedSearch || undefined, page: 1 });
     }
-  }, [debouncedSearch, filters, onFiltersChange]);
+  }, [debouncedSearch]);
 
   // Sync search input with filters when filters are cleared
   useEffect(() => {
