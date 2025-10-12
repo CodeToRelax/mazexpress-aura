@@ -91,13 +91,17 @@ export default function WarehouseDetail() {
           <Button 
             variant="outline" 
             size="icon" 
-            asChild
+            onClick={() => {
+              navigator.clipboard.writeText(warehouse.address.googleMapsUrl);
+              toast({
+                title: t('status.success'),
+                description: 'Google Maps URL copied to clipboard',
+              });
+            }}
             className="glass-card hover:shadow-glass-hover"
-            title="View on Google Maps"
+            title="Copy Google Maps URL"
           >
-            <a href={warehouse.address.googleMapsUrl} target="_blank" rel="noopener noreferrer">
-              <MapPin className="h-5 w-5" />
-            </a>
+            <MapPin className="h-5 w-5" />
           </Button>
         )}
       </div>
