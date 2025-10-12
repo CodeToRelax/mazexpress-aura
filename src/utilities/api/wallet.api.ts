@@ -215,11 +215,24 @@ export async function getUserTransactions(
   const queryString = params.toString();
   const url = `${API_BASE_URL}/api/wallet/admin/user/${userId}/transactions${queryString ? `?${queryString}` : ''}`;
   
+  console.log('[wallet.api] getUserTransactions - URL:', url);
+  console.log('[wallet.api] getUserTransactions - Filters:', JSON.stringify(filters, null, 2));
+  
   const response = await fetch(url, {
     method: 'GET',
     headers,
   });
-  return handleResponse<TransactionPaginationResponse>(response);
+  
+  const rawData = await response.json();
+  console.log('[wallet.api] getUserTransactions - Raw response:', JSON.stringify(rawData, null, 2));
+  
+  if (!response.ok) {
+    const error = rawData;
+    throw new Error(error.message || `HTTP error! status: ${response.status}`);
+  }
+  
+  console.log('[wallet.api] getUserTransactions - Returning data.data:', JSON.stringify(rawData.data, null, 2));
+  return rawData.data;
 }
 
 export async function updateTransaction(

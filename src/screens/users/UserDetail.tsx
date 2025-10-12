@@ -102,6 +102,10 @@ export default function UserDetail() {
     if (!user?._id) return;
     
     console.log('[UserDetail] Fetching wallet data for user:', user._id);
+    console.log('[UserDetail] Current filters:', JSON.stringify(transactionFilters, null, 2));
+    console.log('[UserDetail] Current sortBy:', sortBy);
+    console.log('[UserDetail] Current sortOrder:', sortOrder);
+    
     setIsLoadingWallet(true);
     try {
       const walletData = await getWalletByUserId(user._id);
@@ -113,8 +117,19 @@ export default function UserDetail() {
         sortBy,
         sortOrder,
       });
-      console.log('[UserDetail] Transactions fetched:', transactionData);
-      setTransactions(transactionData.transactions || []);
+      
+      console.log('[UserDetail] ===== TRANSACTION DATA RECEIVED =====');
+      console.log('[UserDetail] Full transactionData:', JSON.stringify(transactionData, null, 2));
+      console.log('[UserDetail] transactionData.transactions type:', typeof transactionData.transactions);
+      console.log('[UserDetail] transactionData.transactions is Array?', Array.isArray(transactionData.transactions));
+      console.log('[UserDetail] transactionData.transactions length:', transactionData.transactions?.length);
+      console.log('[UserDetail] transactionData.pagination:', JSON.stringify(transactionData.pagination, null, 2));
+      
+      const txArray = transactionData.transactions || [];
+      console.log('[UserDetail] Setting transactions array with length:', txArray.length);
+      console.log('[UserDetail] First transaction:', txArray[0] ? JSON.stringify(txArray[0], null, 2) : 'NONE');
+      
+      setTransactions(txArray);
       setTransactionsPagination({
         totalDocs: transactionData.pagination?.totalItems ?? 0,
         limit: transactionData.pagination?.itemsPerPage ?? 10,
@@ -123,6 +138,8 @@ export default function UserDetail() {
         hasPrevPage: transactionData.pagination?.hasPrevPage ?? false,
         hasNextPage: transactionData.pagination?.hasNextPage ?? false,
       });
+      
+      console.log('[UserDetail] State updated. Transactions count:', txArray.length);
     } catch (error) {
       console.error('[UserDetail] Error fetching wallet data:', error);
       toast({
