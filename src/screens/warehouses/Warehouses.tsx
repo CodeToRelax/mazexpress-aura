@@ -181,16 +181,6 @@ export default function Warehouses() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* Print PDF Button */}
-            <Button 
-              variant="outline" 
-              size="icon" 
-              onClick={handleGeneratePDF}
-              title="Generate PDF for all open warehouses"
-            >
-              <Printer className="h-4 w-4" />
-            </Button>
-
             <ACLGuard flag="canManageWarehouses">
               <Button onClick={() => setIsCreateDialogOpen(true)} size="default">
                 <Plus className="h-4 w-4 mr-2" />
