@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
-import { X, Mail, Phone, MapPin, Calendar, User as UserIcon, Package, Wallet as WalletIcon, Shield, Receipt, Loader2, Plus } from 'lucide-react';
+import { X, Mail, Phone, MapPin, Calendar, User as UserIcon, Package, Wallet as WalletIcon, Shield, Receipt, Loader2, Plus, Download } from 'lucide-react';
 import type { User } from '@/types/user';
 import type { Wallet } from '@/types/wallet';
 import type { Transaction } from '@/types/wallet';
@@ -32,6 +32,7 @@ import { DeleteTransactionDialog } from './DeleteTransactionDialog';
 import { GenerateInvoiceDialog } from '@/screens/invoices/GenerateInvoiceDialog';
 import { getUserInvoices } from '@/utilities/api/invoice.api';
 import { getWalletByUserId, getUserTransactions } from '@/utilities/api/wallet.api';
+import { exportUserTransactionsToCSV } from '@/utilities/helpers/transactionExport';
 import { toast } from '@/hooks/use-toast';
 import { formatLYD } from '@/utilities/helpers/currencyHelpers';
 
@@ -43,7 +44,7 @@ interface UserDetailDialogProps {
 }
 
 export function UserDetailDialog({ user, open, onClose, onEdit }: UserDetailDialogProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [wallet, setWallet] = useState<Wallet | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -232,6 +233,26 @@ export function UserDetailDialog({ user, open, onClose, onEdit }: UserDetailDial
       setTransactionFilters({ ...transactionFilters, type: 'withdrawal', page: 1 });
     } else if (filterType === 'pending' || filterType === 'completed' || filterType === 'failed') {
       setTransactionFilters({ ...transactionFilters, status: filterType, page: 1 });
+    }
+  };
+
+  const handleExportCSV = async () => {
+    if (!user?._id) return;
+    
+    try {
+      toast({
+        title: t('wallet.messages.exportingCSV'),
+      });
+      await exportUserTransactionsToCSV(user._id, transactionFilters, i18n.language);
+      toast({
+        title: t('wallet.messages.exportSuccess'),
+      });
+    } catch (error) {
+      toast({
+        title: t('wallet.messages.exportError'),
+        description: error instanceof Error ? error.message : 'Failed to export',
+        variant: 'destructive',
+      });
     }
   };
 
@@ -471,6 +492,15 @@ export function UserDetailDialog({ user, open, onClose, onEdit }: UserDetailDial
                         onToggleColumn={handleToggleColumn}
                         onReset={handleResetColumns}
                       />
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={handleExportCSV}
+                        title={t('wallet.actions.exportCSV')}
+                      >
+                        <Download className="h-4 w-4 mr-2" />
+                        Export
+                      </Button>
                       <Button 
                         variant="default" 
                         size="sm" 

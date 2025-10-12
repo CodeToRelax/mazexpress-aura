@@ -648,7 +648,8 @@
     },
     "actions": {
       "refresh": "Refresh",
-      "resetFilters": "Reset Filters"
+      "resetFilters": "Reset Filters",
+      "exportCSV": "Export to CSV"
     },
     "transaction": {
       "type": "Transaction Type",
@@ -688,7 +689,10 @@
       "walletNotFound": "Wallet not found",
       "transactionFailed": "Transaction failed",
       "updateSuccess": "Transaction updated successfully",
-      "deleteSuccess": "Transaction deleted successfully"
+      "deleteSuccess": "Transaction deleted successfully",
+      "exportingCSV": "Exporting transactions...",
+      "exportSuccess": "Transactions exported successfully",
+      "exportError": "Failed to export transactions"
     },
     "filters": {
       "type": "Type",

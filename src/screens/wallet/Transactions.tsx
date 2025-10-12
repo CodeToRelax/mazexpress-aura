@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { Receipt, RotateCw } from 'lucide-react';
+import { Receipt, RotateCw, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
 import { PageLoader } from '@/components/feedback/PageLoader';
@@ -16,6 +16,7 @@ import { TransactionsStatsBar } from './TransactionsStatsBar';
 import { TransactionsColumnVisibilityToggle } from './TransactionsColumnVisibilityToggle';
 import { EditTransactionDialog } from '../users/EditTransactionDialog';
 import { DeleteTransactionDialog } from '../users/DeleteTransactionDialog';
+import { exportTransactionsToCSV } from '@/utilities/helpers/transactionExport';
 import type { Transaction } from '@/types/wallet';
 
 // localStorage keys
@@ -208,6 +209,24 @@ export default function Transactions() {
     setTransactionToDelete(transaction);
   };
 
+  const handleExportCSV = async () => {
+    try {
+      toast({
+        title: t('wallet.messages.exportingCSV'),
+      });
+      await exportTransactionsToCSV(filters, i18n.language);
+      toast({
+        title: t('wallet.messages.exportSuccess'),
+      });
+    } catch (error) {
+      toast({
+        title: t('wallet.messages.exportError'),
+        description: error instanceof Error ? error.message : 'Failed to export',
+        variant: 'destructive',
+      });
+    }
+  };
+
   const handleEditSuccess = () => {
     setTransactionToEdit(null);
     refetch();
@@ -300,6 +319,15 @@ export default function Transactions() {
             onToggleColumn={handleToggleColumn}
             onReset={handleResetColumns}
           />
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            onClick={handleExportCSV}
+            title={t('wallet.actions.exportCSV')}
+          >
+            <Download className="h-4 w-4" />
+          </Button>
           <Button
             type="button"
             variant="outline"
