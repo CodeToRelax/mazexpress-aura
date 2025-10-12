@@ -189,6 +189,21 @@
       "admins": "Admins",
       "active": "Active",
       "inactive": "Inactive"
+    },
+    "export": {
+      "title": "Export Users to CSV",
+      "description": "Export users based on current filters to a CSV file",
+      "estimatedCount": "Estimated records",
+      "currentFilters": "Current Filters",
+      "confirmExport": "Export CSV",
+      "exporting": "Exporting...",
+      "success": "Successfully exported {{count}} users",
+      "downloadStarted": "Your download will start shortly",
+      "error": "Failed to export users",
+      "noFilters": "No filters applied - exporting all users in this category",
+      "userType": "User Type",
+      "csvInfo": "The CSV file will include all user details in a readable format.",
+      "largeDatasetWarning": "Exporting {{count}} users may take a moment. Please wait..."
     }
   },
   "warehouses": {

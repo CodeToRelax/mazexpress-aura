@@ -18,6 +18,7 @@ import { UsersStatsBar } from './UsersStatsBar';
 import { DeleteUserDialog } from './DeleteUserDialog';
 import { DeactivateUserDialog } from './DeactivateUserDialog';
 import { CreateUserDialog } from './CreateUserDialog';
+import { ExportUsersDialog } from './ExportUsersDialog';
 
 // localStorage keys
 const STORAGE_KEYS = {
@@ -90,6 +91,7 @@ export default function Users() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showToggleDialog, setShowToggleDialog] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showExportDialog, setShowExportDialog] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   
@@ -427,12 +429,14 @@ export default function Users() {
           </div>
           
           <div className="flex items-center gap-2">
-            {selectedUsers.size > 0 && (
-              <Button variant="outline" className="gap-2">
-                <Download className="h-4 w-4" />
-                {t('users.actions.export')}
-              </Button>
-            )}
+            <Button 
+              variant="outline" 
+              className="gap-2"
+              onClick={() => setShowExportDialog(true)}
+            >
+              <Download className="h-4 w-4" />
+              {t('users.actions.export')}
+            </Button>
             <Button className="gap-2" onClick={handleCreateUser}>
               <Plus className="h-4 w-4" />
               {t('users.actions.create')}
@@ -591,6 +595,13 @@ export default function Users() {
         open={showCreateDialog}
         onOpenChange={setShowCreateDialog}
         onSuccess={handleCreateSuccess}
+      />
+
+      <ExportUsersDialog
+        open={showExportDialog}
+        onOpenChange={setShowExportDialog}
+        filters={filters}
+        totalCount={pagination.totalDocs}
       />
     </div>
   );
