@@ -29,6 +29,7 @@ import { TransactionsColumnVisibilityToggle } from '@/screens/wallet/Transaction
 import { CreateTransactionDialog } from './CreateTransactionDialog';
 import { EditTransactionDialog } from './EditTransactionDialog';
 import { DeleteTransactionDialog } from './DeleteTransactionDialog';
+import { RefundTransactionDialog } from './RefundTransactionDialog';
 import { GenerateInvoiceDialog } from '@/screens/invoices/GenerateInvoiceDialog';
 import { getUserInvoices } from '@/utilities/api/invoice.api';
 import { getWalletByUserId, getUserTransactions } from '@/utilities/api/wallet.api';
@@ -69,6 +70,7 @@ export function UserDetailDialog({ user, open, onClose, onEdit }: UserDetailDial
   const [isCreateTransactionOpen, setIsCreateTransactionOpen] = useState(false);
   const [isEditTransactionOpen, setIsEditTransactionOpen] = useState(false);
   const [isDeleteTransactionOpen, setIsDeleteTransactionOpen] = useState(false);
+  const [isRefundTransactionOpen, setIsRefundTransactionOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [isGenerateInvoiceOpen, setIsGenerateInvoiceOpen] = useState(false);
   
@@ -167,6 +169,11 @@ export function UserDetailDialog({ user, open, onClose, onEdit }: UserDetailDial
   const handleDeleteTransaction = (transaction: Transaction) => {
     setSelectedTransaction(transaction);
     setIsDeleteTransactionOpen(true);
+  };
+
+  const handleRefundTransaction = (transaction: Transaction) => {
+    setSelectedTransaction(transaction);
+    setIsRefundTransactionOpen(true);
   };
 
   const handleTransactionSuccess = () => {
@@ -525,6 +532,7 @@ export function UserDetailDialog({ user, open, onClose, onEdit }: UserDetailDial
                     transactions={transactions}
                     onEdit={handleEditTransaction}
                     onDelete={handleDeleteTransaction}
+                    onRefund={handleRefundTransaction}
                     isAdmin={true}
                     visibleColumns={visibleColumns}
                     sortBy={sortBy}
@@ -716,6 +724,20 @@ export function UserDetailDialog({ user, open, onClose, onEdit }: UserDetailDial
         onSuccess={() => {
           handleTransactionSuccess();
           setIsDeleteTransactionOpen(false);
+          setSelectedTransaction(null);
+        }}
+      />
+
+      <RefundTransactionDialog
+        open={isRefundTransactionOpen}
+        onClose={() => {
+          setIsRefundTransactionOpen(false);
+          setSelectedTransaction(null);
+        }}
+        transaction={selectedTransaction}
+        onSuccess={() => {
+          handleTransactionSuccess();
+          setIsRefundTransactionOpen(false);
           setSelectedTransaction(null);
         }}
       />

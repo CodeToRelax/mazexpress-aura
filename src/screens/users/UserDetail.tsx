@@ -23,6 +23,7 @@ import { TransactionsColumnVisibilityToggle } from '@/screens/wallet/Transaction
 import { CreateTransactionDialog } from './CreateTransactionDialog';
 import { EditTransactionDialog } from './EditTransactionDialog';
 import { DeleteTransactionDialog } from './DeleteTransactionDialog';
+import { RefundTransactionDialog } from './RefundTransactionDialog';
 import { GenerateInvoiceDialog } from '@/screens/invoices/GenerateInvoiceDialog';
 import { EditUserDialog } from './EditUserDialog';
 import { usersApi } from '@/utilities/api/users.api';
@@ -61,6 +62,7 @@ export default function UserDetail() {
   const [isCreateTransactionOpen, setIsCreateTransactionOpen] = useState(false);
   const [isEditTransactionOpen, setIsEditTransactionOpen] = useState(false);
   const [isDeleteTransactionOpen, setIsDeleteTransactionOpen] = useState(false);
+  const [isRefundTransactionOpen, setIsRefundTransactionOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [isGenerateInvoiceOpen, setIsGenerateInvoiceOpen] = useState(false);
   const [isEditUserOpen, setIsEditUserOpen] = useState(false);
@@ -180,6 +182,11 @@ export default function UserDetail() {
   const handleDeleteTransaction = (transaction: Transaction) => {
     setSelectedTransaction(transaction);
     setIsDeleteTransactionOpen(true);
+  };
+
+  const handleRefundTransaction = (transaction: Transaction) => {
+    setSelectedTransaction(transaction);
+    setIsRefundTransactionOpen(true);
   };
 
   const handleTransactionSuccess = () => {
@@ -582,6 +589,7 @@ export default function UserDetail() {
                   transactions={transactions}
                   onEdit={handleEditTransaction}
                   onDelete={handleDeleteTransaction}
+                  onRefund={handleRefundTransaction}
                   isAdmin={true}
                   visibleColumns={visibleColumns}
                   sortBy={sortBy}
@@ -771,6 +779,20 @@ export default function UserDetail() {
         onSuccess={() => {
           handleTransactionSuccess();
           setIsDeleteTransactionOpen(false);
+          setSelectedTransaction(null);
+        }}
+      />
+
+      <RefundTransactionDialog
+        open={isRefundTransactionOpen}
+        onClose={() => {
+          setIsRefundTransactionOpen(false);
+          setSelectedTransaction(null);
+        }}
+        transaction={selectedTransaction}
+        onSuccess={() => {
+          handleTransactionSuccess();
+          setIsRefundTransactionOpen(false);
           setSelectedTransaction(null);
         }}
       />
