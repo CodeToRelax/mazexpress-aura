@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -63,6 +63,20 @@ export function EditWarehouseDialog({
       operatingHours: warehouse.operatingHours,
     },
   });
+
+  // Reset form when warehouse changes
+  useEffect(() => {
+    form.reset({
+      name: warehouse.name,
+      status: warehouse.status,
+      phoneNumber: warehouse.phoneNumber || '',
+      email: warehouse.email || '',
+      youtubeUrl: warehouse.youtubeUrl || '',
+      imageUrl: warehouse.imageUrl || '',
+      address: warehouse.address,
+      operatingHours: warehouse.operatingHours,
+    });
+  }, [warehouse, form]);
 
   const onSubmit = async (data: UpdateWarehouseFormData) => {
     try {

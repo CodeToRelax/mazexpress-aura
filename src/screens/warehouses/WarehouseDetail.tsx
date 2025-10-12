@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, MapPin, Phone, Mail, ExternalLink, Edit } from 'lucide-react';
+import { ArrowLeft, MapPin, Phone, Mail, ExternalLink, Edit, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -12,6 +12,8 @@ import { getWarehouseById } from '@/utilities/api/warehouses.api';
 import { WarehouseStatus } from '@/types/warehouse';
 import { format } from 'date-fns';
 import { EditWarehouseDialog } from './EditWarehouseDialog';
+import { generateWarehousePDF } from '@/utilities/helpers/warehousePDF';
+import { toast } from '@/hooks/use-toast';
 
 export default function WarehouseDetail() {
   const { id } = useParams<{ id: string }>();
@@ -31,6 +33,32 @@ export default function WarehouseDetail() {
   });
 
   const warehouse = response?.data;
+
+  const handleGeneratePDF = () => {
+    if (!warehouse) return;
+    
+    try {
+      if (warehouse.status !== 'open') {
+        toast({
+          title: t('status.error'),
+          description: 'PDF generation is only available for open warehouses',
+          variant: 'destructive',
+        });
+        return;
+      }
+      generateWarehousePDF(warehouse);
+      toast({
+        title: t('status.success'),
+        description: 'Generating PDF...',
+      });
+    } catch (error) {
+      toast({
+        title: t('status.error'),
+        description: error instanceof Error ? error.message : 'PDF generation failed',
+        variant: 'destructive',
+      });
+    }
+  };
 
   if (isLoading) return <PageLoader />;
 
@@ -54,6 +82,11 @@ export default function WarehouseDetail() {
         <Button variant="outline" size="icon" onClick={() => setIsEditDialogOpen(true)} className="glass-card hover:shadow-glass-hover">
           <Edit className="h-5 w-5" />
         </Button>
+        {warehouse.status === WarehouseStatus.OPEN && (
+          <Button variant="outline" size="icon" onClick={handleGeneratePDF} className="glass-card hover:shadow-glass-hover" title="Generate PDF">
+            <FileText className="h-5 w-5" />
+          </Button>
+        )}
       </div>
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

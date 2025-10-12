@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { MoreVertical, Eye, Edit, Trash2, ToggleLeft } from 'lucide-react';
+import { MoreVertical, Eye, Edit, Trash2, ToggleLeft, FileText } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -24,6 +24,8 @@ import { EditWarehouseDialog } from './EditWarehouseDialog';
 import { DeleteWarehouseDialog } from './DeleteWarehouseDialog';
 import { ToggleStatusDialog } from './ToggleStatusDialog';
 import { WarehouseStatus, type Warehouse } from '@/types/warehouse';
+import { generateWarehousePDF } from '@/utilities/helpers/warehousePDF';
+import { toast } from '@/hooks/use-toast';
 
 interface WarehousesTableProps {
   warehouses: Warehouse[];
@@ -55,6 +57,31 @@ export function WarehousesTable({ warehouses, onRefetch }: WarehousesTableProps)
   const handleToggleStatus = (warehouse: Warehouse) => {
     setSelectedWarehouse(warehouse);
     setIsToggleStatusDialogOpen(true);
+  };
+
+  const handleGeneratePDF = (warehouse: Warehouse, e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      if (warehouse.status !== 'open') {
+        toast({
+          title: t('status.error'),
+          description: 'PDF generation is only available for open warehouses',
+          variant: 'destructive',
+        });
+        return;
+      }
+      generateWarehousePDF(warehouse);
+      toast({
+        title: t('status.success'),
+        description: 'Generating PDF...',
+      });
+    } catch (error) {
+      toast({
+        title: t('status.error'),
+        description: error instanceof Error ? error.message : 'PDF generation failed',
+        variant: 'destructive',
+      });
+    }
   };
 
   const handleSuccess = () => {
@@ -123,6 +150,12 @@ export function WarehousesTable({ warehouses, onRefetch }: WarehousesTableProps)
                         <Eye className="h-4 w-4 mr-2" />
                         {t('warehouses.actions.view')}
                       </DropdownMenuItem>
+                      {warehouse.status === WarehouseStatus.OPEN && (
+                        <DropdownMenuItem onClick={(e) => handleGeneratePDF(warehouse, e)}>
+                          <FileText className="h-4 w-4 mr-2" />
+                          Generate PDF
+                        </DropdownMenuItem>
+                      )}
                       <ACLGuard flag="canManageWarehouses">
                         <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleEdit(warehouse); }}>
                           <Edit className="h-4 w-4 mr-2" />

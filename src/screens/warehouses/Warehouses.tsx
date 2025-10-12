@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Plus, RotateCw } from 'lucide-react';
+import { Plus, RotateCw, Download, FileText } from 'lucide-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -14,6 +14,15 @@ import { WarehousesPagination } from './WarehousesPagination';
 import { CreateWarehouseDialog } from './CreateWarehouseDialog';
 import { getWarehouses } from '@/utilities/api/warehouses.api';
 import type { WarehouseFilters } from '@/types/warehouse';
+import { exportWarehousesToCSV } from '@/utilities/helpers/warehouseExport';
+import { generateWarehousesPDF } from '@/utilities/helpers/warehousePDF';
+import { toast } from '@/hooks/use-toast';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 export default function Warehouses() {
   const { t } = useTranslation();
@@ -56,6 +65,57 @@ export default function Warehouses() {
     refetch();
   };
 
+  // Handle CSV export
+  const handleExportCSV = () => {
+    try {
+      if (warehouses.length === 0) {
+        toast({
+          title: t('status.error'),
+          description: 'No warehouses to export',
+          variant: 'destructive',
+        });
+        return;
+      }
+      exportWarehousesToCSV(warehouses);
+      toast({
+        title: t('status.success'),
+        description: 'Warehouses exported successfully',
+      });
+    } catch (error) {
+      toast({
+        title: t('status.error'),
+        description: error instanceof Error ? error.message : 'Export failed',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  // Handle PDF generation
+  const handleGeneratePDF = () => {
+    try {
+      const openWarehouses = warehouses.filter((w) => w.status === 'open');
+      if (openWarehouses.length === 0) {
+        toast({
+          title: t('status.error'),
+          description: 'No open warehouses available for PDF generation',
+          variant: 'destructive',
+        });
+        return;
+      }
+      generateWarehousesPDF(warehouses);
+      toast({
+        title: t('status.success'),
+        description: `Generating PDF for ${openWarehouses.length} open warehouse(s)`,
+      });
+    } catch (error) {
+      toast({
+        title: t('status.error'),
+        description: error instanceof Error ? error.message : 'PDF generation failed',
+        variant: 'destructive',
+      });
+    }
+  };
+
   if (error) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -74,14 +134,34 @@ export default function Warehouses() {
           <h1 className="text-3xl font-bold text-foreground">{t('warehouses.title')}</h1>
           <p className="text-muted-foreground mt-1">{t('warehouses.subtitle')}</p>
         </div>
-        <ACLGuard flag="canManageWarehouses">
-          <div className="relative z-10">
+        <div className="flex items-center gap-2">
+          {/* Export Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="default">
+                <Download className="h-4 w-4 mr-2" />
+                Export
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem onClick={handleExportCSV}>
+                <FileText className="h-4 w-4 mr-2" />
+                Export as CSV
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleGeneratePDF}>
+                <FileText className="h-4 w-4 mr-2" />
+                Generate PDF (Open Only)
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <ACLGuard flag="canManageWarehouses">
             <Button onClick={() => setIsCreateDialogOpen(true)} size="default">
               <Plus className="h-4 w-4 mr-2" />
               {t('warehouses.actions.create')}
             </Button>
-          </div>
-        </ACLGuard>
+          </ACLGuard>
+        </div>
       </div>
 
       {/* Stats Bar */}
