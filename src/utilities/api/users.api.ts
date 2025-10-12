@@ -153,29 +153,43 @@ export const usersApi = {
   async getAllUsersForExport(filters: UserFilters): Promise<User[]> {
     const token = await getAuthToken();
     
-    // Create filters without pagination
-    const exportFilters = { ...filters };
-    delete exportFilters.page;
+    let allUsers: User[] = [];
+    let currentPage = 1;
+    let hasMorePages = true;
     
-    // Set a high limit to fetch all users (adjust based on your expected max users)
-    exportFilters.limit = 10000;
-    
-    const params = new URLSearchParams();
-    
-    Object.entries(exportFilters).forEach(([key, value]) => {
-      if (value !== undefined && value !== null && value !== '') {
-        params.append(key, String(value));
-      }
-    });
+    // Fetch all pages using pagination
+    while (hasMorePages) {
+      const exportFilters = { 
+        ...filters,
+        page: currentPage,
+        limit: 100, // Use a reasonable limit per page
+      };
+      
+      const params = new URLSearchParams();
+      
+      Object.entries(exportFilters).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== '') {
+          params.append(key, String(value));
+        }
+      });
 
-    const response = await fetch(`${API_BASE_URL}/api/users?${params}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    });
+      const response = await fetch(`${API_BASE_URL}/api/users?${params}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
 
-    const result = await handleResponse<UsersListResponse>(response);
-    return result.data.users;
+      const result = await handleResponse<UsersListResponse>(response);
+      
+      // Add users from this page to the collection
+      allUsers = [...allUsers, ...result.data.users];
+      
+      // Check if there are more pages
+      hasMorePages = result.data.pagination.hasNextPage;
+      currentPage++;
+    }
+    
+    return allUsers;
   },
 };
