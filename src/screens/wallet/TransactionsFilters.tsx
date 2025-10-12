@@ -1,9 +1,11 @@
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { SlidersHorizontal, X } from 'lucide-react';
+import { Search, SlidersHorizontal, X } from 'lucide-react';
 import type { TransactionFilters } from '@/types/wallet';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useDebounce } from '@/hooks/useDebounce';
 import {
   Select,
   SelectContent,
@@ -34,6 +36,14 @@ export function TransactionsFilters({
   activeFilterCount 
 }: TransactionsFiltersProps) {
   const { t } = useTranslation();
+  const [searchInput, setSearchInput] = useState(filters.search || '');
+  const debouncedSearch = useDebounce(searchInput, 500);
+
+  useEffect(() => {
+    if (debouncedSearch !== filters.search) {
+      onFiltersChange({ ...filters, search: debouncedSearch, page: 1 });
+    }
+  }, [debouncedSearch]);
 
   const handleFilterChange = (key: keyof TransactionFilters, value: any) => {
     onFiltersChange({ ...filters, [key]: value, page: 1 });
@@ -41,6 +51,16 @@ export function TransactionsFilters({
 
   return (
     <div className="flex flex-wrap gap-2 items-center">
+      <div className="relative flex-1 min-w-[200px]">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder={t('wallet.filters.searchPlaceholder')}
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+          className="pl-9"
+        />
+      </div>
+      
       <Sheet>
         <SheetTrigger asChild>
           <Button 
