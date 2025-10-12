@@ -123,18 +123,32 @@ export async function exportTransactionsToCSV(
   locale?: string
 ): Promise<void> {
   try {
-    // Fetch all transactions matching the filters with a high limit
-    const allTransactionsResponse = await getTransactions(
-      { ...filters, limit: 10000, page: 1 },
-      locale
-    );
+    // Fetch all transactions by paginating through results
+    let allTransactions: Transaction[] = [];
+    let currentPage = 1;
+    let hasMore = true;
+    const pageLimit = 100; // Use a reasonable page size
     
-    if (!allTransactionsResponse.transactions || allTransactionsResponse.transactions.length === 0) {
+    while (hasMore) {
+      const response = await getTransactions(
+        { ...filters, limit: pageLimit, page: currentPage },
+        locale
+      );
+      
+      if (response.transactions && response.transactions.length > 0) {
+        allTransactions = [...allTransactions, ...response.transactions];
+      }
+      
+      hasMore = response.pagination?.hasNextPage ?? false;
+      currentPage++;
+    }
+    
+    if (allTransactions.length === 0) {
       throw new Error('No transactions found to export');
     }
 
     // Convert to CSV
-    const csvContent = transactionsToCSV(allTransactionsResponse.transactions);
+    const csvContent = transactionsToCSV(allTransactions);
     
     // Generate filename and download
     const filename = generateFilename(filters);
@@ -156,19 +170,33 @@ export async function exportUserTransactionsToCSV(
   locale?: string
 ): Promise<void> {
   try {
-    // Fetch all user transactions matching the filters with a high limit
-    const allTransactionsResponse = await getUserTransactions(
-      userId,
-      { ...filters, limit: 10000, page: 1 },
-      locale
-    );
+    // Fetch all user transactions by paginating through results
+    let allTransactions: Transaction[] = [];
+    let currentPage = 1;
+    let hasMore = true;
+    const pageLimit = 100; // Use a reasonable page size
     
-    if (!allTransactionsResponse.transactions || allTransactionsResponse.transactions.length === 0) {
+    while (hasMore) {
+      const response = await getUserTransactions(
+        userId,
+        { ...filters, limit: pageLimit, page: currentPage },
+        locale
+      );
+      
+      if (response.transactions && response.transactions.length > 0) {
+        allTransactions = [...allTransactions, ...response.transactions];
+      }
+      
+      hasMore = response.pagination?.hasNextPage ?? false;
+      currentPage++;
+    }
+    
+    if (allTransactions.length === 0) {
       throw new Error('No transactions found to export');
     }
 
     // Convert to CSV
-    const csvContent = transactionsToCSV(allTransactionsResponse.transactions);
+    const csvContent = transactionsToCSV(allTransactions);
     
     // Generate filename and download
     const filename = generateFilename(filters, userId);
