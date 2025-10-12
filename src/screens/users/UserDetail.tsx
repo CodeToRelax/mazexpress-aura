@@ -20,6 +20,7 @@ import { CreateTransactionDialog } from './CreateTransactionDialog';
 import { EditTransactionDialog } from './EditTransactionDialog';
 import { DeleteTransactionDialog } from './DeleteTransactionDialog';
 import { GenerateInvoiceDialog } from '@/screens/invoices/GenerateInvoiceDialog';
+import { EditUserDialog } from './EditUserDialog';
 import { usersApi } from '@/utilities/api/users.api';
 import { getUserInvoices } from '@/utilities/api/invoice.api';
 import { getWalletByUserId, getUserTransactions } from '@/utilities/api/wallet.api';
@@ -42,6 +43,7 @@ export default function UserDetail() {
   const [isDeleteTransactionOpen, setIsDeleteTransactionOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [isGenerateInvoiceOpen, setIsGenerateInvoiceOpen] = useState(false);
+  const [isEditUserOpen, setIsEditUserOpen] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -147,6 +149,25 @@ export default function UserDetail() {
     fetchWalletData();
   };
 
+  const handleEditUserSuccess = async () => {
+    setIsEditUserOpen(false);
+    if (!id) return;
+    try {
+      const response = await usersApi.getUserById(id);
+      setUser(response.data);
+      toast({
+        title: t('users.messages.updateSuccess'),
+        description: 'User information updated successfully',
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to reload user details',
+        variant: 'destructive',
+      });
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -191,7 +212,7 @@ export default function UserDetail() {
             </div>
           </div>
         </div>
-        <Button variant="outline" onClick={() => navigate(`/users/${user._id}/edit`)}>
+        <Button variant="outline" onClick={() => setIsEditUserOpen(true)}>
           {t('users.actions.edit')}
         </Button>
       </div>
@@ -587,6 +608,13 @@ export default function UserDetail() {
           fetchInvoices();
           setIsGenerateInvoiceOpen(false);
         }}
+      />
+
+      <EditUserDialog
+        open={isEditUserOpen}
+        onOpenChange={setIsEditUserOpen}
+        user={user}
+        onSuccess={handleEditUserSuccess}
       />
     </div>
   );
