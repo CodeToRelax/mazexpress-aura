@@ -18,6 +18,7 @@ import { UsersStatsBar } from './UsersStatsBar';
 import { DeleteUserDialog } from './DeleteUserDialog';
 import { DeactivateUserDialog } from './DeactivateUserDialog';
 import { CreateUserDialog } from './CreateUserDialog';
+import { EditUserDialog } from './EditUserDialog';
 import { ExportUsersDialog } from './ExportUsersDialog';
 
 // localStorage keys
@@ -88,9 +89,11 @@ export default function Users() {
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
   const [userToToggle, setUserToToggle] = useState<User | null>(null);
+  const [userToEdit, setUserToEdit] = useState<User | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showToggleDialog, setShowToggleDialog] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -288,11 +291,15 @@ export default function Users() {
   };
 
   const handleEditUser = (user: User) => {
-    // TODO: Implement edit functionality
-    toast({
-      title: 'Edit User',
-      description: 'Edit functionality will be implemented in the next phase',
-    });
+    setUserToEdit(user);
+    setShowEditDialog(true);
+  };
+
+  const handleEditSuccess = () => {
+    setShowEditDialog(false);
+    setUserToEdit(null);
+    fetchUsers();
+    fetchStats();
   };
 
   const handleDeleteUser = (user: User) => {
@@ -595,6 +602,16 @@ export default function Users() {
         open={showCreateDialog}
         onOpenChange={setShowCreateDialog}
         onSuccess={handleCreateSuccess}
+      />
+
+      <EditUserDialog
+        open={showEditDialog}
+        onOpenChange={(open) => {
+          setShowEditDialog(open);
+          if (!open) setUserToEdit(null);
+        }}
+        user={userToEdit}
+        onSuccess={handleEditSuccess}
       />
 
       <ExportUsersDialog

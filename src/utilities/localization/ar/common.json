@@ -108,11 +108,14 @@
       }
     },
     "form": {
+      "editTitle": "تعديل المستخدم",
       "cancel": "إلغاء"
     },
     "messages": {
       "deleteConfirm": "هل أنت متأكد من حذف هذا المستخدم؟",
       "deleteSuccess": "تم حذف المستخدم بنجاح",
+      "updateSuccess": "تم تحديث المستخدم بنجاح",
+      "createSuccess": "تم إنشاء المستخدم بنجاح",
       "activateSuccess": "تم تفعيل المستخدم بنجاح",
       "deactivateSuccess": "تم تعطيل المستخدم بنجاح",
       "error": "حدث خطأ. يرجى المحاولة مرة أخرى.",

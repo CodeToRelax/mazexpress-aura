@@ -89,3 +89,85 @@ export const signupSchema = z.object({
 });
 
 export type SignupFormData = z.infer<typeof signupSchema>;
+
+/**
+ * User update validation schema (excludes password and privacy policy)
+ */
+export const updateUserSchema = z.object({
+  firstName: z
+    .string()
+    .trim()
+    .min(2, 'First name must be at least 2 characters')
+    .max(50, 'First name must be less than 50 characters'),
+  lastName: z
+    .string()
+    .trim()
+    .min(2, 'Last name must be at least 2 characters')
+    .max(50, 'Last name must be less than 50 characters'),
+  email: z
+    .string()
+    .trim()
+    .min(1, 'Email is required')
+    .email('Invalid email address')
+    .max(255, 'Email must be less than 255 characters'),
+  phoneNumber: z
+    .string()
+    .regex(/^(?:\+218|0)?(91|92|93|94|95)\d{7}$/, 'Invalid Libyan phone number format'),
+  birthdate: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, 'Birthdate must be in YYYY-MM-DD format'),
+  address: z.object({
+    street: z
+      .string()
+      .max(100, 'Street address must be less than 100 characters')
+      .optional()
+      .or(z.literal('')),
+    specificDescription: z
+      .string()
+      .max(200, 'Description must be less than 200 characters')
+      .optional()
+      .or(z.literal('')),
+    city: z.enum([
+      'benghazi',
+      'tripoli',
+      'musrata',
+      'al bayda',
+      'zawiya',
+      'gharyan',
+      'tobruk',
+      'ajdabiya',
+      'zliten',
+      'derna',
+      'sirte',
+      'sabha',
+      'khoms',
+      'bani walid',
+      'sabratha',
+      'zuwara',
+      'kufra',
+      'al marj',
+      'tarhuna',
+      'ubari',
+      'gadames',
+      'ghat',
+      'nalut',
+      'jalu',
+      'brega',
+      'istanbul',
+      'dubai',
+      'hongkong',
+    ], {
+      errorMap: () => ({ message: 'Please select a valid city' }),
+    }),
+    country: z.enum(['libya', 'turkey', 'china', 'uae'], {
+      errorMap: () => ({ message: 'Please select a valid country' }),
+    }),
+  }),
+  gender: z.enum(['male', 'female'], {
+    errorMap: () => ({ message: 'Please select a gender' }),
+  }),
+  userType: z.enum(['admin', 'customer']),
+  disabled: z.boolean().optional(),
+});
+
+export type UpdateUserFormData = z.infer<typeof updateUserSchema>;
