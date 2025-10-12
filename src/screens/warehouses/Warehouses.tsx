@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Plus, RotateCw, Download, FileText } from 'lucide-react';
+import { Plus, RotateCw, Download, FileText, Printer } from 'lucide-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -148,12 +148,18 @@ export default function Warehouses() {
                 <FileText className="h-4 w-4 mr-2" />
                 Export as CSV
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleGeneratePDF}>
-                <FileText className="h-4 w-4 mr-2" />
-                Generate PDF (Open Only)
-              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+
+          {/* Print PDF Button */}
+          <Button 
+            variant="outline" 
+            size="icon" 
+            onClick={handleGeneratePDF}
+            title="Generate PDF for all open warehouses"
+          >
+            <Printer className="h-4 w-4" />
+          </Button>
 
           <ACLGuard flag="canManageWarehouses">
             <Button onClick={() => setIsCreateDialogOpen(true)} size="default">
