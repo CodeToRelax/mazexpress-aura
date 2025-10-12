@@ -11,8 +11,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
 import { updateInvoiceStatus } from '@/utilities/api/invoice.api';
 import { toast } from '@/hooks/use-toast';
 import type { Invoice } from '@/types/invoice';
@@ -26,7 +24,6 @@ interface MarkAsPaidDialogProps {
 export function MarkAsPaidDialog({ open, onOpenChange, invoice }: MarkAsPaidDialogProps) {
   const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
-  const [notes, setNotes] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const handleMarkAsPaid = async () => {
@@ -34,7 +31,7 @@ export function MarkAsPaidDialog({ open, onOpenChange, invoice }: MarkAsPaidDial
       setIsLoading(true);
       await updateInvoiceStatus(
         invoice._id,
-        { status: 'PAID', notes: notes || undefined },
+        { status: 'PAID' },
         i18n.language
       );
 
@@ -47,7 +44,6 @@ export function MarkAsPaidDialog({ open, onOpenChange, invoice }: MarkAsPaidDial
       await queryClient.invalidateQueries({ queryKey: ['invoices'] });
       
       onOpenChange(false);
-      setNotes('');
     } catch (error: any) {
       toast({
         title: t('errors.error'),
@@ -66,23 +62,12 @@ export function MarkAsPaidDialog({ open, onOpenChange, invoice }: MarkAsPaidDial
           <AlertDialogTitle>{t('invoice.actions.markAsPaid')}</AlertDialogTitle>
           <AlertDialogDescription>
             {t('invoice.messages.markAsPaidConfirm', { invoiceNumber: invoice.invoiceNumber })}
+            <br />
+            <span className="text-muted-foreground">
+              This will update the invoice status to PAID.
+            </span>
           </AlertDialogDescription>
         </AlertDialogHeader>
-
-        <div className="space-y-2">
-          <Label htmlFor="notes">{t('invoice.fields.notes')}</Label>
-          <Textarea
-            id="notes"
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            placeholder={t('invoice.fields.notesPlaceholder')}
-            rows={3}
-            maxLength={500}
-          />
-          <p className="text-xs text-muted-foreground">
-            {t('common.optional')}
-          </p>
-        </div>
 
         <AlertDialogFooter>
           <AlertDialogCancel disabled={isLoading}>

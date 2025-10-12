@@ -26,7 +26,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { updateInvoiceStatus } from '@/utilities/api/invoice.api';
 import { updateInvoiceStatusSchema } from '@/utilities/zod/invoice.schemas';
@@ -40,7 +39,7 @@ interface UpdateStatusDialogProps {
   invoice: Invoice;
 }
 
-const statuses = ['DRAFT', 'UNPAID', 'PARTIALLY_PAID', 'PAID', 'OVERDUE', 'CANCELLED'] as const;
+const statuses = ['DRAFT', 'SENT', 'PENDING', 'PARTIALLY_PAID', 'PAID', 'OVERDUE', 'REFUNDED', 'DISPUTED', 'VOID', 'FAILED'] as const;
 
 export function UpdateStatusDialog({ open, onOpenChange, invoice }: UpdateStatusDialogProps) {
   const { t, i18n } = useTranslation();
@@ -51,7 +50,6 @@ export function UpdateStatusDialog({ open, onOpenChange, invoice }: UpdateStatus
     resolver: zodResolver(updateInvoiceStatusSchema),
     defaultValues: {
       status: invoice.status,
-      notes: '',
     },
   });
 
@@ -60,10 +58,7 @@ export function UpdateStatusDialog({ open, onOpenChange, invoice }: UpdateStatus
       setIsLoading(true);
       await updateInvoiceStatus(
         invoice._id, 
-        { 
-          status: data.status as any, 
-          notes: data.notes 
-        }, 
+        { status: data.status }, 
         i18n.language
       );
 
@@ -115,33 +110,11 @@ export function UpdateStatusDialog({ open, onOpenChange, invoice }: UpdateStatus
                     <SelectContent>
                       {statuses.map((status) => (
                         <SelectItem key={status} value={status}>
-                          {t(`invoice.status.${status.toLowerCase()}`)}
+                          {status}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="notes"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('invoice.fields.notes')}</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      placeholder={t('invoice.fields.notesPlaceholder')}
-                      rows={3}
-                      maxLength={500}
-                    />
-                  </FormControl>
-                  <p className="text-xs text-muted-foreground">
-                    {t('common.optional')}
-                  </p>
                   <FormMessage />
                 </FormItem>
               )}

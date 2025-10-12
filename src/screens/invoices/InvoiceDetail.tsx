@@ -50,14 +50,24 @@ export default function InvoiceDetail() {
     switch (status) {
       case 'PAID':
         return 'bg-green-500/10 text-green-500 border-green-500/20';
-      case 'UNPAID':
-        return 'bg-red-500/10 text-red-500 border-red-500/20';
+      case 'PENDING':
+        return 'bg-blue-500/10 text-blue-500 border-blue-500/20';
+      case 'SENT':
+        return 'bg-cyan-500/10 text-cyan-500 border-cyan-500/20';
       case 'PARTIALLY_PAID':
         return 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20';
       case 'OVERDUE':
         return 'bg-red-500/10 text-red-500 border-red-500/20';
-      case 'CANCELLED':
+      case 'VOID':
         return 'bg-muted text-muted-foreground border-muted';
+      case 'REFUNDED':
+        return 'bg-purple-500/10 text-purple-500 border-purple-500/20';
+      case 'DISPUTED':
+        return 'bg-orange-500/10 text-orange-500 border-orange-500/20';
+      case 'DRAFT':
+        return 'bg-gray-500/10 text-gray-500 border-gray-500/20';
+      case 'FAILED':
+        return 'bg-red-500/10 text-red-500 border-red-500/20';
       default:
         return 'bg-muted text-muted-foreground border-muted';
     }
@@ -67,10 +77,10 @@ export default function InvoiceDetail() {
   if (error) return <InlineError message={error.message} />;
   if (!invoice) return <InlineError message={t('invoice.notFound')} />;
 
-  const canPay = invoice.status === 'UNPAID' || invoice.status === 'PARTIALLY_PAID';
+  const canPay = invoice.status === 'PENDING' || invoice.status === 'SENT' || invoice.status === 'PARTIALLY_PAID' || invoice.status === 'OVERDUE';
   const canManageInvoices = hasFlag('canManageInvoices') || acl?.userType === 'admin';
-  const canMarkAsPaid = canManageInvoices && (invoice.status === 'UNPAID' || invoice.status === 'PARTIALLY_PAID');
-  const canCancel = canManageInvoices && invoice.status !== 'CANCELLED' && invoice.status !== 'PAID';
+  const canMarkAsPaid = canManageInvoices && (invoice.status === 'PENDING' || invoice.status === 'SENT' || invoice.status === 'PARTIALLY_PAID' || invoice.status === 'OVERDUE');
+  const canCancel = canManageInvoices && invoice.status !== 'VOID' && invoice.status !== 'PAID';
   
   const handlePrint = () => {
     window.print();
@@ -132,7 +142,7 @@ export default function InvoiceDetail() {
                       {t('invoice.quantity')}: {item.quantity} × {formatCurrency(item.unitPrice)} LYD
                     </p>
                   </div>
-                  <p className="font-semibold">{formatCurrency(item.totalGross || item.totalNet || item.totalPrice)} LYD</p>
+                  <p className="font-semibold">{formatCurrency(item.totalGross || item.totalNet || (item.quantity * item.unitPrice))} LYD</p>
                 </div>
               ))}
             </div>

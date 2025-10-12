@@ -8,37 +8,64 @@ import { z } from 'zod';
 export const generateInvoiceSchema = z.object({
   userId: z.string().min(1, 'User ID is required'),
   shipmentIds: z.array(z.string())
-    .min(1, 'At least one shipment must be selected')
-    .max(50, 'Cannot generate invoice for more than 50 shipments at once'),
-});
+    .max(50, 'Cannot generate invoice for more than 50 shipments at once')
+    .optional(),
+  shipmentStatus: z.string().optional(),
+  dateFrom: z.string().optional(),
+  dateTo: z.string().optional(),
+}).refine(
+  (data) => data.shipmentIds || data.shipmentStatus,
+  {
+    message: 'Either shipmentIds or shipmentStatus must be provided',
+  }
+);
 
 export const processPaymentSchema = z.object({
   amount: z.coerce.number()
-    .min(1, 'Amount must be at least 1 LYD')
-    .max(10000000, 'Amount cannot exceed 10,000,000 LYD'),
-  source: z.enum(['WALLET', 'CASH', 'BANK_TRANSFER'], {
+    .min(0.01, 'Amount must be at least 0.01 LYD')
+    .max(100000, 'Amount cannot exceed 100,000 LYD'),
+  source: z.enum(['WALLET', 'CASH', 'BANK_TRANSFER', 'CREDIT_CARD', 'OTHER'], {
     errorMap: () => ({ message: 'Invalid payment source' }),
   }),
-  description: z.string()
-    .min(3, 'Description must be at least 3 characters')
-    .max(500, 'Description cannot exceed 500 characters'),
+  reference: z.string()
+    .max(100, 'Reference cannot exceed 100 characters')
+    .optional(),
 });
 
 export const updateInvoiceStatusSchema = z.object({
-  status: z.enum(['DRAFT', 'UNPAID', 'PARTIALLY_PAID', 'PAID', 'OVERDUE', 'CANCELLED'], {
+  status: z.enum([
+    'DRAFT', 
+    'SENT', 
+    'PENDING', 
+    'PARTIALLY_PAID', 
+    'PAID', 
+    'OVERDUE', 
+    'REFUNDED', 
+    'DISPUTED', 
+    'VOID', 
+    'FAILED'
+  ], {
     errorMap: () => ({ message: 'Invalid status' }),
   }),
-  notes: z.string()
-    .max(500, 'Notes cannot exceed 500 characters')
-    .optional(),
 });
 
 export const invoiceFiltersSchema = z.object({
   page: z.number().min(1).optional(),
   limit: z.number().min(1).max(100).optional(),
-  status: z.enum(['DRAFT', 'UNPAID', 'PARTIALLY_PAID', 'PAID', 'OVERDUE', 'CANCELLED']).optional(),
-  dateFrom: z.string().optional(),
-  dateTo: z.string().optional(),
+  status: z.enum([
+    'DRAFT', 
+    'SENT', 
+    'PENDING', 
+    'PARTIALLY_PAID', 
+    'PAID', 
+    'OVERDUE', 
+    'REFUNDED', 
+    'DISPUTED', 
+    'VOID', 
+    'FAILED'
+  ]).optional(),
+  from: z.string().optional(),
+  to: z.string().optional(),
 });
 
 export type GenerateInvoiceInput = z.infer<typeof generateInvoiceSchema>;

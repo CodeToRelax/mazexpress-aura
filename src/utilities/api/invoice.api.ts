@@ -74,9 +74,8 @@ export async function getInvoices(
   if (filters.page) params.append('page', filters.page.toString());
   if (filters.limit) params.append('limit', filters.limit.toString());
   if (filters.status) params.append('status', filters.status);
-  if (filters.dateFrom) params.append('dateFrom', filters.dateFrom);
-  if (filters.dateTo) params.append('dateTo', filters.dateTo);
-  if (filters.userId) params.append('userId', filters.userId);
+  if (filters.from) params.append('from', filters.from);
+  if (filters.to) params.append('to', filters.to);
   if (filters.sortBy) params.append('sortBy', filters.sortBy);
   if (filters.sortOrder) params.append('sortOrder', filters.sortOrder);
   
@@ -111,8 +110,8 @@ export async function getUserInvoices(
   if (filters.page) params.append('page', filters.page.toString());
   if (filters.limit) params.append('limit', filters.limit.toString());
   if (filters.status) params.append('status', filters.status);
-  if (filters.dateFrom) params.append('dateFrom', filters.dateFrom);
-  if (filters.dateTo) params.append('dateTo', filters.dateTo);
+  if (filters.from) params.append('from', filters.from);
+  if (filters.to) params.append('to', filters.to);
   if (filters.sortBy) params.append('sortBy', filters.sortBy);
   if (filters.sortOrder) params.append('sortOrder', filters.sortOrder);
   

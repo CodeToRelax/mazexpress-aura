@@ -46,14 +46,24 @@ export default function Invoices() {
     switch (status) {
       case 'PAID':
         return 'bg-green-500/10 text-green-500 border-green-500/20';
-      case 'UNPAID':
-        return 'bg-red-500/10 text-red-500 border-red-500/20';
+      case 'PENDING':
+        return 'bg-blue-500/10 text-blue-500 border-blue-500/20';
+      case 'SENT':
+        return 'bg-cyan-500/10 text-cyan-500 border-cyan-500/20';
       case 'PARTIALLY_PAID':
         return 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20';
       case 'OVERDUE':
         return 'bg-red-500/10 text-red-500 border-red-500/20';
-      case 'CANCELLED':
+      case 'VOID':
         return 'bg-muted text-muted-foreground border-muted';
+      case 'REFUNDED':
+        return 'bg-purple-500/10 text-purple-500 border-purple-500/20';
+      case 'DISPUTED':
+        return 'bg-orange-500/10 text-orange-500 border-orange-500/20';
+      case 'DRAFT':
+        return 'bg-gray-500/10 text-gray-500 border-gray-500/20';
+      case 'FAILED':
+        return 'bg-red-500/10 text-red-500 border-red-500/20';
       default:
         return 'bg-muted text-muted-foreground border-muted';
     }
@@ -84,25 +94,31 @@ export default function Invoices() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">{t('invoice.filter.allStatuses')}</SelectItem>
-                <SelectItem value="UNPAID">{t('invoice.status.unpaid')}</SelectItem>
-                <SelectItem value="PARTIALLY_PAID">{t('invoice.status.partially_paid')}</SelectItem>
-                <SelectItem value="PAID">{t('invoice.status.paid')}</SelectItem>
-                <SelectItem value="OVERDUE">{t('invoice.status.overdue')}</SelectItem>
+                <SelectItem value="DRAFT">Draft</SelectItem>
+                <SelectItem value="SENT">Sent</SelectItem>
+                <SelectItem value="PENDING">Pending</SelectItem>
+                <SelectItem value="PARTIALLY_PAID">Partially Paid</SelectItem>
+                <SelectItem value="PAID">Paid</SelectItem>
+                <SelectItem value="OVERDUE">Overdue</SelectItem>
+                <SelectItem value="REFUNDED">Refunded</SelectItem>
+                <SelectItem value="DISPUTED">Disputed</SelectItem>
+                <SelectItem value="VOID">Void</SelectItem>
+                <SelectItem value="FAILED">Failed</SelectItem>
               </SelectContent>
             </Select>
 
             <Input
               type="date"
               placeholder={t('invoice.filter.dateFrom')}
-              value={filters.dateFrom || ''}
-              onChange={(e) => handleFilterChange('dateFrom', e.target.value)}
+              value={filters.from || ''}
+              onChange={(e) => handleFilterChange('from', e.target.value)}
             />
 
             <Input
               type="date"
               placeholder={t('invoice.filter.dateTo')}
-              value={filters.dateTo || ''}
-              onChange={(e) => handleFilterChange('dateTo', e.target.value)}
+              value={filters.to || ''}
+              onChange={(e) => handleFilterChange('to', e.target.value)}
             />
           </div>
 

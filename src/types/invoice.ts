@@ -3,6 +3,31 @@
  * Defines types for invoice management and payment processing
  */
 
+export type InvoiceStatus = 
+  | 'DRAFT' 
+  | 'SENT' 
+  | 'PENDING' 
+  | 'PARTIALLY_PAID' 
+  | 'PAID' 
+  | 'OVERDUE' 
+  | 'REFUNDED' 
+  | 'DISPUTED' 
+  | 'VOID' 
+  | 'FAILED';
+
+export type PaymentSource = 
+  | 'WALLET' 
+  | 'CASH' 
+  | 'BANK_TRANSFER' 
+  | 'CREDIT_CARD' 
+  | 'OTHER';
+
+export type InvoiceItemKind = 
+  | 'SHIPMENT' 
+  | 'SURCHARGE' 
+  | 'DISCOUNT' 
+  | 'ADJUSTMENT';
+
 export interface Invoice {
   _id: string;
   invoiceNumber: string;
@@ -13,42 +38,49 @@ export interface Invoice {
     email: string;
     uniqueShippingNumber: string;
   };
-  status: 'DRAFT' | 'UNPAID' | 'PARTIALLY_PAID' | 'PAID' | 'OVERDUE' | 'CANCELLED';
+  status: InvoiceStatus;
   totals: {
     net: number;
+    tax: number;
     gross: number;
     paid: number;
     due: number;
   };
   items: InvoiceItem[];
   createdAt: string;
-  issueDate?: string; // API returns issueDate
+  issueDate?: string;
   dueDate: string;
   closedAt?: string;
   notes?: string;
   paymentAllocations?: PaymentAllocation[];
+  currency?: string;
+  discountTotal?: number;
+  extraChargesTotal?: number;
+  sentAt?: string;
+  createdBy?: string;
+  lastModifiedBy?: string;
 }
 
 export interface InvoiceItem {
   _id: string;
   invoiceId: string;
   shipmentId?: any; // Can be populated with full shipment data
-  kind: 'SHIPMENT' | 'CUSTOM' | 'shipment' | 'custom'; // API may return uppercase
+  kind: InvoiceItemKind;
   description: string;
   quantity: number;
   unitPrice: number;
-  totalPrice?: number; // Frontend field
-  totalNet?: number; // API field
-  totalGross?: number; // API field
+  taxRate?: number;
+  taxAmount?: number;
+  totalNet?: number;
+  totalGross?: number;
 }
 
 export interface InvoiceFilters {
   page?: number;
   limit?: number;
-  status?: string;
-  dateFrom?: string;
-  dateTo?: string;
-  userId?: string;
+  status?: InvoiceStatus;
+  from?: string;
+  to?: string;
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
 }
@@ -57,9 +89,12 @@ export interface PaymentAllocation {
   _id: string;
   invoiceId: string;
   amount: number;
-  source: 'WALLET' | 'CASH' | 'BANK_TRANSFER';
-  processedAt: string;
-  description?: string;
+  source: PaymentSource;
+  happenedAt?: string;
+  processedAt?: string; // Backward compatibility
+  reference?: string;
+  currency?: string;
+  createdBy?: string;
 }
 
 export interface GenerateInvoiceRequest {
@@ -72,13 +107,12 @@ export interface GenerateInvoiceRequest {
 
 export interface ProcessPaymentRequest {
   amount: number;
-  source: 'WALLET' | 'CASH' | 'BANK_TRANSFER';
-  description: string;
+  source: PaymentSource;
+  reference?: string;
 }
 
 export interface UpdateInvoiceStatusRequest {
-  status: 'DRAFT' | 'UNPAID' | 'PARTIALLY_PAID' | 'PAID' | 'OVERDUE' | 'CANCELLED';
-  notes?: string;
+  status: InvoiceStatus;
 }
 
 export interface InvoiceStats {

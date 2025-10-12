@@ -21,7 +21,6 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
@@ -52,7 +51,7 @@ export function PaymentDialog({ open, onOpenChange, invoice }: PaymentDialogProp
     defaultValues: {
       amount: typeof invoice.userId === 'object' ? invoice.totals.due / 100 : 0,
       source: 'WALLET' as const,
-      description: '',
+      reference: '',
     },
   });
 
@@ -83,7 +82,7 @@ export function PaymentDialog({ open, onOpenChange, invoice }: PaymentDialogProp
     const paymentData: ProcessPaymentRequest = {
       amount: Math.round(data.amount * 100), // Convert to cents
       source: data.source,
-      description: data.description,
+      reference: data.reference,
     };
 
     mutation.mutate(paymentData);
@@ -164,6 +163,8 @@ export function PaymentDialog({ open, onOpenChange, invoice }: PaymentDialogProp
                       <SelectItem value="WALLET">Wallet</SelectItem>
                       <SelectItem value="CASH">Cash</SelectItem>
                       <SelectItem value="BANK_TRANSFER">Bank Transfer</SelectItem>
+                      <SelectItem value="CREDIT_CARD">Credit Card</SelectItem>
+                      <SelectItem value="OTHER">Other</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormDescription>
@@ -178,14 +179,13 @@ export function PaymentDialog({ open, onOpenChange, invoice }: PaymentDialogProp
 
             <FormField
               control={form.control}
-              name="description"
+              name="reference"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>Reference (Optional)</FormLabel>
                   <FormControl>
-                    <Textarea
-                      placeholder="Enter payment description"
-                      className="resize-none"
+                    <Input
+                      placeholder="Enter payment reference (e.g., PAY-2024-001)"
                       {...field}
                     />
                   </FormControl>
