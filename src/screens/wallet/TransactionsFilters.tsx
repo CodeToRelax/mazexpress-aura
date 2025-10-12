@@ -40,7 +40,9 @@ export function TransactionsFilters({
   const debouncedSearch = useDebounce(searchInput, 500);
 
   useEffect(() => {
-    onFiltersChange({ ...filters, search: debouncedSearch || undefined, page: 1 });
+    if (debouncedSearch !== filters.search) {
+      onFiltersChange({ ...filters, search: debouncedSearch || undefined, page: 1 });
+    }
   }, [debouncedSearch]);
 
   // Sync search input with filters when filters are cleared
