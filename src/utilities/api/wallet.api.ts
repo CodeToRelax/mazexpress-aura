@@ -151,7 +151,28 @@ export async function getTransactions(
     method: 'GET',
     headers,
   });
-  return handleResponse<TransactionPaginationResponse>(response);
+  
+  const rawData = await response.json();
+  
+  if (!response.ok) {
+    const error = rawData;
+    throw new Error(error.message || `HTTP error! status: ${response.status}`);
+  }
+  
+  const backendData = rawData.data;
+  
+  // Transform backend response to match frontend interface
+  return {
+    transactions: backendData.docs || [],
+    pagination: {
+      currentPage: backendData.page || 1,
+      totalPages: backendData.totalPages || 0,
+      totalItems: backendData.totalDocs || 0,
+      itemsPerPage: backendData.limit || 10,
+      hasNextPage: backendData.hasNextPage || false,
+      hasPrevPage: backendData.hasPrevPage || false,
+    }
+  };
 }
 
 /**
@@ -215,24 +236,32 @@ export async function getUserTransactions(
   const queryString = params.toString();
   const url = `${API_BASE_URL}/api/wallet/admin/user/${userId}/transactions${queryString ? `?${queryString}` : ''}`;
   
-  console.log('[wallet.api] getUserTransactions - URL:', url);
-  console.log('[wallet.api] getUserTransactions - Filters:', JSON.stringify(filters, null, 2));
-  
   const response = await fetch(url, {
     method: 'GET',
     headers,
   });
   
   const rawData = await response.json();
-  console.log('[wallet.api] getUserTransactions - Raw response:', JSON.stringify(rawData, null, 2));
   
   if (!response.ok) {
     const error = rawData;
     throw new Error(error.message || `HTTP error! status: ${response.status}`);
   }
   
-  console.log('[wallet.api] getUserTransactions - Returning data.data:', JSON.stringify(rawData.data, null, 2));
-  return rawData.data;
+  const backendData = rawData.data;
+  
+  // Transform backend response to match frontend interface
+  return {
+    transactions: backendData.docs || [],
+    pagination: {
+      currentPage: backendData.page || 1,
+      totalPages: backendData.totalPages || 0,
+      totalItems: backendData.totalDocs || 0,
+      itemsPerPage: backendData.limit || 10,
+      hasNextPage: backendData.hasNextPage || false,
+      hasPrevPage: backendData.hasPrevPage || false,
+    }
+  };
 }
 
 export async function updateTransaction(
