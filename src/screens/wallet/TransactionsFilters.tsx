@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search, SlidersHorizontal, X } from 'lucide-react';
 import type { TransactionFilters } from '@/types/wallet';
@@ -38,12 +38,15 @@ export function TransactionsFilters({
   const { t } = useTranslation();
   const [searchInput, setSearchInput] = useState(filters.search || '');
   const debouncedSearch = useDebounce(searchInput, 500);
+  const lastSearchRef = useRef(filters.search);
 
   useEffect(() => {
-    if (debouncedSearch !== filters.search) {
+    // Only update if the debounced search is different from the last value we sent
+    if (debouncedSearch !== lastSearchRef.current) {
+      lastSearchRef.current = debouncedSearch;
       onFiltersChange({ ...filters, search: debouncedSearch || undefined, page: 1 });
     }
-  }, [debouncedSearch]);
+  }, [debouncedSearch, filters, onFiltersChange]);
 
   // Sync search input with filters when filters are cleared
   useEffect(() => {
