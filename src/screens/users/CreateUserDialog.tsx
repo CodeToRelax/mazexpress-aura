@@ -25,8 +25,10 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from '@/hooks/use-toast';
 import { authApi } from '@/utilities/api/auth.api';
+import { aclApi } from '@/utilities/api/acl.api';
 import { signupSchema, type SignupFormData } from '@/utilities/zod/user.schemas';
 import { ResponsiveFormLayout, FormSection, FormField } from '@/components/layout/ResponsiveFormLayout';
+import type { ACLPermission } from '@/types/acl';
 
 interface CreateUserDialogProps {
   open: boolean;
@@ -80,9 +82,21 @@ const COUNTRIES = [
   { value: 'uae', label: 'UAE' },
 ];
 
+const ACL_RESOURCES = [
+  { resource: 'users', label: 'Users Management', actions: ['read', 'create', 'update', 'delete'] },
+  { resource: 'shipments', label: 'Shipments', actions: ['read', 'create', 'update'] },
+  { resource: 'wallet', label: 'Wallet', actions: ['read', 'manage'] },
+  { resource: 'config', label: 'System Config', actions: ['read', 'manage'] },
+  { resource: 'reports', label: 'Reports', actions: ['read'] },
+  { resource: 'dashboard', label: 'Dashboard', actions: ['read'] },
+  { resource: 'warehouses', label: 'Warehouses', actions: ['read', 'create', 'update', 'delete'] },
+  { resource: 'invoices', label: 'Invoices', actions: ['read', 'create', 'manage'] },
+];
+
 export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDialogProps) {
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedPermissions, setSelectedPermissions] = useState<Record<string, string[]>>({});
 
   const {
     register,
@@ -101,6 +115,7 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
 
   const privacyAgreement = watch('privacyPolicy.usageAgreement');
   const selectedCountry = watch('address.country');
+  const userType = watch('userType');
 
   // Filter cities based on selected country
   const availableCities = selectedCountry ? CITIES_BY_COUNTRY[selectedCountry] || [] : [];
@@ -116,6 +131,7 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
   useEffect(() => {
     if (!open) {
       reset();
+      setSelectedPermissions({});
     }
   }, [open, reset]);
 
@@ -131,12 +147,25 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
       const token = await user.getIdToken();
 
       // Type assertion: zod validation ensures all required fields are present
-      await authApi.signup(data as any, token);
+      const result = await authApi.signup(data as any, token);
+      
+      // If admin, set ACL permissions
+      if (data.userType === 'admin' && Object.keys(selectedPermissions).length > 0) {
+        const permissionsArray: ACLPermission[] = Object.entries(selectedPermissions)
+          .filter(([_, actions]) => actions.length > 0)
+          .map(([resource, actions]) => ({ resource, actions }));
+        
+        if (permissionsArray.length > 0) {
+          await aclApi.updateUserACL(result.data._id, permissionsArray);
+        }
+      }
+      
       toast({
         title: t('users.messages.createSuccess'),
         description: 'User account created successfully',
       });
       reset();
+      setSelectedPermissions({});
       onOpenChange(false);
       onSuccess();
     } catch (error) {
@@ -189,6 +218,25 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
               </FormField>
 
               <FormField>
+                <Label htmlFor="userType">User Type *</Label>
+                <Select
+                  defaultValue="customer"
+                  onValueChange={(value) => setValue('userType', value as 'admin' | 'customer', { shouldValidate: true })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="customer">Customer</SelectItem>
+                    <SelectItem value="admin">Admin</SelectItem>
+                  </SelectContent>
+                </Select>
+                {errors.userType && (
+                  <p className="text-sm text-destructive">{errors.userType.message}</p>
+                )}
+              </FormField>
+
+              <FormField>
                 <Label htmlFor="gender">Gender *</Label>
                 <Select onValueChange={(value) => setValue('gender', value as 'male' | 'female', { shouldValidate: true })}>
                   <SelectTrigger>
@@ -233,14 +281,18 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
               </FormField>
 
               <FormField>
-                <Label htmlFor="phoneNumber">Phone Number *</Label>
+                <Label htmlFor="phoneNumber">WhatsApp Number *</Label>
                 <Input
                   id="phoneNumber"
                   {...register('phoneNumber')}
-                  placeholder="+218912345678"
+                  placeholder={userType === 'admin' ? '+1234567890' : '+218912345678'}
                 />
                 {errors.phoneNumber && (
-                  <p className="text-sm text-destructive">{errors.phoneNumber.message}</p>
+                  <p className="text-sm text-destructive">
+                    {userType === 'customer'
+                      ? 'Invalid Libyan phone number format. Must be +218 followed by 91-95 and 7 digits'
+                      : 'Invalid international phone number format. Must include country code and 6-15 digits'}
+                  </p>
                 )}
               </FormField>
 
@@ -326,27 +378,8 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
               </FormField>
             </FormSection>
 
-            {/* Account Type */}
+            {/* Privacy Policy */}
             <FormSection title="Account Settings">
-              <FormField>
-                <Label htmlFor="userType">User Type *</Label>
-                <Select
-                  defaultValue="customer"
-                  onValueChange={(value) => setValue('userType', value as 'admin' | 'customer', { shouldValidate: true })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="customer">Customer</SelectItem>
-                    <SelectItem value="admin">Admin</SelectItem>
-                  </SelectContent>
-                </Select>
-                {errors.userType && (
-                  <p className="text-sm text-destructive">{errors.userType.message}</p>
-                )}
-              </FormField>
-
               <FormField fullWidth>
                 <div className="flex items-center space-x-2">
                   <Checkbox
@@ -365,6 +398,43 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
                 )}
               </FormField>
             </FormSection>
+
+            {/* ACL Permissions for Admin Users */}
+            {userType === 'admin' && (
+              <FormSection title="Admin Permissions" description="Configure access permissions for this administrator">
+                <FormField fullWidth>
+                  <div className="space-y-4">
+                    {ACL_RESOURCES.map(({ resource, label, actions }) => (
+                      <div key={resource} className="border rounded-lg p-4">
+                        <h4 className="font-semibold mb-3 capitalize">{label}</h4>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                          {actions.map((action) => (
+                            <div key={action} className="flex items-center space-x-2">
+                              <Checkbox
+                                id={`${resource}-${action}`}
+                                checked={selectedPermissions[resource]?.includes(action) ?? false}
+                                onCheckedChange={(checked) => {
+                                  setSelectedPermissions(prev => {
+                                    const current = prev[resource] || [];
+                                    const updated = checked
+                                      ? [...current, action]
+                                      : current.filter(a => a !== action);
+                                    return { ...prev, [resource]: updated };
+                                  });
+                                }}
+                              />
+                              <Label htmlFor={`${resource}-${action}`} className="text-sm capitalize cursor-pointer">
+                                {action}
+                              </Label>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </FormField>
+              </FormSection>
+            )}
           </ResponsiveFormLayout>
 
           <DialogFooter className="mt-6">

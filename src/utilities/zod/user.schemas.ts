@@ -24,9 +24,8 @@ export const signupSchema = z.object({
     .string()
     .min(6, 'Password must be at least 6 characters')
     .max(128, 'Password is too long'),
-  phoneNumber: z
-    .string()
-    .regex(/^(?:\+218|0)?(91|92|93|94|95)\d{7}$/, 'Invalid Libyan phone number format'),
+  userType: z.enum(['admin', 'customer']).optional().default('customer'),
+  phoneNumber: z.string().min(1, 'Phone number is required'),
   birthdate: z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/, 'Birthdate must be in YYYY-MM-DD format'),
@@ -85,8 +84,21 @@ export const signupSchema = z.object({
       errorMap: () => ({ message: 'You must accept the terms and conditions' }),
     }),
   }),
-  userType: z.enum(['admin', 'customer']).optional().default('customer'),
-});
+}).refine(
+  (data) => {
+    if (data.userType === 'customer') {
+      // Libyan phone validation
+      return /^(?:\+218|0)?(91|92|93|94|95)\d{7}$/.test(data.phoneNumber);
+    } else {
+      // International phone validation (country code + 6-15 digits)
+      return /^\+?\d{6,15}$/.test(data.phoneNumber);
+    }
+  },
+  {
+    message: 'Invalid phone number format',
+    path: ['phoneNumber'],
+  }
+);
 
 export type SignupFormData = z.infer<typeof signupSchema>;
 
@@ -110,9 +122,8 @@ export const updateUserSchema = z.object({
     .min(1, 'Email is required')
     .email('Invalid email address')
     .max(255, 'Email must be less than 255 characters'),
-  phoneNumber: z
-    .string()
-    .regex(/^(?:\+218|0)?(91|92|93|94|95)\d{7}$/, 'Invalid Libyan phone number format'),
+  userType: z.enum(['admin', 'customer']),
+  phoneNumber: z.string().min(1, 'Phone number is required'),
   birthdate: z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/, 'Birthdate must be in YYYY-MM-DD format'),
@@ -166,8 +177,21 @@ export const updateUserSchema = z.object({
   gender: z.enum(['male', 'female'], {
     errorMap: () => ({ message: 'Please select a gender' }),
   }),
-  userType: z.enum(['admin', 'customer']),
   disabled: z.boolean().optional(),
-});
+}).refine(
+  (data) => {
+    if (data.userType === 'customer') {
+      // Libyan phone validation
+      return /^(?:\+218|0)?(91|92|93|94|95)\d{7}$/.test(data.phoneNumber);
+    } else {
+      // International phone validation (country code + 6-15 digits)
+      return /^\+?\d{6,15}$/.test(data.phoneNumber);
+    }
+  },
+  {
+    message: 'Invalid phone number format',
+    path: ['phoneNumber'],
+  }
+);
 
 export type UpdateUserFormData = z.infer<typeof updateUserSchema>;
