@@ -98,12 +98,12 @@ export function UserDetailDialog({ user, open, onClose, onEdit }: UserDetailDial
       });
       setTransactions(transactionData.transactions || []);
       setTransactionsPagination({
-        totalDocs: transactionData.pagination.totalItems,
-        limit: transactionData.pagination.itemsPerPage,
-        totalPages: transactionData.pagination.totalPages,
-        page: transactionData.pagination.currentPage,
-        hasPrevPage: transactionData.pagination.hasPrevPage,
-        hasNextPage: transactionData.pagination.hasNextPage,
+        totalDocs: transactionData.pagination?.totalItems ?? 0,
+        limit: transactionData.pagination?.itemsPerPage ?? 10,
+        totalPages: transactionData.pagination?.totalPages ?? 0,
+        page: transactionData.pagination?.currentPage ?? 1,
+        hasPrevPage: transactionData.pagination?.hasPrevPage ?? false,
+        hasNextPage: transactionData.pagination?.hasNextPage ?? false,
       });
     } catch (error) {
       console.error('Error fetching wallet data:', error);

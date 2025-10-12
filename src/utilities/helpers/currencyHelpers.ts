@@ -9,11 +9,10 @@
  * @returns Formatted string with LYD suffix
  */
 export function formatLYD(amountInCents: number): string {
-  const amountInLYD = amountInCents / 100;
   return new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(amountInLYD) + ' LYD';
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amountInCents) + ' LYD';
 }
 
 /**
