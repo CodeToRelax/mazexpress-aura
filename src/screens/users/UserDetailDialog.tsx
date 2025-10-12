@@ -28,7 +28,6 @@ import { TransactionsPagination } from '@/screens/wallet/TransactionsPagination'
 import { TransactionsColumnVisibilityToggle } from '@/screens/wallet/TransactionsColumnVisibilityToggle';
 import { CreateTransactionDialog } from './CreateTransactionDialog';
 import { EditTransactionDialog } from './EditTransactionDialog';
-import { DeleteTransactionDialog } from './DeleteTransactionDialog';
 import { RefundTransactionDialog } from './RefundTransactionDialog';
 import { GenerateInvoiceDialog } from '@/screens/invoices/GenerateInvoiceDialog';
 import { getUserInvoices } from '@/utilities/api/invoice.api';
@@ -69,7 +68,6 @@ export function UserDetailDialog({ user, open, onClose, onEdit }: UserDetailDial
   const [isLoadingInvoices, setIsLoadingInvoices] = useState(false);
   const [isCreateTransactionOpen, setIsCreateTransactionOpen] = useState(false);
   const [isEditTransactionOpen, setIsEditTransactionOpen] = useState(false);
-  const [isDeleteTransactionOpen, setIsDeleteTransactionOpen] = useState(false);
   const [isRefundTransactionOpen, setIsRefundTransactionOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [isGenerateInvoiceOpen, setIsGenerateInvoiceOpen] = useState(false);
@@ -164,11 +162,6 @@ export function UserDetailDialog({ user, open, onClose, onEdit }: UserDetailDial
   const handleEditTransaction = (transaction: Transaction) => {
     setSelectedTransaction(transaction);
     setIsEditTransactionOpen(true);
-  };
-
-  const handleDeleteTransaction = (transaction: Transaction) => {
-    setSelectedTransaction(transaction);
-    setIsDeleteTransactionOpen(true);
   };
 
   const handleRefundTransaction = (transaction: Transaction) => {
@@ -533,7 +526,6 @@ export function UserDetailDialog({ user, open, onClose, onEdit }: UserDetailDial
                   <TransactionsTable
                     transactions={transactions}
                     onEdit={handleEditTransaction}
-                    onDelete={handleDeleteTransaction}
                     onRefund={handleRefundTransaction}
                     isAdmin={true}
                     visibleColumns={visibleColumns}
@@ -712,20 +704,6 @@ export function UserDetailDialog({ user, open, onClose, onEdit }: UserDetailDial
         onSuccess={() => {
           handleTransactionSuccess();
           setIsEditTransactionOpen(false);
-          setSelectedTransaction(null);
-        }}
-      />
-
-      <DeleteTransactionDialog
-        open={isDeleteTransactionOpen}
-        onClose={() => {
-          setIsDeleteTransactionOpen(false);
-          setSelectedTransaction(null);
-        }}
-        transaction={selectedTransaction}
-        onSuccess={() => {
-          handleTransactionSuccess();
-          setIsDeleteTransactionOpen(false);
           setSelectedTransaction(null);
         }}
       />

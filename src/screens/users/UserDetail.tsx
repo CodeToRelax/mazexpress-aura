@@ -22,7 +22,6 @@ import { TransactionsPagination } from '@/screens/wallet/TransactionsPagination'
 import { TransactionsColumnVisibilityToggle } from '@/screens/wallet/TransactionsColumnVisibilityToggle';
 import { CreateTransactionDialog } from './CreateTransactionDialog';
 import { EditTransactionDialog } from './EditTransactionDialog';
-import { DeleteTransactionDialog } from './DeleteTransactionDialog';
 import { RefundTransactionDialog } from './RefundTransactionDialog';
 import { GenerateInvoiceDialog } from '@/screens/invoices/GenerateInvoiceDialog';
 import { EditUserDialog } from './EditUserDialog';
@@ -61,7 +60,6 @@ export default function UserDetail() {
   const [isLoadingInvoices, setIsLoadingInvoices] = useState(false);
   const [isCreateTransactionOpen, setIsCreateTransactionOpen] = useState(false);
   const [isEditTransactionOpen, setIsEditTransactionOpen] = useState(false);
-  const [isDeleteTransactionOpen, setIsDeleteTransactionOpen] = useState(false);
   const [isRefundTransactionOpen, setIsRefundTransactionOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [isGenerateInvoiceOpen, setIsGenerateInvoiceOpen] = useState(false);
@@ -177,11 +175,6 @@ export default function UserDetail() {
   const handleEditTransaction = (transaction: Transaction) => {
     setSelectedTransaction(transaction);
     setIsEditTransactionOpen(true);
-  };
-
-  const handleDeleteTransaction = (transaction: Transaction) => {
-    setSelectedTransaction(transaction);
-    setIsDeleteTransactionOpen(true);
   };
 
   const handleRefundTransaction = (transaction: Transaction) => {
@@ -590,7 +583,6 @@ export default function UserDetail() {
                 <TransactionsTable
                   transactions={transactions}
                   onEdit={handleEditTransaction}
-                  onDelete={handleDeleteTransaction}
                   onRefund={handleRefundTransaction}
                   isAdmin={true}
                   visibleColumns={visibleColumns}
@@ -705,41 +697,6 @@ export default function UserDetail() {
         </TabsContent>
         )}
 
-        <TabsContent value="metadata" className="space-y-4 mt-6">
-          <div className="glass-card p-6 rounded-2xl space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="text-sm text-muted-foreground">{t('users.detail.fields.firebaseId')}</label>
-                <div className="font-mono text-sm mt-1 break-all">{user.firebaseId}</div>
-              </div>
-              <div>
-                <label className="text-sm text-muted-foreground">User ID</label>
-                <div className="font-mono text-sm mt-1 break-all">{user._id}</div>
-              </div>
-              <div>
-                <label className="text-sm text-muted-foreground">{t('users.detail.fields.createdAt')}</label>
-                <div className="font-medium mt-1">
-                  {formatDate(user.createdAt, 'MMMM dd, yyyy HH:mm')}
-                </div>
-              </div>
-              <div>
-                <label className="text-sm text-muted-foreground">{t('users.detail.fields.updatedAt')}</label>
-                <div className="font-medium mt-1">
-                  {formatDate(user.updatedAt, 'MMMM dd, yyyy HH:mm')}
-                </div>
-              </div>
-              <div>
-                <label className="text-sm text-muted-foreground">{t('users.detail.fields.privacyAgreement')}</label>
-                <div className="mt-1">
-                  <Badge variant={user.privacyPolicy.usageAgreement ? 'default' : 'destructive'}>
-                    {user.privacyPolicy.usageAgreement ? 'Agreed' : 'Not Agreed'}
-                  </Badge>
-                </div>
-              </div>
-            </div>
-          </div>
-        </TabsContent>
-
         {user.userType === 'admin' && (
           <TabsContent value="acl" className="mt-6">
             <ACLManagementTab userId={user._id} userType={user.userType} />
@@ -767,20 +724,6 @@ export default function UserDetail() {
         onSuccess={() => {
           handleTransactionSuccess();
           setIsEditTransactionOpen(false);
-          setSelectedTransaction(null);
-        }}
-      />
-
-      <DeleteTransactionDialog
-        open={isDeleteTransactionOpen}
-        onClose={() => {
-          setIsDeleteTransactionOpen(false);
-          setSelectedTransaction(null);
-        }}
-        transaction={selectedTransaction}
-        onSuccess={() => {
-          handleTransactionSuccess();
-          setIsDeleteTransactionOpen(false);
           setSelectedTransaction(null);
         }}
       />

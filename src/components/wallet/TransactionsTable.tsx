@@ -32,7 +32,6 @@ import { formatLYD } from '@/utilities/helpers/currencyHelpers';
 interface TransactionsTableProps {
   transactions: Transaction[];
   onEdit?: (transaction: Transaction) => void;
-  onDelete?: (transaction: Transaction) => void;
   onRefund?: (transaction: Transaction) => void;
   isAdmin?: boolean;
   visibleColumns: Set<string>;
@@ -44,7 +43,6 @@ interface TransactionsTableProps {
 export function TransactionsTable({ 
   transactions, 
   onEdit, 
-  onDelete, 
   onRefund,
   isAdmin = false,
   visibleColumns,
@@ -214,7 +212,7 @@ export function TransactionsTable({
                     {formatLYD(transaction.balanceAfter)}
                   </TableCell>
                 )}
-                {isAdmin && onEdit && onDelete && (
+                {isAdmin && (onEdit || onRefund) && (
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -223,23 +221,18 @@ export function TransactionsTable({
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="bg-background">
-                        <DropdownMenuItem onClick={() => onEdit(transaction)}>
-                          <Edit className="h-4 w-4 mr-2" />
-                          {t('common.edit')}
-                        </DropdownMenuItem>
+                        {onEdit && (
+                          <DropdownMenuItem onClick={() => onEdit(transaction)}>
+                            <Edit className="h-4 w-4 mr-2" />
+                            {t('common.edit')}
+                          </DropdownMenuItem>
+                        )}
                         {transaction.type.toLowerCase() === 'deduction' && onRefund && (
                           <DropdownMenuItem onClick={() => onRefund(transaction)}>
                             <RefreshCcw className="h-4 w-4 mr-2" />
                             Refund
                           </DropdownMenuItem>
                         )}
-                        <DropdownMenuItem 
-                          onClick={() => onDelete(transaction)}
-                          className="text-destructive"
-                        >
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          {t('common.delete')}
-                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
