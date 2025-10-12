@@ -50,6 +50,7 @@ export function CreateWarehouseDialog({ open, onOpenChange, onSuccess }: CreateW
   const { t } = useTranslation();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [activeTab, setActiveTab] = useState('basic');
 
   const defaultDayHours = {
     isOpen: true,
@@ -122,10 +123,31 @@ export function CreateWarehouseDialog({ open, onOpenChange, onSuccess }: CreateW
     }
   };
 
+  // Wizard navigation
+  const tabs = ['basic', 'address', 'contact', 'hours'];
+  const currentTabIndex = tabs.indexOf(activeTab);
+  const isFirstTab = currentTabIndex === 0;
+  const isLastTab = currentTabIndex === tabs.length - 1;
+  
+  const handleNext = () => {
+    if (!isLastTab) {
+      setActiveTab(tabs[currentTabIndex + 1]);
+    }
+  };
+  
+  const handlePrevious = () => {
+    if (!isFirstTab) {
+      setActiveTab(tabs[currentTabIndex - 1]);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={(open) => {
       onOpenChange(open);
-      if (!open) form.reset();
+      if (!open) {
+        form.reset();
+        setActiveTab('basic');
+      }
     }}>
       <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col pointer-events-auto">
         <DialogHeader>
@@ -138,12 +160,20 @@ export function CreateWarehouseDialog({ open, onOpenChange, onSuccess }: CreateW
         <div className="flex-1 overflow-y-auto pr-1">
           <Form {...form}>
             <form id="create-warehouse-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <Tabs defaultValue="basic" className="w-full">
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                 <TabsList className="grid w-full grid-cols-4">
-                  <TabsTrigger value="basic">{t('warehouses.form.basicInfo')}</TabsTrigger>
-                  <TabsTrigger value="address">{t('warehouses.form.addressInfo')}</TabsTrigger>
-                  <TabsTrigger value="contact">{t('warehouses.form.contactInfo')}</TabsTrigger>
-                  <TabsTrigger value="hours">Operating Hours</TabsTrigger>
+                  <TabsTrigger value="basic" disabled={activeTab !== 'basic'}>
+                    {t('warehouses.form.basicInfo')}
+                  </TabsTrigger>
+                  <TabsTrigger value="address" disabled={activeTab !== 'address'}>
+                    {t('warehouses.form.addressInfo')}
+                  </TabsTrigger>
+                  <TabsTrigger value="contact" disabled={activeTab !== 'contact'}>
+                    {t('warehouses.form.contactInfo')}
+                  </TabsTrigger>
+                  <TabsTrigger value="hours" disabled={activeTab !== 'hours'}>
+                    Operating Hours
+                  </TabsTrigger>
                 </TabsList>
 
                 {/* Basic Info Tab */}
@@ -459,18 +489,34 @@ export function CreateWarehouseDialog({ open, onOpenChange, onSuccess }: CreateW
         </div>
 
         <DialogFooter className="flex gap-2 border-t pt-4 mt-0 bg-background pointer-events-auto">
+          {!isFirstTab && (
+            <Button type="button" variant="outline" onClick={handlePrevious}>
+              Previous
+            </Button>
+          )}
+          
+          <div className="flex-1" />
+          
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
             {t('actions.cancel')}
           </Button>
-          <Button 
-            type="submit"
-            form="create-warehouse-form"
-            disabled={isSubmitting}
-            onClick={() => console.log('Create button clicked', form.formState.errors)}
-          >
-            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Create Warehouse
-          </Button>
+          
+          {!isLastTab && (
+            <Button type="button" onClick={handleNext}>
+              Next
+            </Button>
+          )}
+          
+          {isLastTab && (
+            <Button 
+              type="submit"
+              form="create-warehouse-form"
+              disabled={isSubmitting}
+            >
+              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Create Warehouse
+            </Button>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>
