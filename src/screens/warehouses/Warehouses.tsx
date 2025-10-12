@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Plus, RotateCw, Download, FileText, Printer } from 'lucide-react';
+import { Plus, RotateCw, Download, FileText, Printer, Warehouse } from 'lucide-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { InlineError } from '@/components/feedback/InlineError';
@@ -129,46 +130,63 @@ export default function Warehouses() {
   return (
     <div className="container mx-auto px-4 py-6 space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">{t('warehouses.title')}</h1>
-          <p className="text-muted-foreground mt-1">{t('warehouses.subtitle')}</p>
-        </div>
-        <div className="flex items-center gap-2">
-          {/* Export Dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="default">
-                <Download className="h-4 w-4 mr-2" />
-                Export
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem onClick={handleExportCSV}>
-                <FileText className="h-4 w-4 mr-2" />
-                Export as CSV
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="relative z-10"
+      >
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">
+              <Warehouse className="h-6 w-6 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-foreground">
+                {t('warehouses.title')}
+              </h1>
+              <p className="text-muted-foreground">
+                {t('warehouses.subtitle')}
+              </p>
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            {/* Export Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="default">
+                  <Download className="h-4 w-4 mr-2" />
+                  Export
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem onClick={handleExportCSV}>
+                  <FileText className="h-4 w-4 mr-2" />
+                  Export as CSV
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-          {/* Print PDF Button */}
-          <Button 
-            variant="outline" 
-            size="icon" 
-            onClick={handleGeneratePDF}
-            title="Generate PDF for all open warehouses"
-          >
-            <Printer className="h-4 w-4" />
-          </Button>
-
-          <ACLGuard flag="canManageWarehouses">
-            <Button onClick={() => setIsCreateDialogOpen(true)} size="default">
-              <Plus className="h-4 w-4 mr-2" />
-              {t('warehouses.actions.create')}
+            {/* Print PDF Button */}
+            <Button 
+              variant="outline" 
+              size="icon" 
+              onClick={handleGeneratePDF}
+              title="Generate PDF for all open warehouses"
+            >
+              <Printer className="h-4 w-4" />
             </Button>
-          </ACLGuard>
+
+            <ACLGuard flag="canManageWarehouses">
+              <Button onClick={() => setIsCreateDialogOpen(true)} size="default">
+                <Plus className="h-4 w-4 mr-2" />
+                {t('warehouses.actions.create')}
+              </Button>
+            </ACLGuard>
+          </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Stats Bar */}
       <WarehousesStatsBar warehouses={warehouses} />
