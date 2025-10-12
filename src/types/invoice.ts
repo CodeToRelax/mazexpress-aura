@@ -83,6 +83,8 @@ export interface InvoiceFilters {
   to?: string;
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
+  search?: string;
+  userId?: string;
 }
 
 export interface PaymentAllocation {

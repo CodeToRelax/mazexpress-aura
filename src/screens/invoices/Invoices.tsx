@@ -1,192 +1,424 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
-import { Card, CardContent } from '@/components/ui/card';
+import { motion } from 'framer-motion';
+import { Receipt, RotateCw, Download, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { getInvoices } from '@/utilities/api/invoice.api';
+import { toast } from '@/hooks/use-toast';
 import { PageLoader } from '@/components/feedback/PageLoader';
 import { InlineError } from '@/components/feedback/InlineError';
-import type { InvoiceFilters } from '@/types/invoice';
-import { format } from 'date-fns';
+import type { InvoiceFilters, Invoice } from '@/types/invoice';
+import { getInvoices } from '@/utilities/api/invoice.api';
+import { InvoicesTable } from '@/components/invoices/InvoicesTable';
+import { InvoicesFilters } from './InvoicesFilters';
+import { InvoicesPagination } from './InvoicesPagination';
+import { InvoicesStatsBar } from './InvoicesStatsBar';
+import { InvoicesColumnVisibilityToggle } from './InvoicesColumnVisibilityToggle';
+import { GenerateInvoiceDialog } from './GenerateInvoiceDialog';
+import { MarkAsPaidDialog } from './MarkAsPaidDialog';
+import { CancelInvoiceDialog } from './CancelInvoiceDialog';
+import { UpdateStatusDialog } from './UpdateStatusDialog';
+import { exportInvoicesToCSV } from '@/utilities/helpers/invoiceExport';
+import { useACL } from '@/hooks/useACL';
+
+// localStorage keys
+const STORAGE_KEYS = {
+  VISIBLE_COLUMNS: 'invoices-visible-columns',
+  FILTERS: 'invoices-filters',
+  TABLE_LIMIT: 'invoices-table-limit',
+};
 
 export default function Invoices() {
   const { t, i18n } = useTranslation();
-  const navigate = useNavigate();
-  const [filters, setFilters] = useState<InvoiceFilters>({
-    page: 1,
-    limit: 20,
+  const { hasPermission } = useACL();
+  
+  // Initialize from localStorage
+  const [filters, setFilters] = useState<InvoiceFilters>(() => {
+    try {
+      const savedFilters = localStorage.getItem(STORAGE_KEYS.FILTERS);
+      const savedLimit = localStorage.getItem(STORAGE_KEYS.TABLE_LIMIT);
+      const parsedFilters = savedFilters ? JSON.parse(savedFilters) : {};
+      
+      return {
+        page: 1,
+        limit: savedLimit ? parseInt(savedLimit) : 20,
+        status: parsedFilters.status,
+        from: parsedFilters.from,
+        to: parsedFilters.to,
+      };
+    } catch {
+      return {
+        page: 1,
+        limit: 20,
+      };
+    }
   });
 
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['invoices', filters],
+  const [visibleColumns, setVisibleColumns] = useState<Set<string>>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.VISIBLE_COLUMNS);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return new Set(parsed);
+      }
+    } catch {}
+    return new Set(['user', 'dueDate', 'status', 'grossAmount', 'paidAmount', 'dueAmount']);
+  });
+
+  const [sortBy, setSortBy] = useState<string>('createdAt');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [showGenerateDialog, setShowGenerateDialog] = useState(false);
+  const [invoiceToMarkAsPaid, setInvoiceToMarkAsPaid] = useState<Invoice | null>(null);
+  const [invoiceToVoid, setInvoiceToVoid] = useState<Invoice | null>(null);
+  const [invoiceToUpdateStatus, setInvoiceToUpdateStatus] = useState<Invoice | null>(null);
+
+  const { data, isLoading, error, refetch } = useQuery({
+    queryKey: ['invoices', filters, i18n.language],
     queryFn: () => getInvoices(filters, i18n.language),
   });
 
-  const handleFilterChange = (key: keyof InvoiceFilters, value: any) => {
-    setFilters((prev) => ({ ...prev, [key]: value, page: 1 }));
+  // Calculate stats from invoices
+  const invoiceStats = {
+    totalInvoices: data?.totalDocs || 0,
+    draftCount: data?.docs?.filter(i => i.status === 'DRAFT').length || 0,
+    sentCount: data?.docs?.filter(i => i.status === 'SENT').length || 0,
+    pendingCount: data?.docs?.filter(i => ['PENDING', 'OVERDUE'].includes(i.status)).length || 0,
+    partiallyPaidCount: data?.docs?.filter(i => i.status === 'PARTIALLY_PAID').length || 0,
+    paidCount: data?.docs?.filter(i => i.status === 'PAID').length || 0,
+    totalGrossAmount: data?.docs?.reduce((sum, i) => sum + i.totals.gross, 0) || 0,
+    totalDueAmount: data?.docs?.reduce((sum, i) => sum + i.totals.due, 0) || 0,
   };
 
-  const handlePageChange = (newPage: number) => {
-    setFilters((prev) => ({ ...prev, page: newPage }));
+  // Persist filters to localStorage
+  useEffect(() => {
+    try {
+      const { page, limit, ...persistableFilters } = filters;
+      localStorage.setItem(STORAGE_KEYS.FILTERS, JSON.stringify(persistableFilters));
+      if (limit) {
+        localStorage.setItem(STORAGE_KEYS.TABLE_LIMIT, limit.toString());
+      }
+    } catch (err) {
+      console.error('Failed to persist filters:', err);
+    }
+  }, [filters]);
+
+  // Persist column visibility to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEYS.VISIBLE_COLUMNS, JSON.stringify(Array.from(visibleColumns)));
+    } catch (err) {
+      console.error('Failed to persist column visibility:', err);
+    }
+  }, [visibleColumns]);
+
+  const handleFiltersChange = (newFilters: InvoiceFilters) => {
+    setFilters(newFilters);
   };
 
-  const formatCurrency = (amountInCents: number) => {
-    const amountInLYD = amountInCents / 100;
-    return new Intl.NumberFormat('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(amountInLYD);
+  const handleClearFilters = () => {
+    setFilters({
+      page: 1,
+      limit: filters.limit,
+    });
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'PAID':
-        return 'bg-green-500/10 text-green-500 border-green-500/20';
-      case 'PENDING':
-        return 'bg-blue-500/10 text-blue-500 border-blue-500/20';
-      case 'SENT':
-        return 'bg-cyan-500/10 text-cyan-500 border-cyan-500/20';
-      case 'PARTIALLY_PAID':
-        return 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20';
-      case 'OVERDUE':
-        return 'bg-red-500/10 text-red-500 border-red-500/20';
-      case 'VOID':
-        return 'bg-muted text-muted-foreground border-muted';
-      case 'REFUNDED':
-        return 'bg-purple-500/10 text-purple-500 border-purple-500/20';
-      case 'DISPUTED':
-        return 'bg-orange-500/10 text-orange-500 border-orange-500/20';
-      case 'DRAFT':
-        return 'bg-gray-500/10 text-gray-500 border-gray-500/20';
-      case 'FAILED':
-        return 'bg-red-500/10 text-red-500 border-red-500/20';
-      default:
-        return 'bg-muted text-muted-foreground border-muted';
+  const handleStatClick = (filterType: 'all' | 'draft' | 'sent' | 'pending' | 'partiallyPaid' | 'paid') => {
+    switch (filterType) {
+      case 'all':
+        setFilters({
+          page: 1,
+          limit: filters.limit,
+        });
+        break;
+      case 'draft':
+        setFilters({
+          ...filters,
+          status: 'DRAFT',
+          page: 1,
+        });
+        break;
+      case 'sent':
+        setFilters({
+          ...filters,
+          status: 'SENT',
+          page: 1,
+        });
+        break;
+      case 'pending':
+        setFilters({
+          ...filters,
+          status: 'PENDING',
+          page: 1,
+        });
+        break;
+      case 'partiallyPaid':
+        setFilters({
+          ...filters,
+          status: 'PARTIALLY_PAID',
+          page: 1,
+        });
+        break;
+      case 'paid':
+        setFilters({
+          ...filters,
+          status: 'PAID',
+          page: 1,
+        });
+        break;
     }
   };
+
+  const handlePageChange = (page: number) => {
+    setFilters(prev => ({ ...prev, page }));
+  };
+
+  const handleLimitChange = (limit: number) => {
+    setFilters(prev => ({ ...prev, limit, page: 1 }));
+  };
+
+  const handleToggleColumn = (column: string) => {
+    setVisibleColumns(prev => {
+      const next = new Set(prev);
+      if (next.has(column)) {
+        next.delete(column);
+      } else {
+        next.add(column);
+      }
+      return next;
+    });
+  };
+
+  const handleResetColumns = () => {
+    setVisibleColumns(new Set(['user', 'dueDate', 'status', 'grossAmount', 'paidAmount', 'dueAmount']));
+  };
+
+  const handleSort = (column: string) => {
+    if (sortBy === column) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortBy(column);
+      setSortOrder('asc');
+    }
+  };
+
+  const handleExportCSV = async () => {
+    try {
+      toast({
+        title: t('invoice.messages.exportingCSV'),
+      });
+      await exportInvoicesToCSV(filters, i18n.language);
+      toast({
+        title: t('invoice.messages.exportSuccess'),
+      });
+    } catch (error) {
+      toast({
+        title: t('invoice.messages.exportError'),
+        description: error instanceof Error ? error.message : 'Failed to export',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleMarkAsPaidSuccess = () => {
+    setInvoiceToMarkAsPaid(null);
+    refetch();
+    toast({
+      title: t('invoice.messages.markAsPaidSuccess'),
+    });
+  };
+
+  const handleVoidSuccess = () => {
+    setInvoiceToVoid(null);
+    refetch();
+    toast({
+      title: t('invoice.messages.voidSuccess'),
+    });
+  };
+
+  const handleUpdateStatusSuccess = () => {
+    setInvoiceToUpdateStatus(null);
+    refetch();
+    toast({
+      title: t('invoice.messages.updateSuccess'),
+    });
+  };
+
+  const handleGenerateSuccess = () => {
+    setShowGenerateDialog(false);
+    refetch();
+    toast({
+      title: t('invoice.messages.generateSuccess'),
+    });
+  };
+
+  const activeFilterCount = Object.entries(filters).filter(
+    ([key, value]) => 
+      value !== undefined && 
+      value !== null && 
+      value !== '' && 
+      !['page', 'limit'].includes(key)
+  ).length;
+
+  const canManageInvoices = hasPermission('invoices', 'update');
 
   if (isLoading) return <PageLoader />;
   if (error) return <InlineError message={error.message} />;
 
   const invoices = data?.docs || [];
   const pagination = {
-    page: data?.page || 1,
+    currentPage: data?.page || 1,
     totalPages: data?.totalPages || 1,
+    totalDocs: data?.totalDocs || 0,
+    limit: data?.limit || 20,
+    hasNextPage: data?.hasNextPage || false,
+    hasPrevPage: data?.hasPrevPage || false,
   };
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold">{t('invoice.title')}</h1>
-
-      <Card>
-        <CardContent className="pt-6">
-          <div className="grid gap-4 md:grid-cols-3 mb-6">
-            <Select
-              value={filters.status || 'all'}
-              onValueChange={(value) => handleFilterChange('status', value === 'all' ? undefined : value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder={t('invoice.filter.status')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t('invoice.filter.allStatuses')}</SelectItem>
-                <SelectItem value="DRAFT">Draft</SelectItem>
-                <SelectItem value="SENT">Sent</SelectItem>
-                <SelectItem value="PENDING">Pending</SelectItem>
-                <SelectItem value="PARTIALLY_PAID">Partially Paid</SelectItem>
-                <SelectItem value="PAID">Paid</SelectItem>
-                <SelectItem value="OVERDUE">Overdue</SelectItem>
-                <SelectItem value="REFUNDED">Refunded</SelectItem>
-                <SelectItem value="DISPUTED">Disputed</SelectItem>
-                <SelectItem value="VOID">Void</SelectItem>
-                <SelectItem value="FAILED">Failed</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Input
-              type="date"
-              placeholder={t('invoice.filter.dateFrom')}
-              value={filters.from || ''}
-              onChange={(e) => handleFilterChange('from', e.target.value)}
-            />
-
-            <Input
-              type="date"
-              placeholder={t('invoice.filter.dateTo')}
-              value={filters.to || ''}
-              onChange={(e) => handleFilterChange('to', e.target.value)}
-            />
-          </div>
-
-          <div className="space-y-3">
-            {invoices.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-8">
-                {t('invoice.noInvoices')}
-              </p>
-            ) : (
-              invoices.map((invoice) => (
-                <Card
-                  key={invoice._id}
-                  className="cursor-pointer hover:bg-accent/50 transition-colors"
-                  onClick={() => navigate(`/invoices/${invoice._id}`)}
-                >
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <span className="font-semibold">{invoice.invoiceNumber}</span>
-                          <Badge className={getStatusColor(invoice.status)}>
-                            {t(`invoice.status.${invoice.status.toLowerCase()}`)}
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                          {t('invoice.dueDate')}: {format(new Date(invoice.dueDate), 'MMM dd, yyyy')}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-lg font-bold">{formatCurrency(invoice.totals.gross)} LYD</p>
-                        {invoice.totals.due > 0 && (
-                          <p className="text-sm text-red-500">
-                            {t('invoice.due')}: {formatCurrency(invoice.totals.due)} LYD
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
-            )}
-          </div>
-
-          {pagination.totalPages > 1 && (
-            <div className="flex justify-center gap-2 mt-6">
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={pagination.page === 1}
-                onClick={() => handlePageChange(pagination.page - 1)}
-              >
-                {t('common.previous')}
-              </Button>
-              <span className="flex items-center px-4 text-sm">
-                {t('common.pageInfo', { current: pagination.page, total: pagination.totalPages })}
-              </span>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={pagination.page === pagination.totalPages}
-                onClick={() => handlePageChange(pagination.page + 1)}
-              >
-                {t('common.next')}
-              </Button>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="relative z-10"
+      >
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">
+              <Receipt className="h-6 w-6 text-primary" />
             </div>
+            <div>
+              <h1 className="text-3xl font-bold text-foreground">
+                {t('invoice.title')}
+              </h1>
+              <p className="text-muted-foreground">
+                {t('invoice.myInvoices')}
+              </p>
+            </div>
+          </div>
+          {canManageInvoices && (
+            <Button onClick={() => setShowGenerateDialog(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              {t('invoice.actions.generate')}
+            </Button>
           )}
-        </CardContent>
-      </Card>
+        </div>
+
+        {/* Stats Bar */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.15 }}
+          className="mb-6"
+        >
+          <InvoicesStatsBar stats={invoiceStats} onStatClick={handleStatClick} />
+        </motion.div>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="space-y-4"
+      >
+        <div className="flex items-center gap-2 relative z-20">
+          <div className="flex-1">
+            <InvoicesFilters
+              filters={filters}
+              onFiltersChange={handleFiltersChange}
+              onClearFilters={handleClearFilters}
+              activeFilterCount={activeFilterCount}
+            />
+          </div>
+          <InvoicesColumnVisibilityToggle
+            visibleColumns={visibleColumns}
+            onToggleColumn={handleToggleColumn}
+            onReset={handleResetColumns}
+          />
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            onClick={handleExportCSV}
+            title={t('invoice.actions.exportCSV')}
+          >
+            <Download className="h-4 w-4" />
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            onClick={() => refetch()}
+            title={t('invoice.actions.refresh')}
+          >
+            <RotateCw className="h-4 w-4" />
+          </Button>
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3, delay: 0.3 }}
+        >
+          <InvoicesTable
+            invoices={invoices}
+            onMarkAsPaid={canManageInvoices ? setInvoiceToMarkAsPaid : undefined}
+            onUpdateStatus={canManageInvoices ? setInvoiceToUpdateStatus : undefined}
+            onVoid={canManageInvoices ? setInvoiceToVoid : undefined}
+            isAdmin={canManageInvoices}
+            visibleColumns={visibleColumns}
+            sortBy={sortBy}
+            sortOrder={sortOrder}
+            onSort={handleSort}
+          />
+        </motion.div>
+
+        {pagination.totalPages > 1 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.4 }}
+          >
+            <InvoicesPagination
+              currentPage={pagination.currentPage}
+              totalPages={pagination.totalPages}
+              totalDocs={pagination.totalDocs}
+              limit={pagination.limit}
+              hasNextPage={pagination.hasNextPage}
+              hasPrevPage={pagination.hasPrevPage}
+              onPageChange={handlePageChange}
+              onLimitChange={handleLimitChange}
+            />
+          </motion.div>
+        )}
+      </motion.div>
+
+      {invoiceToMarkAsPaid && (
+        <MarkAsPaidDialog
+          invoice={invoiceToMarkAsPaid}
+          open={!!invoiceToMarkAsPaid}
+          onOpenChange={(open) => !open && setInvoiceToMarkAsPaid(null)}
+          onSuccess={handleMarkAsPaidSuccess}
+        />
+      )}
+
+      {invoiceToVoid && (
+        <CancelInvoiceDialog
+          invoice={invoiceToVoid}
+          open={!!invoiceToVoid}
+          onOpenChange={(open) => !open && setInvoiceToVoid(null)}
+          onSuccess={handleVoidSuccess}
+        />
+      )}
+
+      {invoiceToUpdateStatus && (
+        <UpdateStatusDialog
+          invoice={invoiceToUpdateStatus}
+          open={!!invoiceToUpdateStatus}
+          onOpenChange={(open) => !open && setInvoiceToUpdateStatus(null)}
+          onSuccess={handleUpdateStatusSuccess}
+        />
+      )}
     </div>
   );
 }
