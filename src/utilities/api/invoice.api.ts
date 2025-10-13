@@ -15,7 +15,6 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000
  * Get authorization headers with JWT token
  */
 async function getAuthHeaders(locale?: string): Promise<HeadersInit> {
-  // Get Firebase auth token
   const auth = getFirebaseAuth();
   const token = await auth.currentUser?.getIdToken();
   
@@ -69,7 +68,6 @@ export async function getAllInvoices(
 }> {
   const headers = await getAuthHeaders(locale);
   
-  // Build query string
   const params = new URLSearchParams();
   if (filters.page) params.append('page', filters.page.toString());
   if (filters.limit) params.append('limit', filters.limit.toString());
@@ -104,7 +102,6 @@ export async function getInvoices(
 }> {
   const headers = await getAuthHeaders(locale);
   
-  // Build query string
   const params = new URLSearchParams();
   if (filters.page) params.append('page', filters.page.toString());
   if (filters.limit) params.append('limit', filters.limit.toString());
@@ -138,7 +135,6 @@ export async function getUserInvoices(
 }> {
   const headers = await getAuthHeaders(locale);
   
-  // Build query string
   const params = new URLSearchParams();
   if (filters.page) params.append('page', filters.page.toString());
   if (filters.limit) params.append('limit', filters.limit.toString());
@@ -215,4 +211,29 @@ export async function updateInvoiceStatus(
     body: JSON.stringify(data),
   });
   return handleResponse<Invoice>(response);
+}
+
+export async function deleteInvoice(
+  invoiceId: string,
+  locale?: string
+): Promise<void> {
+  const headers = await getAuthHeaders(locale);
+  const response = await fetch(`${API_BASE_URL}/api/invoice/${invoiceId}`, {
+    method: 'DELETE',
+    headers,
+  });
+  
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({
+      message: 'Failed to delete invoice',
+    }));
+    throw new Error(error.message);
+  }
+}
+
+export async function cancelInvoice(
+  invoiceId: string,
+  locale?: string
+): Promise<Invoice> {
+  return updateInvoiceStatus(invoiceId, { status: 'VOID' }, locale);
 }

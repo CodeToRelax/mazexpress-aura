@@ -18,6 +18,7 @@ interface ColumnVisibilityToggleProps {
 
 const TOGGLEABLE_COLUMNS = [
   { key: 'user', labelKey: 'invoice.table.user' },
+  { key: 'shippingNumber', labelKey: 'invoice.table.shippingNumber' },
   { key: 'issueDate', labelKey: 'invoice.table.issueDate' },
   { key: 'dueDate', labelKey: 'invoice.table.dueDate' },
   { key: 'status', labelKey: 'invoice.table.status' },
@@ -26,6 +27,7 @@ const TOGGLEABLE_COLUMNS = [
   { key: 'grossAmount', labelKey: 'invoice.table.grossAmount' },
   { key: 'paidAmount', labelKey: 'invoice.table.paidAmount' },
   { key: 'dueAmount', labelKey: 'invoice.table.dueAmount' },
+  { key: 'itemsCount', labelKey: 'invoice.table.itemsCount' },
 ];
 
 export function InvoicesColumnVisibilityToggle({

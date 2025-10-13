@@ -689,6 +689,8 @@
     "table-grossAmount": "المبلغ الإجمالي",
     "table-paidAmount": "المبلغ المدفوع",
     "table-dueAmount": "المبلغ المستحق",
+    "table-shippingNumber": "رقم الشحن",
+    "table-itemsCount": "العناصر",
     "empty-title": "لا توجد فواتير",
     "empty-description": "لا توجد فواتير مطابقة للفلاتر الحالية",
     "empty-noData": "لا توجد فواتير بعد",
