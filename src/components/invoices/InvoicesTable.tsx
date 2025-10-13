@@ -120,7 +120,7 @@ export function InvoicesTable({
   }
 
   return (
-    <div className="rounded-md border">
+    <div className="glass-card rounded-2xl overflow-hidden">
       <Table>
         <TableHeader>
           <TableRow>
