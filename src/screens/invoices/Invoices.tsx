@@ -38,9 +38,11 @@ export default function Invoices() {
     totalDocs: 0,
     limit: 10,
     totalPages: 0,
-    page: 1,
+    currentPage: 1,
     hasPrevPage: false,
     hasNextPage: false,
+    nextPage: null as number | null,
+    prevPage: null as number | null,
   });
   
   // Initialize from localStorage
@@ -106,9 +108,11 @@ export default function Invoices() {
         totalDocs: response.totalDocs,
         limit: response.limit,
         totalPages: response.totalPages,
-        page: response.page,
+        currentPage: response.page,
         hasPrevPage: response.hasPrevPage,
         hasNextPage: response.hasNextPage,
+        nextPage: response.hasNextPage ? response.page + 1 : null,
+        prevPage: response.hasPrevPage ? response.page - 1 : null,
       });
     } catch (error) {
       toast({

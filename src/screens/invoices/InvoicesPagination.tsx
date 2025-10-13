@@ -14,9 +14,11 @@ interface InvoicesPaginationProps {
     totalDocs: number;
     limit: number;
     totalPages: number;
-    page: number;
+    currentPage: number;
     hasPrevPage: boolean;
     hasNextPage: boolean;
+    nextPage: number | null;
+    prevPage: number | null;
   };
   onPageChange: (page: number) => void;
   onLimitChange: (limit: number) => void;
@@ -29,38 +31,34 @@ export function InvoicesPagination({
 }: InvoicesPaginationProps) {
   const { t } = useTranslation();
 
-  const startItem = (pagination.page - 1) * pagination.limit + 1;
-  const endItem = Math.min(pagination.page * pagination.limit, pagination.totalDocs);
+  const { currentPage, totalPages, totalDocs, limit, hasNextPage, hasPrevPage } = pagination;
+  
+  const startIndex = (currentPage - 1) * limit + 1;
+  const endIndex = Math.min(currentPage * limit, totalDocs);
 
   const getPageNumbers = () => {
     const pages: (number | string)[] = [];
     const maxVisible = 5;
 
-    if (pagination.totalPages <= maxVisible) {
-      for (let i = 1; i <= pagination.totalPages; i++) {
+    if (totalPages <= maxVisible) {
+      for (let i = 1; i <= totalPages; i++) {
         pages.push(i);
       }
     } else {
-      if (pagination.page <= 3) {
-        for (let i = 1; i <= 4; i++) {
-          pages.push(i);
-        }
+      if (currentPage <= 3) {
+        for (let i = 1; i <= 4; i++) pages.push(i);
         pages.push('...');
-        pages.push(pagination.totalPages);
-      } else if (pagination.page >= pagination.totalPages - 2) {
+        pages.push(totalPages);
+      } else if (currentPage >= totalPages - 2) {
         pages.push(1);
         pages.push('...');
-        for (let i = pagination.totalPages - 3; i <= pagination.totalPages; i++) {
-          pages.push(i);
-        }
+        for (let i = totalPages - 3; i <= totalPages; i++) pages.push(i);
       } else {
         pages.push(1);
         pages.push('...');
-        pages.push(pagination.page - 1);
-        pages.push(pagination.page);
-        pages.push(pagination.page + 1);
+        for (let i = currentPage - 1; i <= currentPage + 1; i++) pages.push(i);
         pages.push('...');
-        pages.push(pagination.totalPages);
+        pages.push(totalPages);
       }
     }
 
@@ -68,66 +66,65 @@ export function InvoicesPagination({
   };
 
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6">
+    <div className="flex items-center justify-between bg-card px-6 py-4 rounded-2xl shadow-sm border relative z-20">
       <div className="flex items-center gap-4">
-        <p className="text-sm text-muted-foreground">
-          {t('common.showing')} {startItem}-{endItem} {t('common.of')} {pagination.totalDocs}
-        </p>
-        <div className="flex items-center gap-2">
-          <label className="text-sm text-muted-foreground">{t('common.perPage')}:</label>
-          <Select value={pagination.limit.toString()} onValueChange={(value) => onLimitChange(parseInt(value))}>
-            <SelectTrigger className="w-20">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="10">10</SelectItem>
-              <SelectItem value="20">20</SelectItem>
-              <SelectItem value="50">50</SelectItem>
-              <SelectItem value="100">100</SelectItem>
-            </SelectContent>
-          </Select>
+        <div className="text-sm text-muted-foreground">
+          {t('common.showing')} {startIndex}-{endIndex} {t('common.of')} {totalDocs}
         </div>
+        
+        <Select
+          value={String(limit)}
+          onValueChange={(value) => onLimitChange(Number(value))}
+        >
+          <SelectTrigger className="w-[100px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="10">10 / page</SelectItem>
+            <SelectItem value="20">20 / page</SelectItem>
+            <SelectItem value="50">50 / page</SelectItem>
+            <SelectItem value="100">100 / page</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="flex items-center gap-2">
         <Button
           variant="outline"
-          size="sm"
-          onClick={() => onPageChange(pagination.page - 1)}
-          disabled={!pagination.hasPrevPage}
+          size="icon"
+          onClick={() => onPageChange(currentPage - 1)}
+          disabled={!hasPrevPage}
+          className="cursor-pointer"
         >
-          <ChevronLeft className="h-4 w-4 mr-1" />
-          {t('common.previous')}
+          <ChevronLeft className="h-4 w-4" />
         </Button>
 
-        <div className="flex items-center gap-1">
-          {getPageNumbers().map((page, index) => (
-            typeof page === 'number' ? (
-              <Button
-                key={index}
-                variant={page === pagination.page ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => onPageChange(page)}
-                className="w-10"
-              >
-                {page}
-              </Button>
-            ) : (
-              <span key={index} className="px-2 text-muted-foreground">
-                {page}
-              </span>
-            )
-          ))}
-        </div>
+        {getPageNumbers().map((page, index) => (
+          page === '...' ? (
+            <span key={`ellipsis-${index}`} className="px-2 text-muted-foreground">
+              ...
+            </span>
+          ) : (
+            <Button
+              key={page}
+              variant={page === currentPage ? 'default' : 'outline'}
+              size="icon"
+              onClick={() => onPageChange(page as number)}
+              className="cursor-pointer"
+            >
+              {page}
+            </Button>
+          )
+        ))}
 
         <Button
           variant="outline"
-          size="sm"
-          onClick={() => onPageChange(pagination.page + 1)}
-          disabled={!pagination.hasNextPage}
+          size="icon"
+          onClick={() => onPageChange(currentPage + 1)}
+          disabled={!hasNextPage}
+          className="cursor-pointer"
         >
-          {t('common.next')}
-          <ChevronRight className="h-4 w-4 ml-1" />
+          <ChevronRight className="h-4 w-4" />
         </Button>
       </div>
     </div>
