@@ -19,7 +19,6 @@ import { toast } from '@/hooks/use-toast';
 import { generateInvoice } from '@/utilities/api/invoice.api';
 import { UserSearchCombobox } from '@/components/invoices/UserSearchCombobox';
 import type { GenerateInvoiceRequest } from '@/types/invoice';
-import type { User } from '@/types/user';
 
 interface GenerateInvoiceDialogProps {
   open: boolean;
@@ -49,7 +48,6 @@ export function GenerateInvoiceDialog({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [mode, setMode] = useState<'filter' | 'specific'>(shipmentIds ? 'specific' : 'filter');
   const [selectedUserId, setSelectedUserId] = useState<string>(userId || '');
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<string>('ready for pick up');
   const [dateFrom, setDateFrom] = useState<string>('');
   const [dateTo, setDateTo] = useState<string>('');
@@ -143,18 +141,10 @@ export function GenerateInvoiceDialog({
               </Label>
               <UserSearchCombobox
                 value={selectedUserId}
-                onChange={(userId, user) => {
-                  setSelectedUserId(userId);
-                  setSelectedUser(user || null);
-                }}
+                onChange={(userId) => setSelectedUserId(userId)}
                 disabled={isSubmitting}
                 placeholder={t('invoice.generate-selectCustomerPlaceholder')}
               />
-              {selectedUser && (
-                <p className="text-sm text-muted-foreground">
-                  {selectedUser.email} • {selectedUser.uniqueShippingNumber}
-                </p>
-              )}
             </div>
           )}
 
