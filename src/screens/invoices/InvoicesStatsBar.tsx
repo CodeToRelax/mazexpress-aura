@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { Receipt, FileText, Send, Clock, DollarSign, CheckCircle, TrendingUp } from 'lucide-react';
+import { Receipt, FileText, Send, Clock, CheckCircle, TrendingUp } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { formatLYD } from '@/utilities/helpers/currencyHelpers';
 
@@ -9,7 +9,6 @@ interface InvoiceStats {
   draftCount: number;
   sentCount: number;
   pendingCount: number;
-  partiallyPaidCount: number;
   paidCount: number;
   totalGrossAmount: number;
   totalDueAmount: number;
@@ -17,7 +16,7 @@ interface InvoiceStats {
 
 interface InvoicesStatsBarProps {
   stats: InvoiceStats;
-  onStatClick: (filterType: 'all' | 'draft' | 'sent' | 'pending' | 'partiallyPaid' | 'paid') => void;
+  onStatClick: (filterType: 'all' | 'draft' | 'sent' | 'pending' | 'paid') => void;
 }
 
 export function InvoicesStatsBar({ stats, onStatClick }: InvoicesStatsBarProps) {
@@ -57,14 +56,6 @@ export function InvoicesStatsBar({ stats, onStatClick }: InvoicesStatsBarProps) 
       filterType: 'pending' as const,
     },
     {
-      label: t('invoice.stats-partiallyPaid'),
-      value: stats.partiallyPaidCount,
-      icon: DollarSign,
-      color: 'text-orange-600 dark:text-orange-400',
-      bgColor: 'bg-orange-100 dark:bg-orange-900/30',
-      filterType: 'partiallyPaid' as const,
-    },
-    {
       label: t('invoice.stats-paid'),
       value: stats.paidCount,
       icon: CheckCircle,
@@ -84,7 +75,7 @@ export function InvoicesStatsBar({ stats, onStatClick }: InvoicesStatsBarProps) 
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
       {statCards.map((stat, index) => {
         const Icon = stat.icon;
         return (

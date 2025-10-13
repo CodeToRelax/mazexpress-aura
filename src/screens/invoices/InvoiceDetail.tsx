@@ -77,9 +77,9 @@ export default function InvoiceDetail() {
   if (error) return <InlineError message={error.message} />;
   if (!invoice) return <InlineError message={t('invoice.notFound')} />;
 
-  const canPay = invoice.status === 'PENDING' || invoice.status === 'SENT' || invoice.status === 'PARTIALLY_PAID' || invoice.status === 'OVERDUE';
+  const canPay = invoice.status === 'PENDING' || invoice.status === 'SENT' || invoice.status === 'OVERDUE';
   const canManageInvoices = hasFlag('canManageInvoices') || acl?.userType === 'admin';
-  const canMarkAsPaid = canManageInvoices && (invoice.status === 'PENDING' || invoice.status === 'SENT' || invoice.status === 'PARTIALLY_PAID' || invoice.status === 'OVERDUE');
+  const canMarkAsPaid = canManageInvoices && (invoice.status === 'PENDING' || invoice.status === 'SENT' || invoice.status === 'OVERDUE');
   const canCancel = canManageInvoices && invoice.status !== 'VOID' && invoice.status !== 'PAID';
   
   const handlePrint = () => {

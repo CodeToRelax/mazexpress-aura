@@ -37,13 +37,10 @@ export const updateInvoiceStatusSchema = z.object({
     'DRAFT', 
     'SENT', 
     'PENDING', 
-    'PARTIALLY_PAID', 
     'PAID', 
     'OVERDUE', 
-    'REFUNDED', 
-    'DISPUTED', 
-    'VOID', 
-    'FAILED'
+    'CANCELLED',
+    'VOID'
   ], {
     errorMap: () => ({ message: 'Invalid status' }),
   }),
@@ -56,13 +53,10 @@ export const invoiceFiltersSchema = z.object({
     'DRAFT', 
     'SENT', 
     'PENDING', 
-    'PARTIALLY_PAID', 
     'PAID', 
     'OVERDUE', 
-    'REFUNDED', 
-    'DISPUTED', 
-    'VOID', 
-    'FAILED'
+    'CANCELLED',
+    'VOID'
   ]).optional(),
   from: z.string().optional(),
   to: z.string().optional(),

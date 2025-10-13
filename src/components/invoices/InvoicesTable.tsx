@@ -71,13 +71,10 @@ export function InvoicesTable({
       case 'PAID': return 'default';
       case 'SENT': return 'outline';
       case 'PENDING': return 'secondary';
-      case 'PARTIALLY_PAID': return 'secondary';
       case 'OVERDUE': return 'destructive';
       case 'DRAFT': return 'outline';
+      case 'CANCELLED': return 'destructive';
       case 'VOID': return 'destructive';
-      case 'FAILED': return 'destructive';
-      case 'REFUNDED': return 'outline';
-      case 'DISPUTED': return 'destructive';
       default: return 'outline';
     }
   };

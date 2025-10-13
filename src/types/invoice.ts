@@ -7,13 +7,10 @@ export type InvoiceStatus =
   | 'DRAFT' 
   | 'SENT' 
   | 'PENDING' 
-  | 'PARTIALLY_PAID' 
   | 'PAID' 
   | 'OVERDUE' 
-  | 'REFUNDED' 
-  | 'DISPUTED' 
-  | 'VOID' 
-  | 'FAILED';
+  | 'CANCELLED'
+  | 'VOID';
 
 export type PaymentSource = 
   | 'WALLET' 
@@ -81,8 +78,6 @@ export interface InvoiceFilters {
   status?: InvoiceStatus;
   from?: string;
   to?: string;
-  sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
   search?: string;
   userId?: string;
 }

@@ -55,8 +55,6 @@ export default function Invoices() {
       return {
         page: 1,
         limit: savedLimit ? parseInt(savedLimit) : 10,
-        sortBy: parsedFilters.sortBy || 'createdAt',
-        sortOrder: parsedFilters.sortOrder || 'desc',
         status: parsedFilters.status,
         from: parsedFilters.from,
         to: parsedFilters.to,
@@ -65,8 +63,6 @@ export default function Invoices() {
       return {
         page: 1,
         limit: 10,
-        sortBy: 'createdAt',
-        sortOrder: 'desc',
       };
     }
   });
@@ -93,7 +89,6 @@ export default function Invoices() {
     draftCount: invoices.filter(i => i.status === 'DRAFT').length,
     sentCount: invoices.filter(i => i.status === 'SENT').length,
     pendingCount: invoices.filter(i => ['PENDING', 'OVERDUE'].includes(i.status)).length,
-    partiallyPaidCount: invoices.filter(i => i.status === 'PARTIALLY_PAID').length,
     paidCount: invoices.filter(i => i.status === 'PAID').length,
     totalGrossAmount: invoices.reduce((sum, i) => sum + i.totals.gross, 0),
     totalDueAmount: invoices.reduce((sum, i) => sum + i.totals.due, 0),
@@ -159,8 +154,6 @@ export default function Invoices() {
     setFilters({
       page: 1,
       limit: filters.limit,
-      sortBy: 'createdAt',
-      sortOrder: 'desc',
     });
   };
 
@@ -173,8 +166,6 @@ export default function Invoices() {
       setFilters({ ...filters, status: 'SENT', page: 1 });
     } else if (filterType === 'pending') {
       setFilters({ ...filters, status: 'PENDING', page: 1 });
-    } else if (filterType === 'partiallyPaid') {
-      setFilters({ ...filters, status: 'PARTIALLY_PAID', page: 1 });
     } else if (filterType === 'paid') {
       setFilters({ ...filters, status: 'PAID', page: 1 });
     }
@@ -204,32 +195,6 @@ export default function Invoices() {
     setVisibleColumns(new Set(['user', 'issueDate', 'dueDate', 'status', 'grossAmount', 'paidAmount', 'dueAmount']));
   };
 
-  const handleSort = (column: string) => {
-    const columnMap: Record<string, string> = {
-      invoiceNumber: 'invoiceNumber',
-      issueDate: 'issueDate',
-      dueDate: 'dueDate',
-      status: 'status',
-      createdAt: 'createdAt',
-    };
-
-    const apiColumn = columnMap[column];
-    if (!apiColumn) return;
-
-    setFilters(prev => {
-      if (prev.sortBy === apiColumn) {
-        return {
-          ...prev,
-          sortOrder: prev.sortOrder === 'asc' ? 'desc' : 'asc',
-        };
-      }
-      return {
-        ...prev,
-        sortBy: apiColumn,
-        sortOrder: 'asc',
-      };
-    });
-  };
 
   const handleRowClick = (invoice: Invoice) => {
     navigate(`/invoices/${invoice._id}`);
@@ -271,7 +236,7 @@ export default function Invoices() {
       value !== undefined && 
       value !== null && 
       value !== '' && 
-      !['page', 'limit', 'sortBy', 'sortOrder'].includes(key)
+      !['page', 'limit'].includes(key)
   ).length;
 
   return (
@@ -374,9 +339,6 @@ export default function Invoices() {
             <InvoicesTable
               invoices={invoices}
               visibleColumns={visibleColumns}
-              sortBy={filters.sortBy}
-              sortOrder={filters.sortOrder}
-              onSort={handleSort}
               onRowClick={handleRowClick}
               onMarkAsPaid={handleMarkAsPaid}
               onUpdateStatus={handleUpdateStatus}

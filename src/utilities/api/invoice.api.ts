@@ -76,8 +76,6 @@ export async function getAllInvoices(
   if (filters.status) params.append('status', filters.status);
   if (filters.from) params.append('from', filters.from);
   if (filters.to) params.append('to', filters.to);
-  if (filters.sortBy) params.append('sortBy', filters.sortBy);
-  if (filters.sortOrder) params.append('sortOrder', filters.sortOrder);
   if (filters.search) params.append('search', filters.search);
   if (filters.userId) params.append('userId', filters.userId);
   
@@ -113,8 +111,6 @@ export async function getInvoices(
   if (filters.status) params.append('status', filters.status);
   if (filters.from) params.append('from', filters.from);
   if (filters.to) params.append('to', filters.to);
-  if (filters.sortBy) params.append('sortBy', filters.sortBy);
-  if (filters.sortOrder) params.append('sortOrder', filters.sortOrder);
   
   const queryString = params.toString();
   const url = `${API_BASE_URL}/api/invoice/my-invoices${queryString ? `?${queryString}` : ''}`;
@@ -149,8 +145,6 @@ export async function getUserInvoices(
   if (filters.status) params.append('status', filters.status);
   if (filters.from) params.append('from', filters.from);
   if (filters.to) params.append('to', filters.to);
-  if (filters.sortBy) params.append('sortBy', filters.sortBy);
-  if (filters.sortOrder) params.append('sortOrder', filters.sortOrder);
   
   const queryString = params.toString();
   const url = `${API_BASE_URL}/api/invoice/user/${userId}${queryString ? `?${queryString}` : ''}`;

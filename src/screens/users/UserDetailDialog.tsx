@@ -125,9 +125,7 @@ export function UserDetailDialog({ user, open, onClose, onEdit }: UserDetailDial
       const response = await getUserInvoices(
         user._id,
         { 
-          limit: 10,
-          sortBy: 'createdAt',
-          sortOrder: 'desc'
+          limit: 10
         }
       );
       setInvoices(response.docs || []);
