@@ -87,7 +87,7 @@ export function UserSearchCombobox({
             </span>
           ) : (
             <span className="text-muted-foreground">
-              {placeholder || t('invoice.generateDialog.selectCustomerPlaceholder')}
+              {placeholder || t('invoice.generate-selectCustomerPlaceholder')}
             </span>
           )}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -96,7 +96,7 @@ export function UserSearchCombobox({
       <PopoverContent className="w-[400px] p-0 border-border z-50" align="start">
         <Command shouldFilter={false} className="bg-background">
           <CommandInput
-            placeholder={t('invoice.generateDialog.searchCustomerPlaceholder')}
+            placeholder={t('invoice.generate-searchCustomerPlaceholder')}
             value={searchQuery}
             onValueChange={setSearchQuery}
           />
@@ -110,13 +110,13 @@ export function UserSearchCombobox({
                 <div className="flex flex-col items-center gap-2 py-6">
                   <Search className="h-8 w-8 text-muted-foreground" />
                   <p className="text-sm text-muted-foreground">
-                    {t('invoice.generateDialog.startTyping')}
+                    {t('invoice.generate-startTyping')}
                   </p>
                 </div>
               </CommandEmpty>
             ) : customers.length === 0 ? (
               <CommandEmpty>
-                {t('invoice.generateDialog.noCustomersFound')}
+                {t('invoice.generate-noCustomersFound')}
               </CommandEmpty>
             ) : (
               <CommandGroup>

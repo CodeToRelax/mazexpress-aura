@@ -60,8 +60,8 @@ export function GenerateInvoiceDialog({
       queryClient.invalidateQueries({ queryKey: ['invoices'] });
       queryClient.invalidateQueries({ queryKey: ['shipments'] });
       toast({
-        title: t('invoice.messages.generateSuccess'),
-        description: t('invoice.messages.invoiceNumber', { number: invoice.invoiceNumber || 'DRAFT' }),
+        title: t('invoice.message-generateSuccess'),
+        description: t('invoice.message-invoiceNumber', { number: invoice.invoiceNumber || 'DRAFT' }),
         variant: 'default',
       });
       onSuccess?.();
@@ -69,7 +69,7 @@ export function GenerateInvoiceDialog({
     },
     onError: (error: Error) => {
       toast({
-        title: t('invoice.messages.error'),
+        title: t('invoice.message-error'),
         description: error.message,
         variant: 'destructive',
       });
@@ -85,7 +85,7 @@ export function GenerateInvoiceDialog({
     if (!targetUserId) {
       toast({
         title: t('common.error'),
-        description: t('invoice.messages.userRequired'),
+        description: t('invoice.message-userRequired'),
         variant: 'destructive',
       });
       return;
@@ -94,7 +94,7 @@ export function GenerateInvoiceDialog({
     if (mode === 'filter' && !selectedStatus) {
       toast({
         title: t('common.error'),
-        description: t('invoice.messages.statusRequired'),
+        description: t('invoice.message-statusRequired'),
         variant: 'destructive',
       });
       return;
@@ -120,10 +120,10 @@ export function GenerateInvoiceDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <FileText className="h-5 w-5" />
-            {t('invoice.generateDialog.title')}
+            {t('invoice.generate-title')}
           </DialogTitle>
           <DialogDescription>
-            {t('invoice.generateDialog.description')}
+            {t('invoice.generate-description')}
           </DialogDescription>
         </DialogHeader>
 
@@ -131,7 +131,7 @@ export function GenerateInvoiceDialog({
           <Alert>
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
-              {t('invoice.generateDialog.warning')}
+              {t('invoice.generate-warning')}
             </AlertDescription>
           </Alert>
 
@@ -139,7 +139,7 @@ export function GenerateInvoiceDialog({
           {!userId && (
             <div className="space-y-2">
               <Label htmlFor="customer">
-                {t('invoice.generateDialog.selectCustomer')} <span className="text-destructive">*</span>
+                {t('invoice.generate-selectCustomer')} <span className="text-destructive">*</span>
               </Label>
               <UserSearchCombobox
                 value={selectedUserId}
@@ -148,7 +148,7 @@ export function GenerateInvoiceDialog({
                   setSelectedUser(user || null);
                 }}
                 disabled={isSubmitting}
-                placeholder={t('invoice.generateDialog.selectCustomerPlaceholder')}
+                placeholder={t('invoice.generate-selectCustomerPlaceholder')}
               />
               {selectedUser && (
                 <p className="text-sm text-muted-foreground">
@@ -160,12 +160,12 @@ export function GenerateInvoiceDialog({
 
           {!shipmentIds && (
             <div className="space-y-3">
-              <Label>{t('invoice.generateDialog.mode.label')}</Label>
+              <Label>{t('invoice.generate-modeLabel')}</Label>
               <RadioGroup value={mode} onValueChange={(v) => setMode(v as 'filter' | 'specific')}>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="filter" id="filter" />
                   <Label htmlFor="filter" className="font-normal cursor-pointer">
-                    {t('invoice.generateDialog.mode.filter')}
+                    {t('invoice.generate-modeFilter')}
                   </Label>
                 </div>
               </RadioGroup>
@@ -175,10 +175,10 @@ export function GenerateInvoiceDialog({
           {mode === 'filter' ? (
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="status">{t('invoice.generateDialog.filters.status')}</Label>
+                <Label htmlFor="status">{t('invoice.generate-filterStatus')}</Label>
                 <Select value={selectedStatus} onValueChange={setSelectedStatus}>
                   <SelectTrigger id="status">
-                    <SelectValue placeholder={t('invoice.generateDialog.filters.statusPlaceholder')} />
+                    <SelectValue placeholder={t('invoice.generate-filterStatusPlaceholder')} />
                   </SelectTrigger>
                   <SelectContent>
                     {SHIPMENT_STATUSES.map((status) => (
@@ -192,7 +192,7 @@ export function GenerateInvoiceDialog({
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="dateFrom">{t('invoice.generateDialog.filters.dateFrom')}</Label>
+                  <Label htmlFor="dateFrom">{t('invoice.generate-filterDateFrom')}</Label>
                   <Input
                     id="dateFrom"
                     type="date"
@@ -201,7 +201,7 @@ export function GenerateInvoiceDialog({
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="dateTo">{t('invoice.generateDialog.filters.dateTo')}</Label>
+                  <Label htmlFor="dateTo">{t('invoice.generate-filterDateTo')}</Label>
                   <Input
                     id="dateTo"
                     type="date"
@@ -214,7 +214,7 @@ export function GenerateInvoiceDialog({
           ) : (
             <div className="bg-muted p-4 rounded-lg space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">{t('invoice.generateDialog.shipmentCount')}</span>
+                <span className="text-muted-foreground">{t('invoice.generate-shipmentCount')}</span>
                 <span className="font-medium">{shipmentIds?.length || 0}</span>
               </div>
             </div>
@@ -238,7 +238,7 @@ export function GenerateInvoiceDialog({
                 (mode === 'filter' && !selectedStatus)
               }
             >
-              {isSubmitting ? t('common.processing') : t('invoice.generateDialog.submit')}
+              {isSubmitting ? t('common.processing') : t('invoice.generate-submit')}
             </Button>
           </div>
         </div>

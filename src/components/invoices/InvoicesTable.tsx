@@ -113,8 +113,8 @@ export function InvoicesTable({
   if (invoices.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground">{t('invoice.empty.title')}</p>
-        <p className="text-sm text-muted-foreground mt-2">{t('invoice.empty.description')}</p>
+        <p className="text-muted-foreground">{t('invoice.empty-title')}</p>
+        <p className="text-sm text-muted-foreground mt-2">{t('invoice.empty-description')}</p>
       </div>
     );
   }
@@ -124,46 +124,46 @@ export function InvoicesTable({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[150px]">{t('invoice.table.invoiceNumber')}</TableHead>
+            <TableHead className="w-[150px]">{t('invoice.table-invoiceNumber')}</TableHead>
             {visibleColumns.has('user') && (
-              <TableHead className="min-w-[200px]">{t('invoice.table.user')}</TableHead>
+              <TableHead className="min-w-[200px]">{t('invoice.table-user')}</TableHead>
             )}
             {visibleColumns.has('issueDate') && (
               <TableHead>
-                {t('invoice.table.issueDate')}
+                {t('invoice.table-issueDate')}
                 {renderSortIcon('issueDate')}
               </TableHead>
             )}
             {visibleColumns.has('dueDate') && (
               <TableHead>
-                {t('invoice.table.dueDate')}
+                {t('invoice.table-dueDate')}
                 {renderSortIcon('dueDate')}
               </TableHead>
             )}
             {visibleColumns.has('status') && (
               <TableHead>
-                {t('invoice.table.status')}
+                {t('invoice.table-status')}
                 {renderSortIcon('status')}
               </TableHead>
             )}
             {visibleColumns.has('netAmount') && (
-              <TableHead className="text-right">{t('invoice.table.netAmount')}</TableHead>
+              <TableHead className="text-right">{t('invoice.table-netAmount')}</TableHead>
             )}
             {visibleColumns.has('taxAmount') && (
-              <TableHead className="text-right">{t('invoice.table.taxAmount')}</TableHead>
+              <TableHead className="text-right">{t('invoice.table-taxAmount')}</TableHead>
             )}
             {visibleColumns.has('grossAmount') && (
               <TableHead className="text-right">
-                {t('invoice.table.grossAmount')}
+                {t('invoice.table-grossAmount')}
                 {renderSortIcon('totals.gross')}
               </TableHead>
             )}
             {visibleColumns.has('paidAmount') && (
-              <TableHead className="text-right">{t('invoice.table.paidAmount')}</TableHead>
+              <TableHead className="text-right">{t('invoice.table-paidAmount')}</TableHead>
             )}
             {visibleColumns.has('dueAmount') && (
               <TableHead className="text-right">
-                {t('invoice.table.dueAmount')}
+                {t('invoice.table-dueAmount')}
                 {renderSortIcon('totals.due')}
               </TableHead>
             )}

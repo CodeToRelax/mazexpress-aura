@@ -25,7 +25,7 @@ export function InvoicesStatsBar({ stats, onStatClick }: InvoicesStatsBarProps) 
 
   const statCards = [
     {
-      label: t('invoice.stats.totalInvoices'),
+      label: t('invoice.stats-totalInvoices'),
       value: stats.totalInvoices,
       icon: Receipt,
       color: 'text-primary',
@@ -33,7 +33,7 @@ export function InvoicesStatsBar({ stats, onStatClick }: InvoicesStatsBarProps) 
       filterType: 'all' as const,
     },
     {
-      label: t('invoice.stats.draft'),
+      label: t('invoice.stats-draft'),
       value: stats.draftCount,
       icon: FileText,
       color: 'text-gray-600 dark:text-gray-400',
@@ -41,7 +41,7 @@ export function InvoicesStatsBar({ stats, onStatClick }: InvoicesStatsBarProps) 
       filterType: 'draft' as const,
     },
     {
-      label: t('invoice.stats.sent'),
+      label: t('invoice.stats-sent'),
       value: stats.sentCount,
       icon: Send,
       color: 'text-cyan-600 dark:text-cyan-400',
@@ -49,7 +49,7 @@ export function InvoicesStatsBar({ stats, onStatClick }: InvoicesStatsBarProps) 
       filterType: 'sent' as const,
     },
     {
-      label: t('invoice.stats.pending'),
+      label: t('invoice.stats-pending'),
       value: stats.pendingCount,
       icon: Clock,
       color: 'text-yellow-600 dark:text-yellow-400',
@@ -57,7 +57,7 @@ export function InvoicesStatsBar({ stats, onStatClick }: InvoicesStatsBarProps) 
       filterType: 'pending' as const,
     },
     {
-      label: t('invoice.stats.partiallyPaid'),
+      label: t('invoice.stats-partiallyPaid'),
       value: stats.partiallyPaidCount,
       icon: DollarSign,
       color: 'text-orange-600 dark:text-orange-400',
@@ -65,7 +65,7 @@ export function InvoicesStatsBar({ stats, onStatClick }: InvoicesStatsBarProps) 
       filterType: 'partiallyPaid' as const,
     },
     {
-      label: t('invoice.stats.paid'),
+      label: t('invoice.stats-paid'),
       value: stats.paidCount,
       icon: CheckCircle,
       color: 'text-green-600 dark:text-green-400',
@@ -73,7 +73,7 @@ export function InvoicesStatsBar({ stats, onStatClick }: InvoicesStatsBarProps) 
       filterType: 'paid' as const,
     },
     {
-      label: t('invoice.stats.totalDue'),
+      label: t('invoice.stats-totalDue'),
       value: formatLYD(stats.totalDueAmount),
       subValue: formatLYD(stats.totalGrossAmount),
       icon: TrendingUp,

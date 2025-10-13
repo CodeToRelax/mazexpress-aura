@@ -54,7 +54,7 @@ export function InvoicesFilters({
       <div className="relative flex-1 min-w-[200px]">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
-          placeholder={t('invoice.filters.searchPlaceholder')}
+          placeholder={t('invoice.filter-searchPlaceholder')}
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
           className="pl-9"
@@ -68,7 +68,7 @@ export function InvoicesFilters({
             className="gap-2 cursor-pointer shrink-0"
           >
             <SlidersHorizontal className="h-4 w-4" />
-            {t('invoice.filters.advanced')}
+            {t('invoice.filter-advanced')}
             {activeFilterCount > 0 && (
               <Badge variant="default" className="ml-1">
                 {activeFilterCount}
@@ -78,15 +78,15 @@ export function InvoicesFilters({
         </SheetTrigger>
         <SheetContent>
           <SheetHeader>
-            <SheetTitle>{t('invoice.filters.advanced')}</SheetTitle>
+            <SheetTitle>{t('invoice.filter-advanced')}</SheetTitle>
             <SheetDescription>
-              {t('invoice.filters.description')}
+              {t('invoice.filter-description')}
             </SheetDescription>
           </SheetHeader>
           
           <div className="space-y-4 mt-6">
             <div className="space-y-2">
-              <label className="text-sm font-medium">{t('invoice.filters.status')}</label>
+              <label className="text-sm font-medium">{t('invoice.filter-status')}</label>
               <Select
                 value={filters.status || 'all'}
                 onValueChange={(value) => 
@@ -97,7 +97,7 @@ export function InvoicesFilters({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">{t('invoice.filters.allStatuses')}</SelectItem>
+                  <SelectItem value="all">{t('invoice.filter-allStatuses')}</SelectItem>
                   <SelectItem value="DRAFT">Draft</SelectItem>
                   <SelectItem value="SENT">Sent</SelectItem>
                   <SelectItem value="PENDING">Pending</SelectItem>
@@ -113,7 +113,7 @@ export function InvoicesFilters({
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">{t('invoice.filters.dateFrom')}</label>
+              <label className="text-sm font-medium">{t('invoice.filter-dateFrom')}</label>
               <Input
                 type="date"
                 value={filters.from || ''}
@@ -122,7 +122,7 @@ export function InvoicesFilters({
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">{t('invoice.filters.dateTo')}</label>
+              <label className="text-sm font-medium">{t('invoice.filter-dateTo')}</label>
               <Input
                 type="date"
                 value={filters.to || ''}
@@ -139,7 +139,7 @@ export function InvoicesFilters({
           size="icon"
           onClick={onClearFilters}
           className="shrink-0"
-          title={t('invoice.actions.resetFilters')}
+          title={t('invoice.action-resetFilters')}
         >
           <X className="h-4 w-4" />
         </Button>
