@@ -6,11 +6,14 @@
 export type InvoiceStatus = 
   | 'DRAFT' 
   | 'SENT' 
-  | 'PENDING' 
+  | 'PENDING'
+  | 'PARTIALLY_PAID'
   | 'PAID' 
-  | 'OVERDUE' 
-  | 'CANCELLED'
-  | 'VOID';
+  | 'OVERDUE'
+  | 'REFUNDED'
+  | 'DISPUTED'
+  | 'VOID'
+  | 'FAILED';
 
 export type PaymentSource = 
   | 'WALLET' 
@@ -102,10 +105,16 @@ export interface GenerateInvoiceRequest {
   dateTo?: string;
 }
 
-export interface ProcessPaymentRequest {
-  amount: number;
+export interface PaymentMethod {
   source: PaymentSource;
+  amount: number;
   reference?: string;
+}
+
+export interface ProcessPaymentRequest {
+  totalAmount: number;
+  paymentMethods: PaymentMethod[];
+  notes?: string;
 }
 
 export interface UpdateInvoiceStatusRequest {

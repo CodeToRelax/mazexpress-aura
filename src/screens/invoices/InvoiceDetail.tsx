@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Printer, CheckCircle, XCircle, Edit } from 'lucide-react';
+import { ArrowLeft, Printer, CheckCircle, XCircle, Edit, Package, Scale, Box, ExternalLink } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -18,6 +18,7 @@ import { PaymentHistory } from './PaymentHistory';
 import { ACLGuard } from '@/components/guards/ACLGuard';
 import { useACL } from '@/hooks/useACL';
 import { format } from 'date-fns';
+import { parseInvoiceItemDescription, formatCurrency } from '@/utilities/helpers/invoiceHelpers';
 
 export default function InvoiceDetail() {
   const { id } = useParams<{ id: string }>();
@@ -35,15 +36,11 @@ export default function InvoiceDetail() {
     enabled: !!id,
   });
 
-  const formatCurrency = (amountInCents: number | undefined) => {
+  const formatCurrencyAmount = (amountInCents: number | undefined) => {
     if (amountInCents === undefined || amountInCents === null || isNaN(amountInCents)) {
       return '0.00';
     }
-    const amountInLYD = amountInCents / 100;
-    return new Intl.NumberFormat('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(amountInLYD);
+    return formatCurrency(amountInCents / 100);
   };
 
   const getStatusColor = (status: string) => {
@@ -134,17 +131,82 @@ export default function InvoiceDetail() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {invoice.items.map((item) => (
-                <div key={item._id} className="flex justify-between items-start p-3 bg-muted/50 rounded-lg">
-                  <div className="flex-1">
-                    <p className="font-medium">{item.description}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {t('invoice.quantity')}: {item.quantity} × {formatCurrency(item.unitPrice)} LYD
-                    </p>
+              {invoice.items.map((item) => {
+                const parsed = parseInvoiceItemDescription(item.description);
+                
+                return (
+                  <div key={item._id} className="flex items-start justify-between p-4 bg-muted/50 rounded-lg hover:bg-muted/70 transition-colors">
+                    <div className="flex-1 space-y-2">
+                      {/* Shipment Code & Location */}
+                      <div className="flex items-center gap-2 flex-wrap">
+                        {parsed.shipmentCode && (
+                          <Badge variant="outline" className="font-mono text-xs">
+                            <Package className="h-3 w-3 mr-1" />
+                            {parsed.shipmentCode}
+                          </Badge>
+                        )}
+                        {parsed.location && (
+                          <span className="text-sm text-muted-foreground capitalize">
+                            {parsed.location}
+                          </span>
+                        )}
+                      </div>
+                      
+                      {/* Base Description */}
+                      <p className="text-sm font-medium">{parsed.baseDescription}</p>
+                      
+                      {/* Weight & CBM */}
+                      {(parsed.weight || parsed.cbm) && (
+                        <div className="flex gap-4 text-xs text-muted-foreground">
+                          {parsed.weight && (
+                            <span className="flex items-center gap-1">
+                              <Scale className="h-3 w-3" />
+                              Weight: {parsed.weight} kg
+                            </span>
+                          )}
+                          {parsed.cbm && (
+                            <span className="flex items-center gap-1">
+                              <Box className="h-3 w-3" />
+                              CBM: {parsed.cbm} m³
+                            </span>
+                          )}
+                        </div>
+                      )}
+                      
+                      {/* Shipment Link */}
+                      {parsed.shipmentCode && item.shipmentId && (
+                        <Button
+                          variant="link"
+                          size="sm"
+                          className="p-0 h-auto text-xs"
+                          onClick={() => navigate(`/shipments/${item.shipmentId}`)}
+                        >
+                          View Shipment Details
+                          <ExternalLink className="h-3 w-3 ml-1" />
+                        </Button>
+                      )}
+                      
+                      {/* Quantity & Unit Price */}
+                      <div className="flex gap-4 text-xs text-muted-foreground">
+                        <span>Qty: {item.quantity}</span>
+                        <span>Unit Price: {formatCurrencyAmount(item.unitPrice)} LYD</span>
+                      </div>
+                    </div>
+                    
+                    {/* Total Amount */}
+                    <div className="text-right">
+                      <p className="font-semibold text-lg">
+                        {formatCurrencyAmount(item.totalGross || item.totalNet || (item.quantity * item.unitPrice))} LYD
+                      </p>
+                      {item.taxAmount && item.taxAmount > 0 && (
+                        <p className="text-xs text-muted-foreground">
+                          (incl. {formatCurrencyAmount(item.taxAmount)} tax)
+                        </p>
+                      )}
+                    </div>
                   </div>
-                  <p className="font-semibold">{formatCurrency(item.totalGross || item.totalNet || (item.quantity * item.unitPrice))} LYD</p>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             <Separator className="my-4" />

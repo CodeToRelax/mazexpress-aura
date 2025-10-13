@@ -101,10 +101,13 @@ export function InvoicesFilters({
                   <SelectItem value="DRAFT">Draft</SelectItem>
                   <SelectItem value="SENT">Sent</SelectItem>
                   <SelectItem value="PENDING">Pending</SelectItem>
+                  <SelectItem value="PARTIALLY_PAID">Partially Paid</SelectItem>
                   <SelectItem value="PAID">Paid</SelectItem>
                   <SelectItem value="OVERDUE">Overdue</SelectItem>
-                  <SelectItem value="CANCELLED">Cancelled</SelectItem>
+                  <SelectItem value="REFUNDED">Refunded</SelectItem>
+                  <SelectItem value="DISPUTED">Disputed</SelectItem>
                   <SelectItem value="VOID">Void</SelectItem>
+                  <SelectItem value="FAILED">Failed</SelectItem>
                 </SelectContent>
               </Select>
             </div>

@@ -25,6 +25,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { formatLYD } from '@/utilities/helpers/currencyHelpers';
+import { InvoiceStatusBadge } from './InvoiceStatusBadge';
 
 interface InvoicesTableProps {
   invoices: Invoice[];
@@ -67,16 +68,19 @@ export function InvoicesTable({
   };
 
   const getStatusVariant = (status: string): "default" | "secondary" | "destructive" | "outline" => {
-    switch (status) {
-      case 'PAID': return 'default';
-      case 'SENT': return 'outline';
-      case 'PENDING': return 'secondary';
-      case 'OVERDUE': return 'destructive';
-      case 'DRAFT': return 'outline';
-      case 'CANCELLED': return 'destructive';
-      case 'VOID': return 'destructive';
-      default: return 'outline';
-    }
+    const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+      DRAFT: 'secondary',
+      SENT: 'default',
+      PENDING: 'secondary',
+      PARTIALLY_PAID: 'secondary',
+      PAID: 'default',
+      OVERDUE: 'destructive',
+      REFUNDED: 'secondary',
+      DISPUTED: 'destructive',
+      VOID: 'destructive',
+      FAILED: 'destructive',
+    };
+    return variants[status] || 'outline';
   };
 
   const renderSortIcon = (column: string) => {
@@ -197,9 +201,7 @@ export function InvoicesTable({
               )}
               {visibleColumns.has('status') && (
                 <TableCell>
-                  <Badge variant={getStatusVariant(invoice.status)}>
-                    {invoice.status}
-                  </Badge>
+                  <InvoiceStatusBadge status={invoice.status} />
                 </TableCell>
               )}
               {visibleColumns.has('netAmount') && (

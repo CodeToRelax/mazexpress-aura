@@ -3,7 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { format } from 'date-fns';
-import type { Invoice } from '@/types/invoice';
+import { DollarSign, Wallet, Building2, CreditCard, MoreHorizontal } from 'lucide-react';
+import type { Invoice, PaymentSource } from '@/types/invoice';
+import { formatCurrency } from '@/utilities/helpers/invoiceHelpers';
 
 interface PaymentHistoryProps {
   invoice: Invoice;
@@ -12,25 +14,24 @@ interface PaymentHistoryProps {
 export function PaymentHistory({ invoice }: PaymentHistoryProps) {
   const { t } = useTranslation();
 
-  const formatCurrency = (amountInCents: number) => {
-    const amountInLYD = amountInCents / 100;
-    return new Intl.NumberFormat('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(amountInLYD);
+  const getSourceIcon = (source: PaymentSource) => {
+    switch (source) {
+      case 'WALLET': return Wallet;
+      case 'CASH': return DollarSign;
+      case 'BANK_TRANSFER': return Building2;
+      case 'CREDIT_CARD': return CreditCard;
+      default: return MoreHorizontal;
+    }
   };
 
   const getSourceBadge = (source: string) => {
-    switch (source) {
-      case 'WALLET':
-        return <Badge variant="secondary">{t('invoice.paymentSource.wallet')}</Badge>;
-      case 'CASH':
-        return <Badge variant="outline">{t('invoice.paymentSource.cash')}</Badge>;
-      case 'BANK_TRANSFER':
-        return <Badge variant="outline">{t('invoice.paymentSource.bankTransfer')}</Badge>;
-      default:
-        return <Badge variant="outline">{source}</Badge>;
-    }
+    const Icon = getSourceIcon(source as PaymentSource);
+    return (
+      <Badge variant="outline" className="gap-1">
+        <Icon className="h-3 w-3" />
+        {t(`invoice.paymentSource.${source.toLowerCase()}`, source)}
+      </Badge>
+    );
   };
 
   // Extract payment allocations from invoice (if they exist)
@@ -61,20 +62,32 @@ export function PaymentHistory({ invoice }: PaymentHistoryProps) {
           {paymentAllocations.map((payment: any, index: number) => (
             <div key={payment._id || index}>
               {index > 0 && <Separator className="my-4" />}
-              <div className="flex justify-between items-start">
-                <div className="space-y-1">
+              <div className="flex items-start justify-between p-4 bg-muted/50 rounded-lg">
+                <div className="flex-1 space-y-2">
+                  {/* Amount & Source */}
                   <div className="flex items-center gap-2">
-                    <p className="font-medium">
-                      {formatCurrency(payment.amount)} LYD
+                    <p className="font-semibold text-lg">
+                      {formatCurrency(payment.amount / 100)} LYD
                     </p>
                     {getSourceBadge(payment.source)}
                   </div>
+                  
+                  {/* Date */}
                   <p className="text-sm text-muted-foreground">
-                    {format(new Date(payment.processedAt), 'MMM dd, yyyy HH:mm')}
+                    Processed: {format(new Date(payment.happenedAt || payment.processedAt), 'PPp')}
                   </p>
-                  {payment.description && (
+                  
+                  {/* Reference */}
+                  {payment.reference && (
                     <p className="text-sm text-muted-foreground">
-                      {payment.description}
+                      Reference: {payment.reference}
+                    </p>
+                  )}
+                  
+                  {/* Created By */}
+                  {payment.createdBy && (
+                    <p className="text-xs text-muted-foreground">
+                      Created by: {payment.createdBy}
                     </p>
                   )}
                 </div>

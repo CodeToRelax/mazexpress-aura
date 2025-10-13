@@ -12,6 +12,16 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import {
   Form,
   FormControl,
   FormField,
@@ -32,6 +42,10 @@ import { updateInvoiceStatusSchema } from '@/utilities/zod/invoice.schemas';
 import { toast } from '@/hooks/use-toast';
 import type { Invoice } from '@/types/invoice';
 import type { UpdateInvoiceStatusInput } from '@/utilities/zod/invoice.schemas';
+import {
+  Edit, Send, Clock, DollarSign, CheckCircle2,
+  AlertCircle, Undo, AlertTriangle, XCircle, X
+} from 'lucide-react';
 
 interface UpdateStatusDialogProps {
   open: boolean;
@@ -40,12 +54,24 @@ interface UpdateStatusDialogProps {
   onSuccess?: () => void;
 }
 
-const statuses = ['DRAFT', 'SENT', 'PENDING', 'PARTIALLY_PAID', 'PAID', 'OVERDUE', 'REFUNDED', 'DISPUTED', 'VOID', 'FAILED'] as const;
+const statuses = [
+  { value: 'DRAFT', label: 'Draft', icon: Edit },
+  { value: 'SENT', label: 'Sent', icon: Send },
+  { value: 'PENDING', label: 'Pending', icon: Clock },
+  { value: 'PARTIALLY_PAID', label: 'Partially Paid', icon: DollarSign },
+  { value: 'PAID', label: 'Paid', icon: CheckCircle2 },
+  { value: 'OVERDUE', label: 'Overdue', icon: AlertCircle },
+  { value: 'REFUNDED', label: 'Refunded', icon: Undo },
+  { value: 'DISPUTED', label: 'Disputed', icon: AlertTriangle },
+  { value: 'VOID', label: 'Void', icon: XCircle },
+  { value: 'FAILED', label: 'Failed', icon: X },
+] as const;
 
 export function UpdateStatusDialog({ open, onOpenChange, invoice, onSuccess }: UpdateStatusDialogProps) {
   const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState(false);
+  const [showWarningDialog, setShowWarningDialog] = useState(false);
 
   const form = useForm<UpdateInvoiceStatusInput>({
     resolver: zodResolver(updateInvoiceStatusSchema),
@@ -54,12 +80,15 @@ export function UpdateStatusDialog({ open, onOpenChange, invoice, onSuccess }: U
     },
   });
 
-  const onSubmit = async (data: UpdateInvoiceStatusInput) => {
+  const selectedStatus = form.watch('status');
+  const movingFromPaid = invoice.status === 'PAID' && selectedStatus !== 'PAID';
+
+  const performUpdate = async (data: UpdateInvoiceStatusInput) => {
     try {
       setIsLoading(true);
       await updateInvoiceStatus(
-        invoice._id, 
-        { status: data.status }, 
+        invoice._id,
+        { status: data.status },
         i18n.language
       );
 
@@ -70,7 +99,7 @@ export function UpdateStatusDialog({ open, onOpenChange, invoice, onSuccess }: U
 
       await queryClient.invalidateQueries({ queryKey: ['invoice', invoice._id] });
       await queryClient.invalidateQueries({ queryKey: ['invoices'] });
-      
+
       onOpenChange(false);
       onSuccess?.();
       form.reset();
@@ -85,59 +114,100 @@ export function UpdateStatusDialog({ open, onOpenChange, invoice, onSuccess }: U
     }
   };
 
+  const onSubmit = async (data: UpdateInvoiceStatusInput) => {
+    if (movingFromPaid && !showWarningDialog) {
+      setShowWarningDialog(true);
+      return;
+    }
+
+    await performUpdate(data);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>{t('invoice.actions.updateStatus')}</DialogTitle>
-          <DialogDescription>
-            {t('invoice.messages.updateStatusDescription', { invoiceNumber: invoice.invoiceNumber })}
-          </DialogDescription>
-        </DialogHeader>
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>{t('invoice.actions.updateStatus')}</DialogTitle>
+            <DialogDescription>
+              {t('invoice.messages.updateStatusDescription', { invoiceNumber: invoice.invoiceNumber })}
+            </DialogDescription>
+          </DialogHeader>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="status"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('invoice.fields.status')}</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder={t('invoice.fields.selectStatus')} />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {statuses.map((status) => (
-                        <SelectItem key={status} value={status}>
-                          {status}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('invoice.fields.status')}</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder={t('invoice.fields.selectStatus')} />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="bg-background">
+                        {statuses.map((status) => {
+                          const Icon = status.icon;
+                          return (
+                            <SelectItem key={status.value} value={status.value}>
+                              <div className="flex items-center gap-2">
+                                <Icon className="h-4 w-4" />
+                                <span>{status.label}</span>
+                              </div>
+                            </SelectItem>
+                          );
+                        })}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-                disabled={isLoading}
-              >
-                {t('actions.cancel')}
-              </Button>
-              <Button type="submit" disabled={isLoading}>
-                {isLoading ? t('common.processing') : t('invoice.actions.updateStatus')}
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => onOpenChange(false)}
+                  disabled={isLoading}
+                >
+                  {t('actions.cancel')}
+                </Button>
+                <Button type="submit" disabled={isLoading}>
+                  {isLoading ? t('common.processing') : t('invoice.actions.updateStatus')}
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Warning Dialog for Changing from PAID */}
+      <AlertDialog open={showWarningDialog} onOpenChange={setShowWarningDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Warning: Payment Cleanup</AlertDialogTitle>
+            <AlertDialogDescription>
+              Changing the status from PAID will automatically remove all payment allocations
+              for this invoice. This action cannot be undone. Are you sure you want to continue?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setShowWarningDialog(false)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={async () => {
+              setShowWarningDialog(false);
+              await performUpdate(form.getValues());
+            }}>
+              Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }

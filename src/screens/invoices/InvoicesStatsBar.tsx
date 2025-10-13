@@ -9,6 +9,7 @@ interface InvoiceStats {
   draftCount: number;
   sentCount: number;
   pendingCount: number;
+  partiallyPaidCount?: number;
   paidCount: number;
   totalGrossAmount: number;
   totalDueAmount: number;
@@ -16,7 +17,7 @@ interface InvoiceStats {
 
 interface InvoicesStatsBarProps {
   stats: InvoiceStats;
-  onStatClick: (filterType: 'all' | 'draft' | 'sent' | 'pending' | 'paid') => void;
+  onStatClick: (filterType: 'all' | 'draft' | 'sent' | 'pending' | 'partially_paid' | 'paid') => void;
 }
 
 export function InvoicesStatsBar({ stats, onStatClick }: InvoicesStatsBarProps) {
