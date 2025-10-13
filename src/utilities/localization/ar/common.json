@@ -783,6 +783,7 @@
       "filterRequired": "يجب اختيار فلتر واحد على الأقل (الحالة أو النطاق الزمني)",
       "invoiceNumber": "رقم الفاتورة: {{number}}",
       "userRequired": "معرف المستخدم مطلوب",
+      "statusRequired": "يرجى اختيار حالة الشحنة",
       "markAsPaidConfirm": "هل أنت متأكد من تعيين الفاتورة {{invoiceNumber}} كمدفوعة بالكامل؟",
       "cancelConfirm": "هل أنت متأكد من إلغاء الفاتورة {{invoiceNumber}}؟ لا يمكن التراجع عن هذا الإجراء.",
       "updateStatusDescription": "تحديث حالة الفاتورة {{invoiceNumber}}",
@@ -828,7 +829,12 @@
       "shipmentCount": "عدد الشحنات",
       "status": "الحالة",
       "warning": "سيتم إنشاء فاتورة كمسودة. يمكنك مراجعتها وتعديلها قبل الإرسال.",
-      "submit": "إنشاء الفاتورة"
+      "submit": "إنشاء الفاتورة",
+      "selectCustomer": "اختر العميل",
+      "selectCustomerPlaceholder": "ابحث بالاسم أو البريد الإلكتروني أو رقم الشحن...",
+      "searchCustomerPlaceholder": "اكتب للبحث عن العملاء...",
+      "startTyping": "ابدأ الكتابة للبحث عن العملاء...",
+      "noCustomersFound": "لم يتم العثور على عملاء"
     }
   },
   "common": {

@@ -878,6 +878,7 @@
       "filterRequired": "At least one filter must be selected (status or date range)",
       "invoiceNumber": "Invoice Number: {{number}}",
       "userRequired": "User ID is required",
+      "statusRequired": "Please select a shipment status",
       "markAsPaidConfirm": "Are you sure you want to mark invoice {{invoiceNumber}} as fully paid?",
       "cancelConfirm": "Are you sure you want to cancel invoice {{invoiceNumber}}? This action cannot be undone.",
       "updateStatusDescription": "Update the status of invoice {{invoiceNumber}}",
@@ -923,7 +924,12 @@
       "shipmentCount": "Shipment Count",
       "status": "Status",
       "warning": "This will create a DRAFT invoice. You can review and modify it before sending.",
-      "submit": "Generate Invoice"
+      "submit": "Generate Invoice",
+      "selectCustomer": "Select Customer",
+      "selectCustomerPlaceholder": "Search by name, email, or shipping number...",
+      "searchCustomerPlaceholder": "Type to search customers...",
+      "startTyping": "Start typing to search customers...",
+      "noCustomersFound": "No customers found"
     }
   },
   "common": {

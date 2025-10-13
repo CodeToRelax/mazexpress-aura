@@ -399,13 +399,11 @@ export default function Invoices() {
       </motion.div>
 
       {/* Dialogs */}
-      {showGenerateDialog && (
-        <GenerateInvoiceDialog
-          open={showGenerateDialog}
-          onOpenChange={setShowGenerateDialog}
-          onSuccess={handleSuccess}
-        />
-      )}
+      <GenerateInvoiceDialog
+        open={showGenerateDialog}
+        onOpenChange={setShowGenerateDialog}
+        onSuccess={handleSuccess}
+      />
 
       {invoiceToMarkAsPaid && (
         <MarkAsPaidDialog

@@ -17,7 +17,9 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { FileText, AlertCircle } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { generateInvoice } from '@/utilities/api/invoice.api';
+import { UserSearchCombobox } from '@/components/invoices/UserSearchCombobox';
 import type { GenerateInvoiceRequest } from '@/types/invoice';
+import type { User } from '@/types/user';
 
 interface GenerateInvoiceDialogProps {
   open: boolean;
@@ -46,6 +48,8 @@ export function GenerateInvoiceDialog({
   const queryClient = useQueryClient();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [mode, setMode] = useState<'filter' | 'specific'>(shipmentIds ? 'specific' : 'filter');
+  const [selectedUserId, setSelectedUserId] = useState<string>(userId || '');
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<string>('ready for pick up');
   const [dateFrom, setDateFrom] = useState<string>('');
   const [dateTo, setDateTo] = useState<string>('');
@@ -76,7 +80,9 @@ export function GenerateInvoiceDialog({
   });
 
   const handleGenerate = () => {
-    if (!userId) {
+    const targetUserId = userId || selectedUserId;
+    
+    if (!targetUserId) {
       toast({
         title: t('common.error'),
         description: t('invoice.messages.userRequired'),
@@ -85,10 +91,10 @@ export function GenerateInvoiceDialog({
       return;
     }
     
-    if (mode === 'filter' && !selectedStatus && !dateFrom && !dateTo) {
+    if (mode === 'filter' && !selectedStatus) {
       toast({
         title: t('common.error'),
-        description: t('invoice.messages.filterRequired'),
+        description: t('invoice.messages.statusRequired'),
         variant: 'destructive',
       });
       return;
@@ -96,7 +102,7 @@ export function GenerateInvoiceDialog({
 
     setIsSubmitting(true);
     const payload: GenerateInvoiceRequest = {
-      userId,
+      userId: targetUserId,
       ...(mode === 'specific' && shipmentIds ? { shipmentIds } : {}),
       ...(mode === 'filter' ? {
         shipmentStatus: selectedStatus,
@@ -128,6 +134,29 @@ export function GenerateInvoiceDialog({
               {t('invoice.generateDialog.warning')}
             </AlertDescription>
           </Alert>
+
+          {/* User Selection - Required when no userId prop */}
+          {!userId && (
+            <div className="space-y-2">
+              <Label htmlFor="customer">
+                {t('invoice.generateDialog.selectCustomer')} <span className="text-destructive">*</span>
+              </Label>
+              <UserSearchCombobox
+                value={selectedUserId}
+                onChange={(userId, user) => {
+                  setSelectedUserId(userId);
+                  setSelectedUser(user || null);
+                }}
+                disabled={isSubmitting}
+                placeholder={t('invoice.generateDialog.selectCustomerPlaceholder')}
+              />
+              {selectedUser && (
+                <p className="text-sm text-muted-foreground">
+                  {selectedUser.email} • {selectedUser.uniqueShippingNumber}
+                </p>
+              )}
+            </div>
+          )}
 
           {!shipmentIds && (
             <div className="space-y-3">
@@ -202,7 +231,12 @@ export function GenerateInvoiceDialog({
             </Button>
             <Button 
               onClick={handleGenerate}
-              disabled={isSubmitting || (mode === 'specific' && (!shipmentIds || shipmentIds.length === 0))}
+              disabled={
+                isSubmitting || 
+                (!userId && !selectedUserId) ||
+                (mode === 'specific' && (!shipmentIds || shipmentIds.length === 0)) ||
+                (mode === 'filter' && !selectedStatus)
+              }
             >
               {isSubmitting ? t('common.processing') : t('invoice.generateDialog.submit')}
             </Button>
