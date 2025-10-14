@@ -387,6 +387,9 @@
   "shipments": {
     "title": "Shipments Management",
     "subtitle": "Track and manage shipments",
+    "tabs": {
+      "all": "All Shipments"
+    },
     "table": {
       "columns": {
         "esn": "ESN",

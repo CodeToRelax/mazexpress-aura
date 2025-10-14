@@ -2,12 +2,13 @@ import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Package, Plus, RotateCw } from 'lucide-react';
+import { Package, Plus, RotateCw, Plane, Ship, Truck } from 'lucide-react';
 import type { IShipment, ShipmentFilters } from '@/types/shipment';
 import { shipmentsApi } from '@/utilities/api/shipments.api';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ACLGuard } from '@/components/guards/ACLGuard';
 import { InlineError } from '@/components/feedback/InlineError';
 import { ShipmentsTable } from './ShipmentsTable';
@@ -91,6 +92,9 @@ export default function Shipments() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showBulkUpdateDialog, setShowBulkUpdateDialog] = useState(false);
   const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false);
+  
+  // Shipping method tab state
+  const [activeMethodTab, setActiveMethodTab] = useState<string>('all');
   
   // Column visibility state
   const [visibleColumns, setVisibleColumns] = useState<Set<string>>(() => {
@@ -388,6 +392,29 @@ export default function Shipments() {
       !['page', 'limit', 'sort'].includes(key)
   ).length;
 
+  // Handle shipping method tab changes
+  const handleMethodTabChange = (value: string) => {
+    setActiveMethodTab(value);
+    if (value === 'all') {
+      // Remove method filter
+      const { method, shippingMethod, ...restFilters } = filters;
+      setFilters({ ...restFilters, page: 1 });
+    } else {
+      // Set method filter
+      setFilters({ ...filters, method: value, page: 1 });
+    }
+  };
+
+  // Sync active tab with filters
+  useEffect(() => {
+    const currentMethod = filters.method || filters.shippingMethod;
+    if (!currentMethod) {
+      setActiveMethodTab('all');
+    } else if (['air', 'sea', 'land'].includes(currentMethod.toLowerCase())) {
+      setActiveMethodTab(currentMethod.toLowerCase());
+    }
+  }, [filters.method, filters.shippingMethod]);
+
   const showLoadingSkeleton = isLoading || isFetching;
 
   return (
@@ -455,6 +482,28 @@ export default function Shipments() {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="space-y-4"
         >
+          {/* Shipping Method Tabs */}
+          <Tabs value={activeMethodTab} onValueChange={handleMethodTabChange} className="w-full">
+            <TabsList className="grid w-full grid-cols-4 h-14 bg-muted/50 p-1.5">
+              <TabsTrigger value="all" className="gap-2 text-base">
+                <Package className="h-5 w-5" />
+                {t('shipments.tabs.all')}
+              </TabsTrigger>
+              <TabsTrigger value="air" className="gap-2 text-base">
+                <Plane className="h-5 w-5" />
+                {t('shipments.table.method.air')}
+              </TabsTrigger>
+              <TabsTrigger value="sea" className="gap-2 text-base">
+                <Ship className="h-5 w-5" />
+                {t('shipments.table.method.sea')}
+              </TabsTrigger>
+              <TabsTrigger value="land" className="gap-2 text-base">
+                <Truck className="h-5 w-5" />
+                {t('shipments.table.method.land')}
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+
           <div className="flex items-center gap-2 relative z-20">
             <div className="flex-1">
               <ShipmentsFilters
