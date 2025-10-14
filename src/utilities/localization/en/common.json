@@ -737,6 +737,11 @@
     "notFound": "Invoice not found",
     "items": {
       "title": "Invoice Items",
+      "item": "Item",
+      "description": "Description",
+      "destination": "Destination",
+      "method": "Method",
+      "status": "Status",
       "quantity": "Quantity",
       "unitPrice": "Unit Price",
       "total": "Total",

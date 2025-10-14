@@ -642,6 +642,11 @@
     "notFound": "الفاتورة غير موجودة",
     "items": {
       "title": "عناصر الفاتورة",
+      "item": "العنصر",
+      "description": "الوصف",
+      "destination": "الوجهة",
+      "method": "الطريقة",
+      "status": "الحالة",
       "quantity": "الكمية",
       "unitPrice": "سعر الوحدة",
       "total": "الإجمالي",

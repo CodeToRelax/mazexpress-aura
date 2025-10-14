@@ -72,7 +72,13 @@ export function InvoiceItemsTable({ items }: InvoiceItemsTableProps) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>{t('invoice.items.description')}</TableHead>
+            <TableHead>{t('invoice.items.item')}</TableHead>
+            <TableHead>{t('invoice.items.destination')}</TableHead>
+            <TableHead>{t('invoice.items.method')}</TableHead>
+            <TableHead>{t('invoice.items.status')}</TableHead>
+            <TableHead>{t('invoice.items.weight')}</TableHead>
+            <TableHead>{t('invoice.items.dimensions')}</TableHead>
+            <TableHead>{t('invoice.items.cbm')}</TableHead>
             <TableHead>{t('invoice.items.quantity')}</TableHead>
             <TableHead>{t('invoice.items.unitPrice')}</TableHead>
             <TableHead>{t('invoice.items.total')}</TableHead>
@@ -91,68 +97,75 @@ export function InvoiceItemsTable({ items }: InvoiceItemsTableProps) {
                 key={item._id}
                 className="hover:bg-accent/20 transition-colors duration-150"
               >
+                {/* Item Column */}
                 <TableCell>
                   <div className="flex items-center gap-3">
                     <div className={`h-10 w-10 rounded-full ${iconColors.bg} flex items-center justify-center flex-shrink-0`}>
                       <Icon className={`h-5 w-5 ${iconColors.text}`} />
                     </div>
-                    <div>
-                      {isShipment && shipment ? (
-                        <>
-                          <div className="font-medium text-foreground">
-                            ESN: {shipment.esn} → {shipment.shipmentDestination}
-                          </div>
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <span className="capitalize">{shipment.shippingMethod?.toLowerCase()}</span>
-                            <span>·</span>
-                            <Badge 
-                              variant={getStatusBadgeVariant(shipment.status)} 
-                              className="text-xs"
-                            >
-                              {shipment.status}
-                            </Badge>
-                          </div>
-                          {shipment.size && (
-                            <div className="text-sm text-muted-foreground">
-                              {shipment.size.weight && `${shipment.size.weight}kg`}
-                              {shipment.size.weight && shipment.size.length && ' · '}
-                              {shipment.size.length && shipment.size.width && shipment.size.height && (
-                                <>
-                                  {formatDimensions(
-                                    shipment.size.length,
-                                    shipment.size.width,
-                                    shipment.size.height
-                                  )}
-                                  {' · '}
-                                  {calculateCBM(
-                                    shipment.size.length,
-                                    shipment.size.width,
-                                    shipment.size.height
-                                  )}m³
-                                </>
-                              )}
-                            </div>
-                          )}
-                        </>
-                      ) : (
-                        <>
-                          <div className="font-medium text-foreground">
-                            {item.description}
-                          </div>
-                          <div className="text-sm text-muted-foreground capitalize">
-                            {item.kind.toLowerCase().replace('_', ' ')}
-                          </div>
-                        </>
-                      )}
+                    <div className="font-medium text-foreground">
+                      {isShipment && shipment ? shipment.esn : item.description}
                     </div>
                   </div>
                 </TableCell>
+
+                {/* Destination Column */}
+                <TableCell className="text-muted-foreground">
+                  {isShipment && shipment 
+                    ? shipment.shipmentDestination 
+                    : <span className="capitalize">{item.kind.toLowerCase().replace('_', ' ')}</span>
+                  }
+                </TableCell>
+
+                {/* Method Column */}
+                <TableCell className="text-muted-foreground capitalize">
+                  {isShipment && shipment ? shipment.shippingMethod?.toLowerCase() : '-'}
+                </TableCell>
+
+                {/* Status Column */}
+                <TableCell>
+                  {isShipment && shipment ? (
+                    <Badge 
+                      variant={getStatusBadgeVariant(shipment.status)} 
+                      className="text-xs"
+                    >
+                      {shipment.status}
+                    </Badge>
+                  ) : '-'}
+                </TableCell>
+
+                {/* Weight Column */}
+                <TableCell className="text-muted-foreground">
+                  {isShipment && shipment?.size?.weight ? `${shipment.size.weight}kg` : '-'}
+                </TableCell>
+
+                {/* Dimensions Column */}
+                <TableCell className="text-muted-foreground">
+                  {isShipment && shipment?.size 
+                    ? formatDimensions(shipment.size.length, shipment.size.width, shipment.size.height) 
+                    : '-'
+                  }
+                </TableCell>
+
+                {/* CBM Column */}
+                <TableCell className="text-muted-foreground">
+                  {isShipment && shipment?.size?.length && shipment?.size?.width && shipment?.size?.height
+                    ? calculateCBM(shipment.size.length, shipment.size.width, shipment.size.height) + 'm³'
+                    : '-'
+                  }
+                </TableCell>
+
+                {/* Quantity Column */}
                 <TableCell className="text-muted-foreground">
                   {item.quantity}
                 </TableCell>
+
+                {/* Unit Price Column */}
                 <TableCell className="text-muted-foreground">
                   {formatCurrency(item.unitPrice)} LYD
                 </TableCell>
+
+                {/* Total Column */}
                 <TableCell className="text-muted-foreground">
                   {formatCurrency(totalAmount)} LYD
                 </TableCell>
