@@ -1,7 +1,7 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { Invoice } from '@/types/invoice';
-import { parseInvoiceItemDescription } from './invoiceHelpers';
+import { calculateCBM, formatDimensions } from './invoiceHelpers';
 import { formatLYD, fromCents } from './currencyHelpers';
 import { format } from 'date-fns';
 
@@ -24,7 +24,11 @@ const colors = {
  * Generate professional invoice PDF matching platform design
  */
 export async function generateInvoicePDF(invoice: Invoice): Promise<void> {
-  const doc = new jsPDF();
+  const doc = new jsPDF({
+    orientation: 'landscape',
+    unit: 'mm',
+    format: 'a4'
+  });
   
   // ===== HEADER SECTION =====
   // Left: "INVOICE" title
@@ -37,12 +41,12 @@ export async function generateInvoicePDF(invoice: Invoice): Promise<void> {
   doc.setFontSize(18);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-  doc.text('MazExpress', 196, 20, { align: 'right' });
+  doc.text('MazExpress', 283, 20, { align: 'right' });
   
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
-  doc.text('Shipping & Logistics', 196, 27, { align: 'right' });
+  doc.text('Shipping & Logistics', 283, 27, { align: 'right' });
   
   // ===== INFORMATION SECTION (Two columns) =====
   const infoStartY = 45;
@@ -71,34 +75,33 @@ export async function generateInvoicePDF(invoice: Invoice): Promise<void> {
   }
   
   // Right column - Invoice details
-  const rightColX = 140;
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(10);
   doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
   
   // Invoice Number
-  doc.text('Invoice No:', rightColX, infoStartY);
+  doc.text('Invoice No:', 220, infoStartY);
   doc.setFont('helvetica', 'normal');
-  doc.text(invoice.invoiceNumber || 'DRAFT', 196, infoStartY, { align: 'right' });
+  doc.text(invoice.invoiceNumber || 'DRAFT', 283, infoStartY, { align: 'right' });
   
   // Issue Date
   doc.setFont('helvetica', 'bold');
-  doc.text('Issue date:', rightColX, infoStartY + 6);
+  doc.text('Issue date:', 220, infoStartY + 6);
   doc.setFont('helvetica', 'normal');
   doc.text(
     invoice.issueDate ? format(new Date(invoice.issueDate), 'dd/MM/yyyy') : 'N/A',
-    196,
+    283,
     infoStartY + 6,
     { align: 'right' }
   );
   
   // Due Date
   doc.setFont('helvetica', 'bold');
-  doc.text('Due date:', rightColX, infoStartY + 12);
+  doc.text('Due date:', 220, infoStartY + 12);
   doc.setFont('helvetica', 'normal');
   doc.text(
     format(new Date(invoice.dueDate), 'dd/MM/yyyy'),
-    196,
+    283,
     infoStartY + 12,
     { align: 'right' }
   );
@@ -106,54 +109,79 @@ export async function generateInvoicePDF(invoice: Invoice): Promise<void> {
   // ===== ITEMS TABLE =====
   const tableStartY = 100;
   
-  // Prepare table data with enhanced descriptions
+  // Prepare table data matching UI table exactly
   const tableData = invoice.items.map(item => {
-    const parsed = parseInvoiceItemDescription(item.description);
-    
-    // Enhanced description with all details
-    let description = parsed.baseDescription;
-    
-    // If we have structured data, format it nicely
-    if (parsed.shipmentCode) {
-      const details = [];
-      if (parsed.location) details.push(parsed.location);
-      if (parsed.weight) details.push(`${parsed.weight}kg`);
-      if (parsed.cbm) details.push(`${parsed.cbm}m³`);
-      
-      description = `Shipment ${parsed.shipmentCode}`;
-      if (details.length > 0) {
-        description += ` - ${details.join(' | ')}`;
-      }
-    }
+    const isShipment = item.kind === 'SHIPMENT' && item.shipmentId && typeof item.shipmentId === 'object';
+    const shipment = isShipment ? item.shipmentId : null;
+    const totalAmount = item.totalGross || (item.quantity * item.unitPrice);
     
     return [
-      description,
-      formatLYD(fromCents(item.totalGross || item.totalNet || 0)),
+      // ITEM
+      isShipment && shipment ? shipment.esn : item.description,
+      
+      // DESTINATION
+      isShipment && shipment ? shipment.shipmentDestination : item.kind.toLowerCase().replace('_', ' '),
+      
+      // METHOD
+      isShipment && shipment ? shipment.shippingMethod?.toLowerCase() || '-' : '-',
+      
+      // STATUS
+      isShipment && shipment ? shipment.status : '-',
+      
+      // WEIGHT
+      isShipment && shipment?.size?.weight ? `${shipment.size.weight}kg` : '-',
+      
+      // DIMENSIONS
+      isShipment && shipment?.size 
+        ? formatDimensions(shipment.size.length, shipment.size.width, shipment.size.height) 
+        : '-',
+      
+      // CBM
+      isShipment && shipment?.size?.length && shipment?.size?.width && shipment?.size?.height
+        ? calculateCBM(shipment.size.length, shipment.size.width, shipment.size.height) + 'm³'
+        : '-',
+      
+      // QUANTITY
+      item.quantity.toString(),
+      
+      // UNIT PRICE
+      formatLYD(fromCents(item.unitPrice)),
+      
+      // TOTAL
+      formatLYD(fromCents(totalAmount)),
     ];
   });
   
-  // Generate clean table - simplified to 2 columns
+  // Generate table with 10 columns matching UI
   autoTable(doc, {
     startY: tableStartY,
-    head: [['DESCRIPTION', 'AMOUNT']],
+    head: [['ITEM', 'DESTINATION', 'METHOD', 'STATUS', 'WEIGHT', 'DIMENSIONS', 'CBM', 'QTY', 'UNIT PRICE', 'TOTAL']],
     body: tableData,
     theme: 'plain',
     headStyles: { 
       fillColor: colors.headerBg,
       textColor: colors.textDark,
-      fontSize: 10,
+      fontSize: 8,
       fontStyle: 'bold',
-      halign: 'left',
-      cellPadding: 3,
+      halign: 'center',
+      cellPadding: 2,
     },
     bodyStyles: {
-      fontSize: 9,
+      fontSize: 8,
       textColor: colors.textDark,
-      cellPadding: 3,
+      cellPadding: 2,
     },
     columnStyles: {
-      0: { cellWidth: 140, halign: 'left' },   // Description (wider)
-      1: { cellWidth: 45, halign: 'right', fontStyle: 'bold' },  // Amount
+      0: { cellWidth: 25, halign: 'left', fontSize: 8 },
+      1: { cellWidth: 22, halign: 'left', fontSize: 8 },
+      2: { cellWidth: 18, halign: 'center', fontSize: 8 },
+      3: { cellWidth: 20, halign: 'center', fontSize: 8 },
+      4: { cellWidth: 16, halign: 'right', fontSize: 8 },
+      5: { cellWidth: 25, halign: 'center', fontSize: 8 },
+      6: { cellWidth: 18, halign: 'right', fontSize: 8 },
+      7: { cellWidth: 12, halign: 'center', fontSize: 8 },
+      8: { cellWidth: 24, halign: 'right', fontSize: 8 },
+      9: { cellWidth: 24, halign: 'right', fontSize: 9, fontStyle: 'bold' },
     },
     styles: {
       lineColor: colors.border,
@@ -163,8 +191,9 @@ export async function generateInvoicePDF(invoice: Invoice): Promise<void> {
   
   // ===== TOTALS SECTION =====
   const finalY = (doc as any).lastAutoTable.finalY || 150;
-  const totalsX = 130;
   let yPos = finalY + 15;
+  const totalsX = 220;
+  const rightColX = 283;
   
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
@@ -173,14 +202,14 @@ export async function generateInvoicePDF(invoice: Invoice): Promise<void> {
   // Show subtotal only if different from gross
   if (invoice.totals.net !== invoice.totals.gross) {
     doc.text('Subtotal:', totalsX, yPos);
-    doc.text(formatLYD(fromCents(invoice.totals.net)), 196, yPos, { align: 'right' });
+    doc.text(formatLYD(fromCents(invoice.totals.net)), rightColX, yPos, { align: 'right' });
     yPos += 6;
   }
   
   // Show tax only if > 0
   if (invoice.totals.tax > 0) {
     doc.text('Tax:', totalsX, yPos);
-    doc.text(formatLYD(fromCents(invoice.totals.tax)), 196, yPos, { align: 'right' });
+    doc.text(formatLYD(fromCents(invoice.totals.tax)), rightColX, yPos, { align: 'right' });
     yPos += 6;
   }
   
@@ -188,7 +217,7 @@ export async function generateInvoicePDF(invoice: Invoice): Promise<void> {
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(12);
   doc.text('Total:', totalsX, yPos);
-  doc.text(formatLYD(fromCents(invoice.totals.gross)), 196, yPos, { align: 'right' });
+  doc.text(formatLYD(fromCents(invoice.totals.gross)), rightColX, yPos, { align: 'right' });
   
   // ===== NOTES SECTION =====
   if (invoice.notes) {
@@ -206,7 +235,7 @@ export async function generateInvoicePDF(invoice: Invoice): Promise<void> {
   doc.setFontSize(8);
   doc.setFont('helvetica', 'italic');
   doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
-  doc.text('Thank you for your business!', 105, 280, { align: 'center' });
+  doc.text('Thank you for your business!', 148.5, 200, { align: 'center' });
   
   // Save PDF
   const filename = `invoice-${invoice.invoiceNumber || 'draft'}-${format(new Date(), 'yyyyMMdd')}.pdf`;
