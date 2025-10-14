@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Transaction } from '@/types/wallet';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
+import { formatLYD } from '@/utilities/helpers/currencyHelpers';
 
 interface TransactionCardProps {
   transaction: Transaction;
@@ -13,14 +14,6 @@ interface TransactionCardProps {
 
 export function TransactionCard({ transaction, onClick, className = '' }: TransactionCardProps) {
   const { t } = useTranslation();
-
-  const formatCurrency = (amountInCents: number) => {
-    const amountInLYD = amountInCents / 100;
-    return new Intl.NumberFormat('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(amountInLYD);
-  };
 
   const getTypeIcon = () => {
     switch (transaction.type) {
@@ -96,12 +89,7 @@ export function TransactionCard({ transaction, onClick, className = '' }: Transa
           </div>
           <div className="text-right flex-shrink-0">
             <p className={`font-semibold ${getAmountColor()}`}>
-              {getAmountSign()}{formatCurrency(transaction.amount)}
-            </p>
-            <p className="text-xs text-muted-foreground">
-              {typeof transaction.walletId === 'object' 
-                ? transaction.walletId.currency 
-                : 'LYD'}
+              {getAmountSign()}{formatLYD(transaction.amount)}
             </p>
           </div>
         </div>

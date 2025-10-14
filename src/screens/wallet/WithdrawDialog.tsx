@@ -27,6 +27,7 @@ import { toast } from '@/hooks/use-toast';
 import { withdraw } from '@/utilities/api/wallet.api';
 import { withdrawalSchema, type WithdrawalInput } from '@/utilities/zod/wallet.schemas';
 import type { Wallet } from '@/types/wallet';
+import { formatLYD } from '@/utilities/helpers/currencyHelpers';
 
 interface WithdrawDialogProps {
   open: boolean;
@@ -87,14 +88,6 @@ export function WithdrawDialog({ open, onOpenChange, wallet }: WithdrawDialogPro
     });
   };
 
-  const formatCurrency = (amountInCents: number) => {
-    const amountInLYD = amountInCents / 100;
-    return new Intl.NumberFormat('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(amountInLYD);
-  };
-
   const watchAmount = form.watch('amount');
   const showInsufficientWarning = wallet && (watchAmount * 100) > wallet.balance;
 
@@ -107,7 +100,7 @@ export function WithdrawDialog({ open, onOpenChange, wallet }: WithdrawDialogPro
             {wallet && (
               <span className="text-sm">
                 {t('wallet.form.currentBalance', { 
-                  balance: formatCurrency(wallet.balance) 
+                  balance: formatLYD(wallet.balance).replace(' LYD', '')
                 })}
               </span>
             )}

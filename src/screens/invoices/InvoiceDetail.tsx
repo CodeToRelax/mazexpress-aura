@@ -12,7 +12,7 @@ import { CancelInvoiceDialog } from './CancelInvoiceDialog';
 import { UpdateStatusDialog } from './UpdateStatusDialog';
 import { PaymentHistory } from './PaymentHistory';
 import { useACL } from '@/hooks/useACL';
-import { formatCurrency } from '@/utilities/helpers/invoiceHelpers';
+import { formatLYD } from '@/utilities/helpers/currencyHelpers';
 import { InvoiceStatusBadge } from '@/components/invoices/InvoiceStatusBadge';
 import { InvoiceItemsTable } from '@/components/invoices/InvoiceItemsTable';
 
@@ -31,12 +31,6 @@ export default function InvoiceDetail() {
     enabled: !!id,
   });
 
-  const formatCurrencyAmount = (amountInCents: number | undefined) => {
-    if (amountInCents === undefined || amountInCents === null || isNaN(amountInCents)) {
-      return '0.00';
-    }
-    return formatCurrency(amountInCents / 100);
-  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -157,7 +151,7 @@ export default function InvoiceDetail() {
               <div>
                 <h3 className="text-lg font-semibold text-foreground">{t('invoice.payment.paymentDue')}</h3>
                 <p className="text-3xl font-bold text-primary mt-2">
-                  {formatCurrencyAmount(invoice.totals.due)} LYD
+                  {formatLYD(invoice.totals.due || 0)}
                 </p>
                 <p className="text-sm text-muted-foreground mt-1">
                   {t('invoice.fields.invoiceNumber')}: {invoice.invoiceNumber}

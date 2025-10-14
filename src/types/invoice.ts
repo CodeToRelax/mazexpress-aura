@@ -16,11 +16,9 @@ export type InvoiceStatus =
   | 'FAILED';
 
 export type PaymentSource = 
+  | 'CASH'
   | 'WALLET' 
-  | 'CASH' 
-  | 'BANK_TRANSFER' 
-  | 'CREDIT_CARD' 
-  | 'OTHER';
+  | 'BANK_TRANSFER';
 
 export type InvoiceItemKind = 
   | 'SHIPMENT' 

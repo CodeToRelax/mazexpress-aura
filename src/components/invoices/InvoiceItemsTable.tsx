@@ -4,7 +4,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { InvoiceItem, InvoiceItemKind } from '@/types/invoice';
 import { IShipment } from '@/types/shipment';
-import { calculateCBM, formatDimensions, formatCurrency } from '@/utilities/helpers/invoiceHelpers';
+import { calculateCBM, formatDimensions } from '@/utilities/helpers/invoiceHelpers';
+import { formatLYD } from '@/utilities/helpers/currencyHelpers';
 
 interface InvoiceItemsTableProps {
   items: InvoiceItem[];
@@ -162,12 +163,12 @@ export function InvoiceItemsTable({ items }: InvoiceItemsTableProps) {
 
                 {/* Unit Price Column */}
                 <TableCell className="text-muted-foreground">
-                  {formatCurrency(item.unitPrice)} LYD
+                  {formatLYD(item.unitPrice * 100)}
                 </TableCell>
 
                 {/* Total Column */}
                 <TableCell className="text-muted-foreground">
-                  {formatCurrency(totalAmount)} LYD
+                  {formatLYD(totalAmount * 100)}
                 </TableCell>
               </TableRow>
             );

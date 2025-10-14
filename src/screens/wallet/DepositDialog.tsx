@@ -25,6 +25,7 @@ import { toast } from '@/hooks/use-toast';
 import { deposit } from '@/utilities/api/wallet.api';
 import { depositSchema, type DepositInput } from '@/utilities/zod/wallet.schemas';
 import type { Wallet } from '@/types/wallet';
+import { formatLYD } from '@/utilities/helpers/currencyHelpers';
 
 interface DepositDialogProps {
   open: boolean;
@@ -78,14 +79,6 @@ export function DepositDialog({ open, onOpenChange, wallet }: DepositDialogProps
     });
   };
 
-  const formatCurrency = (amountInCents: number) => {
-    const amountInLYD = amountInCents / 100;
-    return new Intl.NumberFormat('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(amountInLYD);
-  };
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
@@ -95,7 +88,7 @@ export function DepositDialog({ open, onOpenChange, wallet }: DepositDialogProps
             {wallet && (
               <span className="text-sm">
                 {t('wallet.form.currentBalance', { 
-                  balance: formatCurrency(wallet.balance) 
+                  balance: formatLYD(wallet.balance).replace(' LYD', '')
                 })}
               </span>
             )}

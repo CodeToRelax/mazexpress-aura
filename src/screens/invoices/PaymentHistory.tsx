@@ -6,7 +6,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { format } from 'date-fns';
 import { DollarSign, Wallet, Building2, CreditCard, MoreHorizontal } from 'lucide-react';
 import type { Invoice, PaymentSource, PaymentAllocation } from '@/types/invoice';
-import { formatCurrency } from '@/utilities/helpers/invoiceHelpers';
+import { formatLYD } from '@/utilities/helpers/currencyHelpers';
 
 interface PaymentHistoryProps {
   invoice: Invoice;
@@ -17,11 +17,10 @@ export function PaymentHistory({ invoice }: PaymentHistoryProps) {
 
   const getSourceIcon = (source: PaymentSource) => {
     switch (source) {
-      case 'WALLET': return Wallet;
       case 'CASH': return DollarSign;
+      case 'WALLET': return Wallet;
       case 'BANK_TRANSFER': return Building2;
-      case 'CREDIT_CARD': return CreditCard;
-      default: return MoreHorizontal;
+      default: return DollarSign;
     }
   };
 
@@ -72,7 +71,7 @@ export function PaymentHistory({ invoice }: PaymentHistoryProps) {
                 return (
                   <TableRow key={payment._id} className="hover:bg-muted/50">
                     <TableCell className="font-semibold">
-                      {formatCurrency(payment.amount)} LYD
+                      {formatLYD(payment.amount * 100)}
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline" className="gap-1.5">

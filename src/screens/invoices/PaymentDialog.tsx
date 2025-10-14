@@ -26,7 +26,7 @@ import { toast } from '@/hooks/use-toast';
 import { processPayment } from '@/utilities/api/invoice.api';
 import { getWallet } from '@/utilities/api/wallet.api';
 import type { Invoice, ProcessPaymentRequest, PaymentSource } from '@/types/invoice';
-import { formatCurrency } from '@/utilities/helpers/invoiceHelpers';
+import { formatLYD } from '@/utilities/helpers/currencyHelpers';
 
 interface PaymentDialogProps {
   open: boolean;
@@ -81,8 +81,8 @@ export function PaymentDialog({ open, onOpenChange, invoice }: PaymentDialogProp
     },
   });
 
-  const totalDue = invoice.totals.due / 100;
-  const currentTotal = methods.reduce((sum, m) => sum + (parseFloat(m.amount) || 0), 0);
+  const totalDue = invoice.totals.due;
+  const currentTotal = methods.reduce((sum, m) => sum + ((parseFloat(m.amount) || 0) * 100), 0);
   const remaining = totalDue - currentTotal;
 
   const addPaymentMethod = () => {
@@ -100,28 +100,28 @@ export function PaymentDialog({ open, onOpenChange, invoice }: PaymentDialogProp
   };
 
   const distributeEqually = () => {
-    const perMethod = (totalDue / methods.length).toFixed(2);
+    const perMethod = ((totalDue / 100) / methods.length).toFixed(0);
     setMethods(methods.map(m => ({ ...m, amount: perMethod })));
   };
 
   const fillRemaining = (id: string) => {
     const otherTotal = methods
       .filter(m => m.id !== id)
-      .reduce((sum, m) => sum + (parseFloat(m.amount) || 0), 0);
+      .reduce((sum, m) => sum + ((parseFloat(m.amount) || 0) * 100), 0);
     
-    const remainingAmount = Math.max(0, totalDue - otherTotal).toFixed(2);
+    const remainingAmount = Math.max(0, (totalDue - otherTotal) / 100).toFixed(0);
     updatePaymentMethod(id, 'amount', remainingAmount);
   };
 
   const walletAmount = methods
     .filter(m => m.source === 'WALLET')
-    .reduce((sum, m) => sum + (parseFloat(m.amount) || 0), 0);
+    .reduce((sum, m) => sum + ((parseFloat(m.amount) || 0) * 100), 0);
   
-  const walletBalance = walletData?.balance / 100 || 0;
+  const walletBalance = walletData?.balance || 0;
   const showInsufficientWarning = walletAmount > walletBalance;
   
   const isValid = 
-    Math.abs(remaining) < 0.01 && 
+    Math.abs(remaining) < 100 && 
     !showInsufficientWarning && 
     methods.every(m => parseFloat(m.amount) > 0);
 
@@ -131,7 +131,7 @@ export function PaymentDialog({ open, onOpenChange, invoice }: PaymentDialogProp
     setIsProcessing(true);
     try {
       const payload: ProcessPaymentRequest = {
-        totalAmount: totalDue,
+        totalAmount: totalDue / 100,
         paymentMethods: methods.map(m => ({
           source: m.source,
           amount: parseFloat(m.amount),
@@ -148,11 +148,10 @@ export function PaymentDialog({ open, onOpenChange, invoice }: PaymentDialogProp
 
   const getPaymentSourceIcon = (source: PaymentSource) => {
     switch (source) {
-      case 'WALLET': return WalletIcon;
       case 'CASH': return DollarSign;
+      case 'WALLET': return WalletIcon;
       case 'BANK_TRANSFER': return Building2;
-      case 'CREDIT_CARD': return CreditCard;
-      default: return MoreHorizontal;
+      default: return DollarSign;
     }
   };
 
@@ -162,7 +161,7 @@ export function PaymentDialog({ open, onOpenChange, invoice }: PaymentDialogProp
         <DialogHeader>
           <DialogTitle>Process Payment</DialogTitle>
           <DialogDescription>
-            Invoice #{invoice.invoiceNumber} - Total Due: {formatCurrency(totalDue)} LYD
+            Invoice #{invoice.invoiceNumber} - Total Due: {formatLYD(totalDue)}
           </DialogDescription>
         </DialogHeader>
 
@@ -209,7 +208,7 @@ export function PaymentDialog({ open, onOpenChange, invoice }: PaymentDialogProp
                             Wallet
                             {walletData && (
                               <span className="text-xs text-muted-foreground">
-                                (Balance: {formatCurrency(walletBalance)} LYD)
+                                (Balance: {formatLYD(walletBalance)})
                               </span>
                             )}
                           </div>
@@ -218,18 +217,6 @@ export function PaymentDialog({ open, onOpenChange, invoice }: PaymentDialogProp
                           <div className="flex items-center gap-2">
                             <Building2 className="h-4 w-4" />
                             Bank Transfer
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="CREDIT_CARD">
-                          <div className="flex items-center gap-2">
-                            <CreditCard className="h-4 w-4" />
-                            Credit Card
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="OTHER">
-                          <div className="flex items-center gap-2">
-                            <MoreHorizontal className="h-4 w-4" />
-                            Other
                           </div>
                         </SelectItem>
                       </SelectContent>
@@ -242,11 +229,11 @@ export function PaymentDialog({ open, onOpenChange, invoice }: PaymentDialogProp
                     <div className="flex gap-1">
                       <Input
                         type="number"
-                        step="0.01"
+                        step="1"
                         min="0"
                         value={method.amount}
                         onChange={(e) => updatePaymentMethod(method.id, 'amount', e.target.value)}
-                        placeholder="0.00"
+                        placeholder="0"
                       />
                       <Button
                         type="button"
@@ -302,27 +289,27 @@ export function PaymentDialog({ open, onOpenChange, invoice }: PaymentDialogProp
           {/* Total Summary */}
           <Card className={cn(
             "p-4",
-            Math.abs(remaining) < 0.01 ? "border-green-500" : "border-yellow-500"
+            Math.abs(remaining) < 100 ? "border-green-500" : "border-yellow-500"
           )}>
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span>Total Due:</span>
-                <span className="font-semibold">{formatCurrency(totalDue)} LYD</span>
+                <span className="font-semibold">{formatLYD(totalDue)}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span>Current Total:</span>
                 <span className={cn(
                   "font-semibold",
-                  Math.abs(remaining) < 0.01 ? "text-green-600" : "text-yellow-600"
+                  Math.abs(remaining) < 100 ? "text-green-600" : "text-yellow-600"
                 )}>
-                  {formatCurrency(currentTotal)} LYD
+                  {formatLYD(currentTotal)}
                 </span>
               </div>
-              {Math.abs(remaining) >= 0.01 && (
+              {Math.abs(remaining) >= 100 && (
                 <div className="flex justify-between text-sm">
                   <span>Remaining:</span>
                   <span className="font-semibold text-yellow-600">
-                    {formatCurrency(Math.abs(remaining))} LYD {remaining > 0 ? '(underpaid)' : '(overpaid)'}
+                    {formatLYD(Math.abs(remaining))} {remaining > 0 ? '(underpaid)' : '(overpaid)'}
                   </span>
                 </div>
               )}
@@ -335,8 +322,8 @@ export function PaymentDialog({ open, onOpenChange, invoice }: PaymentDialogProp
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Insufficient Wallet Balance</AlertTitle>
               <AlertDescription>
-                Wallet payment amount ({formatCurrency(walletAmount)} LYD) exceeds available balance 
-                ({formatCurrency(walletBalance)} LYD)
+                Wallet payment amount ({formatLYD(walletAmount)}) exceeds available balance 
+                ({formatLYD(walletBalance)})
               </AlertDescription>
             </Alert>
           )}
@@ -370,7 +357,7 @@ export function PaymentDialog({ open, onOpenChange, invoice }: PaymentDialogProp
             onClick={handleSubmit}
             disabled={!isValid || isProcessing}
           >
-            {isProcessing ? 'Processing...' : `Process Payment (${formatCurrency(totalDue)} LYD)`}
+            {isProcessing ? 'Processing...' : `Process Payment (${formatLYD(totalDue)})`}
           </Button>
         </DialogFooter>
       </DialogContent>
