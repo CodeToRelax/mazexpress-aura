@@ -2,7 +2,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { Invoice } from '@/types/invoice';
 import { calculateCBM, formatDimensions } from './invoiceHelpers';
-import { formatLYD, fromCents } from './currencyHelpers';
+import { formatLYD } from './currencyHelpers';
 import { format } from 'date-fns';
 
 /**
@@ -141,21 +141,15 @@ export async function generateInvoicePDF(invoice: Invoice): Promise<void> {
         ? calculateCBM(shipment.size.length, shipment.size.width, shipment.size.height) + 'm³'
         : '-',
       
-      // QUANTITY
-      item.quantity.toString(),
-      
-      // UNIT PRICE
-      formatLYD(fromCents(item.unitPrice)),
-      
       // TOTAL
-      formatLYD(fromCents(totalAmount)),
+      formatLYD(totalAmount),
     ];
   });
   
   // Generate table with 10 columns matching UI
   autoTable(doc, {
     startY: tableStartY,
-    head: [['ITEM', 'DESTINATION', 'METHOD', 'STATUS', 'WEIGHT', 'DIMENSIONS', 'CBM', 'QTY', 'UNIT PRICE', 'TOTAL']],
+    head: [['ITEM', 'DESTINATION', 'METHOD', 'STATUS', 'WEIGHT', 'DIMENSIONS', 'CBM', 'TOTAL']],
     body: tableData,
     theme: 'plain',
     headStyles: { 
@@ -172,16 +166,14 @@ export async function generateInvoicePDF(invoice: Invoice): Promise<void> {
       cellPadding: 2,
     },
     columnStyles: {
-      0: { cellWidth: 25, halign: 'left', fontSize: 8 },
-      1: { cellWidth: 22, halign: 'left', fontSize: 8 },
-      2: { cellWidth: 18, halign: 'center', fontSize: 8 },
-      3: { cellWidth: 20, halign: 'center', fontSize: 8 },
-      4: { cellWidth: 16, halign: 'right', fontSize: 8 },
-      5: { cellWidth: 25, halign: 'center', fontSize: 8 },
-      6: { cellWidth: 18, halign: 'right', fontSize: 8 },
-      7: { cellWidth: 12, halign: 'center', fontSize: 8 },
-      8: { cellWidth: 24, halign: 'right', fontSize: 8 },
-      9: { cellWidth: 24, halign: 'right', fontSize: 9, fontStyle: 'bold' },
+      0: { cellWidth: 30, halign: 'left', fontSize: 8 },    // Item (ESN)
+      1: { cellWidth: 30, halign: 'left', fontSize: 8 },    // Destination
+      2: { cellWidth: 22, halign: 'center', fontSize: 8 },  // Method
+      3: { cellWidth: 25, halign: 'center', fontSize: 8 },  // Status
+      4: { cellWidth: 20, halign: 'right', fontSize: 8 },   // Weight
+      5: { cellWidth: 30, halign: 'center', fontSize: 8 },  // Dimensions
+      6: { cellWidth: 20, halign: 'right', fontSize: 8 },   // CBM
+      7: { cellWidth: 28, halign: 'right', fontSize: 9, fontStyle: 'bold' },  // Total
     },
     styles: {
       lineColor: colors.border,
@@ -202,14 +194,14 @@ export async function generateInvoicePDF(invoice: Invoice): Promise<void> {
   // Show subtotal only if different from gross
   if (invoice.totals.net !== invoice.totals.gross) {
     doc.text('Subtotal:', totalsX, yPos);
-    doc.text(formatLYD(fromCents(invoice.totals.net)), rightColX, yPos, { align: 'right' });
+    doc.text(formatLYD(invoice.totals.net), rightColX, yPos, { align: 'right' });
     yPos += 6;
   }
   
   // Show tax only if > 0
   if (invoice.totals.tax > 0) {
     doc.text('Tax:', totalsX, yPos);
-    doc.text(formatLYD(fromCents(invoice.totals.tax)), rightColX, yPos, { align: 'right' });
+    doc.text(formatLYD(invoice.totals.tax), rightColX, yPos, { align: 'right' });
     yPos += 6;
   }
   
@@ -217,7 +209,7 @@ export async function generateInvoicePDF(invoice: Invoice): Promise<void> {
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(12);
   doc.text('Total:', totalsX, yPos);
-  doc.text(formatLYD(fromCents(invoice.totals.gross)), rightColX, yPos, { align: 'right' });
+  doc.text(formatLYD(invoice.totals.gross), rightColX, yPos, { align: 'right' });
   
   // ===== NOTES SECTION =====
   if (invoice.notes) {
@@ -268,7 +260,7 @@ export async function generateBatchInvoicesPDF(invoices: Invoice[]): Promise<voi
     
     doc.text(`Status: ${invoice.status}`, 14, 36);
     doc.text(`Due: ${format(new Date(invoice.dueDate), 'dd/MM/yyyy')}`, 14, 42);
-    doc.text(`Amount Due: ${formatLYD(fromCents(invoice.totals.due))}`, 14, 48);
+    doc.text(`Amount Due: ${formatLYD(invoice.totals.due)}`, 14, 48);
   });
   
   const filename = `invoices-batch-${format(new Date(), 'yyyyMMdd')}.pdf`;
