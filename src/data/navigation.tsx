@@ -34,6 +34,14 @@ export const navigationItems: NavItemWithACL[] = [
     aclFlag: 'canViewShipments',
   },
   {
+    id: 'invoices',
+    labelKey: 'nav.invoices',
+    icon: FileText,
+    href: '/invoices',
+    match: 'prefix',
+    aclFlag: 'canViewInvoices',
+  },
+  {
     id: 'warehouses',
     labelKey: 'nav.warehouses',
     icon: Warehouse,
@@ -64,13 +72,5 @@ export const navigationItems: NavItemWithACL[] = [
         aclFlag: 'canViewReports',
       },
     ],
-  },
-  {
-    id: 'invoices',
-    labelKey: 'nav.invoices',
-    icon: FileText,
-    href: '/invoices',
-    match: 'prefix',
-    aclFlag: 'canViewInvoices',
   },
 ];
