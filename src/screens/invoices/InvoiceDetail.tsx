@@ -141,6 +141,9 @@ export default function InvoiceDetail() {
         </div>
       </div>
 
+      {/* Payment History */}
+      {canManageInvoices && <PaymentHistory invoice={invoice} />}
+
       {/* Invoice Items */}
       <Card className="glass-card">
         <CardHeader>
@@ -153,9 +156,6 @@ export default function InvoiceDetail() {
           <InvoiceItemsTable items={invoice.items} />
         </CardContent>
       </Card>
-
-      {/* Payment History */}
-      {canManageInvoices && <PaymentHistory invoice={invoice} />}
 
       <PaymentDialog
         open={paymentOpen}
