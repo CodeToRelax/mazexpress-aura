@@ -71,7 +71,7 @@ export function PaymentHistory({ invoice }: PaymentHistoryProps) {
                 return (
                   <TableRow key={payment._id} className="hover:bg-muted/50">
                     <TableCell className="font-semibold">
-                      {formatLYD(payment.amount * 100)}
+                      {formatLYD(payment.amount)}
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline" className="gap-1.5">

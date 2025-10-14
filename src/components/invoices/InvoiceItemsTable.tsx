@@ -163,12 +163,12 @@ export function InvoiceItemsTable({ items }: InvoiceItemsTableProps) {
 
                 {/* Unit Price Column */}
                 <TableCell className="text-muted-foreground">
-                  {formatLYD(item.unitPrice * 100)}
+                  {formatLYD(item.unitPrice)}
                 </TableCell>
 
                 {/* Total Column */}
                 <TableCell className="text-muted-foreground">
-                  {formatLYD(totalAmount * 100)}
+                  {formatLYD(totalAmount)}
                 </TableCell>
               </TableRow>
             );

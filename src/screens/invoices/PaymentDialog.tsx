@@ -82,7 +82,7 @@ export function PaymentDialog({ open, onOpenChange, invoice }: PaymentDialogProp
   });
 
   const totalDue = invoice.totals.due;
-  const currentTotal = methods.reduce((sum, m) => sum + ((parseFloat(m.amount) || 0) * 100), 0);
+  const currentTotal = methods.reduce((sum, m) => sum + (parseFloat(m.amount) || 0), 0);
   const remaining = totalDue - currentTotal;
 
   const addPaymentMethod = () => {
@@ -100,28 +100,28 @@ export function PaymentDialog({ open, onOpenChange, invoice }: PaymentDialogProp
   };
 
   const distributeEqually = () => {
-    const perMethod = ((totalDue / 100) / methods.length).toFixed(0);
+    const perMethod = (totalDue / methods.length).toFixed(0);
     setMethods(methods.map(m => ({ ...m, amount: perMethod })));
   };
 
   const fillRemaining = (id: string) => {
     const otherTotal = methods
       .filter(m => m.id !== id)
-      .reduce((sum, m) => sum + ((parseFloat(m.amount) || 0) * 100), 0);
+      .reduce((sum, m) => sum + (parseFloat(m.amount) || 0), 0);
     
-    const remainingAmount = Math.max(0, (totalDue - otherTotal) / 100).toFixed(0);
+    const remainingAmount = Math.max(0, totalDue - otherTotal).toFixed(0);
     updatePaymentMethod(id, 'amount', remainingAmount);
   };
 
   const walletAmount = methods
     .filter(m => m.source === 'WALLET')
-    .reduce((sum, m) => sum + ((parseFloat(m.amount) || 0) * 100), 0);
+    .reduce((sum, m) => sum + (parseFloat(m.amount) || 0), 0);
   
   const walletBalance = walletData?.balance || 0;
   const showInsufficientWarning = walletAmount > walletBalance;
   
   const isValid = 
-    Math.abs(remaining) < 100 && 
+    Math.abs(remaining) < 1 && 
     !showInsufficientWarning && 
     methods.every(m => parseFloat(m.amount) > 0);
 
@@ -131,7 +131,7 @@ export function PaymentDialog({ open, onOpenChange, invoice }: PaymentDialogProp
     setIsProcessing(true);
     try {
       const payload: ProcessPaymentRequest = {
-        totalAmount: totalDue / 100,
+        totalAmount: totalDue,
         paymentMethods: methods.map(m => ({
           source: m.source,
           amount: parseFloat(m.amount),
@@ -289,7 +289,7 @@ export function PaymentDialog({ open, onOpenChange, invoice }: PaymentDialogProp
           {/* Total Summary */}
           <Card className={cn(
             "p-4",
-            Math.abs(remaining) < 100 ? "border-green-500" : "border-yellow-500"
+            Math.abs(remaining) < 1 ? "border-green-500" : "border-yellow-500"
           )}>
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
@@ -300,12 +300,12 @@ export function PaymentDialog({ open, onOpenChange, invoice }: PaymentDialogProp
                 <span>Current Total:</span>
                 <span className={cn(
                   "font-semibold",
-                  Math.abs(remaining) < 100 ? "text-green-600" : "text-yellow-600"
+                  Math.abs(remaining) < 1 ? "text-green-600" : "text-yellow-600"
                 )}>
                   {formatLYD(currentTotal)}
                 </span>
               </div>
-              {Math.abs(remaining) >= 100 && (
+              {Math.abs(remaining) >= 1 && (
                 <div className="flex justify-between text-sm">
                   <span>Remaining:</span>
                   <span className="font-semibold text-yellow-600">
