@@ -15,6 +15,8 @@ import { useACL } from '@/hooks/useACL';
 import { formatLYD } from '@/utilities/helpers/currencyHelpers';
 import { InvoiceStatusBadge } from '@/components/invoices/InvoiceStatusBadge';
 import { InvoiceItemsTable } from '@/components/invoices/InvoiceItemsTable';
+import { generateInvoicePDF } from '@/utilities/helpers/invoicePDF';
+import { toast } from '@/hooks/use-toast';
 
 export default function InvoiceDetail() {
   const { id } = useParams<{ id: string }>();
@@ -74,8 +76,20 @@ export default function InvoiceDetail() {
   const canPay = canManageInvoices && (invoice.status === 'PENDING' || invoice.status === 'SENT' || invoice.status === 'OVERDUE' || invoice.status === 'PARTIALLY_PAID') && invoice.totals.due > 0;
   const canCancel = canManageInvoices && invoice.status !== 'VOID' && invoice.status !== 'PAID';
   
-  const handlePrint = () => {
-    window.print();
+  const handlePrint = async () => {
+    try {
+      await generateInvoicePDF(invoice);
+      toast({
+        title: t('common.success'),
+        description: 'Invoice PDF generated successfully',
+      });
+    } catch (error) {
+      toast({
+        title: t('common.error'),
+        description: 'Failed to generate PDF',
+        variant: 'destructive',
+      });
+    }
   };
 
   return (

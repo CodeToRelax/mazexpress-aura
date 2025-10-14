@@ -5,131 +5,209 @@ import { formatCurrency, parseInvoiceItemDescription } from './invoiceHelpers';
 import { format } from 'date-fns';
 
 /**
- * Generate PDF for a single invoice
+ * Platform color palette (from index.css)
+ * Primary: HSL(193, 98%, 44%) = RGB(2, 181, 224) - Cyan/Turquoise
+ */
+const colors = {
+  primary: [2, 181, 224] as [number, number, number],
+  primaryLight: [84, 196, 224] as [number, number, number],
+  headerBg: [243, 244, 246] as [number, number, number],
+  textDark: [31, 41, 55] as [number, number, number],
+  textMuted: [107, 114, 128] as [number, number, number],
+  border: [229, 231, 235] as [number, number, number],
+  white: [255, 255, 255] as [number, number, number],
+  black: [0, 0, 0] as [number, number, number],
+};
+
+/**
+ * Generate professional invoice PDF matching platform design
  */
 export async function generateInvoicePDF(invoice: Invoice): Promise<void> {
   const doc = new jsPDF();
   
-  // Company header
-  doc.setFontSize(20);
+  // ===== HEADER SECTION =====
+  // Left: "INVOICE" title
+  doc.setFontSize(24);
   doc.setFont('helvetica', 'bold');
-  doc.text('MazExpress', 14, 20);
+  doc.setTextColor(colors.black[0], colors.black[1], colors.black[2]);
+  doc.text('INVOICE', 14, 25);
+  
+  // Right: Company branding in cyan
+  doc.setFontSize(18);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+  doc.text('MazExpress', 196, 20, { align: 'right' });
   
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
-  doc.text('Shipping & Logistics', 14, 26);
+  doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
+  doc.text('Shipping & Logistics', 196, 27, { align: 'right' });
   
-  // Invoice title
-  doc.setFontSize(16);
-  doc.setFont('helvetica', 'bold');
-  doc.text(invoice.invoiceNumber || 'DRAFT INVOICE', 14, 40);
+  // ===== INFORMATION SECTION (Two columns) =====
+  const infoStartY = 45;
   
-  // Status badge
-  doc.setFontSize(10);
-  doc.setFont('helvetica', 'bold');
-  const statusX = 150;
-  doc.text(`Status: ${invoice.status}`, statusX, 40);
+  // Left column - Company info
+  doc.setFontSize(9);
+  doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
+  doc.text('MazExpress', 14, infoStartY);
+  doc.text('Shipping & Logistics Solutions', 14, infoStartY + 5);
   
-  // Customer information
+  // Bill To section
   doc.setFontSize(11);
   doc.setFont('helvetica', 'bold');
-  doc.text('Bill To:', 14, 55);
+  doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
+  doc.text('BILL TO', 14, infoStartY + 18);
   
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(10);
   const userId = typeof invoice.userId === 'object' ? invoice.userId : null;
   if (userId) {
-    doc.text(`${userId.firstName} ${userId.lastName}`, 14, 62);
-    doc.text(userId.email, 14, 68);
-    doc.text(`Shipping #: ${userId.uniqueShippingNumber}`, 14, 74);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`${userId.firstName} ${userId.lastName}`, 14, infoStartY + 25);
+    doc.setFont('helvetica', 'normal');
+    doc.text(userId.email, 14, infoStartY + 31);
+    doc.text(`Shipping #: ${userId.uniqueShippingNumber}`, 14, infoStartY + 37);
   }
   
-  // Invoice details
+  // Right column - Invoice details
+  const rightColX = 140;
   doc.setFont('helvetica', 'bold');
-  doc.text('Invoice Details:', 150, 55);
+  doc.setFontSize(10);
+  doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
+  
+  // Invoice Number
+  doc.text('Invoice No:', rightColX, infoStartY);
   doc.setFont('helvetica', 'normal');
+  doc.text(invoice.invoiceNumber || 'DRAFT', 196, infoStartY, { align: 'right' });
   
-  const details = [
-    `Issue Date: ${invoice.issueDate ? format(new Date(invoice.issueDate), 'PP') : 'N/A'}`,
-    `Due Date: ${format(new Date(invoice.dueDate), 'PP')}`,
-    `Currency: ${invoice.currency || 'LYD'}`,
-  ];
+  // Issue Date
+  doc.setFont('helvetica', 'bold');
+  doc.text('Issue date:', rightColX, infoStartY + 6);
+  doc.setFont('helvetica', 'normal');
+  doc.text(
+    invoice.issueDate ? format(new Date(invoice.issueDate), 'dd/MM/yyyy') : 'N/A',
+    196,
+    infoStartY + 6,
+    { align: 'right' }
+  );
   
-  let yPos = 62;
-  details.forEach(detail => {
-    doc.text(detail, 150, yPos);
-    yPos += 6;
-  });
+  // Due Date
+  doc.setFont('helvetica', 'bold');
+  doc.text('Due date:', rightColX, infoStartY + 12);
+  doc.setFont('helvetica', 'normal');
+  doc.text(
+    format(new Date(invoice.dueDate), 'dd/MM/yyyy'),
+    196,
+    infoStartY + 12,
+    { align: 'right' }
+  );
   
-  // Invoice items table
+  // ===== ITEMS TABLE =====
+  const tableStartY = 100;
+  
+  // Prepare table data
   const tableData = invoice.items.map(item => {
     const parsed = parseInvoiceItemDescription(item.description);
+    const description = parsed.shipmentCode 
+      ? `Shipment ${parsed.shipmentCode} - ${parsed.location || 'N/A'}`
+      : parsed.baseDescription;
+    
     return [
-      parsed.shipmentCode || '-',
-      parsed.baseDescription,
+      description,
       item.quantity.toString(),
       formatCurrency(item.unitPrice / 100),
       formatCurrency((item.totalGross || item.totalNet || 0) / 100),
     ];
   });
   
+  // Generate clean table
   autoTable(doc, {
-    startY: 85,
-    head: [['Shipment', 'Description', 'Qty', 'Unit Price (LYD)', 'Total (LYD)']],
+    startY: tableStartY,
+    head: [['DESCRIPTION', 'QUANTITY', 'UNIT PRICE (LYD)', 'AMOUNT (LYD)']],
     body: tableData,
-    theme: 'grid',
-    headStyles: { fillColor: [59, 130, 246], textColor: 255 },
-    styles: { fontSize: 9 },
+    theme: 'plain',
+    headStyles: { 
+      fillColor: colors.headerBg,
+      textColor: colors.textDark,
+      fontSize: 10,
+      fontStyle: 'bold',
+      halign: 'left',
+      cellPadding: 3,
+    },
+    bodyStyles: {
+      fontSize: 9,
+      textColor: colors.textDark,
+      cellPadding: 3,
+    },
     columnStyles: {
-      0: { cellWidth: 30 },
-      1: { cellWidth: 80 },
-      2: { cellWidth: 20, halign: 'center' },
-      3: { cellWidth: 30, halign: 'right' },
-      4: { cellWidth: 30, halign: 'right' },
+      0: { cellWidth: 100, halign: 'left' },
+      1: { cellWidth: 25, halign: 'center' },
+      2: { cellWidth: 30, halign: 'right' },
+      3: { cellWidth: 30, halign: 'right', fontStyle: 'bold' },
+    },
+    styles: {
+      lineColor: colors.border,
+      lineWidth: 0.1,
     },
   });
   
-  // Totals section
+  // ===== TOTALS SECTION =====
   const finalY = (doc as any).lastAutoTable.finalY || 150;
-  const totalsX = 140;
-  let totalsY = finalY + 10;
+  const totalsX = 130;
+  let yPos = finalY + 15;
   
-  doc.setFont('helvetica', 'normal');
   doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
   
-  const totals = [
-    ['Net Amount:', formatCurrency(invoice.totals.net / 100)],
-    ['Tax:', formatCurrency(invoice.totals.tax / 100)],
-    ['Gross Amount:', formatCurrency(invoice.totals.gross / 100)],
-    ['Paid:', formatCurrency(invoice.totals.paid / 100)],
-  ];
+  // Show subtotal only if different from gross
+  if (invoice.totals.net !== invoice.totals.gross) {
+    doc.text('Subtotal (LYD):', totalsX, yPos);
+    doc.text(formatCurrency(invoice.totals.net / 100), 196, yPos, { align: 'right' });
+    yPos += 6;
+  }
   
-  totals.forEach(([label, value]) => {
-    doc.text(label, totalsX, totalsY);
-    doc.text(`${value} LYD`, totalsX + 50, totalsY, { align: 'right' });
-    totalsY += 6;
-  });
+  // Show tax only if > 0
+  if (invoice.totals.tax > 0) {
+    doc.text('Tax (LYD):', totalsX, yPos);
+    doc.text(formatCurrency(invoice.totals.tax / 100), 196, yPos, { align: 'right' });
+    yPos += 6;
+  }
   
-  // Due amount (highlighted)
+  // Total
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(11);
-  doc.text('Amount Due:', totalsX, totalsY + 2);
-  doc.text(`${formatCurrency(invoice.totals.due / 100)} LYD`, totalsX + 50, totalsY + 2, { align: 'right' });
+  doc.text('Total (LYD):', totalsX, yPos);
+  doc.text(formatCurrency(invoice.totals.gross / 100), 196, yPos, { align: 'right' });
+  yPos += 10;
   
-  // Notes
+  // Cyan highlighted box for TOTAL DUE
+  const boxHeight = 12;
+  const boxWidth = 66;
+  doc.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+  doc.roundedRect(totalsX, yPos - 5, boxWidth, boxHeight, 2, 2, 'F');
+  
+  doc.setTextColor(colors.white[0], colors.white[1], colors.white[2]);
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'bold');
+  doc.text('TOTAL DUE (LYD):', totalsX + 3, yPos + 3);
+  doc.text(formatCurrency(invoice.totals.due / 100), 193, yPos + 3, { align: 'right' });
+  
+  // ===== NOTES SECTION =====
   if (invoice.notes) {
+    doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(10);
-    doc.text('Notes:', 14, totalsY + 15);
+    doc.text('Notes:', 14, yPos + 20);
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(9);
     const splitNotes = doc.splitTextToSize(invoice.notes, 180);
-    doc.text(splitNotes, 14, totalsY + 21);
+    doc.text(splitNotes, 14, yPos + 26);
   }
   
-  // Footer
+  // ===== FOOTER =====
   doc.setFontSize(8);
   doc.setFont('helvetica', 'italic');
+  doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
   doc.text('Thank you for your business!', 105, 280, { align: 'center' });
   
   // Save PDF
@@ -148,19 +226,21 @@ export async function generateBatchInvoicesPDF(invoices: Invoice[]): Promise<voi
       doc.addPage();
     }
     
-    // Similar content as single invoice, but in a loop
-    // Simplified version for batch
+    // Simplified batch version
     doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
     doc.text(`Invoice: ${invoice.invoiceNumber || 'DRAFT'}`, 14, 20);
     
     const userId = typeof invoice.userId === 'object' ? invoice.userId : null;
     if (userId) {
       doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
       doc.text(`Customer: ${userId.firstName} ${userId.lastName}`, 14, 30);
     }
     
     doc.text(`Status: ${invoice.status}`, 14, 36);
-    doc.text(`Due: ${format(new Date(invoice.dueDate), 'PP')}`, 14, 42);
+    doc.text(`Due: ${format(new Date(invoice.dueDate), 'dd/MM/yyyy')}`, 14, 42);
     doc.text(`Amount Due: ${formatCurrency(invoice.totals.due / 100)} LYD`, 14, 48);
   });
   
