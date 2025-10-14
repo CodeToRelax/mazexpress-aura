@@ -80,8 +80,6 @@ export function InvoiceItemsTable({ items }: InvoiceItemsTableProps) {
             <TableHead>{t('invoice.items.weight')}</TableHead>
             <TableHead>{t('invoice.items.dimensions')}</TableHead>
             <TableHead>{t('invoice.items.cbm')}</TableHead>
-            <TableHead>{t('invoice.items.quantity')}</TableHead>
-            <TableHead>{t('invoice.items.unitPrice')}</TableHead>
             <TableHead>{t('invoice.items.total')}</TableHead>
           </TableRow>
         </TableHeader>
@@ -154,16 +152,6 @@ export function InvoiceItemsTable({ items }: InvoiceItemsTableProps) {
                     ? calculateCBM(shipment.size.length, shipment.size.width, shipment.size.height) + 'm³'
                     : '-'
                   }
-                </TableCell>
-
-                {/* Quantity Column */}
-                <TableCell className="text-muted-foreground">
-                  {item.quantity}
-                </TableCell>
-
-                {/* Unit Price Column */}
-                <TableCell className="text-muted-foreground">
-                  {formatLYD(item.unitPrice)}
                 </TableCell>
 
                 {/* Total Column */}
