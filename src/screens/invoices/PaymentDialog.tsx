@@ -24,7 +24,7 @@ import {
 import { cn } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
 import { processPayment } from '@/utilities/api/invoice.api';
-import { getWallet } from '@/utilities/api/wallet.api';
+import { getWalletByUserId } from '@/utilities/api/wallet.api';
 import type { Invoice, ProcessPaymentRequest, PaymentSource } from '@/types/invoice';
 import { formatLYD } from '@/utilities/helpers/currencyHelpers';
 
@@ -51,10 +51,15 @@ export function PaymentDialog({ open, onOpenChange, invoice }: PaymentDialogProp
   ]);
   const [notes, setNotes] = useState('');
 
+  // Extract customer user ID from invoice
+  const customerId = typeof invoice.userId === 'string' 
+    ? invoice.userId 
+    : invoice.userId._id;
+
   const { data: walletData, isLoading: walletLoading, error: walletError } = useQuery({
-    queryKey: ['wallet'],
-    queryFn: () => getWallet(i18n.language),
-    enabled: open,
+    queryKey: ['wallet', customerId],
+    queryFn: () => getWalletByUserId(customerId, i18n.language),
+    enabled: open && !!customerId,
   });
 
   // Debug wallet query state
