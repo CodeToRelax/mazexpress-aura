@@ -756,6 +756,19 @@
       "processPayment": "Process Payment",
       "paymentNote": "To mark an invoice as PAID, use the 'Make Payment' button to properly record payment details."
     },
+    "table": {
+      "user": "Customer",
+      "shippingNumber": "Shipping #",
+      "issueDate": "Issue Date",
+      "dueDate": "Due Date",
+      "status": "Status",
+      "netAmount": "Net Amount",
+      "taxAmount": "Tax Amount",
+      "grossAmount": "Gross Amount",
+      "paidAmount": "Paid Amount",
+      "dueAmount": "Due Amount",
+      "itemsCount": "Items"
+    },
     "quantity": "Quantity",
     "netAmount": "Net Amount",
     "taxAmount": "Tax Amount",

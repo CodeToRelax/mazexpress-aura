@@ -661,6 +661,19 @@
       "processPayment": "معالجة الدفع",
       "paymentNote": "لتحديد الفاتورة كمدفوعة، استخدم زر 'الدفع' لتسجيل تفاصيل الدفع بشكل صحيح."
     },
+    "table": {
+      "user": "العميل",
+      "shippingNumber": "رقم الشحن",
+      "issueDate": "تاريخ الإصدار",
+      "dueDate": "تاريخ الاستحقاق",
+      "status": "الحالة",
+      "netAmount": "المبلغ الصافي",
+      "taxAmount": "مبلغ الضريبة",
+      "grossAmount": "المبلغ الإجمالي",
+      "paidAmount": "المبلغ المدفوع",
+      "dueAmount": "المبلغ المستحق",
+      "itemsCount": "العناصر"
+    },
     "quantity": "الكمية",
     "netAmount": "المبلغ الصافي",
     "taxAmount": "مبلغ الضريبة",
