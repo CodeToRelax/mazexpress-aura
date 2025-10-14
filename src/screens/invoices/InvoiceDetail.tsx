@@ -20,6 +20,7 @@ import { useACL } from '@/hooks/useACL';
 import { format } from 'date-fns';
 import { parseInvoiceItemDescription, formatCurrency } from '@/utilities/helpers/invoiceHelpers';
 import { InvoiceStatusBadge } from '@/components/invoices/InvoiceStatusBadge';
+import { InvoiceItemsTable } from '@/components/invoices/InvoiceItemsTable';
 
 export default function InvoiceDetail() {
   const { id } = useParams<{ id: string }>();
@@ -140,10 +141,21 @@ export default function InvoiceDetail() {
         </div>
       </div>
 
+      {/* Invoice Items */}
+      <Card className="glass-card">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Package className="h-5 w-5 text-primary" />
+            {t('invoice.items.title')}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
+          <InvoiceItemsTable items={invoice.items} />
+        </CardContent>
+      </Card>
+
       {/* Payment History */}
       {canManageInvoices && <PaymentHistory invoice={invoice} />}
-
-      {/* TODO: Additional Content - To be implemented in next sections */}
 
       <PaymentDialog
         open={paymentOpen}

@@ -735,7 +735,16 @@
     "title": "Invoices",
     "subtitle": "Manage and track customer invoices",
     "notFound": "Invoice not found",
-    "items": "Invoice Items",
+    "items": {
+      "title": "Invoice Items",
+      "quantity": "Quantity",
+      "unitPrice": "Unit Price",
+      "total": "Total",
+      "weight": "Weight",
+      "dimensions": "Dimensions",
+      "cbm": "CBM",
+      "noItems": "No items in this invoice"
+    },
     "quantity": "Quantity",
     "netAmount": "Net Amount",
     "taxAmount": "Tax Amount",

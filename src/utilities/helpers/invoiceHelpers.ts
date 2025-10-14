@@ -39,3 +39,27 @@ export function formatCurrency(amount: number): string {
     maximumFractionDigits: 2,
   }).format(amount);
 }
+
+/**
+ * Calculate CBM (Cubic Meters) from dimensions in centimeters
+ * @param length - Length in cm
+ * @param width - Width in cm
+ * @param height - Height in cm
+ * @returns Formatted CBM string with 3 decimal places
+ */
+export function calculateCBM(length: number, width: number, height: number): string {
+  const cbm = (length * width * height) / 1000000;
+  return cbm.toFixed(3);
+}
+
+/**
+ * Format dimensions string
+ * @param length - Length in cm
+ * @param width - Width in cm
+ * @param height - Height in cm
+ * @returns Formatted dimensions string (L×W×H)
+ */
+export function formatDimensions(length?: number, width?: number, height?: number): string {
+  if (!length || !width || !height) return 'N/A';
+  return `${length}×${width}×${height}cm`;
+}
