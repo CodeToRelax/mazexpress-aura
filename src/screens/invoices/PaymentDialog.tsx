@@ -51,10 +51,19 @@ export function PaymentDialog({ open, onOpenChange, invoice }: PaymentDialogProp
   ]);
   const [notes, setNotes] = useState('');
 
-  const { data: walletData } = useQuery({
+  const { data: walletData, isLoading: walletLoading, error: walletError } = useQuery({
     queryKey: ['wallet'],
     queryFn: () => getWallet(i18n.language),
     enabled: open,
+  });
+
+  // Debug wallet query state
+  console.log('PaymentDialog - Wallet Query:', {
+    open,
+    walletData,
+    walletLoading,
+    walletError,
+    balance: walletData?.balance,
   });
 
   const mutation = useMutation({
@@ -202,15 +211,23 @@ export function PaymentDialog({ open, onOpenChange, invoice }: PaymentDialogProp
                             Cash
                           </div>
                         </SelectItem>
-                        <SelectItem value="WALLET">
+                        <SelectItem value="WALLET" disabled={walletLoading || !!walletError}>
                           <div className="flex items-center gap-2">
                             <WalletIcon className="h-4 w-4" />
                             Wallet
-                            {walletData && (
+                            {walletLoading ? (
+                              <span className="text-xs text-muted-foreground">
+                                (Loading...)
+                              </span>
+                            ) : walletError ? (
+                              <span className="text-xs text-destructive">
+                                (Error)
+                              </span>
+                            ) : walletData ? (
                               <span className="text-xs text-muted-foreground">
                                 (Balance: {formatLYD(walletBalance)})
                               </span>
-                            )}
+                            ) : null}
                           </div>
                         </SelectItem>
                         <SelectItem value="BANK_TRANSFER">
@@ -315,6 +332,17 @@ export function PaymentDialog({ open, onOpenChange, invoice }: PaymentDialogProp
               )}
             </div>
           </Card>
+
+          {/* Wallet Error Warning */}
+          {walletError && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Wallet Error</AlertTitle>
+              <AlertDescription>
+                Failed to load wallet balance. Please refresh and try again.
+              </AlertDescription>
+            </Alert>
+          )}
 
           {/* Wallet Insufficient Warning */}
           {showInsufficientWarning && (
