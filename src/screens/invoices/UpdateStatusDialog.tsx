@@ -42,9 +42,9 @@ import { updateInvoiceStatusSchema } from '@/utilities/zod/invoice.schemas';
 import { toast } from '@/hooks/use-toast';
 import type { Invoice } from '@/types/invoice';
 import type { UpdateInvoiceStatusInput } from '@/utilities/zod/invoice.schemas';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
-  Edit, Send, Clock, DollarSign, CheckCircle2,
-  AlertCircle, Undo, AlertTriangle, XCircle, X
+  Edit, Send, Clock, AlertCircle, Undo, AlertTriangle, XCircle, X, Info
 } from 'lucide-react';
 
 interface UpdateStatusDialogProps {
@@ -58,8 +58,6 @@ const statuses = [
   { value: 'DRAFT', label: 'Draft', icon: Edit },
   { value: 'SENT', label: 'Sent', icon: Send },
   { value: 'PENDING', label: 'Pending', icon: Clock },
-  { value: 'PARTIALLY_PAID', label: 'Partially Paid', icon: DollarSign },
-  { value: 'PAID', label: 'Paid', icon: CheckCircle2 },
   { value: 'OVERDUE', label: 'Overdue', icon: AlertCircle },
   { value: 'REFUNDED', label: 'Refunded', icon: Undo },
   { value: 'DISPUTED', label: 'Disputed', icon: AlertTriangle },
@@ -166,6 +164,13 @@ export function UpdateStatusDialog({ open, onOpenChange, invoice, onSuccess }: U
                   </FormItem>
                 )}
               />
+
+              <Alert>
+                <Info className="h-4 w-4" />
+                <AlertDescription>
+                  {t('invoice.payment.paymentNote')}
+                </AlertDescription>
+              </Alert>
 
               <DialogFooter>
                 <Button

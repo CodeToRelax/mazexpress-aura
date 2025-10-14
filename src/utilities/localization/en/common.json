@@ -735,7 +735,7 @@
     "title": "Invoices",
     "subtitle": "Manage and track customer invoices",
     "notFound": "Invoice not found",
-    "items": {
+     "items": {
       "title": "Invoice Items",
       "item": "Item",
       "description": "Description",
@@ -749,6 +749,12 @@
       "dimensions": "Dimensions",
       "cbm": "CBM",
       "noItems": "No items in this invoice"
+    },
+    "payment": {
+      "makePayment": "Make Payment",
+      "paymentDue": "Payment Due",
+      "processPayment": "Process Payment",
+      "paymentNote": "To mark an invoice as PAID, use the 'Make Payment' button to properly record payment details."
     },
     "quantity": "Quantity",
     "netAmount": "Net Amount",

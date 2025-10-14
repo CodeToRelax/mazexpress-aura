@@ -2,23 +2,17 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Printer, CheckCircle, XCircle, Edit, Package, Scale, Box, ExternalLink, FileText, Loader2 } from 'lucide-react';
+import { ArrowLeft, Printer, XCircle, Edit, Package, FileText, Loader2, DollarSign } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 import { getInvoiceById } from '@/utilities/api/invoice.api';
-import { PageLoader } from '@/components/feedback/PageLoader';
 import { InlineError } from '@/components/feedback/InlineError';
 import { PaymentDialog } from './PaymentDialog';
-import { MarkAsPaidDialog } from './MarkAsPaidDialog';
 import { CancelInvoiceDialog } from './CancelInvoiceDialog';
 import { UpdateStatusDialog } from './UpdateStatusDialog';
 import { PaymentHistory } from './PaymentHistory';
-import { ACLGuard } from '@/components/guards/ACLGuard';
 import { useACL } from '@/hooks/useACL';
-import { format } from 'date-fns';
-import { parseInvoiceItemDescription, formatCurrency } from '@/utilities/helpers/invoiceHelpers';
+import { formatCurrency } from '@/utilities/helpers/invoiceHelpers';
 import { InvoiceStatusBadge } from '@/components/invoices/InvoiceStatusBadge';
 import { InvoiceItemsTable } from '@/components/invoices/InvoiceItemsTable';
 
@@ -28,7 +22,6 @@ export default function InvoiceDetail() {
   const navigate = useNavigate();
   const { hasFlag, acl } = useACL();
   const [paymentOpen, setPaymentOpen] = useState(false);
-  const [markPaidOpen, setMarkPaidOpen] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
   const [updateStatusOpen, setUpdateStatusOpen] = useState(false);
 
@@ -83,9 +76,8 @@ export default function InvoiceDetail() {
   if (error) return <InlineError message={error.message} />;
   if (!invoice) return <InlineError message={t('invoice.notFound')} />;
 
-  const canPay = invoice.status === 'PENDING' || invoice.status === 'SENT' || invoice.status === 'OVERDUE';
   const canManageInvoices = hasFlag('canManageInvoices') || acl?.userType === 'admin';
-  const canMarkAsPaid = canManageInvoices && (invoice.status === 'PENDING' || invoice.status === 'SENT' || invoice.status === 'OVERDUE');
+  const canPay = canManageInvoices && (invoice.status === 'PENDING' || invoice.status === 'SENT' || invoice.status === 'OVERDUE' || invoice.status === 'PARTIALLY_PAID') && invoice.totals.due > 0;
   const canCancel = canManageInvoices && invoice.status !== 'VOID' && invoice.status !== 'PAID';
   
   const handlePrint = () => {
@@ -157,15 +149,36 @@ export default function InvoiceDetail() {
         </CardContent>
       </Card>
 
+      {/* Make Payment Section */}
+      {canPay && (
+        <Card className="glass-card border-primary/20">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">{t('invoice.payment.paymentDue')}</h3>
+                <p className="text-3xl font-bold text-primary mt-2">
+                  {formatCurrencyAmount(invoice.totals.due)} LYD
+                </p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {t('invoice.fields.invoiceNumber')}: {invoice.invoiceNumber}
+                </p>
+              </div>
+              <Button 
+                size="lg" 
+                onClick={() => setPaymentOpen(true)}
+                className="gap-2"
+              >
+                <DollarSign className="h-5 w-5" />
+                {t('invoice.payment.makePayment')}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <PaymentDialog
         open={paymentOpen}
         onOpenChange={setPaymentOpen}
-        invoice={invoice}
-      />
-
-      <MarkAsPaidDialog
-        open={markPaidOpen}
-        onOpenChange={setMarkPaidOpen}
         invoice={invoice}
       />
 
