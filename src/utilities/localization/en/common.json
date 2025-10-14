@@ -888,6 +888,7 @@
       "downloadPDF": "Download PDF",
       "print": "Print",
       "markAsPaid": "Mark as Paid",
+      "makePayment": "Make Payment",
       "updateStatus": "Update Status",
       "void": "Void Invoice",
       "export": "Export",

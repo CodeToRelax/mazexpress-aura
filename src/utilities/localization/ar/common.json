@@ -794,6 +794,7 @@
       "downloadPDF": "تحميل PDF",
       "print": "طباعة",
       "markAsPaid": "تعيين كمدفوع",
+      "makePayment": "الدفع",
       "updateStatus": "تحديث الحالة",
       "void": "إلغاء الفاتورة",
       "export": "تصدير",
