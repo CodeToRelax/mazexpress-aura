@@ -99,9 +99,37 @@ export function PaymentDialog({ open, onOpenChange, invoice }: PaymentDialogProp
   const currentTotal = methods.reduce((sum, m) => sum + (parseFloat(m.amount) || 0), 0);
   const remaining = totalDue - currentTotal;
 
+  // Get sources that are already used by other payment methods
+  const getUsedSources = (excludeId?: string): PaymentSource[] => {
+    return methods
+      .filter(m => m.id !== excludeId)
+      .map(m => m.source);
+  };
+
+  // Get available sources for a specific payment method row
+  const getAvailableSources = (currentMethodId: string): PaymentSource[] => {
+    const usedSources = getUsedSources(currentMethodId);
+    const allSources: PaymentSource[] = ['CASH', 'WALLET', 'BANK_TRANSFER'];
+    return allSources.filter(source => !usedSources.includes(source));
+  };
+
+  // Check if a specific source is available (not used by other rows)
+  const isSourceAvailable = (source: PaymentSource, currentMethodId: string): boolean => {
+    const usedSources = getUsedSources(currentMethodId);
+    return !usedSources.includes(source);
+  };
+
   const addPaymentMethod = () => {
-    if (methods.length >= 5) return;
-    setMethods([...methods, { id: uuidv4(), source: 'CASH', amount: '', reference: '' }]);
+    const usedSources = getUsedSources();
+    const allSources: PaymentSource[] = ['CASH', 'WALLET', 'BANK_TRANSFER'];
+    const availableSources = allSources.filter(source => !usedSources.includes(source));
+    
+    // Can't add if all 3 sources are used
+    if (availableSources.length === 0) return;
+    
+    // Auto-select the first available source
+    const newSource = availableSources[0];
+    setMethods([...methods, { id: uuidv4(), source: newSource, amount: '', reference: '' }]);
   };
 
   const removePaymentMethod = (id: string) => {
@@ -210,17 +238,28 @@ export function PaymentDialog({ open, onOpenChange, invoice }: PaymentDialogProp
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="bg-background">
-                        <SelectItem value="CASH">
+                        <SelectItem 
+                          value="CASH" 
+                          disabled={!isSourceAvailable('CASH', method.id)}
+                        >
                           <div className="flex items-center gap-2">
                             <DollarSign className="h-4 w-4" />
                             Cash
+                            {!isSourceAvailable('CASH', method.id) && (
+                              <span className="text-xs text-muted-foreground">(Already used)</span>
+                            )}
                           </div>
                         </SelectItem>
-                        <SelectItem value="WALLET" disabled={walletLoading || !!walletError}>
+                        <SelectItem 
+                          value="WALLET" 
+                          disabled={!isSourceAvailable('WALLET', method.id) || walletLoading || !!walletError}
+                        >
                           <div className="flex items-center gap-2">
                             <WalletIcon className="h-4 w-4" />
                             Wallet
-                            {walletLoading ? (
+                            {!isSourceAvailable('WALLET', method.id) ? (
+                              <span className="text-xs text-muted-foreground">(Already used)</span>
+                            ) : walletLoading ? (
                               <span className="text-xs text-muted-foreground">
                                 (Loading...)
                               </span>
@@ -235,10 +274,16 @@ export function PaymentDialog({ open, onOpenChange, invoice }: PaymentDialogProp
                             ) : null}
                           </div>
                         </SelectItem>
-                        <SelectItem value="BANK_TRANSFER">
+                        <SelectItem 
+                          value="BANK_TRANSFER"
+                          disabled={!isSourceAvailable('BANK_TRANSFER', method.id)}
+                        >
                           <div className="flex items-center gap-2">
                             <Building2 className="h-4 w-4" />
                             Bank Transfer
+                            {!isSourceAvailable('BANK_TRANSFER', method.id) && (
+                              <span className="text-xs text-muted-foreground">(Already used)</span>
+                            )}
                           </div>
                         </SelectItem>
                       </SelectContent>
@@ -301,10 +346,10 @@ export function PaymentDialog({ open, onOpenChange, invoice }: PaymentDialogProp
               variant="outline"
               onClick={addPaymentMethod}
               className="w-full"
-              disabled={methods.length >= 5}
+              disabled={getUsedSources().length >= 3}
             >
               <Plus className="h-4 w-4 mr-2" />
-              Add Payment Method
+              Add Payment Method {getUsedSources().length >= 3 && '(All sources used)'}
             </Button>
           </div>
 
