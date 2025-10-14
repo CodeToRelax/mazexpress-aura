@@ -25,7 +25,7 @@ const colors = {
  */
 export async function generateInvoicePDF(invoice: Invoice): Promise<void> {
   const doc = new jsPDF({
-    orientation: 'landscape',
+    orientation: 'portrait',
     unit: 'mm',
     format: 'a4'
   });
@@ -41,12 +41,12 @@ export async function generateInvoicePDF(invoice: Invoice): Promise<void> {
   doc.setFontSize(18);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-  doc.text('MazExpress', 283, 20, { align: 'right' });
+  doc.text('MazExpress', 196, 20, { align: 'right' });
   
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
-  doc.text('Shipping & Logistics', 283, 27, { align: 'right' });
+  doc.text('Shipping & Logistics', 196, 27, { align: 'right' });
   
   // ===== INFORMATION SECTION (Two columns) =====
   const infoStartY = 45;
@@ -80,28 +80,28 @@ export async function generateInvoicePDF(invoice: Invoice): Promise<void> {
   doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
   
   // Invoice Number
-  doc.text('Invoice No:', 220, infoStartY);
+  doc.text('Invoice No:', 130, infoStartY);
   doc.setFont('helvetica', 'normal');
-  doc.text(invoice.invoiceNumber || 'DRAFT', 283, infoStartY, { align: 'right' });
+  doc.text(invoice.invoiceNumber || 'DRAFT', 196, infoStartY, { align: 'right' });
   
   // Issue Date
   doc.setFont('helvetica', 'bold');
-  doc.text('Issue date:', 220, infoStartY + 6);
+  doc.text('Issue date:', 130, infoStartY + 6);
   doc.setFont('helvetica', 'normal');
   doc.text(
     invoice.issueDate ? format(new Date(invoice.issueDate), 'dd/MM/yyyy') : 'N/A',
-    283,
+    196,
     infoStartY + 6,
     { align: 'right' }
   );
   
   // Due Date
   doc.setFont('helvetica', 'bold');
-  doc.text('Due date:', 220, infoStartY + 12);
+  doc.text('Due date:', 130, infoStartY + 12);
   doc.setFont('helvetica', 'normal');
   doc.text(
     format(new Date(invoice.dueDate), 'dd/MM/yyyy'),
-    283,
+    196,
     infoStartY + 12,
     { align: 'right' }
   );
@@ -166,14 +166,14 @@ export async function generateInvoicePDF(invoice: Invoice): Promise<void> {
       cellPadding: 2,
     },
     columnStyles: {
-      0: { cellWidth: 30, halign: 'left', fontSize: 8 },    // Item (ESN)
-      1: { cellWidth: 30, halign: 'left', fontSize: 8 },    // Destination
-      2: { cellWidth: 22, halign: 'center', fontSize: 8 },  // Method
-      3: { cellWidth: 25, halign: 'center', fontSize: 8 },  // Status
-      4: { cellWidth: 20, halign: 'right', fontSize: 8 },   // Weight
-      5: { cellWidth: 30, halign: 'center', fontSize: 8 },  // Dimensions
-      6: { cellWidth: 20, halign: 'right', fontSize: 8 },   // CBM
-      7: { cellWidth: 28, halign: 'right', fontSize: 9, fontStyle: 'bold' },  // Total
+      0: { cellWidth: 22, halign: 'left', fontSize: 8 },    // Item (ESN)
+      1: { cellWidth: 22, halign: 'left', fontSize: 8 },    // Destination
+      2: { cellWidth: 16, halign: 'center', fontSize: 7 },  // Method
+      3: { cellWidth: 18, halign: 'center', fontSize: 7 },  // Status
+      4: { cellWidth: 14, halign: 'right', fontSize: 7 },   // Weight
+      5: { cellWidth: 22, halign: 'center', fontSize: 7 },  // Dimensions
+      6: { cellWidth: 14, halign: 'right', fontSize: 7 },   // CBM
+      7: { cellWidth: 24, halign: 'right', fontSize: 8, fontStyle: 'bold' },  // Total
     },
     styles: {
       lineColor: colors.border,
@@ -184,8 +184,8 @@ export async function generateInvoicePDF(invoice: Invoice): Promise<void> {
   // ===== TOTALS SECTION =====
   const finalY = (doc as any).lastAutoTable.finalY || 150;
   let yPos = finalY + 15;
-  const totalsX = 220;
-  const rightColX = 283;
+  const totalsX = 130;
+  const rightColX = 196;
   
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
@@ -227,7 +227,7 @@ export async function generateInvoicePDF(invoice: Invoice): Promise<void> {
   doc.setFontSize(8);
   doc.setFont('helvetica', 'italic');
   doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
-  doc.text('Thank you for your business!', 148.5, 200, { align: 'center' });
+  doc.text('Thank you for your business!', 105, 200, { align: 'center' });
   
   // Save PDF
   const filename = `invoice-${invoice.invoiceNumber || 'draft'}-${format(new Date(), 'yyyyMMdd')}.pdf`;
