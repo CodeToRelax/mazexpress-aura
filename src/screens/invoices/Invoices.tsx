@@ -14,7 +14,7 @@ import { InvoicesPagination } from './InvoicesPagination';
 import { InvoicesStatsBar } from './InvoicesStatsBar';
 import { InvoicesColumnVisibilityToggle } from './InvoicesColumnVisibilityToggle';
 import { GenerateInvoiceDialog } from './GenerateInvoiceDialog';
-import { MarkAsPaidDialog } from './MarkAsPaidDialog';
+import { PaymentDialog } from './PaymentDialog';
 import { CancelInvoiceDialog } from './CancelInvoiceDialog';
 import { UpdateStatusDialog } from './UpdateStatusDialog';
 import { exportInvoicesToCSV } from '@/utilities/helpers/invoiceExport';
@@ -79,7 +79,7 @@ export default function Invoices() {
   });
 
   const [showGenerateDialog, setShowGenerateDialog] = useState(false);
-  const [invoiceToMarkAsPaid, setInvoiceToMarkAsPaid] = useState<Invoice | null>(null);
+  const [invoiceToMakePayment, setInvoiceToMakePayment] = useState<Invoice | null>(null);
   const [invoiceToVoid, setInvoiceToVoid] = useState<Invoice | null>(null);
   const [invoiceToUpdateStatus, setInvoiceToUpdateStatus] = useState<Invoice | null>(null);
 
@@ -200,8 +200,8 @@ export default function Invoices() {
     navigate(`/invoices/${invoice._id}`);
   };
 
-  const handleMarkAsPaid = (invoice: Invoice) => {
-    setInvoiceToMarkAsPaid(invoice);
+  const handleMakePayment = (invoice: Invoice) => {
+    setInvoiceToMakePayment(invoice);
   };
 
   const handleUpdateStatus = (invoice: Invoice) => {
@@ -340,7 +340,7 @@ export default function Invoices() {
               invoices={invoices}
               visibleColumns={visibleColumns}
               onRowClick={handleRowClick}
-              onMarkAsPaid={handleMarkAsPaid}
+              onMakePayment={handleMakePayment}
               onUpdateStatus={handleUpdateStatus}
               onVoid={handleVoid}
               isAdmin={hasFlag('canManageInvoices')}
@@ -371,12 +371,11 @@ export default function Invoices() {
         onSuccess={handleSuccess}
       />
 
-      {invoiceToMarkAsPaid && (
-        <MarkAsPaidDialog
-          invoice={invoiceToMarkAsPaid}
-          open={!!invoiceToMarkAsPaid}
-          onOpenChange={(open) => !open && setInvoiceToMarkAsPaid(null)}
-          onSuccess={handleSuccess}
+      {invoiceToMakePayment && (
+        <PaymentDialog
+          invoice={invoiceToMakePayment}
+          open={!!invoiceToMakePayment}
+          onOpenChange={(open) => !open && setInvoiceToMakePayment(null)}
         />
       )}
 

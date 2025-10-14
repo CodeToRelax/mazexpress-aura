@@ -9,7 +9,7 @@ import {
   Trash2,
   Printer,
   Download,
-  CheckCircle,
+  DollarSign,
   AlertTriangle,
 } from 'lucide-react';
 import { format, isPast } from 'date-fns';
@@ -41,7 +41,7 @@ interface InvoicesTableProps {
   selectedInvoices?: Set<string>;
   onSelectInvoice?: (invoiceId: string, selected: boolean) => void;
   onSelectAll?: (selected: boolean) => void;
-  onMarkAsPaid?: (invoice: Invoice) => void;
+  onMakePayment?: (invoice: Invoice) => void;
   onUpdateStatus?: (invoice: Invoice) => void;
   onVoid?: (invoice: Invoice) => void;
   onEdit?: (invoice: Invoice) => void;
@@ -61,7 +61,7 @@ export function InvoicesTable({
   selectedInvoices = new Set(),
   onSelectInvoice,
   onSelectAll,
-  onMarkAsPaid,
+  onMakePayment,
   onUpdateStatus,
   onVoid,
   onEdit,
@@ -384,13 +384,13 @@ export function InvoicesTable({
                         
                         <DropdownMenuSeparator />
                         
-                        {onMarkAsPaid && invoice.status !== 'PAID' && invoice.status !== 'VOID' && invoice.totals.due > 0 && (
+                        {onMakePayment && invoice.status !== 'PAID' && invoice.status !== 'VOID' && invoice.totals.due > 0 && (
                           <DropdownMenuItem 
-                            onClick={() => onMarkAsPaid(invoice)}
+                            onClick={() => onMakePayment(invoice)}
                             className="cursor-pointer"
                           >
-                            <CheckCircle className="h-4 w-4 mr-2" />
-                            {t('invoice.actions.markAsPaid')}
+                            <DollarSign className="h-4 w-4 mr-2" />
+                            {t('invoice.actions.makePayment')}
                           </DropdownMenuItem>
                         )}
                         
