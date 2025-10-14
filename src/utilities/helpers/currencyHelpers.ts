@@ -4,16 +4,15 @@
  */
 
 /**
- * Formats an amount in cents to LYD display format
- * @param amountInCents - The amount in cents (e.g., 500000 = 5,000.00 LYD)
+ * Formats an amount in LYD to display format with thousand separators
+ * @param amountInLYD - The amount in LYD (e.g., 5000 = 5,000 LYD)
  * @returns Formatted string with LYD suffix
  */
-export function formatLYD(amountInCents: number): string {
-  const amountInLYD = Math.round(amountInCents / 100);
+export function formatLYD(amountInLYD: number): string {
   return new Intl.NumberFormat('en-US', {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
-  }).format(amountInLYD) + ' LYD';
+  }).format(Math.round(amountInLYD)) + ' LYD';
 }
 
 /**
