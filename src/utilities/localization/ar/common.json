@@ -763,7 +763,64 @@
     "message-userRequired": "معرف المستخدم مطلوب",
     "message-statusRequired": "يرجى اختيار حالة الشحنة",
     "message-notesRequired": "سبب الإلغاء مطلوب",
-    "message-cancellationReasonRequired": "يرجى تقديم سبب للإلغاء"
+    "message-cancellationReasonRequired": "يرجى تقديم سبب للإلغاء",
+    "actions": {
+      "view": "عرض التفاصيل",
+      "edit": "تعديل الفاتورة",
+      "delete": "حذف الفاتورة",
+      "downloadPDF": "تحميل PDF",
+      "print": "طباعة",
+      "markAsPaid": "تعيين كمدفوع",
+      "updateStatus": "تحديث الحالة",
+      "void": "إلغاء الفاتورة",
+      "export": "تصدير",
+      "generate": "إنشاء فاتورة",
+      "cancel": "إلغاء الفاتورة",
+      "cancelInvoice": "إلغاء الفاتورة"
+    },
+    "bulk": {
+      "selected": "محدد",
+      "updateStatus": "تحديث الحالة",
+      "export": "تصدير المحدد",
+      "delete": "حذف المحدد"
+    },
+    "delete": {
+      "title": "حذف الفاتورة",
+      "description": "هل أنت متأكد من حذف هذه الفاتورة؟",
+      "confirmLabel": "اكتب DELETE للتأكيد",
+      "confirmPlaceholder": "DELETE",
+      "confirmHelp": "اكتب DELETE بأحرف كبيرة للتأكيد على الحذف",
+      "confirm": "حذف الفاتورة",
+      "deleting": "جاري الحذف...",
+      "paidWarning": "لا يمكن حذف الفواتير المدفوعة. يرجى الاتصال بالدعم إذا كنت بحاجة إلى إزالة هذه الفاتورة."
+    },
+    "messages": {
+      "deleteSuccess": "تم حذف الفاتورة بنجاح",
+      "deleteError": "فشل حذف الفاتورة"
+    },
+    "statusHistory": {
+      "title": "سجل الحالة",
+      "description": "الجدول الزمني لتغييرات الحالة لهذه الفاتورة",
+      "noHistory": "لم يتم تسجيل أي تغييرات في الحالة بعد"
+    },
+    "fields": {
+      "invoiceNumber": "رقم الفاتورة",
+      "status": "الحالة",
+      "totalAmount": "المبلغ الإجمالي"
+    },
+    "status": {
+      "DRAFT": "مسودة",
+      "SENT": "مرسلة",
+      "PENDING": "قيد الانتظار",
+      "PARTIALLY_PAID": "مدفوعة جزئياً",
+      "PAID": "مدفوعة",
+      "OVERDUE": "متأخرة",
+      "REFUNDED": "مستردة",
+      "DISPUTED": "متنازع عليها",
+      "VOID": "ملغاة",
+      "FAILED": "فشلت",
+      "overdue": "متأخرة"
+    }
   },
   "common": {
     "yes": "نعم",
@@ -771,7 +828,12 @@
     "cancel": "إلغاء",
     "error": "خطأ",
     "processing": "جاري المعالجة...",
-    "optional": "اختياري"
+    "optional": "اختياري",
+    "selectAll": "تحديد الكل",
+    "clear": "مسح",
+    "columns": "الأعمدة",
+    "resetDefault": "إعادة تعيين إلى الافتراضي",
+    "actions": "الإجراءات"
   }
 }
 

@@ -857,22 +857,7 @@
     "message-userRequired": "User ID is required",
     "message-statusRequired": "Please select a shipment status",
     "message-notesRequired": "Cancellation reason is required",
-    "message-cancellationReasonRequired": "Please provide a reason for cancellation"
-  },
-  "common": {
-    "yes": "Yes",
-    "no": "No",
-    "cancel": "Cancel",
-    "error": "Error",
-    "processing": "Processing...",
-    "optional": "Optional",
-    "selectAll": "Select All",
-    "clear": "Clear",
-    "columns": "Columns",
-    "resetDefault": "Reset to Default",
-    "actions": "Actions"
-  },
-  "invoice": {
+    "message-cancellationReasonRequired": "Please provide a reason for cancellation",
     "actions": {
       "view": "View Details",
       "edit": "Edit Invoice",
@@ -881,7 +866,11 @@
       "print": "Print",
       "markAsPaid": "Mark as Paid",
       "updateStatus": "Update Status",
-      "void": "Void Invoice"
+      "void": "Void Invoice",
+      "export": "Export",
+      "generate": "Generate Invoice",
+      "cancel": "Cancel Invoice",
+      "cancelInvoice": "Cancel Invoice"
     },
     "bulk": {
       "selected": "selected",
@@ -926,5 +915,18 @@
       "FAILED": "Failed",
       "overdue": "Overdue"
     }
+  },
+  "common": {
+    "yes": "Yes",
+    "no": "No",
+    "cancel": "Cancel",
+    "error": "Error",
+    "processing": "Processing...",
+    "optional": "Optional",
+    "selectAll": "Select All",
+    "clear": "Clear",
+    "columns": "Columns",
+    "resetDefault": "Reset to Default",
+    "actions": "Actions"
   }
 }
