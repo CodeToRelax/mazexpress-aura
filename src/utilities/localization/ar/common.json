@@ -833,6 +833,8 @@
       "paidWarning": "لا يمكن حذف الفواتير المدفوعة. يرجى الاتصال بالدعم إذا كنت بحاجة إلى إزالة هذه الفاتورة."
     },
     "messages": {
+      "updateStatusDescription": "تحديث حالة الفاتورة {{invoiceNumber}}",
+      "cancelConfirm": "هل أنت متأكد من إلغاء الفاتورة {{invoiceNumber}}؟ لا يمكن التراجع عن هذا الإجراء.",
       "deleteSuccess": "تم حذف الفاتورة بنجاح",
       "deleteError": "فشل حذف الفاتورة"
     },

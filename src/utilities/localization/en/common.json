@@ -927,6 +927,8 @@
       "paidWarning": "Cannot delete paid invoices. Please contact support if you need to remove this invoice."
     },
     "messages": {
+      "updateStatusDescription": "Update the status of invoice {{invoiceNumber}}",
+      "cancelConfirm": "Are you sure you want to cancel invoice {{invoiceNumber}}? This action cannot be undone.",
       "deleteSuccess": "Invoice deleted successfully",
       "deleteError": "Failed to delete invoice"
     },
