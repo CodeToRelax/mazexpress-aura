@@ -209,25 +209,26 @@ export default function InvoiceDetail() {
               })}
             </div>
 
-            <Separator className="my-4" />
+            <Separator className="my-6" />
 
-            <div className="space-y-2">
+            {/* Totals Summary Table */}
+            <div className="bg-muted/30 rounded-lg p-4 space-y-3">
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">{t('invoice.netAmount')}</span>
-                <span>{formatCurrency(invoice.totals.net)} LYD</span>
+                <span className="font-medium">{formatCurrency(invoice.totals.net)} LYD</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">{t('invoice.grossAmount')}</span>
-                <span>{formatCurrency(invoice.totals.gross)} LYD</span>
+                <span className="font-medium">{formatCurrency(invoice.totals.gross)} LYD</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">{t('invoice.paidAmount')}</span>
-                <span className="text-green-500">{formatCurrency(invoice.totals.paid)} LYD</span>
+                <span className="font-medium text-green-600 dark:text-green-400">{formatCurrency(invoice.totals.paid)} LYD</span>
               </div>
-              <Separator className="my-2" />
-              <div className="flex justify-between text-lg font-bold">
-                <span>{t('invoice.dueAmount')}</span>
-                <span className="text-red-500">{formatCurrency(invoice.totals.due)} LYD</span>
+              <Separator />
+              <div className="flex justify-between">
+                <span className="text-lg font-semibold">{t('invoice.dueAmount')}</span>
+                <span className="text-xl font-bold text-red-600 dark:text-red-400">{formatCurrency(invoice.totals.due)} LYD</span>
               </div>
             </div>
           </CardContent>
@@ -238,7 +239,7 @@ export default function InvoiceDetail() {
             <CardHeader>
               <CardTitle>{t('invoice.details')}</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-4">
               <div>
                 <p className="text-sm text-muted-foreground">{t('invoice.createdAt')}</p>
                 <p className="font-medium">{format(new Date(invoice.issueDate || invoice.createdAt), 'MMM dd, yyyy')}</p>
@@ -251,12 +252,6 @@ export default function InvoiceDetail() {
                 <div>
                   <p className="text-sm text-muted-foreground">{t('invoice.closedAt')}</p>
                   <p className="font-medium">{format(new Date(invoice.closedAt), 'MMM dd, yyyy')}</p>
-                </div>
-              )}
-              {invoice.notes && (
-                <div>
-                  <p className="text-sm text-muted-foreground">{t('invoice.notes')}</p>
-                  <p className="text-sm">{invoice.notes}</p>
                 </div>
               )}
             </CardContent>
