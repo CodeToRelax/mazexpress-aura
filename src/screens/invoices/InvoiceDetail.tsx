@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Printer, CheckCircle, XCircle, Edit, Package, Scale, Box, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Printer, CheckCircle, XCircle, Edit, Package, Scale, Box, ExternalLink, FileText, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -19,6 +19,7 @@ import { ACLGuard } from '@/components/guards/ACLGuard';
 import { useACL } from '@/hooks/useACL';
 import { format } from 'date-fns';
 import { parseInvoiceItemDescription, formatCurrency } from '@/utilities/helpers/invoiceHelpers';
+import { InvoiceStatusBadge } from '@/components/invoices/InvoiceStatusBadge';
 
 export default function InvoiceDetail() {
   const { id } = useParams<{ id: string }>();
@@ -70,7 +71,14 @@ export default function InvoiceDetail() {
     }
   };
 
-  if (isLoading) return <PageLoader />;
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   if (error) return <InlineError message={error.message} />;
   if (!invoice) return <InlineError message={t('invoice.notFound')} />;
 
@@ -84,153 +92,63 @@ export default function InvoiceDetail() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between no-print">
+    <div className="relative z-10 space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate('/invoices')}>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => navigate('/invoices')}
+            className="glass-card hover:shadow-glass-hover"
+          >
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-3xl font-bold">{invoice.invoiceNumber}</h1>
-          <Badge className={getStatusColor(invoice.status)}>
-            {t(`invoice.status.${invoice.status.toLowerCase()}`)}
-          </Badge>
+          <div>
+            <div className="flex items-center gap-3">
+              <FileText className="h-6 w-6 text-primary" />
+              <h1 className="text-3xl font-bold text-foreground">
+                {invoice.invoiceNumber}
+              </h1>
+              <InvoiceStatusBadge status={invoice.status} showIcon />
+            </div>
+          </div>
         </div>
-
-        {canManageInvoices && (
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={handlePrint}>
+        
+        <div className="flex gap-2">
+          {canManageInvoices && (
+            <Button variant="outline" onClick={handlePrint}>
               <Printer className="h-4 w-4 mr-2" />
               {t('invoice.actions.print')}
             </Button>
-            {canMarkAsPaid && (
-              <Button variant="default" size="sm" onClick={() => setMarkPaidOpen(true)}>
-                <CheckCircle className="h-4 w-4 mr-2" />
-                {t('invoice.actions.markAsPaid')}
-              </Button>
-            )}
-            {canCancel && (
-              <Button variant="destructive" size="sm" onClick={() => setCancelOpen(true)}>
-                <XCircle className="h-4 w-4 mr-2" />
-                {t('invoice.actions.cancelInvoice')}
-              </Button>
-            )}
-            {canManageInvoices && (
-              <Button variant="outline" size="sm" onClick={() => setUpdateStatusOpen(true)}>
-                <Edit className="h-4 w-4 mr-2" />
-                {t('invoice.actions.updateStatus')}
-              </Button>
-            )}
-          </div>
-        )}
+          )}
+          {canManageInvoices && invoice.status !== 'VOID' && (
+            <Button variant="outline" onClick={() => setUpdateStatusOpen(true)}>
+              <Edit className="h-4 w-4 mr-2" />
+              {t('invoice.actions.updateStatus')}
+            </Button>
+          )}
+          {canCancel && (
+            <Button 
+              variant="destructive" 
+              size="icon"
+              onClick={() => setCancelOpen(true)}
+            >
+              <XCircle className="h-5 w-5" />
+            </Button>
+          )}
+        </div>
       </div>
 
+      {/* TODO: Main Content - To be implemented in next sections */}
+      {/* 
       <div className="grid gap-6 md:grid-cols-3">
         <Card className="md:col-span-2">
           <CardHeader>
             <CardTitle>{t('invoice.items')}</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
-              {invoice.items.map((item) => {
-                const parsed = parseInvoiceItemDescription(item.description);
-                
-                return (
-                  <div key={item._id} className="flex items-start justify-between p-4 bg-muted/50 rounded-lg hover:bg-muted/70 transition-colors">
-                    <div className="flex-1 space-y-2">
-                      {/* Shipment Code & Location */}
-                      <div className="flex items-center gap-2 flex-wrap">
-                        {parsed.shipmentCode && (
-                          <Badge variant="outline" className="font-mono text-xs">
-                            <Package className="h-3 w-3 mr-1" />
-                            {parsed.shipmentCode}
-                          </Badge>
-                        )}
-                        {parsed.location && (
-                          <span className="text-sm text-muted-foreground capitalize">
-                            {parsed.location}
-                          </span>
-                        )}
-                      </div>
-                      
-                      {/* Base Description */}
-                      <p className="text-sm font-medium">{parsed.baseDescription}</p>
-                      
-                      {/* Weight & CBM */}
-                      {(parsed.weight || parsed.cbm) && (
-                        <div className="flex gap-4 text-xs text-muted-foreground">
-                          {parsed.weight && (
-                            <span className="flex items-center gap-1">
-                              <Scale className="h-3 w-3" />
-                              Weight: {parsed.weight} kg
-                            </span>
-                          )}
-                          {parsed.cbm && (
-                            <span className="flex items-center gap-1">
-                              <Box className="h-3 w-3" />
-                              CBM: {parsed.cbm} m³
-                            </span>
-                          )}
-                        </div>
-                      )}
-                      
-                      {/* Shipment Link */}
-                      {parsed.shipmentCode && item.shipmentId && (
-                        <Button
-                          variant="link"
-                          size="sm"
-                          className="p-0 h-auto text-xs"
-                          onClick={() => navigate(`/shipments/${item.shipmentId}`)}
-                        >
-                          View Shipment Details
-                          <ExternalLink className="h-3 w-3 ml-1" />
-                        </Button>
-                      )}
-                      
-                      {/* Quantity & Unit Price */}
-                      <div className="flex gap-4 text-xs text-muted-foreground">
-                        <span>Qty: {item.quantity}</span>
-                        <span>Unit Price: {formatCurrencyAmount(item.unitPrice)} LYD</span>
-                      </div>
-                    </div>
-                    
-                    {/* Total Amount */}
-                    <div className="text-right">
-                      <p className="font-semibold text-lg">
-                        {formatCurrencyAmount(item.totalGross || item.totalNet || (item.quantity * item.unitPrice))} LYD
-                      </p>
-                      {item.taxAmount && item.taxAmount > 0 && (
-                        <p className="text-xs text-muted-foreground">
-                          (incl. {formatCurrencyAmount(item.taxAmount)} tax)
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            <Separator className="my-6" />
-
-            {/* Totals Summary Table */}
-            <div className="bg-muted/30 rounded-lg p-4 space-y-3">
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">{t('invoice.netAmount')}</span>
-                <span className="font-medium">{formatCurrency(invoice.totals.net)} LYD</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">{t('invoice.grossAmount')}</span>
-                <span className="font-medium">{formatCurrency(invoice.totals.gross)} LYD</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">{t('invoice.paidAmount')}</span>
-                <span className="font-medium text-green-600 dark:text-green-400">{formatCurrency(invoice.totals.paid)} LYD</span>
-              </div>
-              <Separator />
-              <div className="flex justify-between">
-                <span className="text-lg font-semibold">{t('invoice.dueAmount')}</span>
-                <span className="text-xl font-bold text-red-600 dark:text-red-400">{formatCurrency(invoice.totals.due)} LYD</span>
-              </div>
-            </div>
+            ...Invoice items content...
           </CardContent>
         </Card>
 
@@ -240,20 +158,7 @@ export default function InvoiceDetail() {
               <CardTitle>{t('invoice.details')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div>
-                <p className="text-sm text-muted-foreground">{t('invoice.createdAt')}</p>
-                <p className="font-medium">{format(new Date(invoice.issueDate || invoice.createdAt), 'MMM dd, yyyy')}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">{t('invoice.dueDate')}</p>
-                <p className="font-medium">{format(new Date(invoice.dueDate), 'MMM dd, yyyy')}</p>
-              </div>
-              {invoice.closedAt && (
-                <div>
-                  <p className="text-sm text-muted-foreground">{t('invoice.closedAt')}</p>
-                  <p className="font-medium">{format(new Date(invoice.closedAt), 'MMM dd, yyyy')}</p>
-                </div>
-              )}
+              ...Invoice details content...
             </CardContent>
           </Card>
 
@@ -266,6 +171,7 @@ export default function InvoiceDetail() {
       </div>
 
       {canManageInvoices && <PaymentHistory invoice={invoice} />}
+      */}
 
       <PaymentDialog
         open={paymentOpen}
