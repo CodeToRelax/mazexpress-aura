@@ -28,15 +28,15 @@ function getItemKindIcon(kind: InvoiceItemKind) {
 function getItemKindColor(kind: InvoiceItemKind) {
   switch (kind) {
     case 'SHIPMENT':
-      return 'text-primary';
+      return { bg: 'bg-primary/10', text: 'text-primary' };
     case 'SURCHARGE':
-      return 'text-orange-500';
+      return { bg: 'bg-orange-500/10', text: 'text-orange-500' };
     case 'DISCOUNT':
-      return 'text-green-500';
+      return { bg: 'bg-green-500/10', text: 'text-green-500' };
     case 'ADJUSTMENT':
-      return 'text-blue-500';
+      return { bg: 'bg-blue-500/10', text: 'text-blue-500' };
     default:
-      return 'text-primary';
+      return { bg: 'bg-primary/10', text: 'text-primary' };
   }
 }
 
@@ -68,20 +68,20 @@ export function InvoiceItemsTable({ items }: InvoiceItemsTableProps) {
   }
 
   return (
-    <div className="rounded-md border glass-card overflow-hidden">
+    <div className="glass-card rounded-2xl overflow-hidden">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[50%]">{t('invoice.items.title')}</TableHead>
-            <TableHead className="text-right">{t('invoice.items.quantity')}</TableHead>
-            <TableHead className="text-right">{t('invoice.items.unitPrice')}</TableHead>
-            <TableHead className="text-right">{t('invoice.items.total')}</TableHead>
+            <TableHead>{t('invoice.items.description')}</TableHead>
+            <TableHead>{t('invoice.items.quantity')}</TableHead>
+            <TableHead>{t('invoice.items.unitPrice')}</TableHead>
+            <TableHead>{t('invoice.items.total')}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {items.map((item) => {
             const Icon = getItemKindIcon(item.kind);
-            const iconColor = getItemKindColor(item.kind);
+            const iconColors = getItemKindColor(item.kind);
             const isShipment = item.kind === 'SHIPMENT' && item.shipmentId && typeof item.shipmentId === 'object';
             const shipment = isShipment ? (item.shipmentId as IShipment) : null;
             const totalAmount = item.totalGross || (item.quantity * item.unitPrice);
@@ -91,10 +91,12 @@ export function InvoiceItemsTable({ items }: InvoiceItemsTableProps) {
                 key={item._id}
                 className="hover:bg-accent/20 transition-colors duration-150"
               >
-                <TableCell className="py-4">
-                  <div className="flex items-start gap-3">
-                    <Icon className={`h-5 w-5 mt-0.5 ${iconColor}`} />
-                    <div className="space-y-1">
+                <TableCell>
+                  <div className="flex items-center gap-3">
+                    <div className={`h-10 w-10 rounded-full ${iconColors.bg} flex items-center justify-center flex-shrink-0`}>
+                      <Icon className={`h-5 w-5 ${iconColors.text}`} />
+                    </div>
+                    <div>
                       {isShipment && shipment ? (
                         <>
                           <div className="font-medium text-foreground">
@@ -145,13 +147,13 @@ export function InvoiceItemsTable({ items }: InvoiceItemsTableProps) {
                     </div>
                   </div>
                 </TableCell>
-                <TableCell className="text-right font-medium">
+                <TableCell className="text-muted-foreground">
                   {item.quantity}
                 </TableCell>
-                <TableCell className="text-right font-medium">
+                <TableCell className="text-muted-foreground">
                   {formatCurrency(item.unitPrice)} LYD
                 </TableCell>
-                <TableCell className="text-right font-medium">
+                <TableCell className="text-muted-foreground">
                   {formatCurrency(totalAmount)} LYD
                 </TableCell>
               </TableRow>
