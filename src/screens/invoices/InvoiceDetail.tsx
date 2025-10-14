@@ -140,38 +140,10 @@ export default function InvoiceDetail() {
         </div>
       </div>
 
-      {/* TODO: Main Content - To be implemented in next sections */}
-      {/* 
-      <div className="grid gap-6 md:grid-cols-3">
-        <Card className="md:col-span-2">
-          <CardHeader>
-            <CardTitle>{t('invoice.items')}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            ...Invoice items content...
-          </CardContent>
-        </Card>
-
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>{t('invoice.details')}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              ...Invoice details content...
-            </CardContent>
-          </Card>
-
-          {canPay && (
-            <Button className="w-full" onClick={() => setPaymentOpen(true)}>
-              {t('invoice.payNow')}
-            </Button>
-          )}
-        </div>
-      </div>
-
+      {/* Payment History */}
       {canManageInvoices && <PaymentHistory invoice={invoice} />}
-      */}
+
+      {/* TODO: Additional Content - To be implemented in next sections */}
 
       <PaymentDialog
         open={paymentOpen}

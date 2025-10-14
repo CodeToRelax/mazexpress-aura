@@ -94,7 +94,16 @@ export interface PaymentAllocation {
   processedAt?: string; // Backward compatibility
   reference?: string;
   currency?: string;
-  createdBy?: string;
+  notes?: string;
+  processedBy?: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+  };
+  createdBy?: string; // Backward compatibility
+  createdAt?: string;
+  updatedAt?: string;
+  __v?: number;
 }
 
 export interface GenerateInvoiceRequest {
