@@ -119,6 +119,7 @@ export function ShipmentsTable({
             {visibleColumns.has('method') && <TableHead>{t('shipments.table.columns.method')}</TableHead>}
             {visibleColumns.has('status') && <TableHead>{renderSortableHeader('status', t('shipments.table.columns.status'))}</TableHead>}
             {visibleColumns.has('tier') && <TableHead>{renderSortableHeader('tier', t('shipments.table.columns.tier'))}</TableHead>}
+            {visibleColumns.has('originCountry') && <TableHead>{t('shipments.table.columns.originCountry')}</TableHead>}
             {visibleColumns.has('weight') && <TableHead>{t('shipments.table.columns.weight')}</TableHead>}
             {visibleColumns.has('estimatedArrival') && <TableHead>{t('shipments.table.columns.estimatedArrival')}</TableHead>}
             <TableHead>{renderSortableHeader('createdAt', t('shipments.table.columns.createdAt'))}</TableHead>
@@ -170,6 +171,14 @@ export function ShipmentsTable({
               {visibleColumns.has('tier') && (
                 <TableCell>
                   <TierBadge tier={shipment.tier || 'A'} />
+                </TableCell>
+              )}
+              {visibleColumns.has('originCountry') && (
+                <TableCell className="capitalize">
+                  {shipment.originCountry 
+                    ? t(`shipments.originCountry.${shipment.originCountry}`) 
+                    : 'N/A'
+                  }
                 </TableCell>
               )}
               {visibleColumns.has('weight') && (

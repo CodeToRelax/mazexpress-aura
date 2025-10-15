@@ -138,6 +138,7 @@ export interface ShipmentFilters {
   shippingMethod?: string;
   isDomestic?: boolean;
   tier?: string;
+  originCountry?: string;
   from?: string;
   to?: string;
   createdAfter?: string; // Date range start

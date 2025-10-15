@@ -456,6 +456,8 @@
         "allMethods": "All Methods",
         "allDestinations": "All Destinations",
         "allTiers": "All Tiers",
+        "originCountry": "Origin Country",
+        "allOriginCountries": "All Origin Countries",
         "from": "From",
         "to": "To",
         "domestic": "Domestic Only",

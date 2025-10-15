@@ -400,6 +400,8 @@
         "allMethods": "جميع الطرق",
         "allDestinations": "جميع الوجهات",
         "allTiers": "جميع الفئات",
+        "originCountry": "بلد المنشأ",
+        "allOriginCountries": "جميع بلدان المنشأ",
         "from": "من",
         "to": "إلى",
         "domestic": "محلي فقط",

@@ -15,8 +15,8 @@ export function AuthLayoutGlass({ children, className }: AuthLayoutGlassProps) {
       <div className="md:hidden glass-background min-h-screen w-full flex flex-col">
         {/* Controls at top */}
         <div className="flex items-center justify-end gap-2 p-3 z-50">
-          <LanguageToggle />
-          <ThemeToggle />
+          {/* <LanguageToggle /> */}
+          {/* <ThemeToggle /> */}
         </div>
         
         {/* Content fills remaining space */}
@@ -30,8 +30,8 @@ export function AuthLayoutGlass({ children, className }: AuthLayoutGlassProps) {
       {/* Desktop: Centered card */}
       <div className="hidden md:flex glass-background min-h-screen w-full items-center justify-center p-4">
         <div className="fixed top-4 right-4 flex items-center gap-2 z-50">
-          <LanguageToggle />
-          <ThemeToggle />
+          {/* <LanguageToggle /> */}
+          {/* <ThemeToggle /> */}
         </div>
         
         <motion.div

@@ -65,8 +65,8 @@ export function Sidenav({ items, isCollapsed, expandedGroups, onToggleGroup }: S
         'p-3 border-t border-[hsl(var(--sidenav-border))]',
         isCollapsed ? 'flex flex-col gap-2' : 'flex items-center gap-2'
       )}>
-        <ThemeToggle />
-        <LanguageToggle />
+        {/* <ThemeToggle /> */}
+        {/* <LanguageToggle /> */}
       </div>
     </aside>
   );

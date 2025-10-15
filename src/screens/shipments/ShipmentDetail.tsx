@@ -189,6 +189,18 @@ export default function ShipmentDetail() {
             </div>
           </div>
 
+          {shipment.originCountry && (
+            <div className="flex items-start gap-3">
+              <MapPin className="h-5 w-5 text-muted-foreground mt-0.5" />
+              <div>
+                <p className="text-sm text-muted-foreground">{t('shipments.table.columns.originCountry')}</p>
+                <p className="font-medium capitalize">
+                  {t(`shipments.originCountry.${shipment.originCountry}`)}
+                </p>
+              </div>
+            </div>
+          )}
+
           <div className="flex items-start gap-3">
             <Calendar className="h-5 w-5 text-muted-foreground mt-0.5" />
             <div>

@@ -196,6 +196,27 @@ export function ShipmentsFilters({
             </div>
 
             <div className="space-y-2">
+              <label className="text-sm font-medium">{t('shipments.filters.originCountry')}</label>
+              <Select
+                value={filters.originCountry || 'all'}
+                onValueChange={(value) => 
+                  handleFilterChange('originCountry', value === 'all' ? undefined : value)
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{t('shipments.filters.allOriginCountries')}</SelectItem>
+                  <SelectItem value="libya">{t('shipments.originCountry.libya')}</SelectItem>
+                  <SelectItem value="turkey">{t('shipments.originCountry.turkey')}</SelectItem>
+                  <SelectItem value="china">{t('shipments.originCountry.china')}</SelectItem>
+                  <SelectItem value="uae">{t('shipments.originCountry.uae')}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
               <label className="text-sm font-medium">{t('shipments.filters.dateFrom')}</label>
               <Input
                 type="date"

@@ -81,8 +81,8 @@ export function AppLayout() {
           
           {/* Desktop Actions */}
           <div className="hidden xl:flex items-center gap-2">
-            <ThemeToggle />
-            <LanguageToggle />
+            {/* <ThemeToggle /> */}
+            {/* <LanguageToggle /> */}
             <SettingsToggle />
             <Button variant="ghost" size="sm" onClick={handleSignOut} className="gap-2">
               <LogOut className="h-4 w-4" />
@@ -92,7 +92,7 @@ export function AppLayout() {
 
           {/* Mobile Actions */}
           <div className="flex xl:hidden items-center gap-2">
-            <ThemeToggle />
+            {/* <ThemeToggle /> */}
             <SettingsToggle />
             <Button variant="ghost" size="icon" onClick={handleSignOut}>
               <LogOut className="h-4 w-4" />
