@@ -405,7 +405,8 @@
         "note": "Note",
         "createdAt": "Created",
         "updatedAt": "Updated",
-        "actions": "Actions"
+        "actions": "Actions",
+        "tier": "Tier"
       },
       "status": {
         "pending": "Pending",
@@ -439,31 +440,33 @@
       "refresh": "Refresh",
       "clearFilters": "Clear all filters"
     },
-    "filters": {
-      "search": "Search shipments...",
-      "searchPlaceholder": "ESN, CSN, ISN...",
-      "advanced": "Advanced Filters",
-      "description": "Filter shipments by status, method, destination, and date range",
-      "status": "Status",
-      "method": "Shipping Method",
-      "destination": "Destination",
-      "dateRange": "Date Range",
-      "dateFrom": "From Date",
-      "dateTo": "To Date",
-      "allStatuses": "All Statuses",
-      "allMethods": "All Methods",
-      "allDestinations": "All Destinations",
-      "from": "From",
-      "to": "To",
-      "domestic": "Domestic Only",
-      "international": "International Only",
-      "destinations": {
-        "benghazi": "Benghazi",
-        "tripoli": "Tripoli",
-        "misurata": "Misurata",
-        "zawiya": "Zawiya"
-      }
-    },
+      "filters": {
+        "search": "Search shipments...",
+        "searchPlaceholder": "ESN, CSN, ISN...",
+        "advanced": "Advanced Filters",
+        "description": "Filter shipments by status, method, destination, and date range",
+        "status": "Status",
+        "method": "Shipping Method",
+        "destination": "Destination",
+        "tier": "Tier",
+        "dateRange": "Date Range",
+        "dateFrom": "From Date",
+        "dateTo": "To Date",
+        "allStatuses": "All Statuses",
+        "allMethods": "All Methods",
+        "allDestinations": "All Destinations",
+        "allTiers": "All Tiers",
+        "from": "From",
+        "to": "To",
+        "domestic": "Domestic Only",
+        "international": "International Only",
+        "destinations": {
+          "benghazi": "Benghazi",
+          "tripoli": "Tripoli",
+          "misurata": "Misurata",
+          "zawiya": "Zawiya"
+        }
+      },
     "stats": {
       "total": "Total Shipments",
       "pending": "Pending",
@@ -496,7 +499,8 @@
         "note": "Note (Optional)",
         "estimatedArrival": "Estimated Arrival",
         "isDomestic": "Domestic Shipment",
-        "status": "Status"
+        "status": "Status",
+        "tier": "Pricing Tier"
       },
       "placeholders": {
         "csn": "e.g., BEN-828C",
@@ -505,7 +509,13 @@
         "weight": "Enter weight in kg",
         "height": "Enter height in cm",
         "width": "Enter width in cm",
-        "length": "Enter length in cm"
+        "length": "Enter length in cm",
+        "tier": "Select pricing tier"
+      },
+      "descriptions": {
+        "csnSearch": "Search for a customer by name, email, or CSN",
+        "csnReadOnly": "CSN cannot be changed after creation",
+        "tier": "Pricing tier affects shipping costs based on domestic tier multipliers"
       },
       "validation": {
         "csnRequired": "Customer Shipping Number is required",
@@ -567,11 +577,19 @@
       "warning": "This action cannot be undone.",
       "confirm": "Type DELETE to confirm"
     },
-    "bulkUpdate": {
-      "title": "Update Multiple Shipments",
-      "description": "Update status for {{count}} selected shipments",
-      "selectStatus": "Select new status"
-    },
+      "bulkUpdate": {
+        "title": "Update Multiple Shipments",
+        "description": "Update status for {{count}} selected shipments",
+        "selectStatus": "Select new status",
+        "selectTier": "Update Tier (Optional)"
+      },
+      "tier": {
+        "a": "Tier A - Standard",
+        "b": "Tier B - Premium",
+        "c": "Tier C - VIP",
+        "d": "Tier D - Enterprise",
+        "e": "Tier E - Ultimate"
+      },
     "track": {
       "title": "Track Your Shipment",
       "description": "Enter your shipment ESN to track its status",

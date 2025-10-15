@@ -71,6 +71,7 @@ export interface IShipment {
   status: string;
   estimatedArrival?: string;
   isDomestic?: boolean;
+  tier?: 'A' | 'B' | 'C' | 'D' | 'E';
   createdAt: string;
   updatedAt: string;
   updatedBy?: string;
@@ -86,6 +87,7 @@ export interface CreateShipmentPayload {
   note?: string;
   estimatedArrival?: string;
   isDomestic?: boolean;
+  tier?: 'A' | 'B' | 'C' | 'D' | 'E';
 }
 
 export interface UpdateShipmentPayload {
@@ -99,11 +101,13 @@ export interface UpdateShipmentPayload {
   status?: string;
   estimatedArrival?: string;
   isDomestic?: boolean;
+  tier?: 'A' | 'B' | 'C' | 'D' | 'E';
 }
 
 export interface BulkUpdatePayload {
   shipmentsId: string[];
   shipmentStatus: string;
+  tier?: 'A' | 'B' | 'C' | 'D' | 'E';
 }
 
 export interface BulkUpdateEsnPayload {
@@ -129,6 +133,7 @@ export interface ShipmentFilters {
   method?: string; // Alias for shippingMethod
   shippingMethod?: string;
   isDomestic?: boolean;
+  tier?: string;
   from?: string;
   to?: string;
   createdAfter?: string; // Date range start
@@ -165,6 +170,8 @@ export interface PriceCalculationPayload {
   shippingMethod: string;
   destination: string;
   country: string;
+  isDomestic?: boolean;
+  tier?: 'A' | 'B' | 'C' | 'D' | 'E';
 }
 
 export interface ShipmentsPagination {

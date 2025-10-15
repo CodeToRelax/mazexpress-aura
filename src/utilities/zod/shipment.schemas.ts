@@ -27,6 +27,7 @@ export const createShipmentSchema = z.object({
   note: z.string().max(500).optional().or(z.literal('')),
   estimatedArrival: z.string().optional().or(z.literal('')),
   isDomestic: z.boolean().optional(),
+  tier: z.enum(['A', 'B', 'C', 'D', 'E']).optional(),
 });
 
 // Update Shipment Schema
@@ -41,6 +42,7 @@ export const updateShipmentSchema = z.object({
   status: z.nativeEnum(ShipmentStatus).optional(),
   estimatedArrival: z.string().optional().or(z.literal('')),
   isDomestic: z.boolean().optional(),
+  tier: z.enum(['A', 'B', 'C', 'D', 'E']).optional(),
 });
 
 // Search Shipment Schema - Support both ESN formats
@@ -65,6 +67,8 @@ export const priceCalculationSchema = z.object({
   shippingMethod: z.nativeEnum(ShippingMethod),
   destination: z.string().min(1),
   country: z.string().min(1),
+  isDomestic: z.boolean().optional(),
+  tier: z.enum(['A', 'B', 'C', 'D', 'E']).optional(),
 }).refine(
   (data) => data.weight || data.dimensions,
   {

@@ -19,6 +19,9 @@ export function normalizeShipment(raw: any): IShipment {
     note: raw.note ?? undefined,
     estimatedArrival: raw.estimatedArrival ?? undefined,
     
+    // Normalize tier: default to 'A' if not specified
+    tier: raw.tier || 'A',
+    
     // Normalize size data
     size: normalizeShipmentSize(raw.size),
   };

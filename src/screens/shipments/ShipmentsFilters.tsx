@@ -174,6 +174,28 @@ export function ShipmentsFilters({
             </div>
 
             <div className="space-y-2">
+              <label className="text-sm font-medium">{t('shipments.filters.tier')}</label>
+              <Select
+                value={filters.tier || 'all'}
+                onValueChange={(value) => 
+                  handleFilterChange('tier', value === 'all' ? undefined : value)
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{t('shipments.filters.allTiers')}</SelectItem>
+                  <SelectItem value="A">{t('shipments.tier.a', { defaultValue: 'Tier A - Standard' })}</SelectItem>
+                  <SelectItem value="B">{t('shipments.tier.b', { defaultValue: 'Tier B - Premium' })}</SelectItem>
+                  <SelectItem value="C">{t('shipments.tier.c', { defaultValue: 'Tier C - VIP' })}</SelectItem>
+                  <SelectItem value="D">{t('shipments.tier.d', { defaultValue: 'Tier D - Enterprise' })}</SelectItem>
+                  <SelectItem value="E">{t('shipments.tier.e', { defaultValue: 'Tier E - Ultimate' })}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
               <label className="text-sm font-medium">{t('shipments.filters.dateFrom')}</label>
               <Input
                 type="date"

@@ -32,22 +32,33 @@ interface BulkUpdateDialogProps {
 export function BulkUpdateDialog({ open, onOpenChange, selectedShipmentIds, onSuccess }: BulkUpdateDialogProps) {
   const { t } = useTranslation();
   const [selectedStatus, setSelectedStatus] = useState<ShipmentStatus | ''>('');
+  const [selectedTier, setSelectedTier] = useState<'A' | 'B' | 'C' | 'D' | 'E' | ''>('');
   const [isUpdating, setIsUpdating] = useState(false);
 
   const handleClose = () => {
     setSelectedStatus('');
+    setSelectedTier('');
     onOpenChange(false);
   };
 
   const handleConfirm = async () => {
-    if (!selectedStatus) return;
+    if (!selectedStatus && !selectedTier) return;
 
     try {
       setIsUpdating(true);
-      await shipmentsApi.bulkUpdateShipments({
+      const payload: any = {
         shipmentsId: selectedShipmentIds,
-        shipmentStatus: selectedStatus,
-      });
+      };
+      
+      if (selectedStatus) {
+        payload.shipmentStatus = selectedStatus;
+      }
+      
+      if (selectedTier) {
+        payload.tier = selectedTier;
+      }
+      
+      await shipmentsApi.bulkUpdateShipments(payload);
       toast({
         title: t('status.success'),
         description: t('shipments.messages.bulkUpdateSuccess', { count: selectedShipmentIds.length }),
@@ -99,6 +110,22 @@ export function BulkUpdateDialog({ open, onOpenChange, selectedShipmentIds, onSu
             </Select>
           </div>
 
+          <div className="space-y-2">
+            <Label htmlFor="tier">{t('shipments.bulkUpdate.selectTier', { defaultValue: 'Update Tier (Optional)' })}</Label>
+            <Select value={selectedTier} onValueChange={(value) => setSelectedTier(value as 'A' | 'B' | 'C' | 'D' | 'E')}>
+              <SelectTrigger id="tier">
+                <SelectValue placeholder={t('shipments.form.placeholders.tier', { defaultValue: 'Select tier' })} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="A">{t('shipments.tier.a', { defaultValue: 'Tier A - Standard' })}</SelectItem>
+                <SelectItem value="B">{t('shipments.tier.b', { defaultValue: 'Tier B - Premium' })}</SelectItem>
+                <SelectItem value="C">{t('shipments.tier.c', { defaultValue: 'Tier C - VIP' })}</SelectItem>
+                <SelectItem value="D">{t('shipments.tier.d', { defaultValue: 'Tier D - Enterprise' })}</SelectItem>
+                <SelectItem value="E">{t('shipments.tier.e', { defaultValue: 'Tier E - Ultimate' })}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           <div className="glass-card p-3 rounded-lg">
             <p className="text-sm text-muted-foreground">
               {selectedShipmentIds.length} {selectedShipmentIds.length === 1 ? 'shipment' : 'shipments'} selected
@@ -110,7 +137,7 @@ export function BulkUpdateDialog({ open, onOpenChange, selectedShipmentIds, onSu
           <Button variant="outline" onClick={handleClose} disabled={isUpdating}>
             {t('actions.cancel')}
           </Button>
-          <Button onClick={handleConfirm} disabled={!selectedStatus || isUpdating}>
+          <Button onClick={handleConfirm} disabled={(!selectedStatus && !selectedTier) || isUpdating}>
             {isUpdating && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
             {t('shipments.actions.bulkUpdate')}
           </Button>

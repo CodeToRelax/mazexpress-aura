@@ -30,6 +30,8 @@ export default function PriceCalculator() {
       shippingMethod: ShippingMethod.AIR,
       destination: '',
       country: 'libya',
+      isDomestic: false,
+      tier: 'A',
     },
   });
 
@@ -178,6 +180,35 @@ export default function PriceCalculator() {
                           <FormControl>
                             <Input {...field} placeholder="e.g., Libya, Turkey, UAE" />
                           </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* Tier Selection */}
+                    <FormField
+                      control={form.control}
+                      name="tier"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('shipments.form.fields.tier')}</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder={t('shipments.form.placeholders.tier', { defaultValue: 'Select tier' })} />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="A">{t('shipments.tier.a', { defaultValue: 'Tier A - Standard' })}</SelectItem>
+                              <SelectItem value="B">{t('shipments.tier.b', { defaultValue: 'Tier B - Premium' })}</SelectItem>
+                              <SelectItem value="C">{t('shipments.tier.c', { defaultValue: 'Tier C - VIP' })}</SelectItem>
+                              <SelectItem value="D">{t('shipments.tier.d', { defaultValue: 'Tier D - Enterprise' })}</SelectItem>
+                              <SelectItem value="E">{t('shipments.tier.e', { defaultValue: 'Tier E - Ultimate' })}</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormDescription>
+                            {t('shipments.form.descriptions.tier', { defaultValue: 'Pricing tier affects shipping costs' })}
+                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
