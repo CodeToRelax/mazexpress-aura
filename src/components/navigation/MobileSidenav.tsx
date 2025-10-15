@@ -117,8 +117,8 @@ export function MobileSidenav({
 
         {/* Footer */}
         <div className="p-4 border-t border-[hsl(var(--sidenav-border))] flex items-center gap-2">
-          <ThemeToggle />
-          <LanguageToggle />
+          {/* <ThemeToggle /> */}
+          {/* <LanguageToggle /> */}
         </div>
       </aside>
     </>
