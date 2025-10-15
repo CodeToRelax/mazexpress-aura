@@ -71,6 +71,7 @@ export interface IShipment {
   status: string;
   estimatedArrival?: string;
   isDomestic?: boolean;
+  originCountry?: 'libya' | 'turkey' | 'china' | 'uae';
   tier?: 'A' | 'B' | 'C' | 'D' | 'E';
   createdAt: string;
   updatedAt: string;
@@ -87,6 +88,7 @@ export interface CreateShipmentPayload {
   note?: string;
   estimatedArrival?: string;
   isDomestic?: boolean;
+  originCountry?: 'libya' | 'turkey' | 'china' | 'uae';
   tier?: 'A' | 'B' | 'C' | 'D' | 'E';
 }
 
@@ -101,12 +103,14 @@ export interface UpdateShipmentPayload {
   status?: string;
   estimatedArrival?: string;
   isDomestic?: boolean;
+  originCountry?: 'libya' | 'turkey' | 'china' | 'uae';
   tier?: 'A' | 'B' | 'C' | 'D' | 'E';
 }
 
 export interface BulkUpdatePayload {
   shipmentsId: string[];
-  shipmentStatus: string;
+  shipmentStatus?: string;
+  originCountry?: 'libya' | 'turkey' | 'china' | 'uae';
   tier?: 'A' | 'B' | 'C' | 'D' | 'E';
 }
 

@@ -165,7 +165,7 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess }: CreateSh
                   )}
                 />
 
-                {form.watch('isDomestic') && (
+                {form.watch('isDomestic') ? (
                   <FormField
                     control={form.control}
                     name="tier"
@@ -188,6 +188,33 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess }: CreateSh
                         </Select>
                         <FormDescription>
                           {t('shipments.form.descriptions.tier', { defaultValue: 'Pricing tier affects shipping costs' })}
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                ) : (
+                  <FormField
+                    control={form.control}
+                    name="originCountry"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('shipments.form.fields.originCountry')}</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder={t('shipments.form.placeholders.originCountry', { defaultValue: 'Select origin country' })} />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="libya">{t('shipments.originCountry.libya', { defaultValue: 'Libya' })}</SelectItem>
+                            <SelectItem value="turkey">{t('shipments.originCountry.turkey', { defaultValue: 'Turkey' })}</SelectItem>
+                            <SelectItem value="china">{t('shipments.originCountry.china', { defaultValue: 'China' })}</SelectItem>
+                            <SelectItem value="uae">{t('shipments.originCountry.uae', { defaultValue: 'UAE' })}</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormDescription>
+                          {t('shipments.form.descriptions.originCountry', { defaultValue: 'Country where shipment originates from' })}
                         </FormDescription>
                         <FormMessage />
                       </FormItem>

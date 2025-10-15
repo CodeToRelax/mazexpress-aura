@@ -33,16 +33,18 @@ export function BulkUpdateDialog({ open, onOpenChange, selectedShipmentIds, onSu
   const { t } = useTranslation();
   const [selectedStatus, setSelectedStatus] = useState<ShipmentStatus | ''>('');
   const [selectedTier, setSelectedTier] = useState<'A' | 'B' | 'C' | 'D' | 'E' | ''>('');
+  const [selectedOriginCountry, setSelectedOriginCountry] = useState<'libya' | 'turkey' | 'china' | 'uae' | ''>('');
   const [isUpdating, setIsUpdating] = useState(false);
 
   const handleClose = () => {
     setSelectedStatus('');
     setSelectedTier('');
+    setSelectedOriginCountry('');
     onOpenChange(false);
   };
 
   const handleConfirm = async () => {
-    if (!selectedStatus && !selectedTier) return;
+    if (!selectedStatus && !selectedTier && !selectedOriginCountry) return;
 
     try {
       setIsUpdating(true);
@@ -56,6 +58,10 @@ export function BulkUpdateDialog({ open, onOpenChange, selectedShipmentIds, onSu
       
       if (selectedTier) {
         payload.tier = selectedTier;
+      }
+
+      if (selectedOriginCountry) {
+        payload.originCountry = selectedOriginCountry;
       }
       
       await shipmentsApi.bulkUpdateShipments(payload);
@@ -126,6 +132,21 @@ export function BulkUpdateDialog({ open, onOpenChange, selectedShipmentIds, onSu
             </Select>
           </div>
 
+          <div className="space-y-2">
+            <Label htmlFor="originCountry">{t('shipments.bulkUpdate.selectOriginCountry', { defaultValue: 'Update Origin Country (Optional)' })}</Label>
+            <Select value={selectedOriginCountry} onValueChange={(value) => setSelectedOriginCountry(value as 'libya' | 'turkey' | 'china' | 'uae')}>
+              <SelectTrigger id="originCountry">
+                <SelectValue placeholder={t('shipments.form.placeholders.originCountry', { defaultValue: 'Select origin country' })} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="libya">{t('shipments.originCountry.libya', { defaultValue: 'Libya' })}</SelectItem>
+                <SelectItem value="turkey">{t('shipments.originCountry.turkey', { defaultValue: 'Turkey' })}</SelectItem>
+                <SelectItem value="china">{t('shipments.originCountry.china', { defaultValue: 'China' })}</SelectItem>
+                <SelectItem value="uae">{t('shipments.originCountry.uae', { defaultValue: 'UAE' })}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           <div className="glass-card p-3 rounded-lg">
             <p className="text-sm text-muted-foreground">
               {selectedShipmentIds.length} {selectedShipmentIds.length === 1 ? 'shipment' : 'shipments'} selected
@@ -137,7 +158,7 @@ export function BulkUpdateDialog({ open, onOpenChange, selectedShipmentIds, onSu
           <Button variant="outline" onClick={handleClose} disabled={isUpdating}>
             {t('actions.cancel')}
           </Button>
-          <Button onClick={handleConfirm} disabled={(!selectedStatus && !selectedTier) || isUpdating}>
+          <Button onClick={handleConfirm} disabled={(!selectedStatus && !selectedTier && !selectedOriginCountry) || isUpdating}>
             {isUpdating && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
             {t('shipments.actions.bulkUpdate')}
           </Button>

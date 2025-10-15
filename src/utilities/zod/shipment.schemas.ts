@@ -27,6 +27,7 @@ export const createShipmentSchema = z.object({
   note: z.string().max(500).optional().or(z.literal('')),
   estimatedArrival: z.string().optional().or(z.literal('')),
   isDomestic: z.boolean().optional(),
+  originCountry: z.enum(['libya', 'turkey', 'china', 'uae']).optional(),
   tier: z.enum(['A', 'B', 'C', 'D', 'E']).optional(),
 });
 
@@ -42,6 +43,7 @@ export const updateShipmentSchema = z.object({
   status: z.nativeEnum(ShipmentStatus).optional(),
   estimatedArrival: z.string().optional().or(z.literal('')),
   isDomestic: z.boolean().optional(),
+  originCountry: z.enum(['libya', 'turkey', 'china', 'uae']).optional(),
   tier: z.enum(['A', 'B', 'C', 'D', 'E']).optional(),
 });
 
