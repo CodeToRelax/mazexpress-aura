@@ -500,7 +500,8 @@
         "estimatedArrival": "Estimated Arrival",
         "isDomestic": "Domestic Shipment",
         "status": "Status",
-        "tier": "Pricing Tier"
+        "tier": "Pricing Tier",
+        "originCountry": "Origin Country"
       },
       "placeholders": {
         "csn": "e.g., BEN-828C",
@@ -510,12 +511,14 @@
         "height": "Enter height in cm",
         "width": "Enter width in cm",
         "length": "Enter length in cm",
-        "tier": "Select pricing tier"
+        "tier": "Select pricing tier",
+        "originCountry": "Select origin country"
       },
       "descriptions": {
         "csnSearch": "Search for a customer by name, email, or CSN",
         "csnReadOnly": "CSN cannot be changed after creation",
-        "tier": "Pricing tier affects shipping costs based on domestic tier multipliers"
+        "tier": "Pricing tier affects shipping costs based on domestic tier multipliers",
+        "originCountry": "Country where the shipment originates from"
       },
       "validation": {
         "csnRequired": "Customer Shipping Number is required",
@@ -581,7 +584,8 @@
         "title": "Update Multiple Shipments",
         "description": "Update status for {{count}} selected shipments",
         "selectStatus": "Select new status",
-        "selectTier": "Update Tier (Optional)"
+        "selectTier": "Update Tier (Optional)",
+        "selectOriginCountry": "Update Origin Country (Optional)"
       },
       "tier": {
         "a": "A - Standard",
@@ -589,6 +593,12 @@
         "c": "C - VIP",
         "d": "D - Enterprise",
         "e": "E - Ultimate"
+      },
+      "originCountry": {
+        "libya": "Libya",
+        "turkey": "Turkey",
+        "china": "China",
+        "uae": "UAE"
       },
     "track": {
       "title": "Track Your Shipment",
