@@ -354,10 +354,10 @@
       },
       "status": {
         "pending": "قيد الانتظار",
-        "in transit": "قيد النقل",
-        "ready for pick up": "جاهز للاستلام",
-        "received at warehouse": "تم الاستلام في المستودع",
-        "shipped to destination": "تم الشحن إلى الوجهة",
+        "in_transit": "قيد النقل",
+        "ready_for_pick_up": "جاهز للاستلام",
+        "received_at_warehouse": "تم الاستلام في المستودع",
+        "shipped_to_destination": "تم الشحن إلى الوجهة",
         "delivered": "تم التسليم",
         "cancelled": "ملغى",
         "returned": "مرتجع"

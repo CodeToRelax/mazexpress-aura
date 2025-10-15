@@ -410,10 +410,10 @@
       },
       "status": {
         "pending": "Pending",
-        "in transit": "In Transit",
-        "ready for pick up": "Ready for Pickup",
-        "received at warehouse": "Received at Warehouse",
-        "shipped to destination": "Shipped to Destination",
+        "in_transit": "In Transit",
+        "ready_for_pick_up": "Ready for Pickup",
+        "received_at_warehouse": "Received at Warehouse",
+        "shipped_to_destination": "Shipped to Destination",
         "delivered": "Delivered",
         "cancelled": "Cancelled",
         "returned": "Returned"
