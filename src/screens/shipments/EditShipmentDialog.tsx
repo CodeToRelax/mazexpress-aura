@@ -199,34 +199,6 @@ export function EditShipmentDialog({ open, onOpenChange, shipment, onSuccess }: 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
-                  name="tier"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('shipments.form.fields.tier')}</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder={t('shipments.form.placeholders.tier', { defaultValue: 'Select tier' })} />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="A">{t('shipments.tier.a', { defaultValue: 'Tier A - Standard' })}</SelectItem>
-                          <SelectItem value="B">{t('shipments.tier.b', { defaultValue: 'Tier B - Premium' })}</SelectItem>
-                          <SelectItem value="C">{t('shipments.tier.c', { defaultValue: 'Tier C - VIP' })}</SelectItem>
-                          <SelectItem value="D">{t('shipments.tier.d', { defaultValue: 'Tier D - Enterprise' })}</SelectItem>
-                          <SelectItem value="E">{t('shipments.tier.e', { defaultValue: 'Tier E - Ultimate' })}</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormDescription>
-                        {t('shipments.form.descriptions.tier', { defaultValue: 'Pricing tier affects shipping costs' })}
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
                   name="isDomestic"
                   render={({ field }) => (
                     <FormItem className="flex flex-row items-start space-x-3 space-y-0 pt-8">
@@ -239,6 +211,36 @@ export function EditShipmentDialog({ open, onOpenChange, shipment, onSuccess }: 
                     </FormItem>
                   )}
                 />
+
+                {form.watch('isDomestic') && (
+                  <FormField
+                    control={form.control}
+                    name="tier"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('shipments.form.fields.tier')}</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder={t('shipments.form.placeholders.tier', { defaultValue: 'Select tier' })} />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="A">{t('shipments.tier.a', { defaultValue: 'A - Standard' })}</SelectItem>
+                            <SelectItem value="B">{t('shipments.tier.b', { defaultValue: 'B - Premium' })}</SelectItem>
+                            <SelectItem value="C">{t('shipments.tier.c', { defaultValue: 'C - VIP' })}</SelectItem>
+                            <SelectItem value="D">{t('shipments.tier.d', { defaultValue: 'D - Enterprise' })}</SelectItem>
+                            <SelectItem value="E">{t('shipments.tier.e', { defaultValue: 'E - Ultimate' })}</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormDescription>
+                          {t('shipments.form.descriptions.tier', { defaultValue: 'Pricing tier affects shipping costs' })}
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
               </div>
             </div>
 

@@ -584,11 +584,11 @@
         "selectTier": "Update Tier (Optional)"
       },
       "tier": {
-        "a": "Tier A - Standard",
-        "b": "Tier B - Premium",
-        "c": "Tier C - VIP",
-        "d": "Tier D - Enterprise",
-        "e": "Tier E - Ultimate"
+        "a": "A - Standard",
+        "b": "B - Premium",
+        "c": "C - VIP",
+        "d": "D - Enterprise",
+        "e": "E - Ultimate"
       },
     "track": {
       "title": "Track Your Shipment",

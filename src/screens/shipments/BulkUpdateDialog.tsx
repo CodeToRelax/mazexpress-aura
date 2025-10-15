@@ -117,11 +117,11 @@ export function BulkUpdateDialog({ open, onOpenChange, selectedShipmentIds, onSu
                 <SelectValue placeholder={t('shipments.form.placeholders.tier', { defaultValue: 'Select tier' })} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="A">{t('shipments.tier.a', { defaultValue: 'Tier A - Standard' })}</SelectItem>
-                <SelectItem value="B">{t('shipments.tier.b', { defaultValue: 'Tier B - Premium' })}</SelectItem>
-                <SelectItem value="C">{t('shipments.tier.c', { defaultValue: 'Tier C - VIP' })}</SelectItem>
-                <SelectItem value="D">{t('shipments.tier.d', { defaultValue: 'Tier D - Enterprise' })}</SelectItem>
-                <SelectItem value="E">{t('shipments.tier.e', { defaultValue: 'Tier E - Ultimate' })}</SelectItem>
+                <SelectItem value="A">{t('shipments.tier.a', { defaultValue: 'A - Standard' })}</SelectItem>
+                <SelectItem value="B">{t('shipments.tier.b', { defaultValue: 'B - Premium' })}</SelectItem>
+                <SelectItem value="C">{t('shipments.tier.c', { defaultValue: 'C - VIP' })}</SelectItem>
+                <SelectItem value="D">{t('shipments.tier.d', { defaultValue: 'D - Enterprise' })}</SelectItem>
+                <SelectItem value="E">{t('shipments.tier.e', { defaultValue: 'E - Ultimate' })}</SelectItem>
               </SelectContent>
             </Select>
           </div>

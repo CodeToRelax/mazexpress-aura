@@ -48,7 +48,7 @@ export function TierBadge({ tier, className }: TierBadgeProps) {
         className
       )}
     >
-      {t(`shipments.tier.${tier.toLowerCase()}`, { defaultValue: `Tier ${tier}` })}
+      {t(`shipments.tier.${tier.toLowerCase()}`, { defaultValue: `${tier} - Standard` })}
     </Badge>
   );
 }
