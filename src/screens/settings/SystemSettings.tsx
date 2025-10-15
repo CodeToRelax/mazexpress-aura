@@ -4,7 +4,8 @@ import { Settings, Loader2, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CountryConfigCard } from './CountryConfigCard';
-import { getSystemConfig } from '@/utilities/api/config.api';
+import { DomesticTiersCard } from './DomesticTiersCard';
+import { getSystemConfig, type DomesticTiers } from '@/utilities/api/config.api';
 import { toast } from '@/hooks/use-toast';
 
 interface CountryConfig {
@@ -16,6 +17,7 @@ interface CountryConfig {
 
 interface SystemConfigData {
   lydExchangeRate: number;
+  domesticTiers: DomesticTiers;
   countries: Record<string, CountryConfig>;
 }
 
@@ -39,6 +41,7 @@ export default function SystemSettings() {
       const data = await getSystemConfig();
       setConfig({
         lydExchangeRate: data.lydExchangeRate,
+        domesticTiers: data.domesticTiers,
         countries: data.countries,
       });
       if (isRefresh) {
@@ -98,11 +101,23 @@ export default function SystemSettings() {
         </Button>
       </div>
 
-      {/* Main Content */}
+      {/* Domestic Tiers Section */}
+      {config?.domesticTiers && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="mb-8"
+        >
+          <DomesticTiersCard tiers={config.domesticTiers} onUpdate={fetchConfig} />
+        </motion.div>
+      )}
+
+      {/* Country Configuration Tabs */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
       >
         <Tabs defaultValue={COUNTRIES[0].key} className="w-full">
           <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 mb-8">

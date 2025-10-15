@@ -9,9 +9,18 @@ interface CountryShippingConfig {
   airShippingFactor: number;
 }
 
+interface DomesticTiers {
+  A: number;
+  B: number;
+  C: number;
+  D: number;
+  E: number;
+}
+
 interface SystemConfig {
   _id: string;
   lydExchangeRate: number;
+  domesticTiers: DomesticTiers;
   countries: Record<string, CountryShippingConfig>;
   updatedBy?: string;
   createdAt: string;
@@ -122,3 +131,32 @@ export async function updateSystemConfig(
   const result = await response.json();
   return result.data;
 }
+
+export async function updateDomesticTiers(
+  domesticTiers: DomesticTiers
+): Promise<SystemConfig> {
+  const token = await getAuthToken();
+  
+  if (!token) {
+    throw new Error('Authentication required');
+  }
+  
+  const response = await fetch(`${API_BASE_URL}/api/config`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify({ domesticTiers }),
+  });
+  
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error?.message || 'Failed to update domestic tiers');
+  }
+  
+  const result = await response.json();
+  return result.data;
+}
+
+export type { DomesticTiers, CountryShippingConfig, SystemConfig };
