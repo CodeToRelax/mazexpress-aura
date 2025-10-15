@@ -406,7 +406,8 @@
         "createdAt": "Created",
         "updatedAt": "Updated",
         "actions": "Actions",
-        "tier": "Tier"
+        "tier": "Tier",
+        "originCountry": "Origin Country"
       },
       "status": {
         "pending": "Pending",

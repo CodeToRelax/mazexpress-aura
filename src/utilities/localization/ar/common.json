@@ -350,7 +350,8 @@
         "createdAt": "تاريخ الإنشاء",
         "updatedAt": "تاريخ التحديث",
         "actions": "الإجراءات",
-        "tier": "الفئة"
+        "tier": "الفئة",
+        "originCountry": "بلد المنشأ"
       },
       "status": {
         "pending": "قيد الانتظار",
