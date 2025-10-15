@@ -540,7 +540,11 @@
     },
     "detail": {
       "title": "Shipment Details",
+      "subtitle": "Complete information about this shipment",
       "overview": "Overview",
+      "deliveryStatus": "Delivery Status",
+      "currentStatus": "Current Status",
+      "statusUpdatedAt": "Status updated {{date}}",
       "basicInfo": "Basic Information",
       "sizeInfo": "Size & Dimensions",
       "shippingInfo": "Shipping Details",

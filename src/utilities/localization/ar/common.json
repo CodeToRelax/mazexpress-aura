@@ -484,7 +484,11 @@
     },
     "detail": {
       "title": "تفاصيل الشحنة",
+      "subtitle": "معلومات كاملة عن هذه الشحنة",
       "overview": "نظرة عامة",
+      "deliveryStatus": "حالة التسليم",
+      "currentStatus": "الحالة الحالية",
+      "statusUpdatedAt": "تم تحديث الحالة في {{date}}",
       "shippingDetails": "تفاصيل الشحن",
       "sizeWeight": "الحجم والوزن",
       "metadata": "البيانات الوصفية",

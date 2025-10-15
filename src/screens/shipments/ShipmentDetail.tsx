@@ -130,6 +130,34 @@ export default function ShipmentDetail() {
         </div>
       </div>
 
+      {/* Delivery Status */}
+      <div className="glass-card p-6 rounded-2xl space-y-4">
+        <h3 className="text-lg font-semibold flex items-center gap-2">
+          <Truck className="h-5 w-5" />
+          {t('shipments.detail.deliveryStatus')}
+        </h3>
+        <Separator />
+        
+        <div className="space-y-4">
+          <div>
+            <p className="text-sm text-muted-foreground mb-2">
+              {t('shipments.detail.currentStatus')}
+            </p>
+            <div className="flex items-center gap-2">
+              <StatusBadge status={shipment.status} className="text-base px-4 py-2" />
+            </div>
+          </div>
+          
+          <div className="text-sm text-muted-foreground">
+            <p>
+              {t('shipments.detail.statusUpdatedAt', {
+                date: format(new Date(shipment.updatedAt), 'PPP p')
+              })}
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Shipping Details */}
       <div className="glass-card p-6 rounded-2xl space-y-4">
         <h3 className="text-lg font-semibold">{t('shipments.detail.shippingDetails')}</h3>
