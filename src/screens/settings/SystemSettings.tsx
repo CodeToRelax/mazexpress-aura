@@ -41,7 +41,14 @@ export default function SystemSettings() {
       const data = await getSystemConfig();
       setConfig({
         lydExchangeRate: data.lydExchangeRate,
-        domesticTiers: data.domesticTiers,
+        // Provide default tiers if not present in API response
+        domesticTiers: data.domesticTiers || {
+          A: 1.0,
+          B: 1.2,
+          C: 1.5,
+          D: 2.0,
+          E: 2.5
+        },
         countries: data.countries,
       });
       if (isRefresh) {
@@ -102,7 +109,7 @@ export default function SystemSettings() {
       </div>
 
       {/* Domestic Tiers Section */}
-      {config?.domesticTiers && (
+      {config && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
