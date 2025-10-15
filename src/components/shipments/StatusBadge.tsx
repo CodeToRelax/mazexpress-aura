@@ -8,6 +8,9 @@ interface StatusBadgeProps {
 
 export function StatusBadge({ status, className }: StatusBadgeProps) {
   const { t } = useTranslation();
+  
+  // Normalize status: convert spaces to underscores
+  const normalizedStatus = status.replace(/\s+/g, '_');
 
   const statusColors: Record<string, string> = {
     'pending': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 border-yellow-200 dark:border-yellow-800',
@@ -20,7 +23,7 @@ export function StatusBadge({ status, className }: StatusBadgeProps) {
     'shipped_to_destination': 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800'
   };
 
-  const colorClass = statusColors[status] || 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400 border-gray-200 dark:border-gray-800';
+  const colorClass = statusColors[normalizedStatus] || 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400 border-gray-200 dark:border-gray-800';
 
   return (
     <span className={cn(
@@ -28,7 +31,7 @@ export function StatusBadge({ status, className }: StatusBadgeProps) {
       colorClass,
       className
     )}>
-      {t(`shipments.table.status.${status}`)}
+      {t(`shipments.table.status.${normalizedStatus}`)}
     </span>
   );
 }
