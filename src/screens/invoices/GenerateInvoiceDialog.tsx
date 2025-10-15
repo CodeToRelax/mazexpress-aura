@@ -173,7 +173,7 @@ export function GenerateInvoiceDialog({
                   <SelectContent>
                     {SHIPMENT_STATUSES.map((status) => (
                       <SelectItem key={status} value={status}>
-                        {t(`shipments.table.status.${status}`)}
+                        {t(`shipments.table.status.${status.replace(/ /g, '_')}`)}
                       </SelectItem>
                     ))}
                   </SelectContent>

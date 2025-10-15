@@ -69,7 +69,7 @@ export function QuickStatusUpdate({ shipmentId, currentStatus, onSuccess, classN
             <div className="flex items-center">
               {status === currentStatus && <Check className="h-4 w-4 mr-2 text-primary" />}
               <span className={cn(status !== currentStatus && 'ml-6')}>
-                {t(`shipments.table.status.${status}`)}
+                {t(`shipments.table.status.${status.replace(/ /g, '_')}`)}
               </span>
             </div>
           </SelectItem>

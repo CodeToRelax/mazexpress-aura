@@ -103,7 +103,7 @@ export function BulkUpdateDialog({ open, onOpenChange, selectedShipmentIds, onSu
               <SelectContent>
                 {Object.values(ShipmentStatus).map((status) => (
                   <SelectItem key={status} value={status}>
-                    {t(`shipments.table.status.${status}`)}
+                    {t(`shipments.table.status.${status.replace(/ /g, '_')}`)}
                   </SelectItem>
                 ))}
               </SelectContent>
