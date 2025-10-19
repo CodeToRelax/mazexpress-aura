@@ -33,6 +33,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { CitySearchCombobox } from '@/components/ui/CitySearchCombobox';
 import { toast } from '@/hooks/use-toast';
 import { shipmentsApi } from '@/utilities/api/shipments.api';
 import { updateShipmentSchema, type UpdateShipmentFormData } from '@/utilities/zod/shipment.schemas';
@@ -286,20 +287,17 @@ export function EditShipmentDialog({ open, onOpenChange, shipment, onSuccess }: 
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>{t('shipments.form.fields.destination')}</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {Object.values(Cities).map((city) => (
-                            <SelectItem key={city} value={city}>
-                              {city.charAt(0).toUpperCase() + city.slice(1).replace(/_/g, ' ')}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <FormControl>
+                        <CitySearchCombobox
+                          cities={Object.values(Cities).map((city) => ({
+                            value: city,
+                            label: city.charAt(0).toUpperCase() + city.slice(1).replace(/_/g, ' ')
+                          }))}
+                          value={field.value || ''}
+                          onChange={field.onChange}
+                          placeholder="Select destination"
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
