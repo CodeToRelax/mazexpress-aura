@@ -28,6 +28,7 @@ import { authApi } from '@/utilities/api/auth.api';
 import { aclApi } from '@/utilities/api/acl.api';
 import { signupSchema, type SignupFormData } from '@/utilities/zod/user.schemas';
 import { ResponsiveFormLayout, FormSection, FormField } from '@/components/layout/ResponsiveFormLayout';
+import { CitySearchCombobox } from '@/components/ui/CitySearchCombobox';
 import type { ACLPermission } from '@/types/acl';
 
 interface CreateUserDialogProps {
@@ -333,21 +334,13 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
 
               <FormField>
                 <Label htmlFor="city">City *</Label>
-                <Select 
-                  onValueChange={(value) => setValue('address.city', value as any, { shouldValidate: true })}
+                <CitySearchCombobox
+                  cities={availableCities}
+                  value={watch('address.city') || ''}
+                  onChange={(value) => setValue('address.city', value as any, { shouldValidate: true })}
                   disabled={!selectedCountry}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder={selectedCountry ? "Select city" : "Select country first"} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {availableCities.map((city) => (
-                      <SelectItem key={city.value} value={city.value}>
-                        {city.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  placeholder={selectedCountry ? "Search cities..." : "Select country first"}
+                />
                 {errors.address?.city && (
                   <p className="text-sm text-destructive">{errors.address.city.message}</p>
                 )}
