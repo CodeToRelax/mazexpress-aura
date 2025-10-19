@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Package, Clock, Truck, CheckCircle2, PackageCheck, Ship, MapPin, XCircle, Undo2 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useACL } from '@/hooks/useACL';
 import type { ShipmentStats } from '@/types/shipment';
 
 interface ShipmentsStatsBarProps {
@@ -10,6 +11,7 @@ interface ShipmentsStatsBarProps {
 
 export function ShipmentsStatsBar({ stats, onStatClick }: ShipmentsStatsBarProps) {
   const { t } = useTranslation();
+  const { accessibleStatuses, isSuperAdmin } = useACL();
 
   const statCards = [
     {
@@ -19,6 +21,7 @@ export function ShipmentsStatsBar({ stats, onStatClick }: ShipmentsStatsBarProps
       color: 'text-primary',
       bgColor: 'bg-primary/10',
       filterType: 'all' as const,
+      status: null,
     },
     {
       icon: Clock,
@@ -27,6 +30,7 @@ export function ShipmentsStatsBar({ stats, onStatClick }: ShipmentsStatsBarProps
       color: 'text-yellow-600 dark:text-yellow-400',
       bgColor: 'bg-yellow-500/10',
       filterType: 'pending' as const,
+      status: 'pending',
     },
     {
       icon: Truck,
@@ -35,6 +39,7 @@ export function ShipmentsStatsBar({ stats, onStatClick }: ShipmentsStatsBarProps
       color: 'text-blue-600 dark:text-blue-400',
       bgColor: 'bg-blue-500/10',
       filterType: 'in transit' as const,
+      status: 'in_transit',
     },
     {
       icon: CheckCircle2,
@@ -43,6 +48,7 @@ export function ShipmentsStatsBar({ stats, onStatClick }: ShipmentsStatsBarProps
       color: 'text-green-600 dark:text-green-400',
       bgColor: 'bg-green-500/10',
       filterType: 'delivered' as const,
+      status: 'delivered',
     },
     {
       icon: PackageCheck,
@@ -51,6 +57,7 @@ export function ShipmentsStatsBar({ stats, onStatClick }: ShipmentsStatsBarProps
       color: 'text-cyan-600 dark:text-cyan-400',
       bgColor: 'bg-cyan-500/10',
       filterType: 'received at warehouse' as const,
+      status: 'received_at_warehouse',
     },
     {
       icon: Ship,
@@ -59,6 +66,7 @@ export function ShipmentsStatsBar({ stats, onStatClick }: ShipmentsStatsBarProps
       color: 'text-indigo-600 dark:text-indigo-400',
       bgColor: 'bg-indigo-500/10',
       filterType: 'shipped to destination' as const,
+      status: 'shipped_to_destination',
     },
     {
       icon: MapPin,
@@ -67,6 +75,7 @@ export function ShipmentsStatsBar({ stats, onStatClick }: ShipmentsStatsBarProps
       color: 'text-purple-600 dark:text-purple-400',
       bgColor: 'bg-purple-500/10',
       filterType: 'ready for pick up' as const,
+      status: 'ready_for_pick_up',
     },
     {
       icon: XCircle,
@@ -75,6 +84,7 @@ export function ShipmentsStatsBar({ stats, onStatClick }: ShipmentsStatsBarProps
       color: 'text-red-600 dark:text-red-400',
       bgColor: 'bg-red-500/10',
       filterType: 'cancelled' as const,
+      status: 'cancelled',
     },
     {
       icon: Undo2,
@@ -83,12 +93,20 @@ export function ShipmentsStatsBar({ stats, onStatClick }: ShipmentsStatsBarProps
       color: 'text-orange-600 dark:text-orange-400',
       bgColor: 'bg-orange-500/10',
       filterType: 'returned' as const,
+      status: 'returned',
     },
   ];
 
+  // Filter stat cards based on accessible statuses
+  const visibleStatCards = isSuperAdmin 
+    ? statCards 
+    : statCards.filter(card => 
+        card.status === null || accessibleStatuses.includes(card.status)
+      );
+
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-      {statCards.map((stat, index) => (
+      {visibleStatCards.map((stat, index) => (
         <motion.div
           key={stat.label}
           initial={{ opacity: 0, y: 20 }}

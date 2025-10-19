@@ -60,5 +60,8 @@ export const selectACLFlags = (state: RootState) => state.acl.acl?.frontendFlags
 export const selectACLLoaded = (state: RootState) => state.acl.isLoaded;
 export const selectACLError = (state: RootState) => state.acl.error;
 export const selectIsAdmin = (state: RootState) => state.acl.acl?.userType === 'admin';
+export const selectAdminCountry = (state: RootState) => state.acl.acl?.adminCountry;
+export const selectAccessibleStatuses = (state: RootState) => state.acl.acl?.accessibleStatuses || [];
+export const selectIsSuperAdmin = (state: RootState) => state.acl.acl?.isSuperAdmin || false;
 
 export default aclSlice.reducer;

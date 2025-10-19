@@ -18,6 +18,9 @@ export function useACL() {
   const isLoaded = useAppSelector(selectACLLoaded);
   const error = useAppSelector(selectACLError);
   const isAdmin = useAppSelector(selectIsAdmin);
+  const adminCountry = useAppSelector((state) => state.acl.acl?.adminCountry);
+  const accessibleStatuses = useAppSelector((state) => state.acl.acl?.accessibleStatuses || []);
+  const isSuperAdmin = useAppSelector((state) => state.acl.acl?.isSuperAdmin || false);
 
   /**
    * Check if user has a specific permission
@@ -59,6 +62,9 @@ export function useACL() {
     error,
     isAdmin,
     isCustomer: acl?.userType === 'customer',
+    adminCountry,
+    accessibleStatuses,
+    isSuperAdmin,
     hasPermission,
     hasFlag,
     canAccessResource,

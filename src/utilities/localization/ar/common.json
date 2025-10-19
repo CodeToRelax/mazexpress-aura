@@ -318,6 +318,19 @@
     "viewOnMaps": "عرض على خرائط جوجل",
     "viewVideo": "مشاهدة فيديو يوتيوب"
   },
+  "acl": {
+    "countryRestriction": "قيود الوصول حسب البلد",
+    "noAccessToStatus": "وصول الحالة مقيد",
+    "accessDenied": "تم رفض الوصول",
+    "managedByCountry": "يتم إدارة هذه الشحنة بواسطة عمليات {{country}}",
+    "countryRestrictionGeneric": "ليس لديك وصول إلى هذا المورد بسبب قيود البلد",
+    "noAccessToStatusDesc": "ليس لديك إذن للوصول إلى الشحنات في هذه الحالة",
+    "accessDeniedDesc": "ليس لديك إذن للوصول إلى هذا المورد",
+    "contactSuperAdmin": "إذا كنت تعتقد أنه يجب أن يكون لديك وصول، يرجى الاتصال بمسؤول النظام",
+    "onlyAccessibleStatuses": "عرض الحالات التي يمكنك إدارتها فقط",
+    "superAdmin": "مسؤول عام",
+    "allAccess": "وصول كامل"
+  },
   "status": {
     "authenticated": "أنت مسجل الدخول",
     "loading": "جاري التحميل...",

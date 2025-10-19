@@ -61,6 +61,9 @@ export interface UserACLData {
   permissions: ACLPermission[];
   rules: ACLRule[];
   frontendFlags: ACLFlags;
+  adminCountry?: 'libya' | 'turkey' | 'china' | 'uae';
+  accessibleStatuses?: string[];
+  isSuperAdmin?: boolean;
 }
 
 export interface ACLApiResponse {

@@ -1,11 +1,18 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Search, SlidersHorizontal, X } from 'lucide-react';
+import { Search, SlidersHorizontal, X, Info } from 'lucide-react';
 import type { ShipmentFilters } from '@/types/shipment';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useDebounce } from '@/hooks/useDebounce';
+import { useACL } from '@/hooks/useACL';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import {
   Select,
   SelectContent,
@@ -36,6 +43,7 @@ export function ShipmentsFilters({
   activeFilterCount 
 }: ShipmentsFiltersProps) {
   const { t } = useTranslation();
+  const { accessibleStatuses, adminCountry, isSuperAdmin } = useACL();
   const [searchInput, setSearchInput] = useState(filters.search || '');
   const debouncedSearch = useDebounce(searchInput, 500);
 
@@ -57,7 +65,8 @@ export function ShipmentsFilters({
     onFiltersChange({ ...filters, [key]: value, page: 1 });
   };
 
-  const statuses = [
+  // Filter statuses based on ACL
+  const allStatuses = [
     'pending',
     'in_transit',
     'ready_for_pick_up',
@@ -67,9 +76,27 @@ export function ShipmentsFilters({
     'received_at_warehouse',
     'shipped_to_destination'
   ];
+  
+  const statuses = isSuperAdmin 
+    ? allStatuses 
+    : allStatuses.filter(status => accessibleStatuses.includes(status));
+
+  // Filter origin countries based on admin country
+  const getOriginCountries = () => {
+    if (isSuperAdmin) {
+      return ['libya', 'turkey', 'china', 'uae'];
+    }
+    if (adminCountry === 'libya') {
+      // Libya admins see forwarding countries
+      return ['turkey', 'china', 'uae'];
+    }
+    // Forwarding country admins see their own country
+    return adminCountry ? [adminCountry] : [];
+  };
 
   const methods = ['air', 'sea', 'land'];
   const destinations = ['benghazi', 'tripoli', 'misurata', 'zawiya'];
+  const originCountries = getOriginCountries();
 
   return (
     <div className="flex flex-wrap gap-2 items-center">
@@ -108,7 +135,21 @@ export function ShipmentsFilters({
           
           <div className="space-y-4 mt-6">
             <div className="space-y-2">
-              <label className="text-sm font-medium">{t('shipments.filters.status')}</label>
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium">{t('shipments.filters.status')}</label>
+                {!isSuperAdmin && statuses.length < allStatuses.length && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Info className="h-4 w-4 text-muted-foreground" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>{t('acl.onlyAccessibleStatuses', { defaultValue: 'Showing only statuses you can manage' })}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
+              </div>
               <Select
                 value={filters.status || 'all'}
                 onValueChange={(value) => 
@@ -202,16 +243,25 @@ export function ShipmentsFilters({
                 onValueChange={(value) => 
                   handleFilterChange('originCountry', value === 'all' ? undefined : value)
                 }
+                disabled={originCountries.length === 0}
               >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">{t('shipments.filters.allOriginCountries')}</SelectItem>
-                  <SelectItem value="libya">{t('shipments.originCountry.libya')}</SelectItem>
-                  <SelectItem value="turkey">{t('shipments.originCountry.turkey')}</SelectItem>
-                  <SelectItem value="china">{t('shipments.originCountry.china')}</SelectItem>
-                  <SelectItem value="uae">{t('shipments.originCountry.uae')}</SelectItem>
+                  {originCountries.includes('libya') && (
+                    <SelectItem value="libya">{t('shipments.originCountry.libya')}</SelectItem>
+                  )}
+                  {originCountries.includes('turkey') && (
+                    <SelectItem value="turkey">{t('shipments.originCountry.turkey')}</SelectItem>
+                  )}
+                  {originCountries.includes('china') && (
+                    <SelectItem value="china">{t('shipments.originCountry.china')}</SelectItem>
+                  )}
+                  {originCountries.includes('uae') && (
+                    <SelectItem value="uae">{t('shipments.originCountry.uae')}</SelectItem>
+                  )}
                 </SelectContent>
               </Select>
             </div>

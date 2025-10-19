@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Loader2, PackageCheck } from 'lucide-react';
+import { useACL } from '@/hooks/useACL';
 import {
   Dialog,
   DialogContent,
@@ -31,10 +32,16 @@ interface BulkUpdateDialogProps {
 
 export function BulkUpdateDialog({ open, onOpenChange, selectedShipmentIds, onSuccess }: BulkUpdateDialogProps) {
   const { t } = useTranslation();
+  const { accessibleStatuses, isSuperAdmin } = useACL();
   const [selectedStatus, setSelectedStatus] = useState<ShipmentStatus | ''>('');
   const [selectedTier, setSelectedTier] = useState<'A' | 'B' | 'C' | 'D' | 'E' | ''>('');
   const [selectedOriginCountry, setSelectedOriginCountry] = useState<'libya' | 'turkey' | 'china' | 'uae' | ''>('');
   const [isUpdating, setIsUpdating] = useState(false);
+
+  // Filter statuses based on ACL
+  const availableStatuses = isSuperAdmin 
+    ? Object.values(ShipmentStatus)
+    : Object.values(ShipmentStatus).filter(status => accessibleStatuses.includes(status));
 
   const handleClose = () => {
     setSelectedStatus('');
@@ -107,13 +114,18 @@ export function BulkUpdateDialog({ open, onOpenChange, selectedShipmentIds, onSu
                 <SelectValue placeholder={t('shipments.filters.allStatuses')} />
               </SelectTrigger>
               <SelectContent>
-                {Object.values(ShipmentStatus).map((status) => (
+                {availableStatuses.map((status) => (
                   <SelectItem key={status} value={status}>
                     {t(`shipments.table.status.${status.replace(/ /g, '_')}`)}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
+            {!isSuperAdmin && availableStatuses.length < Object.values(ShipmentStatus).length && (
+              <p className="text-xs text-muted-foreground">
+                {t('acl.onlyAccessibleStatuses', { defaultValue: 'Showing only statuses you can set' })}
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">

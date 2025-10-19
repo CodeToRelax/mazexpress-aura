@@ -374,6 +374,19 @@
     "viewOnMaps": "View on Google Maps",
     "viewVideo": "View YouTube Video"
   },
+  "acl": {
+    "countryRestriction": "Country-Based Access Restriction",
+    "noAccessToStatus": "Status Access Restricted",
+    "accessDenied": "Access Denied",
+    "managedByCountry": "This shipment is managed by {{country}} operations",
+    "countryRestrictionGeneric": "You don't have access to this resource due to country-based restrictions",
+    "noAccessToStatusDesc": "You don't have permission to access shipments in this status",
+    "accessDeniedDesc": "You don't have permission to access this resource",
+    "contactSuperAdmin": "If you believe you should have access, please contact your system administrator",
+    "onlyAccessibleStatuses": "Showing only statuses you can manage",
+    "superAdmin": "Super Admin",
+    "allAccess": "All Access"
+  },
   "status": {
     "authenticated": "You are authenticated",
     "loading": "Loading...",
