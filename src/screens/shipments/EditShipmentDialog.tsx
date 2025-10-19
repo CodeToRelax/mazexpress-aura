@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Globe, Home } from 'lucide-react';
 import type { IShipment } from '@/types/shipment';
 import {
   Dialog,
@@ -34,6 +34,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { CitySearchCombobox } from '@/components/ui/CitySearchCombobox';
+import { DomesticShipmentDetailsForm } from '@/components/shipments/DomesticShipmentDetailsForm';
 import { toast } from '@/hooks/use-toast';
 import { shipmentsApi } from '@/utilities/api/shipments.api';
 import { updateShipmentSchema, type UpdateShipmentFormData } from '@/utilities/zod/shipment.schemas';
@@ -71,6 +72,17 @@ export function EditShipmentDialog({ open, onOpenChange, shipment, onSuccess }: 
       extraCosts: shipment.extraCosts || 0,
       note: shipment.note || '',
       estimatedArrival: shipment.estimatedArrival || '',
+      domesticShipmentDetails: shipment.domesticShipmentDetails || {
+        senderName: '',
+        receiverName: '',
+        receiverPrimaryPhoneNumber: '',
+        receiverSecondaryPhoneNumber: '',
+        destination: '',
+        productPrice: undefined,
+        productQuantity: undefined,
+        customerPaysShipping: false,
+        note: '',
+      },
     },
   });
 
@@ -94,6 +106,17 @@ export function EditShipmentDialog({ open, onOpenChange, shipment, onSuccess }: 
         extraCosts: shipment.extraCosts || 0,
         note: shipment.note || '',
         estimatedArrival: shipment.estimatedArrival || '',
+        domesticShipmentDetails: shipment.domesticShipmentDetails || {
+          senderName: '',
+          receiverName: '',
+          receiverPrimaryPhoneNumber: '',
+          receiverSecondaryPhoneNumber: '',
+          destination: '',
+          productPrice: undefined,
+          productQuantity: undefined,
+          customerPaysShipping: false,
+          note: '',
+        },
       });
     }
   }, [open, shipment, form]);
@@ -202,17 +225,36 @@ export function EditShipmentDialog({ open, onOpenChange, shipment, onSuccess }: 
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Shipment Type Toggle */}
                 <FormField
                   control={form.control}
                   name="isDomestic"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 pt-8">
+                    <FormItem className="col-span-full">
+                      <FormLabel>{t('shipments.form.fields.shipmentType')}</FormLabel>
                       <FormControl>
-                        <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                        <div className="flex gap-2">
+                          <Button
+                            type="button"
+                            variant={!field.value ? "default" : "outline"}
+                            className="flex-1 transition-all"
+                            onClick={() => field.onChange(false)}
+                          >
+                            <Globe className="h-4 w-4 mr-2" />
+                            {t('shipments.form.fields.international')}
+                          </Button>
+                          <Button
+                            type="button"
+                            variant={field.value ? "default" : "outline"}
+                            className="flex-1 transition-all"
+                            onClick={() => field.onChange(true)}
+                          >
+                            <Home className="h-4 w-4 mr-2" />
+                            {t('shipments.form.fields.domestic')}
+                          </Button>
+                        </div>
                       </FormControl>
-                      <div className="space-y-1 leading-none">
-                        <FormLabel>{t('shipments.form.fields.isDomestic')}</FormLabel>
-                      </div>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -274,6 +316,14 @@ export function EditShipmentDialog({ open, onOpenChange, shipment, onSuccess }: 
                   />
                 )}
               </div>
+
+              {/* Domestic Shipment Details Form */}
+              {form.watch('isDomestic') && (
+                <DomesticShipmentDetailsForm
+                  control={form.control}
+                  isDisabled={isSubmitting}
+                />
+              )}
             </div>
 
             {/* Shipping Details */}

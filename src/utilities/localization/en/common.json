@@ -506,7 +506,22 @@
         "isDomestic": "Domestic Shipment",
         "status": "Status",
         "tier": "Pricing Tier",
-        "originCountry": "Origin Country"
+        "originCountry": "Origin Country",
+        "shipmentType": "Shipment Type",
+        "international": "International",
+        "domestic": "Domestic",
+        "domesticDetails": "Domestic Shipment Details",
+        "senderName": "Sender Name",
+        "receiverName": "Receiver Name",
+        "receiverPrimaryPhone": "Primary Phone Number",
+        "receiverSecondaryPhone": "Secondary Phone Number",
+        "detailedDestination": "Detailed Destination Address",
+        "productPrice": "Product Price (LYD)",
+        "productQuantity": "Product Quantity",
+        "shippingPayment": "Shipping Payment",
+        "companyPays": "Company Pays Shipping",
+        "customerPays": "Customer Pays Shipping",
+        "domesticNote": "Domestic Shipment Notes"
       },
       "placeholders": {
         "csn": "e.g., BEN-828C",
@@ -517,13 +532,25 @@
         "width": "Enter width in cm",
         "length": "Enter length in cm",
         "tier": "Select pricing tier",
-        "originCountry": "Select origin country"
+        "originCountry": "Select origin country",
+        "senderName": "Enter sender's full name",
+        "receiverName": "Enter receiver's full name",
+        "primaryPhone": "+218912345678",
+        "secondaryPhone": "+218987654321",
+        "detailedAddress": "123 Main Street, Building A, Floor 2",
+        "productPrice": "150.50",
+        "productQuantity": "2",
+        "domesticNote": "Fragile items - handle with care"
       },
       "descriptions": {
         "csnSearch": "Search for a customer by name, email, or CSN",
         "csnReadOnly": "CSN cannot be changed after creation",
         "tier": "Pricing tier affects shipping costs based on domestic tier multipliers",
-        "originCountry": "Country where the shipment originates from"
+        "originCountry": "Country where the shipment originates from",
+        "domesticDetails": "Additional details for domestic shipments within Libya",
+        "phoneFormat": "Enter phone number in format: +218XXXXXXXXX",
+        "productInfo": "Information about the product being shipped",
+        "shippingCost": "Who is responsible for paying the shipping cost"
       },
       "validation": {
         "csnRequired": "Customer Shipping Number is required",

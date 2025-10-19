@@ -12,6 +12,19 @@ export const shipmentSizeSchema = z.object({
   { message: 'Either weight OR all dimensions must be provided' }
 );
 
+// Domestic Shipment Details Schema
+export const domesticShipmentDetailsSchema = z.object({
+  senderName: z.string().max(100).optional().or(z.literal('')),
+  receiverName: z.string().max(100).optional().or(z.literal('')),
+  receiverPrimaryPhoneNumber: z.string().regex(/^[\+]?[0-9\s\-\(\)]{7,20}$/, 'Invalid phone number format').optional().or(z.literal('')),
+  receiverSecondaryPhoneNumber: z.string().regex(/^[\+]?[0-9\s\-\(\)]{7,20}$/, 'Invalid phone number format').optional().or(z.literal('')),
+  destination: z.string().max(200).optional().or(z.literal('')),
+  productPrice: z.number().min(0).max(1000000).optional(),
+  productQuantity: z.number().min(1).max(10000).optional(),
+  customerPaysShipping: z.boolean().optional(),
+  note: z.string().max(500).optional().or(z.literal('')),
+}).optional();
+
 // Create Shipment Schema
 export const createShipmentSchema = z.object({
   isn: z.string().regex(/^[A-Z0-9]{8,20}$/i, 'Invalid ISN format').optional().or(z.literal('')),
@@ -29,6 +42,7 @@ export const createShipmentSchema = z.object({
   isDomestic: z.boolean().optional(),
   originCountry: z.enum(['libya', 'turkey', 'china', 'uae']).optional(),
   tier: z.enum(['A', 'B', 'C', 'D', 'E']).optional(),
+  domesticShipmentDetails: domesticShipmentDetailsSchema,
 });
 
 // Update Shipment Schema
@@ -45,6 +59,7 @@ export const updateShipmentSchema = z.object({
   isDomestic: z.boolean().optional(),
   originCountry: z.enum(['libya', 'turkey', 'china', 'uae']).optional(),
   tier: z.enum(['A', 'B', 'C', 'D', 'E']).optional(),
+  domesticShipmentDetails: domesticShipmentDetailsSchema,
 });
 
 // Search Shipment Schema - Support both ESN formats

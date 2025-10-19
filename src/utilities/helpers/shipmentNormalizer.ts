@@ -22,6 +22,9 @@ export function normalizeShipment(raw: any): IShipment {
     // Normalize tier: default to 'A' if not specified
     tier: raw.tier || 'A',
     
+    // Normalize domestic shipment details
+    domesticShipmentDetails: raw.domesticShipmentDetails || undefined,
+    
     // Normalize size data
     size: normalizeShipmentSize(raw.size),
   };

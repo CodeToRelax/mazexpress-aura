@@ -58,6 +58,18 @@ export interface IShipmentSize {
   length: number;
 }
 
+export interface IDomesticShipmentDetails {
+  senderName?: string;
+  receiverName?: string;
+  receiverPrimaryPhoneNumber?: string;
+  receiverSecondaryPhoneNumber?: string;
+  destination?: string;
+  productPrice?: number;
+  productQuantity?: number;
+  customerPaysShipping?: boolean;
+  note?: string;
+}
+
 export interface IShipment {
   _id: string;
   isn?: string;
@@ -73,6 +85,7 @@ export interface IShipment {
   isDomestic?: boolean;
   originCountry?: 'libya' | 'turkey' | 'china' | 'uae';
   tier?: 'A' | 'B' | 'C' | 'D' | 'E';
+  domesticShipmentDetails?: IDomesticShipmentDetails;
   createdAt: string;
   updatedAt: string;
   updatedBy?: string;
@@ -90,6 +103,7 @@ export interface CreateShipmentPayload {
   isDomestic?: boolean;
   originCountry?: 'libya' | 'turkey' | 'china' | 'uae';
   tier?: 'A' | 'B' | 'C' | 'D' | 'E';
+  domesticShipmentDetails?: IDomesticShipmentDetails;
 }
 
 export interface UpdateShipmentPayload {
@@ -105,6 +119,7 @@ export interface UpdateShipmentPayload {
   isDomestic?: boolean;
   originCountry?: 'libya' | 'turkey' | 'china' | 'uae';
   tier?: 'A' | 'B' | 'C' | 'D' | 'E';
+  domesticShipmentDetails?: IDomesticShipmentDetails;
 }
 
 export interface BulkUpdatePayload {

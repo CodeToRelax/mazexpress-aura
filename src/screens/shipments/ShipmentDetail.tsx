@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
-import { ArrowLeft, Package, MapPin, Truck, Calendar, Weight, Ruler, DollarSign, FileText, Loader2, Edit, Trash2, Printer } from 'lucide-react';
+import { ArrowLeft, Package, MapPin, Truck, Calendar, Weight, Ruler, DollarSign, FileText, Loader2, Edit, Trash2, Printer, Home } from 'lucide-react';
 import type { IShipment } from '@/types/shipment';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -305,6 +305,76 @@ export default function ShipmentDetail() {
           </div>
         </div>
       </div>
+
+      {/* Domestic Shipment Details */}
+      {shipment.isDomestic && shipment.domesticShipmentDetails && (
+        <div className="glass-card p-6 rounded-2xl space-y-4 bg-accent/50 backdrop-blur-sm border border-accent">
+          <h3 className="text-lg font-semibold flex items-center gap-2">
+            <Home className="h-5 w-5 text-primary" />
+            {t('shipments.form.fields.domesticDetails')}
+          </h3>
+          <Separator />
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {shipment.domesticShipmentDetails.senderName && (
+              <div>
+                <p className="text-sm text-muted-foreground">{t('shipments.form.fields.senderName')}</p>
+                <p className="font-medium">{shipment.domesticShipmentDetails.senderName}</p>
+              </div>
+            )}
+            {shipment.domesticShipmentDetails.receiverName && (
+              <div>
+                <p className="text-sm text-muted-foreground">{t('shipments.form.fields.receiverName')}</p>
+                <p className="font-medium">{shipment.domesticShipmentDetails.receiverName}</p>
+              </div>
+            )}
+            {shipment.domesticShipmentDetails.receiverPrimaryPhoneNumber && (
+              <div>
+                <p className="text-sm text-muted-foreground">{t('shipments.form.fields.receiverPrimaryPhone')}</p>
+                <p className="font-medium">{shipment.domesticShipmentDetails.receiverPrimaryPhoneNumber}</p>
+              </div>
+            )}
+            {shipment.domesticShipmentDetails.receiverSecondaryPhoneNumber && (
+              <div>
+                <p className="text-sm text-muted-foreground">{t('shipments.form.fields.receiverSecondaryPhone')}</p>
+                <p className="font-medium">{shipment.domesticShipmentDetails.receiverSecondaryPhoneNumber}</p>
+              </div>
+            )}
+            {shipment.domesticShipmentDetails.productPrice !== undefined && (
+              <div>
+                <p className="text-sm text-muted-foreground">{t('shipments.form.fields.productPrice')}</p>
+                <p className="font-medium">{shipment.domesticShipmentDetails.productPrice} LYD</p>
+              </div>
+            )}
+            {shipment.domesticShipmentDetails.productQuantity !== undefined && (
+              <div>
+                <p className="text-sm text-muted-foreground">{t('shipments.form.fields.productQuantity')}</p>
+                <p className="font-medium">{shipment.domesticShipmentDetails.productQuantity}</p>
+              </div>
+            )}
+            {shipment.domesticShipmentDetails.destination && (
+              <div className="col-span-full">
+                <p className="text-sm text-muted-foreground">{t('shipments.form.fields.detailedDestination')}</p>
+                <p className="font-medium">{shipment.domesticShipmentDetails.destination}</p>
+              </div>
+            )}
+            <div>
+              <p className="text-sm text-muted-foreground">{t('shipments.form.fields.shippingPayment')}</p>
+              <p className="font-medium">
+                {shipment.domesticShipmentDetails.customerPaysShipping 
+                  ? t('shipments.form.fields.customerPays') 
+                  : t('shipments.form.fields.companyPays')}
+              </p>
+            </div>
+            {shipment.domesticShipmentDetails.note && (
+              <div className="col-span-full">
+                <p className="text-sm text-muted-foreground">{t('shipments.form.fields.domesticNote')}</p>
+                <p className="font-medium">{shipment.domesticShipmentDetails.note}</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Dialogs */}
       {shipment && (
