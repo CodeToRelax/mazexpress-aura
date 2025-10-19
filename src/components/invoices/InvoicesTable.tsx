@@ -317,13 +317,13 @@ export function InvoicesTable({
                 
                 {visibleColumns.has('paidAmount') && (
                   <TableCell className="text-right text-green-600 dark:text-green-400 font-semibold">
-                    {formatLYD(invoice.totals.paid)}
+                    {invoice.totals.paid > 0 ? formatLYD(invoice.totals.paid) : '-'}
                   </TableCell>
                 )}
                 
                 {visibleColumns.has('dueAmount') && (
                   <TableCell className="text-right text-red-600 dark:text-red-400 font-semibold">
-                    {formatLYD(invoice.totals.due)}
+                    {invoice.totals.due > 0 ? formatLYD(invoice.totals.due) : '-'}
                   </TableCell>
                 )}
                 
