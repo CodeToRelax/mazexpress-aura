@@ -142,7 +142,7 @@ export function PaymentDialog({ open, onOpenChange, invoice }: PaymentDialogProp
   };
 
   const distributeEqually = () => {
-    const perMethod = (totalDue / methods.length).toFixed(0);
+    const perMethod = (totalDue / methods.length).toFixed(2);
     setMethods(methods.map(m => ({ ...m, amount: perMethod })));
   };
 
@@ -151,7 +151,7 @@ export function PaymentDialog({ open, onOpenChange, invoice }: PaymentDialogProp
       .filter(m => m.id !== id)
       .reduce((sum, m) => sum + (parseFloat(m.amount) || 0), 0);
     
-    const remainingAmount = Math.max(0, totalDue - otherTotal).toFixed(0);
+    const remainingAmount = Math.max(0, totalDue - otherTotal).toFixed(2);
     updatePaymentMethod(id, 'amount', remainingAmount);
   };
 

@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Receipt, TrendingUp, TrendingDown, MinusCircle, CheckCircle, RefreshCcw } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { formatLYD } from '@/utilities/helpers/currencyHelpers';
+import { formatLYDFromCents } from '@/utilities/helpers/currencyHelpers';
 
 interface TransactionStats {
   totalTransactions: number;
@@ -37,7 +37,7 @@ export function TransactionsStatsBar({ stats, onStatClick }: TransactionsStatsBa
       icon: TrendingUp,
       label: t('wallet.stats.deposits'),
       value: `${stats.totalDeposits}`,
-      subValue: formatLYD(stats.depositAmount),
+      subValue: formatLYDFromCents(stats.depositAmount),
       color: 'text-green-600 dark:text-green-400',
       bgColor: 'bg-green-500/10',
       filterType: 'deposits' as const,
@@ -46,7 +46,7 @@ export function TransactionsStatsBar({ stats, onStatClick }: TransactionsStatsBa
       icon: TrendingDown,
       label: t('wallet.stats.withdrawals'),
       value: `${stats.totalWithdrawals}`,
-      subValue: formatLYD(stats.withdrawalAmount),
+      subValue: formatLYDFromCents(stats.withdrawalAmount),
       color: 'text-red-600 dark:text-red-400',
       bgColor: 'bg-red-500/10',
       filterType: 'withdrawals' as const,
@@ -55,7 +55,7 @@ export function TransactionsStatsBar({ stats, onStatClick }: TransactionsStatsBa
       icon: RefreshCcw,
       label: t('wallet.stats.refunds'),
       value: `${stats.totalRefunds}`,
-      subValue: formatLYD(stats.refundAmount),
+      subValue: formatLYDFromCents(stats.refundAmount),
       color: 'text-purple-600 dark:text-purple-400',
       bgColor: 'bg-purple-500/10',
       filterType: 'refunds' as const,
@@ -64,7 +64,7 @@ export function TransactionsStatsBar({ stats, onStatClick }: TransactionsStatsBa
       icon: MinusCircle,
       label: t('wallet.stats.deductions'),
       value: `${stats.totalDeductions}`,
-      subValue: formatLYD(stats.deductionAmount),
+      subValue: formatLYDFromCents(stats.deductionAmount),
       color: 'text-orange-600 dark:text-orange-400',
       bgColor: 'bg-orange-500/10',
       filterType: 'deductions' as const,

@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { InvoiceItem, InvoiceItemKind } from '@/types/invoice';
 import { IShipment } from '@/types/shipment';
 import { calculateCBM, formatDimensions } from '@/utilities/helpers/invoiceHelpers';
-import { formatLYD } from '@/utilities/helpers/currencyHelpers';
+import { formatLYDFromCents } from '@/utilities/helpers/currencyHelpers';
 
 interface InvoiceItemsTableProps {
   items: InvoiceItem[];
@@ -156,7 +156,7 @@ export function InvoiceItemsTable({ items }: InvoiceItemsTableProps) {
 
                 {/* Total Column */}
                 <TableCell className="text-muted-foreground">
-                  {formatLYD(totalAmount)}
+                  {formatLYDFromCents(totalAmount)}
                 </TableCell>
               </TableRow>
             );

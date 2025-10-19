@@ -27,7 +27,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { formatLYD } from '@/utilities/helpers/currencyHelpers';
+import { formatLYDFromCents } from '@/utilities/helpers/currencyHelpers';
 
 interface TransactionsTableProps {
   transactions: Transaction[];
@@ -188,7 +188,7 @@ export function TransactionsTable({
                 )}
                 <TableCell className={`text-right font-semibold ${getTypeColor(transaction.type)}`}>
                   {transaction.type.toLowerCase() === 'withdrawal' || transaction.type.toLowerCase() === 'deduction' ? '-' : '+'}
-                  {formatLYD(transaction.amount)}
+                  {formatLYDFromCents(transaction.amount)}
                 </TableCell>
                 {visibleColumns.has('status') && (
                   <TableCell>
@@ -204,12 +204,12 @@ export function TransactionsTable({
                 )}
                 {visibleColumns.has('balanceBefore') && (
                   <TableCell className="text-right text-muted-foreground">
-                    {formatLYD(transaction.balanceBefore)}
+                    {formatLYDFromCents(transaction.balanceBefore)}
                   </TableCell>
                 )}
                 {visibleColumns.has('balanceAfter') && (
                   <TableCell className="text-right text-muted-foreground">
-                    {formatLYD(transaction.balanceAfter)}
+                    {formatLYDFromCents(transaction.balanceAfter)}
                   </TableCell>
                 )}
                 {isAdmin && (onEdit || onRefund) && (

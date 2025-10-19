@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Receipt, FileText, Send, Clock, CheckCircle, TrendingUp } from 'lucide-react';
 import { Card } from '@/components/ui/card';
-import { formatLYD } from '@/utilities/helpers/currencyHelpers';
+import { formatLYDFromCents } from '@/utilities/helpers/currencyHelpers';
 
 interface InvoiceStats {
   totalInvoices: number;
@@ -66,8 +66,8 @@ export function InvoicesStatsBar({ stats, onStatClick }: InvoicesStatsBarProps) 
     },
     {
       label: t('invoice.stats-totalDue'),
-      value: formatLYD(stats.totalDueAmount),
-      subValue: formatLYD(stats.totalGrossAmount),
+      value: formatLYDFromCents(stats.totalDueAmount),
+      subValue: formatLYDFromCents(stats.totalGrossAmount),
       icon: TrendingUp,
       color: 'text-red-600 dark:text-red-400',
       bgColor: 'bg-red-100 dark:bg-red-900/30',

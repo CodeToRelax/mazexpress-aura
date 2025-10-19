@@ -12,7 +12,7 @@ import { CancelInvoiceDialog } from './CancelInvoiceDialog';
 import { UpdateStatusDialog } from './UpdateStatusDialog';
 import { PaymentHistory } from './PaymentHistory';
 import { useACL } from '@/hooks/useACL';
-import { formatLYD } from '@/utilities/helpers/currencyHelpers';
+import { formatLYDFromCents } from '@/utilities/helpers/currencyHelpers';
 import { InvoiceStatusBadge } from '@/components/invoices/InvoiceStatusBadge';
 import { InvoiceItemsTable } from '@/components/invoices/InvoiceItemsTable';
 import { generateInvoicePDF } from '@/utilities/helpers/invoicePDF';
@@ -165,7 +165,7 @@ export default function InvoiceDetail() {
               <div>
                 <h3 className="text-lg font-semibold text-foreground">{t('invoice.payment.paymentDue')}</h3>
                 <p className="text-3xl font-bold text-primary mt-2">
-                  {formatLYD(invoice.totals.due || 0)}
+                  {formatLYDFromCents(invoice.totals.due || 0)}
                 </p>
                 <p className="text-sm text-muted-foreground mt-1">
                   {t('invoice.fields.invoiceNumber')}: {invoice.invoiceNumber}

@@ -33,7 +33,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { formatLYD } from '@/utilities/helpers/currencyHelpers';
+import { formatLYDFromCents } from '@/utilities/helpers/currencyHelpers';
 import { InvoiceStatusBadge } from './InvoiceStatusBadge';
 
 interface InvoicesTableProps {
@@ -299,31 +299,31 @@ export function InvoicesTable({
                 
                 {visibleColumns.has('netAmount') && (
                   <TableCell className="text-right">
-                    {formatLYD(invoice.totals.net)}
+                    {formatLYDFromCents(invoice.totals.net)}
                   </TableCell>
                 )}
                 
                 {visibleColumns.has('taxAmount') && (
                   <TableCell className="text-right">
-                    {formatLYD(invoice.totals.tax)}
+                    {formatLYDFromCents(invoice.totals.tax)}
                   </TableCell>
                 )}
                 
                 {visibleColumns.has('grossAmount') && (
                   <TableCell className="text-right font-semibold">
-                    {formatLYD(invoice.totals.gross)}
+                    {formatLYDFromCents(invoice.totals.gross)}
                   </TableCell>
                 )}
                 
                 {visibleColumns.has('paidAmount') && (
                   <TableCell className="text-right text-green-600 dark:text-green-400 font-semibold">
-                    {formatLYD(invoice.totals.paid)}
+                    {formatLYDFromCents(invoice.totals.paid)}
                   </TableCell>
                 )}
                 
                 {visibleColumns.has('dueAmount') && (
                   <TableCell className="text-right text-red-600 dark:text-red-400 font-semibold">
-                    {formatLYD(invoice.totals.due)}
+                    {formatLYDFromCents(invoice.totals.due)}
                   </TableCell>
                 )}
                 
