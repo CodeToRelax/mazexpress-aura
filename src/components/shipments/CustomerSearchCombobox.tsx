@@ -23,10 +23,11 @@ import type { User } from '@/types/user';
 interface CustomerSearchComboboxProps {
   value: string;
   onChange: (csn: string) => void;
+  onCustomerSelect?: (customer: User) => void;
   disabled?: boolean;
 }
 
-export function CustomerSearchCombobox({ value, onChange, disabled }: CustomerSearchComboboxProps) {
+export function CustomerSearchCombobox({ value, onChange, onCustomerSelect, disabled }: CustomerSearchComboboxProps) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -125,6 +126,7 @@ export function CustomerSearchCombobox({ value, onChange, disabled }: CustomerSe
                     value={customer.uniqueShippingNumber}
                     onSelect={() => {
                       onChange(customer.uniqueShippingNumber);
+                      onCustomerSelect?.(customer);
                       setOpen(false);
                       setSearchQuery('');
                     }}

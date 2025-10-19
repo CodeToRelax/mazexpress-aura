@@ -29,18 +29,18 @@ export const domesticShipmentDetailsSchema = z.object({
 export const createShipmentSchema = z.object({
   isn: z.string().regex(/^[A-Z0-9]{8,20}$/i, 'Invalid ISN format').optional().or(z.literal('')),
   csn: z.string().regex(/^[A-Za-z]{3}-[A-Za-z0-9]{3,4}$/i, 'Invalid CSN format (e.g., BEN-828C or ben-test)'),
-  size: shipmentSizeSchema,
+  size: shipmentSizeSchema.optional(),
   shipmentDestination: z.nativeEnum(Cities, {
     errorMap: () => ({ message: 'Invalid destination' }),
   }),
   shippingMethod: z.nativeEnum(ShippingMethod, {
     errorMap: () => ({ message: 'Invalid shipping method' }),
-  }),
+  }).optional(),
   extraCosts: z.number().min(0).max(10000).optional(),
   note: z.string().max(500).optional().or(z.literal('')),
   estimatedArrival: z.string().optional().or(z.literal('')),
   isDomestic: z.boolean().optional(),
-  originCountry: z.enum(['libya', 'turkey', 'china', 'uae']).optional(),
+  originCountry: z.enum(['turkey', 'china', 'uae']).optional(),
   tier: z.enum(['A', 'B', 'C', 'D', 'E']).optional(),
   domesticShipmentDetails: domesticShipmentDetailsSchema,
 });
@@ -57,7 +57,7 @@ export const updateShipmentSchema = z.object({
   status: z.nativeEnum(ShipmentStatus).optional(),
   estimatedArrival: z.string().optional().or(z.literal('')),
   isDomestic: z.boolean().optional(),
-  originCountry: z.enum(['libya', 'turkey', 'china', 'uae']).optional(),
+  originCountry: z.enum(['turkey', 'china', 'uae']).optional(),
   tier: z.enum(['A', 'B', 'C', 'D', 'E']).optional(),
   domesticShipmentDetails: domesticShipmentDetailsSchema,
 });

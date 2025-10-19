@@ -61,7 +61,7 @@ export function EditShipmentDialog({ open, onOpenChange, shipment, onSuccess }: 
       shippingMethod: shipment.shippingMethod as any,
       status: shipment.status as ShipmentStatus,
       isDomestic: shipment.isDomestic,
-      originCountry: shipment.originCountry,
+      originCountry: shipment.originCountry === 'libya' ? undefined : shipment.originCountry as any,
       tier: shipment.tier,
       size: {
         weight: shipment.size?.weight || 1,
@@ -95,7 +95,7 @@ export function EditShipmentDialog({ open, onOpenChange, shipment, onSuccess }: 
         shippingMethod: shipment.shippingMethod as any,
         status: shipment.status as ShipmentStatus,
         isDomestic: shipment.isDomestic,
-        originCountry: shipment.originCountry,
+        originCountry: shipment.originCountry === 'libya' ? undefined : shipment.originCountry as any,
         tier: shipment.tier,
         size: {
           weight: shipment.size?.weight || 1,
@@ -182,21 +182,23 @@ export function EditShipmentDialog({ open, onOpenChange, shipment, onSuccess }: 
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name="isn"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        {t('shipments.form.fields.isn')} <span className="text-muted-foreground text-xs">({t('common.optional', { defaultValue: 'Optional' })})</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder={t('shipments.form.placeholders.isn')} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                {!form.watch('isDomestic') && (
+                  <FormField
+                    control={form.control}
+                    name="isn"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          {t('shipments.form.fields.isn')} <span className="text-muted-foreground text-xs">({t('common.optional', { defaultValue: 'Optional' })})</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder={t('shipments.form.placeholders.isn')} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
 
                 <FormField
                   control={form.control}
@@ -301,7 +303,6 @@ export function EditShipmentDialog({ open, onOpenChange, shipment, onSuccess }: 
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="libya">{t('shipments.originCountry.libya', { defaultValue: 'Libya' })}</SelectItem>
                             <SelectItem value="turkey">{t('shipments.originCountry.turkey', { defaultValue: 'Turkey' })}</SelectItem>
                             <SelectItem value="china">{t('shipments.originCountry.china', { defaultValue: 'China' })}</SelectItem>
                             <SelectItem value="uae">{t('shipments.originCountry.uae', { defaultValue: 'UAE' })}</SelectItem>
@@ -317,16 +318,50 @@ export function EditShipmentDialog({ open, onOpenChange, shipment, onSuccess }: 
                 )}
               </div>
 
-              {/* Domestic Shipment Details Form */}
-              {form.watch('isDomestic') && (
-                <DomesticShipmentDetailsForm
-                  control={form.control}
-                  isDisabled={isSubmitting}
-                />
-              )}
-            </div>
+            {/* Domestic Shipment Details Form */}
+            {form.watch('isDomestic') && (
+              <DomesticShipmentDetailsForm
+                control={form.control}
+                isDisabled={isSubmitting}
+              />
+            )}
+          </div>
 
-            {/* Shipping Details */}
+          {/* Destination - Always visible but disabled for domestic (placeholder for now) */}
+          {form.watch('isDomestic') && (
+            <div className="space-y-4">
+              <FormField
+                control={form.control}
+                name="shipmentDestination"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('shipments.form.fields.destination')}</FormLabel>
+                    <FormControl>
+                      <CitySearchCombobox
+                        cities={Object.values(Cities).map((city) => ({
+                          value: city,
+                          label: city.charAt(0).toUpperCase() + city.slice(1).replace(/_/g, ' ')
+                        }))}
+                        value={field.value || ''}
+                        onChange={field.onChange}
+                        placeholder="Select destination"
+                        disabled={true}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      {t('shipments.form.descriptions.autoDestination', { 
+                        defaultValue: 'Destination is set from customer\'s registered city'
+                      })}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          )}
+
+          {/* Shipping Details - Only for International */}
+          {!form.watch('isDomestic') && (
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">{t('shipments.form.shippingInfo')}</h3>
               
@@ -405,11 +440,13 @@ export function EditShipmentDialog({ open, onOpenChange, shipment, onSuccess }: 
                     </FormItem>
                   )}
                 />
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* Size & Dimensions */}
-            <div className="space-y-4">
+            {/* Size & Dimensions - Only for International */}
+            {!form.watch('isDomestic') && (
+              <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold">{t('shipments.form.sizeInfo')}</h3>
                 <div className="flex items-center gap-3">
@@ -535,29 +572,32 @@ export function EditShipmentDialog({ open, onOpenChange, shipment, onSuccess }: 
                 )}
               </div>
             </div>
+            )}
 
-            {/* Optional Information */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">{t('shipments.form.optionalInfo')}</h3>
-              
-              <FormField
-                control={form.control}
-                name="note"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('shipments.form.fields.note')}</FormLabel>
-                    <FormControl>
-                      <Textarea 
-                        {...field} 
-                        placeholder={t('shipments.form.placeholders.note')}
-                        rows={3}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            {/* Optional Information - Only for International */}
+            {!form.watch('isDomestic') && (
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">{t('shipments.form.optionalInfo')}</h3>
+                
+                <FormField
+                  control={form.control}
+                  name="note"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('shipments.form.fields.note')}</FormLabel>
+                      <FormControl>
+                        <Textarea 
+                          {...field} 
+                          placeholder={t('shipments.form.placeholders.note')}
+                          rows={3}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            )}
 
             <DialogFooter>
               <Button

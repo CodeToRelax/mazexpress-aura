@@ -387,6 +387,30 @@
       "scanBarcodes": "مسح الباركود",
       "saveUpdates": "حفظ التحديثات"
     },
+    "form": {
+      "fields": {
+        "domesticDetails": "تفاصيل الشحنة المحلية",
+        "senderName": "اسم المرسل",
+        "receiverName": "اسم المستلم",
+        "receiverPrimaryPhone": "رقم الهاتف الأساسي",
+        "receiverSecondaryPhone": "رقم الهاتف الثانوي (اختياري)",
+        "detailedDestination": "عنوان الوجهة التفصيلي",
+        "productPrice": "سعر المنتج (دينار ليبي)",
+        "productQuantity": "كمية المنتج",
+        "shippingPayment": "دفع الشحن",
+        "companyPays": "الشركة تدفع الشحن",
+        "customerPays": "العميل يدفع الشحن",
+        "domesticNote": "ملاحظات الشحنة المحلية"
+      },
+      "descriptions": {
+        "domesticDetails": "تفاصيل إضافية للشحنات المحلية داخل ليبيا",
+        "phoneFormat": "أدخل رقم الهاتف بصيغة: +218XXXXXXXXX",
+        "productInfo": "معلومات حول المنتج المشحون",
+        "shippingCost": "من المسؤول عن دفع تكلفة الشحن",
+        "autoDestination": "يتم تعيين الوجهة من مدينة العميل المسجلة",
+        "selectCustomerFirst": "اختر عميلاً لتعبئة الوجهة تلقائياً"
+      }
+    },
       "filters": {
         "search": "البحث في الشحنات...",
         "searchPlaceholder": "رقم الشحنة الخارجي، رقم شحنة العميل، رقم الشحنة الدولي...",

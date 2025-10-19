@@ -41,11 +41,10 @@ export function DomesticShipmentDetailsForm({ control, isDisabled }: DomesticShi
             <FormItem>
               <FormLabel>{t('shipments.form.fields.senderName')}</FormLabel>
               <FormControl>
-                <Input
-                  {...field}
-                  placeholder={t('shipments.form.placeholders.senderName')}
-                  disabled={isDisabled}
-                />
+                  <Input
+                    {...field}
+                    disabled={isDisabled}
+                  />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -60,11 +59,10 @@ export function DomesticShipmentDetailsForm({ control, isDisabled }: DomesticShi
             <FormItem>
               <FormLabel>{t('shipments.form.fields.receiverName')}</FormLabel>
               <FormControl>
-                <Input
-                  {...field}
-                  placeholder={t('shipments.form.placeholders.receiverName')}
-                  disabled={isDisabled}
-                />
+                  <Input
+                    {...field}
+                    disabled={isDisabled}
+                  />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -79,12 +77,11 @@ export function DomesticShipmentDetailsForm({ control, isDisabled }: DomesticShi
             <FormItem>
               <FormLabel>{t('shipments.form.fields.receiverPrimaryPhone')}</FormLabel>
               <FormControl>
-                <Input
-                  {...field}
-                  type="tel"
-                  placeholder={t('shipments.form.placeholders.primaryPhone')}
-                  disabled={isDisabled}
-                />
+                  <Input
+                    {...field}
+                    type="tel"
+                    disabled={isDisabled}
+                  />
               </FormControl>
               <FormDescription>
                 {t('shipments.form.descriptions.phoneFormat')}
@@ -102,12 +99,11 @@ export function DomesticShipmentDetailsForm({ control, isDisabled }: DomesticShi
             <FormItem>
               <FormLabel>{t('shipments.form.fields.receiverSecondaryPhone')}</FormLabel>
               <FormControl>
-                <Input
-                  {...field}
-                  type="tel"
-                  placeholder={t('shipments.form.placeholders.secondaryPhone')}
-                  disabled={isDisabled}
-                />
+                  <Input
+                    {...field}
+                    type="tel"
+                    disabled={isDisabled}
+                  />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -126,7 +122,6 @@ export function DomesticShipmentDetailsForm({ control, isDisabled }: DomesticShi
                   {...field}
                   type="number"
                   step="0.01"
-                  placeholder={t('shipments.form.placeholders.productPrice')}
                   disabled={isDisabled}
                   onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
                   value={field.value || ''}
@@ -153,7 +148,6 @@ export function DomesticShipmentDetailsForm({ control, isDisabled }: DomesticShi
                   type="number"
                   step="1"
                   min="1"
-                  placeholder={t('shipments.form.placeholders.productQuantity')}
                   disabled={isDisabled}
                   onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
                   value={field.value || ''}
@@ -174,7 +168,6 @@ export function DomesticShipmentDetailsForm({ control, isDisabled }: DomesticShi
               <FormControl>
                 <Textarea
                   {...field}
-                  placeholder={t('shipments.form.placeholders.detailedAddress')}
                   disabled={isDisabled}
                   rows={2}
                 />
@@ -228,12 +221,11 @@ export function DomesticShipmentDetailsForm({ control, isDisabled }: DomesticShi
             <FormItem className="col-span-full">
               <FormLabel>{t('shipments.form.fields.domesticNote')}</FormLabel>
               <FormControl>
-                <Textarea
-                  {...field}
-                  placeholder={t('shipments.form.placeholders.domesticNote')}
-                  disabled={isDisabled}
-                  rows={3}
-                />
+                  <Textarea
+                    {...field}
+                    disabled={isDisabled}
+                    rows={3}
+                  />
               </FormControl>
               <FormMessage />
             </FormItem>

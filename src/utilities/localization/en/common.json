@@ -385,6 +385,30 @@
     "placeholder": "Dashboard coming in Phase 2"
   },
   "shipments": {
+    "form": {
+      "fields": {
+        "domesticDetails": "Domestic Shipment Details",
+        "senderName": "Sender Name",
+        "receiverName": "Receiver Name",
+        "receiverPrimaryPhone": "Primary Phone Number",
+        "receiverSecondaryPhone": "Secondary Phone Number (Optional)",
+        "detailedDestination": "Detailed Destination Address",
+        "productPrice": "Product Price (LYD)",
+        "productQuantity": "Product Quantity",
+        "shippingPayment": "Shipping Payment",
+        "companyPays": "Company Pays Shipping",
+        "customerPays": "Customer Pays Shipping",
+        "domesticNote": "Domestic Shipment Notes"
+      },
+      "descriptions": {
+        "domesticDetails": "Additional details for domestic shipments within Libya",
+        "phoneFormat": "Enter phone number in format: +218XXXXXXXXX",
+        "productInfo": "Information about the product being shipped",
+        "shippingCost": "Who is responsible for paying the shipping cost",
+        "autoDestination": "Destination is set from customer's registered city",
+        "selectCustomerFirst": "Select a customer to auto-fill destination"
+      }
+    },
     "title": "Shipments Management",
     "subtitle": "Track and manage shipments",
     "tabs": {
