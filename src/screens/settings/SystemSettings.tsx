@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CountryConfigCard } from './CountryConfigCard';
 import { DomesticTiersCard } from './DomesticTiersCard';
+import { ExchangeRateCard } from './ExchangeRateCard';
 import { getSystemConfig, type DomesticTiers } from '@/utilities/api/config.api';
 import { toast } from '@/hooks/use-toast';
 
@@ -107,12 +108,24 @@ export default function SystemSettings() {
         </Button>
       </div>
 
-      {/* Domestic Tiers Section */}
+      {/* Exchange Rate Section */}
       {config && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
+          className="mb-8"
+        >
+          <ExchangeRateCard lydExchangeRate={config.lydExchangeRate} onUpdate={fetchConfig} />
+        </motion.div>
+      )}
+
+      {/* Domestic Tiers Section */}
+      {config && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.05 }}
           className="mb-8"
         >
           <DomesticTiersCard tiers={config.domesticTiers} onUpdate={fetchConfig} />

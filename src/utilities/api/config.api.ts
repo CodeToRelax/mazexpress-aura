@@ -159,4 +159,31 @@ export async function updateDomesticTiers(
   return result.data;
 }
 
+export async function updateExchangeRate(
+  lydExchangeRate: number
+): Promise<SystemConfig> {
+  const token = await getAuthToken();
+  
+  if (!token) {
+    throw new Error('Authentication required');
+  }
+  
+  const response = await fetch(`${API_BASE_URL}/api/config`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify({ lydExchangeRate }),
+  });
+  
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error?.message || 'Failed to update exchange rate');
+  }
+  
+  const result = await response.json();
+  return result.data;
+}
+
 export type { DomesticTiers, CountryShippingConfig, SystemConfig };
