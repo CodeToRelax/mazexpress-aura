@@ -6,48 +6,62 @@ import logoImage from '@/assets/maz-express-logo.png';
 function generateLabelHTML(shipment: IShipment): string {
   // Generate barcode from ESN
   const canvas = document.createElement('canvas');
+  let barcodeDataUrl = '';
+  
   try {
     JsBarcode(canvas, shipment.esn, {
       format: 'CODE128',
-      width: 2,
-      height: 100,
+      width: 3,
+      height: 120,
       displayValue: true,
-      fontSize: 20,
+      fontSize: 24,
       margin: 10,
-      textMargin: 5,
+      textMargin: 8,
+      background: '#FFFFFF',
+      lineColor: '#000000',
     });
+    barcodeDataUrl = canvas.toDataURL('image/png');
   } catch (error) {
     console.error('Error generating barcode for ESN:', shipment.esn, error);
-    return '';
+    // Fallback: show ESN as text if barcode fails
+    barcodeDataUrl = '';
   }
 
-  const barcodeDataUrl = canvas.toDataURL('image/png');
-
-  // Prepare dimensions
+  // Prepare dimensions - compact format
   const dimensions = shipment.size?.length && shipment.size?.width && shipment.size?.height
-    ? `${shipment.size.length} X ${shipment.size.width} X ${shipment.size.height} CM`
-    : '0 X 0 X 0 CM';
+    ? `${shipment.size.length}×${shipment.size.width}×${shipment.size.height} CM`
+    : 'Dimensions: TBD';
 
   // Prepare weight
   const weight = shipment.size?.weight 
     ? `${shipment.size.weight} KG` 
-    : 'Weight: TBD';
+    : 'TBD';
 
-  // Prepare destination (lowercase)
-  const destination = (shipment.shipmentDestination || 'N/A').toLowerCase().replace(/_/g, ' ');
+  // Prepare destination (UPPERCASE for clarity)
+  const destination = (shipment.shipmentDestination || 'N/A').toUpperCase().replace(/_/g, ' ');
 
   return `
     <div class="label-container">
-      <div>
+      <div class="label-header">
         <img src="${logoImage}" alt="MAZ Express" class="logo" />
-        <div class="csn">${shipment.csn}</div>
-        <hr class="separator" />
-        <div class="dimensions">${dimensions}</div>
-        <div class="weight">${weight}</div>
-        <div class="destination">${destination}</div>
-        <hr class="separator" />
       </div>
-      <img src="${barcodeDataUrl}" alt="ESN Barcode" class="barcode" />
+      
+      <div class="label-main">
+        <div class="csn">${shipment.csn}</div>
+      </div>
+      
+      <div class="label-info">
+        <div class="info-row"><span class="label-text">Dimensions:</span> ${dimensions}</div>
+        <div class="info-row weight"><span class="label-text">Weight:</span> ${weight}</div>
+        <div class="info-row destination">${destination}</div>
+      </div>
+      
+      <div class="label-barcode">
+        ${barcodeDataUrl 
+          ? `<img src="${barcodeDataUrl}" alt="ESN Barcode" class="barcode" />`
+          : `<div class="barcode-fallback">${shipment.esn}</div>`
+        }
+      </div>
     </div>
   `;
 }
@@ -98,11 +112,9 @@ export function generateShipmentLabel(shipment: IShipment): void {
         .label-container {
           width: 4in;
           height: 6in;
-          padding: 0.3in;
+          padding: 0.25in;
           display: flex;
           flex-direction: column;
-          align-items: center;
-          text-align: center;
           justify-content: space-between;
           page-break-after: always;
         }
@@ -111,50 +123,83 @@ export function generateShipmentLabel(shipment: IShipment): void {
           page-break-after: auto;
         }
 
+        .label-header {
+          text-align: center;
+          padding-bottom: 0.1in;
+          border-bottom: 2px solid #000;
+        }
+
         .logo {
-          width: 200px;
+          width: 2.8in;
           height: auto;
-          margin-bottom: 15px;
+          max-height: 0.8in;
+          object-fit: contain;
+        }
+
+        .label-main {
+          text-align: center;
+          padding: 0.15in 0;
         }
 
         .csn {
-          font-size: 72px;
+          font-size: 84px;
           font-weight: bold;
           line-height: 1;
-          margin: 10px 0;
+          letter-spacing: -2px;
           word-break: break-all;
         }
 
-        .separator {
-          width: 80%;
-          border: 0;
+        .label-info {
+          text-align: center;
+          padding: 0.1in 0;
           border-top: 2px solid #000;
-          margin: 15px 0;
+          border-bottom: 2px solid #000;
         }
 
-        .dimensions {
-          font-size: 36px;
-          font-weight: normal;
-          margin: 10px 0;
+        .info-row {
+          font-size: 32px;
+          margin: 8px 0;
         }
 
-        .weight {
-          font-size: 48px;
+        .info-row.weight {
+          font-size: 52px;
           font-weight: bold;
-          margin: 10px 0;
+          margin: 12px 0;
         }
 
-        .destination {
-          font-size: 56px;
+        .info-row.destination {
+          font-size: 48px;
+          font-weight: 600;
+          margin: 10px 0;
+          letter-spacing: 1px;
+        }
+
+        .label-text {
           font-weight: normal;
-          margin: 15px 0;
+          font-size: 0.7em;
+        }
+
+        .label-barcode {
+          text-align: center;
+          padding-top: 0.1in;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
 
         .barcode {
           width: 100%;
-          max-width: 350px;
+          max-width: 3.5in;
           height: auto;
-          margin-top: 10px;
+        }
+
+        .barcode-fallback {
+          font-size: 36px;
+          font-weight: bold;
+          font-family: 'Courier New', monospace;
+          padding: 20px;
+          background: #f0f0f0;
+          border: 2px dashed #000;
         }
 
         @media print {
@@ -237,11 +282,9 @@ export function generateBulkShipmentLabels(shipments: IShipment[]): void {
         .label-container {
           width: 4in;
           height: 6in;
-          padding: 0.3in;
+          padding: 0.25in;
           display: flex;
           flex-direction: column;
-          align-items: center;
-          text-align: center;
           justify-content: space-between;
           page-break-after: always;
           page-break-before: always;
@@ -263,50 +306,83 @@ export function generateBulkShipmentLabels(shipments: IShipment[]): void {
           break-after: auto;
         }
 
+        .label-header {
+          text-align: center;
+          padding-bottom: 0.1in;
+          border-bottom: 2px solid #000;
+        }
+
         .logo {
-          width: 200px;
+          width: 2.8in;
           height: auto;
-          margin-bottom: 15px;
+          max-height: 0.8in;
+          object-fit: contain;
+        }
+
+        .label-main {
+          text-align: center;
+          padding: 0.15in 0;
         }
 
         .csn {
-          font-size: 72px;
+          font-size: 84px;
           font-weight: bold;
           line-height: 1;
-          margin: 10px 0;
+          letter-spacing: -2px;
           word-break: break-all;
         }
 
-        .separator {
-          width: 80%;
-          border: 0;
+        .label-info {
+          text-align: center;
+          padding: 0.1in 0;
           border-top: 2px solid #000;
-          margin: 15px 0;
+          border-bottom: 2px solid #000;
         }
 
-        .dimensions {
-          font-size: 36px;
-          font-weight: normal;
-          margin: 10px 0;
+        .info-row {
+          font-size: 32px;
+          margin: 8px 0;
         }
 
-        .weight {
-          font-size: 48px;
+        .info-row.weight {
+          font-size: 52px;
           font-weight: bold;
-          margin: 10px 0;
+          margin: 12px 0;
         }
 
-        .destination {
-          font-size: 56px;
+        .info-row.destination {
+          font-size: 48px;
+          font-weight: 600;
+          margin: 10px 0;
+          letter-spacing: 1px;
+        }
+
+        .label-text {
           font-weight: normal;
-          margin: 15px 0;
+          font-size: 0.7em;
+        }
+
+        .label-barcode {
+          text-align: center;
+          padding-top: 0.1in;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
 
         .barcode {
           width: 100%;
-          max-width: 350px;
+          max-width: 3.5in;
           height: auto;
-          margin-top: 10px;
+        }
+
+        .barcode-fallback {
+          font-size: 36px;
+          font-weight: bold;
+          font-family: 'Courier New', monospace;
+          padding: 20px;
+          background: #f0f0f0;
+          border: 2px dashed #000;
         }
 
         @media print {
