@@ -27,11 +27,6 @@ function generateLabelHTML(shipment: IShipment): string {
     barcodeDataUrl = '';
   }
 
-  // Prepare dimensions - compact format
-  const dimensions = shipment.size?.length && shipment.size?.width && shipment.size?.height
-    ? `${shipment.size.length}×${shipment.size.width}×${shipment.size.height} CM`
-    : 'Dimensions: TBD';
-
   // Prepare weight
   const weight = shipment.size?.weight 
     ? `${shipment.size.weight} KG` 
@@ -51,7 +46,6 @@ function generateLabelHTML(shipment: IShipment): string {
       </div>
       
       <div class="label-info">
-        <div class="info-row"><span class="label-text">Dimensions:</span> ${dimensions}</div>
         <div class="info-row weight"><span class="label-text">Weight:</span> ${weight}</div>
         <div class="info-row destination">${destination}</div>
       </div>
