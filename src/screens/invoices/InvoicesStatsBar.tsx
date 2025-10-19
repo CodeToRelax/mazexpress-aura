@@ -65,10 +65,17 @@ export function InvoicesStatsBar({ stats, onStatClick }: InvoicesStatsBarProps) 
       filterType: 'paid' as const,
     },
     {
+      label: t('invoice.stats-totalGross'),
+      value: formatLYD(stats.totalGrossAmount),
+      icon: TrendingUp,
+      color: 'text-blue-600 dark:text-blue-400',
+      bgColor: 'bg-blue-100 dark:bg-blue-900/30',
+      filterType: null,
+    },
+    {
       label: t('invoice.stats-totalDue'),
       value: formatLYD(stats.totalDueAmount),
-      subValue: formatLYD(stats.totalGrossAmount),
-      icon: TrendingUp,
+      icon: Clock,
       color: 'text-red-600 dark:text-red-400',
       bgColor: 'bg-red-100 dark:bg-red-900/30',
       filterType: null,
@@ -76,7 +83,7 @@ export function InvoicesStatsBar({ stats, onStatClick }: InvoicesStatsBarProps) 
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-4">
       {statCards.map((stat, index) => {
         const Icon = stat.icon;
         return (
@@ -99,9 +106,6 @@ export function InvoicesStatsBar({ stats, onStatClick }: InvoicesStatsBarProps) 
                 <div className="flex-1 min-w-0">
                   <p className="text-xs text-muted-foreground truncate">{stat.label}</p>
                   <p className="text-lg font-bold text-foreground">{stat.value}</p>
-                  {stat.subValue && (
-                    <p className="text-xs text-muted-foreground">{stat.subValue}</p>
-                  )}
                 </div>
               </div>
             </Card>

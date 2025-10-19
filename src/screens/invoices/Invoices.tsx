@@ -83,15 +83,17 @@ export default function Invoices() {
   const [invoiceToVoid, setInvoiceToVoid] = useState<Invoice | null>(null);
   const [invoiceToUpdateStatus, setInvoiceToUpdateStatus] = useState<Invoice | null>(null);
 
-  // Calculate stats from invoices
+  // Calculate stats from invoices (excluding REFUNDED and VOID)
+  const activeInvoices = invoices.filter(i => !['REFUNDED', 'VOID'].includes(i.status));
+  
   const invoiceStats = {
     totalInvoices: pagination.totalDocs,
     draftCount: invoices.filter(i => i.status === 'DRAFT').length,
     sentCount: invoices.filter(i => i.status === 'SENT').length,
     pendingCount: invoices.filter(i => ['PENDING', 'OVERDUE'].includes(i.status)).length,
     paidCount: invoices.filter(i => i.status === 'PAID').length,
-    totalGrossAmount: invoices.reduce((sum, i) => sum + i.totals.gross, 0),
-    totalDueAmount: invoices.reduce((sum, i) => sum + i.totals.due, 0),
+    totalGrossAmount: activeInvoices.reduce((sum, i) => sum + i.totals.gross, 0),
+    totalDueAmount: activeInvoices.reduce((sum, i) => sum + i.totals.due, 0),
   };
 
   const fetchInvoices = useCallback(async () => {
