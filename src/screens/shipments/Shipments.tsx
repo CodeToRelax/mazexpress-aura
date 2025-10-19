@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Package, Plus, RotateCw, Plane, Ship, Truck } from 'lucide-react';
+import { Package, Plus, RotateCw, Plane, Ship, Truck, Printer } from 'lucide-react';
 import type { IShipment, ShipmentFilters } from '@/types/shipment';
 import { shipmentsApi } from '@/utilities/api/shipments.api';
 import { Button } from '@/components/ui/button';
@@ -21,6 +21,7 @@ import { EditShipmentDialog } from './EditShipmentDialog';
 import { DeleteShipmentDialog } from './DeleteShipmentDialog';
 import { BulkUpdateDialog } from './BulkUpdateDialog';
 import { BulkDeleteDialog } from './BulkDeleteDialog';
+import { generateBulkShipmentLabels } from '@/utilities/helpers/shipmentLabel';
 
 // localStorage keys
 const STORAGE_KEYS = {
@@ -363,6 +364,11 @@ export default function Shipments() {
     setSelectedShipments(new Set());
   };
 
+  const handleBulkPrintLabels = () => {
+    const selectedShipmentsList = shipments.filter(s => selectedShipments.has(s._id));
+    generateBulkShipmentLabels(selectedShipmentsList);
+  };
+
   const handleSort = (column: string) => {
     const currentSort = filters.sort || '-createdAt';
     const currentColumn = currentSort.startsWith('-') ? currentSort.substring(1) : currentSort;
@@ -445,6 +451,10 @@ export default function Shipments() {
               {selectedShipments.size > 0 && (
                 <ACLGuard flag="canBulkUpdateShipments">
                   <div className="flex gap-2">
+                    <Button variant="outline" onClick={handleBulkPrintLabels}>
+                      <Printer className="h-4 w-4 mr-2" />
+                      Print Labels ({selectedShipments.size})
+                    </Button>
                     <Button variant="outline" onClick={handleBulkUpdate}>
                       {t('shipments.actions.bulkUpdate')}
                     </Button>
