@@ -22,7 +22,6 @@ interface SystemConfigData {
 }
 
 const COUNTRIES = [
-  { key: 'libya', name: 'Libya' },
   { key: 'turkey', name: 'Turkey' },
   { key: 'china', name: 'China' },
   { key: 'uae', name: 'UAE' },
@@ -127,7 +126,7 @@ export default function SystemSettings() {
         transition={{ duration: 0.5, delay: 0.1 }}
       >
         <Tabs defaultValue={COUNTRIES[0].key} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 mb-8">
+          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-3 mb-8">
             {COUNTRIES.map((country) => (
               <TabsTrigger key={country.key} value={country.key}>
                 {country.name}

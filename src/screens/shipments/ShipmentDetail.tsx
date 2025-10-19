@@ -252,6 +252,18 @@ export default function ShipmentDetail() {
                 </div>
               </div>
             )}
+
+            {(shipment.size.height && shipment.size.width && shipment.size.length) && (
+              <div className="flex items-start gap-3">
+                <Weight className="h-5 w-5 text-muted-foreground mt-0.5" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Weight by CBM</p>
+                  <p className="font-medium">
+                    {((shipment.size.length * shipment.size.width * shipment.size.height) / 1000000).toFixed(4)} m³
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
