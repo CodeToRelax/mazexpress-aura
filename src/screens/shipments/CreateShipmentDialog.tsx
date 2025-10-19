@@ -273,44 +273,6 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess }: CreateSh
               )}
             </div>
 
-            {/* Destination - Always visible but disabled for domestic */}
-            {form.watch('isDomestic') && (
-              <div className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="shipmentDestination"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('shipments.form.fields.destination')}</FormLabel>
-                      <FormControl>
-                        <CitySearchCombobox
-                          cities={Object.values(Cities).map((city) => ({
-                            value: city,
-                            label: city.charAt(0).toUpperCase() + city.slice(1).replace(/_/g, ' ')
-                          }))}
-                          value={field.value || ''}
-                          onChange={field.onChange}
-                          placeholder={t('shipments.filters.allDestinations')}
-                          disabled={!!selectedCustomer}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        {selectedCustomer 
-                          ? t('shipments.form.descriptions.autoDestination', { 
-                              defaultValue: 'Destination is set from customer\'s registered city'
-                            })
-                          : t('shipments.form.descriptions.selectCustomerFirst', {
-                              defaultValue: 'Select a customer to auto-fill destination'
-                            })
-                        }
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            )}
-
             {/* Shipping Details - Only for International */}
             {!form.watch('isDomestic') && (
               <div className="space-y-4">

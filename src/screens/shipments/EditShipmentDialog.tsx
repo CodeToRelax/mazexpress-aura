@@ -327,39 +327,6 @@ export function EditShipmentDialog({ open, onOpenChange, shipment, onSuccess }: 
             )}
           </div>
 
-          {/* Destination - Always visible but disabled for domestic (placeholder for now) */}
-          {form.watch('isDomestic') && (
-            <div className="space-y-4">
-              <FormField
-                control={form.control}
-                name="shipmentDestination"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('shipments.form.fields.destination')}</FormLabel>
-                    <FormControl>
-                      <CitySearchCombobox
-                        cities={Object.values(Cities).map((city) => ({
-                          value: city,
-                          label: city.charAt(0).toUpperCase() + city.slice(1).replace(/_/g, ' ')
-                        }))}
-                        value={field.value || ''}
-                        onChange={field.onChange}
-                        placeholder="Select destination"
-                        disabled={true}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      {t('shipments.form.descriptions.autoDestination', { 
-                        defaultValue: 'Destination is set from customer\'s registered city'
-                      })}
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-          )}
-
           {/* Shipping Details - Only for International */}
           {!form.watch('isDomestic') && (
             <div className="space-y-4">
