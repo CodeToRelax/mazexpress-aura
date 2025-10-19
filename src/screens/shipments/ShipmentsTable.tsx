@@ -9,7 +9,8 @@ import {
   Package,
   ChevronsUpDown,
   ChevronUp,
-  ChevronDown
+  ChevronDown,
+  Printer
 } from 'lucide-react';
 import type { IShipment } from '@/types/shipment';
 import { Button } from '@/components/ui/button';
@@ -34,6 +35,7 @@ import {
 import { ACLGuard } from '@/components/guards/ACLGuard';
 import { StatusBadge } from '@/components/shipments/StatusBadge';
 import { TierBadge } from '@/components/shipments/TierBadge';
+import { generateShipmentLabel } from '@/utilities/helpers/shipmentLabel';
 
 interface ShipmentsTableProps {
   shipments: IShipment[];
@@ -202,6 +204,10 @@ export function ShipmentsTable({
                     <DropdownMenuItem onClick={() => navigate(`/shipments/${shipment._id}`)}>
                       <Eye className="h-4 w-4 mr-2" />
                       {t('shipments.actions.view')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => generateShipmentLabel(shipment)}>
+                      <Printer className="h-4 w-4 mr-2" />
+                      Print Label
                     </DropdownMenuItem>
                     <ACLGuard flag="canUpdateShipments">
                       <DropdownMenuItem onClick={() => onEdit(shipment)}>

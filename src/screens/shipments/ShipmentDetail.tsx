@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
-import { ArrowLeft, Package, MapPin, Truck, Calendar, Weight, Ruler, DollarSign, FileText, Loader2, Edit, Trash2 } from 'lucide-react';
+import { ArrowLeft, Package, MapPin, Truck, Calendar, Weight, Ruler, DollarSign, FileText, Loader2, Edit, Trash2, Printer } from 'lucide-react';
 import type { IShipment } from '@/types/shipment';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -14,6 +14,7 @@ import { shipmentsApi } from '@/utilities/api/shipments.api';
 import { toast } from '@/hooks/use-toast';
 import { useACL } from '@/hooks/useACL';
 import { ACLGuard } from '@/components/guards/ACLGuard';
+import { generateShipmentLabel } from '@/utilities/helpers/shipmentLabel';
 
 export default function ShipmentDetail() {
   const { id } = useParams<{ id: string }>();
@@ -100,6 +101,10 @@ export default function ShipmentDetail() {
         </div>
         
         <div className="flex gap-2">
+          <Button variant="outline" onClick={() => generateShipmentLabel(shipment)}>
+            <Printer className="h-4 w-4 mr-2" />
+            Print Label
+          </Button>
           {canUpdateShipments && (
             <Button variant="outline" onClick={() => setIsEditDialogOpen(true)}>
               <Edit className="h-4 w-4 mr-2" />
