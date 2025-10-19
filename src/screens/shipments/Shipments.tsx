@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Package, Plus, RotateCw, Plane, Ship, Truck, Printer } from 'lucide-react';
+import { Package, Plus, RotateCw, Plane, Ship, Truck, Printer, Barcode } from 'lucide-react';
 import type { IShipment, ShipmentFilters } from '@/types/shipment';
 import { shipmentsApi } from '@/utilities/api/shipments.api';
 import { Button } from '@/components/ui/button';
@@ -21,6 +21,7 @@ import { EditShipmentDialog } from './EditShipmentDialog';
 import { DeleteShipmentDialog } from './DeleteShipmentDialog';
 import { BulkUpdateDialog } from './BulkUpdateDialog';
 import { BulkDeleteDialog } from './BulkDeleteDialog';
+import { BarcodeScanDialog } from './BarcodeScanDialog';
 import { generateBulkShipmentLabels } from '@/utilities/helpers/shipmentLabel';
 
 // localStorage keys
@@ -93,6 +94,7 @@ export default function Shipments() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showBulkUpdateDialog, setShowBulkUpdateDialog] = useState(false);
   const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false);
+  const [showBarcodeScanDialog, setShowBarcodeScanDialog] = useState(false);
   
   // Shipping method tab state
   const [activeMethodTab, setActiveMethodTab] = useState<string>('all');
@@ -464,6 +466,12 @@ export default function Shipments() {
                   </div>
                 </ACLGuard>
               )}
+              <ACLGuard flag="canBulkUpdateShipments">
+                <Button variant="outline" onClick={() => setShowBarcodeScanDialog(true)}>
+                  <Barcode className="h-4 w-4 mr-2" />
+                  {t('shipments.actions.scanBarcodes')}
+                </Button>
+              </ACLGuard>
               <ACLGuard flag="canCreateShipments">
                 <Button className="gap-2" onClick={handleCreateShipment}>
                   <Plus className="h-4 w-4" />
@@ -624,6 +632,12 @@ export default function Shipments() {
           open={showBulkDeleteDialog}
           onOpenChange={setShowBulkDeleteDialog}
           selectedShipmentIds={Array.from(selectedShipments)}
+          onSuccess={handleBulkSuccess}
+        />
+        
+        <BarcodeScanDialog
+          open={showBarcodeScanDialog}
+          onOpenChange={setShowBarcodeScanDialog}
           onSuccess={handleBulkSuccess}
         />
       </div>
