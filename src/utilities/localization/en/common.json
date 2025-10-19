@@ -439,7 +439,9 @@
       "bulkDelete": "Bulk Delete",
       "calculatePrice": "Calculate Price",
       "refresh": "Refresh",
-      "clearFilters": "Clear all filters"
+      "clearFilters": "Clear all filters",
+      "scanBarcodes": "Scan Barcodes",
+      "saveUpdates": "Save Updates"
     },
       "filters": {
         "search": "Search shipments...",
@@ -547,7 +549,15 @@
       "priceCalculated": "Price calculated successfully!",
       "error": "An error occurred",
       "notFound": "Shipment not found",
-      "copySuccess": "Copied to clipboard"
+      "copySuccess": "Copied to clipboard",
+      "duplicate": "Duplicate Scan",
+      "alreadyScanned": "already scanned",
+      "scanned": "Shipment Scanned",
+      "addedToList": "added to list",
+      "shipmentNotFound": "Shipment not found",
+      "selectShipments": "Please select at least one shipment",
+      "selectStatus": "Please select a status",
+      "bulkUpdateFailed": "Failed to update shipments"
     },
     "empty": {
       "title": "No Shipments Found",
@@ -638,6 +648,14 @@
       "noItems": "No items to display",
       "perPage": "Per page",
       "pageOf": "Page {{current}} of {{total}}"
+    },
+    "scanDialog": {
+      "description": "Scan shipment barcodes to bulk update their status",
+      "startScanning": "Start scanning barcodes",
+      "scannedCount": "{{scanned}} scanned, {{selected}} selected",
+      "scanning": "Scanning...",
+      "emptyState": "No shipments scanned yet. Start scanning to add shipments.",
+      "selectStatus": "Select status to update"
     }
   },
   "wallet": {
@@ -1005,6 +1023,7 @@
     "clear": "Clear",
     "columns": "Columns",
     "resetDefault": "Reset to Default",
-    "actions": "Actions"
+    "actions": "Actions",
+    "saving": "Saving..."
   }
 }

@@ -383,7 +383,9 @@
       "bulkDelete": "حذف جماعي",
       "calculatePrice": "حساب السعر",
       "refresh": "تحديث",
-      "clearFilters": "مسح الفلاتر"
+      "clearFilters": "مسح الفلاتر",
+      "scanBarcodes": "مسح الباركود",
+      "saveUpdates": "حفظ التحديثات"
     },
       "filters": {
         "search": "البحث في الشحنات...",
@@ -491,7 +493,15 @@
       "priceCalculated": "تم حساب السعر بنجاح!",
       "error": "حدث خطأ",
       "notFound": "لم يتم العثور على الشحنة",
-      "copySuccess": "تم النسخ إلى الحافظة"
+      "copySuccess": "تم النسخ إلى الحافظة",
+      "duplicate": "مسح مكرر",
+      "alreadyScanned": "تم مسحها مسبقاً",
+      "scanned": "تم مسح الشحنة",
+      "addedToList": "تمت الإضافة إلى القائمة",
+      "shipmentNotFound": "لم يتم العثور على الشحنة",
+      "selectShipments": "يرجى تحديد شحنة واحدة على الأقل",
+      "selectStatus": "يرجى اختيار حالة",
+      "bulkUpdateFailed": "فشل تحديث الشحنات"
     },
     "empty": {
       "title": "لا توجد شحنات",
@@ -577,6 +587,14 @@
       "totalPrice": "السعر الإجمالي",
       "breakdown": "تفصيل السعر",
       "enterDetails": "أدخل تفاصيل الشحنة لحساب السعر"
+    },
+    "scanDialog": {
+      "description": "امسح باركود الشحنات لتحديث حالتها بشكل جماعي",
+      "startScanning": "ابدأ بمسح الباركود",
+      "scannedCount": "{{scanned}} تم مسحها، {{selected}} محددة",
+      "scanning": "جاري المسح...",
+      "emptyState": "لم يتم مسح أي شحنات بعد. ابدأ بالمسح لإضافة شحنات.",
+      "selectStatus": "اختر الحالة للتحديث"
     }
   },
   "wallet": {
@@ -911,7 +929,8 @@
     "clear": "مسح",
     "columns": "الأعمدة",
     "resetDefault": "إعادة تعيين إلى الافتراضي",
-    "actions": "الإجراءات"
+    "actions": "الإجراءات",
+    "saving": "جاري الحفظ..."
   }
 }
 
