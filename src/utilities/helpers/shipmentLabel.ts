@@ -244,10 +244,23 @@ export function generateBulkShipmentLabels(shipments: IShipment[]): void {
           text-align: center;
           justify-content: space-between;
           page-break-after: always;
+          page-break-before: always;
+          page-break-inside: avoid;
+          break-inside: avoid;
+          break-after: page;
+          break-before: page;
+          overflow: hidden;
+          position: relative;
+        }
+
+        .label-container:first-child {
+          page-break-before: auto;
+          break-before: auto;
         }
 
         .label-container:last-child {
           page-break-after: auto;
+          break-after: auto;
         }
 
         .logo {
@@ -300,6 +313,16 @@ export function generateBulkShipmentLabels(shipments: IShipment[]): void {
           body {
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
+          }
+          
+          .label-container {
+            page-break-before: always !important;
+            page-break-after: always !important;
+            page-break-inside: avoid !important;
+          }
+          
+          .label-container:first-child {
+            page-break-before: avoid !important;
           }
         }
       </style>
