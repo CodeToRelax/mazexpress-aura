@@ -476,21 +476,6 @@ export default function Wallets() {
               </p>
             </div>
           </div>
-          
-          <div className="flex items-center gap-2">
-            <Button 
-              variant="outline" 
-              className="gap-2"
-              onClick={() => setShowExportDialog(true)}
-            >
-              <Download className="h-4 w-4" />
-              {t('wallets.actions.export')}
-            </Button>
-            <Button className="gap-2" onClick={handleCreateWallet}>
-              <Plus className="h-4 w-4" />
-              {t('wallets.actions.create')}
-            </Button>
-          </div>
         </div>
 
         {/* Stats Bar */}
