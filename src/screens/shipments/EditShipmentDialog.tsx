@@ -394,13 +394,13 @@ export function EditShipmentDialog({ open, onOpenChange, shipment, onSuccess }: 
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
-                            <Button
-                              variant="outline"
-                              className={cn(
-                                "w-full justify-start text-left font-normal",
-                                !field.value && "text-muted-foreground"
-                              )}
-                            >
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "w-full justify-start text-left font-normal bg-background",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
                               <CalendarIcon className="mr-2 h-4 w-4" />
                               {field.value ? format(new Date(field.value), 'dd/MM/yyyy') : 'Select date'}
                             </Button>

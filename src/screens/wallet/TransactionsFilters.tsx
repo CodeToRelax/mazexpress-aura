@@ -135,13 +135,13 @@ export function TransactionsFilters({
               <label className="text-sm font-medium">{t('wallet.filters.dateFrom')}</label>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !filters.dateFrom && "text-muted-foreground"
-                    )}
-                  >
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal bg-background",
+                    !filters.dateFrom && "text-muted-foreground"
+                  )}
+                >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {filters.dateFrom ? format(new Date(filters.dateFrom), 'dd/MM/yyyy') : 'Select date'}
                   </Button>
@@ -168,13 +168,13 @@ export function TransactionsFilters({
               <label className="text-sm font-medium">{t('wallet.filters.dateTo')}</label>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !filters.dateTo && "text-muted-foreground"
-                    )}
-                  >
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal bg-background",
+                    !filters.dateTo && "text-muted-foreground"
+                  )}
+                >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {filters.dateTo ? format(new Date(filters.dateTo), 'dd/MM/yyyy') : 'Select date'}
                   </Button>

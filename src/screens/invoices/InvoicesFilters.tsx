@@ -121,13 +121,13 @@ export function InvoicesFilters({
               <label className="text-sm font-medium">{t('invoice.filter-dateFrom')}</label>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !filters.from && "text-muted-foreground"
-                    )}
-                  >
+            <Button
+              variant="outline"
+              className={cn(
+                "w-full justify-start text-left font-normal bg-background",
+                !filters.from && "text-muted-foreground"
+              )}
+            >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {filters.from ? format(new Date(filters.from), 'dd/MM/yyyy') : 'Select date'}
                   </Button>
@@ -154,13 +154,13 @@ export function InvoicesFilters({
               <label className="text-sm font-medium">{t('invoice.filter-dateTo')}</label>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !filters.to && "text-muted-foreground"
-                    )}
-                  >
+            <Button
+              variant="outline"
+              className={cn(
+                "w-full justify-start text-left font-normal bg-background",
+                !filters.to && "text-muted-foreground"
+              )}
+            >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {filters.to ? format(new Date(filters.to), 'dd/MM/yyyy') : 'Select date'}
                   </Button>

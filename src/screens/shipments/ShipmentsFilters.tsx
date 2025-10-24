@@ -275,13 +275,13 @@ export function ShipmentsFilters({
               <label className="text-sm font-medium">{t('shipments.filters.dateFrom')}</label>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !filters.createdAfter && "text-muted-foreground"
-                    )}
-                  >
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal bg-background",
+                    !filters.createdAfter && "text-muted-foreground"
+                  )}
+                >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {filters.createdAfter ? format(new Date(filters.createdAfter), 'dd/MM/yyyy') : 'Select date'}
                   </Button>
@@ -308,13 +308,13 @@ export function ShipmentsFilters({
               <label className="text-sm font-medium">{t('shipments.filters.dateTo')}</label>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !filters.createdBefore && "text-muted-foreground"
-                    )}
-                  >
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal bg-background",
+                    !filters.createdBefore && "text-muted-foreground"
+                  )}
+                >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {filters.createdBefore ? format(new Date(filters.createdBefore), 'dd/MM/yyyy') : 'Select date'}
                   </Button>

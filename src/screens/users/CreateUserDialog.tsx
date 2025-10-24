@@ -235,13 +235,13 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
                 <Label htmlFor="birthdate">Birth Date *</Label>
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !watch('birthdate') && "text-muted-foreground"
-                      )}
-                    >
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal bg-background",
+                      !watch('birthdate') && "text-muted-foreground"
+                    )}
+                  >
                       <CalendarIcon className="mr-2 h-4 w-4" />
                       {watch('birthdate') ? format(new Date(watch('birthdate')), 'dd/MM/yyyy') : 'Select date'}
                     </Button>
