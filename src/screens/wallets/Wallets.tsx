@@ -583,10 +583,6 @@ export default function Wallets() {
               visibleColumns={visibleColumns}
               onSelectWallet={handleSelectWallet}
               onSelectAll={handleSelectAll}
-              onView={() => {}}
-              onEdit={handleEditWallet}
-              onDelete={handleDeleteWallet}
-              onToggleStatus={handleToggleStatus}
               sortBy={filters.sortBy}
               sortOrder={filters.sortOrder}
               onSort={handleSort}

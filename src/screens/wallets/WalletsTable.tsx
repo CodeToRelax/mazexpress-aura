@@ -2,11 +2,6 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { 
-  MoreVertical, 
-  Edit, 
-  Trash2, 
-  Eye, 
-  Copy,
   CheckCircle2,
   XCircle,
   ChevronsUpDown,
@@ -14,17 +9,8 @@ import {
   ChevronDown,
   Wallet as WalletIcon
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import {
   Table,
   TableBody,
@@ -33,7 +19,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { toast } from '@/hooks/use-toast';
 import { formatLYD } from '@/utilities/helpers/currencyHelpers';
 
 interface WalletView {
@@ -53,10 +38,6 @@ interface WalletsTableProps {
   selectedWallets: Set<string>;
   onSelectWallet: (walletId: string) => void;
   onSelectAll: (checked: boolean) => void;
-  onView: (wallet: WalletView) => void;
-  onEdit: (wallet: WalletView) => void;
-  onDelete: (wallet: WalletView) => void;
-  onToggleStatus: (wallet: WalletView) => void;
   visibleColumns?: Set<string>;
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
@@ -68,10 +49,6 @@ export function WalletsTable({
   selectedWallets,
   onSelectWallet,
   onSelectAll,
-  onView,
-  onEdit,
-  onDelete,
-  onToggleStatus,
   visibleColumns = new Set(['email', 'balance', 'currency', 'status', 'created']),
   sortBy,
   sortOrder,
@@ -110,13 +87,6 @@ export function WalletsTable({
     );
   };
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    toast({
-      title: t('wallets.messages.copySuccess'),
-    });
-  };
-
   const allSelected = wallets.length > 0 && wallets.every(wallet => selectedWallets.has(wallet.walletId));
   const someSelected = wallets.some(wallet => selectedWallets.has(wallet.walletId)) && !allSelected;
 
@@ -139,7 +109,6 @@ export function WalletsTable({
             {visibleColumns.has('currency') && <TableHead>{t('wallets.table.columns.currency')}</TableHead>}
             {visibleColumns.has('status') && <TableHead>{t('wallets.table.columns.status')}</TableHead>}
             {visibleColumns.has('created') && <TableHead>{renderSortableHeader('created', t('wallets.table.columns.created'))}</TableHead>}
-            <TableHead className="w-12"></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -194,52 +163,6 @@ export function WalletsTable({
                   {format(new Date(wallet.createdAt), 'MMM dd, yyyy')}
                 </TableCell>
               )}
-              <TableCell onClick={(e) => e.stopPropagation()}>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
-                      <MoreVertical className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>{t('wallets.table.columns.actions')}</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => navigate(`/users/${wallet.userId}?tab=wallet`)}>
-                      <Eye className="h-4 w-4 mr-2" />
-                      {t('wallets.actions.view')}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => onEdit(wallet)}>
-                      <Edit className="h-4 w-4 mr-2" />
-                      {t('wallets.actions.edit')}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => copyToClipboard(wallet.walletId)}>
-                      <Copy className="h-4 w-4 mr-2" />
-                      {t('wallets.actions.copyId')}
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => onToggleStatus(wallet)}>
-                      {wallet.isActive ? (
-                        <>
-                          <XCircle className="h-4 w-4 mr-2" />
-                          {t('wallets.actions.deactivate')}
-                        </>
-                      ) : (
-                        <>
-                          <CheckCircle2 className="h-4 w-4 mr-2" />
-                          {t('wallets.actions.activate')}
-                        </>
-                      )}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem 
-                      onClick={() => onDelete(wallet)}
-                      className="text-destructive focus:text-destructive"
-                    >
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      {t('wallets.actions.delete')}
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </TableCell>
             </TableRow>
           ))}
         </TableBody>
