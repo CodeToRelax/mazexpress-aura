@@ -124,7 +124,7 @@ export function InvoicesFilters({
             <Button
               variant="outline"
               className={cn(
-                "w-full justify-start text-left font-normal bg-background",
+                "w-full justify-start text-left font-normal bg-white dark:bg-card",
                 !filters.from && "text-muted-foreground"
               )}
             >
@@ -157,7 +157,7 @@ export function InvoicesFilters({
             <Button
               variant="outline"
               className={cn(
-                "w-full justify-start text-left font-normal bg-background",
+                "w-full justify-start text-left font-normal bg-white dark:bg-card",
                 !filters.to && "text-muted-foreground"
               )}
             >

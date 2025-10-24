@@ -138,7 +138,7 @@ export function TransactionsFilters({
                 <Button
                   variant="outline"
                   className={cn(
-                    "w-full justify-start text-left font-normal bg-background",
+                    "w-full justify-start text-left font-normal bg-white dark:bg-card",
                     !filters.dateFrom && "text-muted-foreground"
                   )}
                 >
@@ -171,7 +171,7 @@ export function TransactionsFilters({
                 <Button
                   variant="outline"
                   className={cn(
-                    "w-full justify-start text-left font-normal bg-background",
+                    "w-full justify-start text-left font-normal bg-white dark:bg-card",
                     !filters.dateTo && "text-muted-foreground"
                   )}
                 >

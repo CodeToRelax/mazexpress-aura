@@ -300,7 +300,7 @@ export function EditUserDialog({ open, onOpenChange, user, onSuccess }: EditUser
                   <Button
                     variant="outline"
                     className={cn(
-                      "w-full justify-start text-left font-normal bg-background",
+                      "w-full justify-start text-left font-normal bg-white dark:bg-card",
                       !watch('birthdate') && "text-muted-foreground"
                     )}
                   >

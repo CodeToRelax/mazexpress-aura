@@ -163,7 +163,7 @@ export function UsersFilters({
                 <Button
                   variant="outline"
                   className={cn(
-                    "w-full justify-start text-left font-normal bg-background",
+                    "w-full justify-start text-left font-normal bg-white dark:bg-card",
                     !filters.createdAfter && "text-muted-foreground"
                   )}
                 >
@@ -196,7 +196,7 @@ export function UsersFilters({
                 <Button
                   variant="outline"
                   className={cn(
-                    "w-full justify-start text-left font-normal bg-background",
+                    "w-full justify-start text-left font-normal bg-white dark:bg-card",
                     !filters.createdBefore && "text-muted-foreground"
                   )}
                 >
