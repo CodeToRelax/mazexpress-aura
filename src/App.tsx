@@ -13,6 +13,7 @@ import Login from "@/screens/auth/Login";
 import Dashboard from "@/screens/dashboard/Dashboard";
 import Users from "@/screens/users/Users";
 import UserDetail from "@/screens/users/UserDetail";
+import Wallets from "@/screens/wallets/Wallets";
 import Warehouses from "@/screens/warehouses/Warehouses";
 import WarehouseDetail from "@/screens/warehouses/WarehouseDetail";
 import Shipments from "@/screens/shipments/Shipments";
@@ -55,6 +56,7 @@ const App = () => {
               <Route path="/" element={<Dashboard />} />
               <Route path="/users" element={<Users />} />
               <Route path="/users/:id" element={<UserDetail />} />
+              <Route path="/wallets" element={<Wallets />} />
               <Route path="/warehouses" element={<Warehouses />} />
               <Route path="/warehouses/:id" element={<WarehouseDetail />} />
               <Route path="/shipments" element={<Shipments />} />

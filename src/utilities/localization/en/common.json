@@ -21,8 +21,23 @@
     "wallet": "Wallet",
     "wallet.dashboard": "Dashboard",
     "wallet.transactions": "Transactions",
+    "wallets": "Wallets",
     "invoices": "Invoices",
     "settings": "Settings"
+  },
+  "wallets": {
+    "title": "Wallets Management",
+    "subtitle": "Manage user wallets and transactions",
+    "tabs": { "customers": "Customers", "admins": "Admins" },
+    "table": { "columns": { "user": "User", "email": "Email", "phone": "Phone", "role": "Role", "status": "Status", "country": "Country", "shippingNumber": "Shipping #", "joined": "Joined", "actions": "Actions" }, "status": { "active": "Active", "disabled": "Disabled" }, "role": { "admin": "Admin", "customer": "Customer" }, "selectAll": "Select all", "showingResults": "Showing {{from}}-{{to}} of {{total}} wallets", "sortBy": "Sort by {{column}}" },
+    "actions": { "create": "Create Wallet", "edit": "Edit", "delete": "Delete", "view": "View Details", "activate": "Activate", "deactivate": "Deactivate", "copyId": "Copy ID", "export": "Export", "refresh": "Refresh", "resetFilters": "Reset Filters" },
+    "filters": { "searchPlaceholder": "Name, email, phone...", "advanced": "Advanced Filters", "status": "Status", "gender": "Gender", "country": "Country", "createdAfter": "Created After", "createdBefore": "Created Before", "allStatuses": "All Statuses", "allGenders": "All Genders", "allCountries": "All Countries", "male": "Male", "female": "Female" },
+    "empty": { "title": "No wallets found", "description": "No wallets match your current filters." },
+    "stats": { "totalWallets": "Total Wallets", "customers": "Customers", "admins": "Admins", "active": "Active", "inactive": "Inactive" },
+    "messages": { "deleteSuccess": "Wallet deleted successfully", "updateSuccess": "Wallet updated successfully", "createSuccess": "Wallet created successfully", "activateSuccess": "Wallet activated successfully", "deactivateSuccess": "Wallet deactivated successfully", "error": "An error occurred", "copySuccess": "Wallet ID copied to clipboard" },
+    "columns": { "visibility": "Columns", "showHide": "Show/Hide Columns", "hiddenCount": "{{count}} hidden", "resetDefault": "Reset to Default" },
+    "form": { "cancel": "Cancel" },
+    "export": { "title": "Export Wallets to CSV", "description": "Export wallets to a CSV file", "success": "Successfully exported {{count}} wallets", "error": "Failed to export wallets" }
   },
   "users": {
     "title": "Users Management",
