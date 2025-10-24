@@ -1,16 +1,16 @@
 import { useTranslation } from 'react-i18next';
-import { Wallet, UserCheck, UserX, Shield, UsersRound } from 'lucide-react';
+import { Wallet, UserCheck, UserX } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { formatLYD } from '@/utilities/helpers/currencyHelpers';
 
 interface WalletsStatsBarProps {
   stats: {
-    totalUsers: number;
-    totalCustomers: number;
-    totalAdmins: number;
-    activeUsers: number;
-    inactiveUsers: number;
+    totalWallets: number;
+    activeWallets: number;
+    inactiveWallets: number;
+    totalBalance: number;
   };
-  onStatClick: (filterType: 'all' | 'customers' | 'admins' | 'active' | 'inactive') => void;
+  onStatClick: (filterType: 'all' | 'active' | 'inactive') => void;
 }
 
 export function WalletsStatsBar({ stats, onStatClick }: WalletsStatsBarProps) {
@@ -20,31 +20,15 @@ export function WalletsStatsBar({ stats, onStatClick }: WalletsStatsBarProps) {
     {
       icon: Wallet,
       label: t('wallets.stats.totalWallets'),
-      value: stats.totalUsers,
+      value: stats.totalWallets,
       color: 'text-primary',
       bgColor: 'bg-primary/10',
       filterType: 'all' as const,
     },
     {
-      icon: UsersRound,
-      label: t('wallets.stats.customers'),
-      value: stats.totalCustomers,
-      color: 'text-blue-600 dark:text-blue-400',
-      bgColor: 'bg-blue-500/10',
-      filterType: 'customers' as const,
-    },
-    {
-      icon: Shield,
-      label: t('wallets.stats.admins'),
-      value: stats.totalAdmins,
-      color: 'text-purple-600 dark:text-purple-400',
-      bgColor: 'bg-purple-500/10',
-      filterType: 'admins' as const,
-    },
-    {
       icon: UserCheck,
       label: t('wallets.stats.active'),
-      value: stats.activeUsers,
+      value: stats.activeWallets,
       color: 'text-green-600 dark:text-green-400',
       bgColor: 'bg-green-500/10',
       filterType: 'active' as const,
@@ -52,23 +36,31 @@ export function WalletsStatsBar({ stats, onStatClick }: WalletsStatsBarProps) {
     {
       icon: UserX,
       label: t('wallets.stats.inactive'),
-      value: stats.inactiveUsers,
+      value: stats.inactiveWallets,
       color: 'text-red-600 dark:text-red-400',
       bgColor: 'bg-red-500/10',
       filterType: 'inactive' as const,
     },
+    {
+      icon: Wallet,
+      label: t('wallets.stats.totalBalance'),
+      value: formatLYD(stats.totalBalance),
+      color: 'text-blue-600 dark:text-blue-400',
+      bgColor: 'bg-blue-500/10',
+      filterType: null,
+    },
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
       {statCards.map((stat, index) => (
         <motion.div
           key={stat.label}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: index * 0.05 }}
-          onClick={() => onStatClick(stat.filterType)}
-          className="glass-card rounded-xl p-4 cursor-pointer hover:bg-accent/20 transition-all duration-150 hover:shadow-md"
+          onClick={stat.filterType ? () => onStatClick(stat.filterType) : undefined}
+          className={`glass-card rounded-xl p-4 ${stat.filterType ? 'cursor-pointer hover:bg-accent/20' : ''} transition-all duration-150 hover:shadow-md`}
         >
           <div className="flex items-center gap-3">
             <div className={`w-10 h-10 rounded-lg ${stat.bgColor} flex items-center justify-center shrink-0`}>

@@ -20,11 +20,10 @@ interface WalletsColumnVisibilityToggleProps {
 
 const TOGGLEABLE_COLUMNS = [
   { key: 'email', labelKey: 'wallets.table.columns.email' },
-  { key: 'phone', labelKey: 'wallets.table.columns.phone' },
-  { key: 'role', labelKey: 'wallets.table.columns.role' },
+  { key: 'balance', labelKey: 'wallets.table.columns.balance' },
+  { key: 'currency', labelKey: 'wallets.table.columns.currency' },
   { key: 'status', labelKey: 'wallets.table.columns.status' },
-  { key: 'country', labelKey: 'wallets.table.columns.country' },
-  { key: 'joined', labelKey: 'wallets.table.columns.joined' },
+  { key: 'created', labelKey: 'wallets.table.columns.created' },
 ];
 
 export function WalletsColumnVisibilityToggle({

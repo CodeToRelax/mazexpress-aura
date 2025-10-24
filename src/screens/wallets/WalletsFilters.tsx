@@ -54,9 +54,6 @@ export function WalletsFilters({
     onFiltersChange({ ...filters, [key]: value, page: 1 });
   };
 
-  const countries = ['libya', 'turkey', 'china', 'uae'];
-  const genders = ['male', 'female'];
-
   return (
     <div className="flex flex-wrap gap-2 items-center">
       <div className="relative flex-1 min-w-[200px]">
@@ -96,9 +93,9 @@ export function WalletsFilters({
             <div className="space-y-2">
               <label className="text-sm font-medium">{t('wallets.filters.status')}</label>
               <Select
-                value={filters.disabled === undefined ? 'all' : filters.disabled ? 'disabled' : 'active'}
+                value={filters.disabled === undefined ? 'all' : filters.disabled ? 'inactive' : 'active'}
                 onValueChange={(value) => 
-                  handleFilterChange('disabled', value === 'all' ? undefined : value === 'disabled')
+                  handleFilterChange('disabled', value === 'all' ? undefined : value === 'inactive')
                 }
               >
                 <SelectTrigger>
@@ -107,51 +104,7 @@ export function WalletsFilters({
                 <SelectContent>
                   <SelectItem value="all">{t('wallets.filters.allStatuses')}</SelectItem>
                   <SelectItem value="active">{t('wallets.table.status.active')}</SelectItem>
-                  <SelectItem value="disabled">{t('wallets.table.status.disabled')}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium">{t('wallets.filters.gender')}</label>
-              <Select
-                value={filters.gender || 'all'}
-                onValueChange={(value) => 
-                  handleFilterChange('gender', value === 'all' ? undefined : value)
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t('wallets.filters.allGenders')}</SelectItem>
-                  {genders.map(gender => (
-                    <SelectItem key={gender} value={gender}>
-                      {t(`wallets.filters.${gender}`)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium">{t('wallets.filters.country')}</label>
-              <Select
-                value={filters.country || 'all'}
-                onValueChange={(value) => 
-                  handleFilterChange('country', value === 'all' ? undefined : value)
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t('wallets.filters.allCountries')}</SelectItem>
-                  {countries.map(country => (
-                    <SelectItem key={country} value={country} className="capitalize">
-                      {country}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="inactive">{t('wallets.table.status.inactive')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -258,28 +211,10 @@ export function ActiveFiltersBadges({
       <span className="text-sm text-muted-foreground">Active filters:</span>
       {filters.disabled !== undefined && (
         <Badge variant="secondary" className="gap-1">
-          Status: {filters.disabled ? 'Disabled' : 'Active'}
+          Status: {filters.disabled ? 'Inactive' : 'Active'}
           <X 
             className="h-3 w-3 cursor-pointer" 
             onClick={() => handleFilterChange('disabled', undefined)}
-          />
-        </Badge>
-      )}
-      {filters.gender && (
-        <Badge variant="secondary" className="gap-1 capitalize">
-          Gender: {filters.gender}
-          <X 
-            className="h-3 w-3 cursor-pointer" 
-            onClick={() => handleFilterChange('gender', undefined)}
-          />
-        </Badge>
-      )}
-      {filters.country && (
-        <Badge variant="secondary" className="gap-1 capitalize">
-          Country: {filters.country}
-          <X 
-            className="h-3 w-3 cursor-pointer" 
-            onClick={() => handleFilterChange('country', undefined)}
           />
         </Badge>
       )}

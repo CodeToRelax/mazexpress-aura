@@ -1,10 +1,22 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Wallet as WalletIcon, Plus, Download, Trash2, RotateCw } from 'lucide-react';
-import type { User, UserFilters, UserType } from '@/types/user';
+import type { User, UserFilters } from '@/types/user';
 import { usersApi } from '@/utilities/api/users.api';
+
+// Wallet-centric view type
+interface WalletView {
+  walletId: string;
+  walletIdDisplay: string;
+  ownerName: string;
+  ownerEmail: string;
+  balance: number;
+  currency: string;
+  isActive: boolean;
+  createdAt: string;
+  userId: string;
+}
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
@@ -30,12 +42,9 @@ const STORAGE_KEYS = {
 
 export default function Wallets() {
   const { t } = useTranslation();
-  const [searchParams, setSearchParams] = useSearchParams();
   
-  const [activeTab, setActiveTab] = useState<UserType>(
-    (searchParams.get('tab') as UserType) || 'customer'
-  );
-  const [users, setUsers] = useState<User[]>([]);
+  const [wallets, setWallets] = useState<WalletView[]>([]);
+  const [usersMap, setUsersMap] = useState<Map<string, User>>(new Map());
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({
     currentPage: 1,
@@ -48,12 +57,11 @@ export default function Wallets() {
     prevPage: null,
   });
   
-  const [userStats, setUserStats] = useState({
-    totalUsers: 0,
-    totalCustomers: 0,
-    totalAdmins: 0,
-    activeUsers: 0,
-    inactiveUsers: 0,
+  const [walletStats, setWalletStats] = useState({
+    totalWallets: 0,
+    activeWallets: 0,
+    inactiveWallets: 0,
+    totalBalance: 0,
   });
 
   // Initialize from localStorage
@@ -66,12 +74,9 @@ export default function Wallets() {
       return {
         page: 1,
         limit: savedLimit ? parseInt(savedLimit) : 10,
-        userType: activeTab,
         sortBy: parsedFilters.sortBy || 'createdAt',
         sortOrder: parsedFilters.sortOrder || 'desc',
         disabled: parsedFilters.disabled,
-        gender: parsedFilters.gender,
-        country: parsedFilters.country,
         createdAfter: parsedFilters.createdAfter,
         createdBefore: parsedFilters.createdBefore,
       };
@@ -79,14 +84,13 @@ export default function Wallets() {
       return {
         page: 1,
         limit: 10,
-        userType: activeTab,
         sortBy: 'createdAt',
         sortOrder: 'desc',
       };
     }
   });
 
-  const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
+  const [selectedWallets, setSelectedWallets] = useState<Set<string>>(new Set());
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
   const [userToToggle, setUserToToggle] = useState<User | null>(null);
   const [userToEdit, setUserToEdit] = useState<User | null>(null);
@@ -106,20 +110,44 @@ export default function Wallets() {
         return new Set(parsed);
       }
     } catch {}
-    return new Set(['email', 'phone', 'status', 'country', 'joined']);
+    return new Set(['email', 'balance', 'currency', 'status', 'created']);
   });
 
-  const fetchUsers = useCallback(async () => {
-    console.log('fetchUsers called with filters:', filters);
+  const fetchWallets = useCallback(async () => {
+    console.log('fetchWallets called with filters:', filters);
     try {
       setLoading(true);
       setHasError(false);
       setErrorMessage('');
       const response = await usersApi.getUsers(filters);
-      setUsers(response.data.users);
+      
+      // Build a map of users by ID
+      const userMap = new Map<string, User>();
+      response.data.users.forEach(user => userMap.set(user._id, user));
+      setUsersMap(userMap);
+      
+      // Transform users to wallet-centric view (only users with wallets)
+      const walletViews: WalletView[] = response.data.users
+        .filter(user => user.walletId && typeof user.walletId === 'object')
+        .map(user => {
+          const wallet = user.walletId as { _id: string; balance: number; currency: string; isActive: boolean };
+          return {
+            walletId: wallet._id,
+            walletIdDisplay: '...' + wallet._id.slice(-6),
+            ownerName: `${user.firstName} ${user.lastName}`,
+            ownerEmail: user.email,
+            balance: wallet.balance,
+            currency: wallet.currency,
+            isActive: wallet.isActive,
+            createdAt: user.createdAt,
+            userId: user._id,
+          };
+        });
+      
+      setWallets(walletViews);
       setPagination(response.data.pagination);
     } catch (error) {
-      console.error('Failed to fetch users:', error);
+      console.error('Failed to fetch wallets:', error);
       const message = error instanceof Error ? error.message : 'Unknown error';
       setHasError(true);
       setErrorMessage(message);
@@ -139,30 +167,44 @@ export default function Wallets() {
 
   const fetchStats = useCallback(async () => {
     try {
-      const stats = await usersApi.getStats();
-      setUserStats(stats);
+      const response = await usersApi.getUsers({ limit: 1000 }); // Get all users for stats
+      const usersWithWallets = response.data.users.filter(
+        user => user.walletId && typeof user.walletId === 'object'
+      );
+      
+      const activeWallets = usersWithWallets.filter(user => {
+        const wallet = user.walletId as { _id: string; balance: number; currency: string; isActive: boolean };
+        return wallet.isActive;
+      }).length;
+      
+      const totalBalance = usersWithWallets.reduce((sum, user) => {
+        const wallet = user.walletId as { _id: string; balance: number; currency: string; isActive: boolean };
+        return sum + wallet.balance;
+      }, 0);
+      
+      setWalletStats({
+        totalWallets: usersWithWallets.length,
+        activeWallets,
+        inactiveWallets: usersWithWallets.length - activeWallets,
+        totalBalance,
+      });
     } catch (err) {
       console.error('Failed to fetch stats:', err);
     }
   }, []);
 
   useEffect(() => {
-    fetchUsers();
-  }, [fetchUsers]);
+    fetchWallets();
+  }, [fetchWallets]);
 
   useEffect(() => {
     fetchStats();
   }, [fetchStats]);
 
-  useEffect(() => {
-    setFilters(prev => ({ ...prev, userType: activeTab, page: 1 }));
-    setSearchParams({ tab: activeTab });
-  }, [activeTab, setSearchParams]);
-
   // Persist filters to localStorage
   useEffect(() => {
     try {
-      const { page, search, userType, limit, ...persistableFilters } = filters;
+      const { page, search, limit, ...persistableFilters } = filters;
       localStorage.setItem(STORAGE_KEYS.FILTERS, JSON.stringify(persistableFilters));
       if (limit) {
         localStorage.setItem(STORAGE_KEYS.TABLE_LIMIT, limit.toString());
@@ -181,12 +223,6 @@ export default function Wallets() {
     }
   }, [visibleColumns]);
 
-  const handleTabChange = (tab: string) => {
-    console.log('Tab clicked:', tab, 'Current activeTab:', activeTab);
-    setActiveTab(tab as UserType);
-    setSelectedUsers(new Set());
-  };
-
   const handleFiltersChange = (newFilters: UserFilters) => {
     setFilters(newFilters);
   };
@@ -197,41 +233,15 @@ export default function Wallets() {
       limit: filters.limit,
       sortBy: 'createdAt',
       sortOrder: 'desc',
-      userType: activeTab,
     });
   };
 
-  const handleStatClick = (filterType: 'all' | 'customers' | 'admins' | 'active' | 'inactive') => {
+  const handleStatClick = (filterType: 'all' | 'active' | 'inactive') => {
     switch (filterType) {
       case 'all':
         setFilters({
           page: 1,
           limit: filters.limit,
-          userType: activeTab,
-          sortBy: 'createdAt',
-          sortOrder: 'desc',
-        });
-        break;
-      case 'customers':
-        setActiveTab('customer');
-        searchParams.set('tab', 'customer');
-        setSearchParams(searchParams);
-        setFilters({
-          page: 1,
-          limit: filters.limit,
-          userType: 'customer',
-          sortBy: 'createdAt',
-          sortOrder: 'desc',
-        });
-        break;
-      case 'admins':
-        setActiveTab('admin');
-        searchParams.set('tab', 'admin');
-        setSearchParams(searchParams);
-        setFilters({
-          page: 1,
-          limit: filters.limit,
-          userType: 'admin',
           sortBy: 'createdAt',
           sortOrder: 'desc',
         });
@@ -261,13 +271,13 @@ export default function Wallets() {
     setFilters(prev => ({ ...prev, limit, page: 1 }));
   };
 
-  const handleSelectUser = (userId: string) => {
-    setSelectedUsers(prev => {
+  const handleSelectWallet = (walletId: string) => {
+    setSelectedWallets(prev => {
       const newSet = new Set(prev);
-      if (newSet.has(userId)) {
-        newSet.delete(userId);
+      if (newSet.has(walletId)) {
+        newSet.delete(walletId);
       } else {
-        newSet.add(userId);
+        newSet.add(walletId);
       }
       return newSet;
     });
@@ -275,36 +285,42 @@ export default function Wallets() {
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedUsers(new Set(users.map(u => u._id)));
+      setSelectedWallets(new Set(wallets.map(w => w.walletId)));
     } else {
-      setSelectedUsers(new Set());
+      setSelectedWallets(new Set());
     }
   };
 
-  const handleCreateUser = () => {
+  const handleCreateWallet = () => {
     setShowCreateDialog(true);
   };
 
   const handleCreateSuccess = () => {
-    fetchUsers();
+    fetchWallets();
     fetchStats();
   };
 
-  const handleEditUser = (user: User) => {
-    setUserToEdit(user);
-    setShowEditDialog(true);
+  const handleEditWallet = (wallet: WalletView) => {
+    const user = usersMap.get(wallet.userId);
+    if (user) {
+      setUserToEdit(user);
+      setShowEditDialog(true);
+    }
   };
 
   const handleEditSuccess = () => {
     setShowEditDialog(false);
     setUserToEdit(null);
-    fetchUsers();
+    fetchWallets();
     fetchStats();
   };
 
-  const handleDeleteUser = (user: User) => {
-    setUserToDelete(user);
-    setShowDeleteDialog(true);
+  const handleDeleteWallet = (wallet: WalletView) => {
+    const user = usersMap.get(wallet.userId);
+    if (user) {
+      setUserToDelete(user);
+      setShowDeleteDialog(true);
+    }
   };
 
   const confirmDelete = async () => {
@@ -315,8 +331,8 @@ export default function Wallets() {
       toast({
         title: t('wallets.messages.deleteSuccess'),
       });
-      fetchUsers();
-      fetchStats(); // Refresh stats after delete
+      fetchWallets();
+      fetchStats();
     } catch (error) {
       toast({
         title: t('wallets.messages.error'),
@@ -329,9 +345,12 @@ export default function Wallets() {
     }
   };
 
-  const handleToggleStatus = (user: User) => {
-    setUserToToggle(user);
-    setShowToggleDialog(true);
+  const handleToggleStatus = (wallet: WalletView) => {
+    const user = usersMap.get(wallet.userId);
+    if (user) {
+      setUserToToggle(user);
+      setShowToggleDialog(true);
+    }
   };
 
   const confirmToggleStatus = async () => {
@@ -344,8 +363,8 @@ export default function Wallets() {
           ? t('wallets.messages.activateSuccess') 
           : t('wallets.messages.deactivateSuccess'),
       });
-      fetchUsers();
-      fetchStats(); // Refresh stats after toggle
+      fetchWallets();
+      fetchStats();
     } catch (error) {
       toast({
         title: t('wallets.messages.error'),
@@ -371,31 +390,28 @@ export default function Wallets() {
   };
 
   const handleResetColumns = () => {
-    setVisibleColumns(new Set(['email', 'phone', 'status', 'country', 'joined']));
+    setVisibleColumns(new Set(['email', 'balance', 'currency', 'status', 'created']));
   };
 
   const handleSort = (column: string) => {
-    // Map UI column names to API sortBy values (only valid UserFilters sortBy values)
-    const columnMap: Record<string, 'createdAt' | 'updatedAt' | 'firstName' | 'lastName' | 'email' | 'userType'> = {
-      name: 'firstName',
+    // Map UI column names to API sortBy values
+    const columnMap: Record<string, 'createdAt' | 'updatedAt' | 'firstName' | 'lastName' | 'email'> = {
+      owner: 'firstName',
       email: 'email',
-      role: 'userType',
-      joined: 'createdAt',
+      balance: 'createdAt', // No direct balance sort, use createdAt
+      created: 'createdAt',
     };
 
-    // Only allow sorting for columns that map to valid API sortBy values
     const apiColumn = columnMap[column];
     if (!apiColumn) return;
 
     setFilters(prev => {
-      // Toggle sort order if clicking the same column
       if (prev.sortBy === apiColumn) {
         return {
           ...prev,
           sortOrder: prev.sortOrder === 'asc' ? 'desc' : 'asc',
         };
       }
-      // Set new column with default ascending order
       return {
         ...prev,
         sortBy: apiColumn,
@@ -409,7 +425,7 @@ export default function Wallets() {
       value !== undefined && 
       value !== null && 
       value !== '' && 
-      !['page', 'limit', 'sortBy', 'sortOrder', 'userType'].includes(key)
+      !['page', 'limit', 'sortBy', 'sortOrder'].includes(key)
   ).length;
 
   return (
@@ -444,23 +460,12 @@ export default function Wallets() {
               <Download className="h-4 w-4" />
               {t('wallets.actions.export')}
             </Button>
-            <Button className="gap-2" onClick={handleCreateUser}>
+            <Button className="gap-2" onClick={handleCreateWallet}>
               <Plus className="h-4 w-4" />
               {t('wallets.actions.create')}
             </Button>
           </div>
         </div>
-
-        <Tabs value={activeTab} onValueChange={handleTabChange} className="mb-6">
-          <TabsList className="grid w-[400px] grid-cols-2">
-            <TabsTrigger value="customer">
-              {t('wallets.tabs.customers')}
-            </TabsTrigger>
-            <TabsTrigger value="admin">
-              {t('wallets.tabs.admins')}
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
 
         {/* Stats Bar */}
         <motion.div
@@ -469,7 +474,7 @@ export default function Wallets() {
           transition={{ duration: 0.5, delay: 0.15 }}
           className="mb-6"
         >
-          <WalletsStatsBar stats={userStats} onStatClick={handleStatClick} />
+          <WalletsStatsBar stats={walletStats} onStatClick={handleStatClick} />
         </motion.div>
       </motion.div>
 
@@ -499,7 +504,7 @@ export default function Wallets() {
             size="icon"
             onClick={() => {
               console.log('Refresh button clicked');
-              fetchUsers();
+              fetchWallets();
               fetchStats();
             }}
             className="shrink-0 cursor-pointer"
@@ -530,7 +535,7 @@ export default function Wallets() {
             <p className="text-sm text-muted-foreground mb-4 font-mono">
               {errorMessage}
             </p>
-            <Button onClick={() => { fetchUsers(); fetchStats(); }} className="gap-2">
+            <Button onClick={() => { fetchWallets(); fetchStats(); }} className="gap-2">
               <RotateCw className="h-4 w-4" />
               Try Again
             </Button>
@@ -547,7 +552,7 @@ export default function Wallets() {
               </div>
             ))}
           </div>
-        ) : users.length === 0 ? (
+        ) : wallets.length === 0 ? (
           <div className="glass-card rounded-2xl p-12 text-center">
             <div className="w-20 h-20 rounded-2xl bg-muted/30 mx-auto flex items-center justify-center mb-4">
               <WalletIcon className="h-10 w-10 text-muted-foreground" />
@@ -562,14 +567,14 @@ export default function Wallets() {
         ) : (
           <>
             <WalletsTable
-              users={users}
-              selectedUsers={selectedUsers}
+              wallets={wallets}
+              selectedWallets={selectedWallets}
               visibleColumns={visibleColumns}
-              onSelectUser={handleSelectUser}
+              onSelectWallet={handleSelectWallet}
               onSelectAll={handleSelectAll}
               onView={() => {}}
-              onEdit={handleEditUser}
-              onDelete={handleDeleteUser}
+              onEdit={handleEditWallet}
+              onDelete={handleDeleteWallet}
               onToggleStatus={handleToggleStatus}
               sortBy={filters.sortBy}
               sortOrder={filters.sortOrder}

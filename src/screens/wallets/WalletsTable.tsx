@@ -12,13 +12,11 @@ import {
   ChevronsUpDown,
   ChevronUp,
   ChevronDown,
-  Package
+  Wallet as WalletIcon
 } from 'lucide-react';
-import type { User } from '@/types/user';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -36,16 +34,29 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { toast } from '@/hooks/use-toast';
+import { formatLYD } from '@/utilities/helpers/currencyHelpers';
+
+interface WalletView {
+  walletId: string;
+  walletIdDisplay: string;
+  ownerName: string;
+  ownerEmail: string;
+  balance: number;
+  currency: string;
+  isActive: boolean;
+  createdAt: string;
+  userId: string;
+}
 
 interface WalletsTableProps {
-  users: User[];
-  selectedUsers: Set<string>;
-  onSelectUser: (userId: string) => void;
+  wallets: WalletView[];
+  selectedWallets: Set<string>;
+  onSelectWallet: (walletId: string) => void;
   onSelectAll: (checked: boolean) => void;
-  onView: (user: User) => void;
-  onEdit: (user: User) => void;
-  onDelete: (user: User) => void;
-  onToggleStatus: (user: User) => void;
+  onView: (wallet: WalletView) => void;
+  onEdit: (wallet: WalletView) => void;
+  onDelete: (wallet: WalletView) => void;
+  onToggleStatus: (wallet: WalletView) => void;
   visibleColumns?: Set<string>;
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
@@ -53,15 +64,15 @@ interface WalletsTableProps {
 }
 
 export function WalletsTable({
-  users,
-  selectedUsers,
-  onSelectUser,
+  wallets,
+  selectedWallets,
+  onSelectWallet,
   onSelectAll,
   onView,
   onEdit,
   onDelete,
   onToggleStatus,
-  visibleColumns = new Set(['email', 'phone', 'status', 'country', 'joined']),
+  visibleColumns = new Set(['email', 'balance', 'currency', 'status', 'created']),
   sortBy,
   sortOrder,
   onSort,
@@ -81,8 +92,7 @@ export function WalletsTable({
   };
 
   const renderSortableHeader = (column: string, label: string) => {
-    // Only allow sorting for columns that have API support
-    const isSortable = onSort && ['name', 'email', 'role', 'joined'].includes(column);
+    const isSortable = onSort && ['owner', 'email', 'balance', 'created'].includes(column);
     
     if (!isSortable) {
       return label;
@@ -100,10 +110,6 @@ export function WalletsTable({
     );
   };
 
-  const getInitials = (firstName: string, lastName: string) => {
-    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
-  };
-
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     toast({
@@ -111,8 +117,8 @@ export function WalletsTable({
     });
   };
 
-  const allSelected = users.length > 0 && users.every(user => selectedUsers.has(user._id));
-  const someSelected = users.some(user => selectedUsers.has(user._id)) && !allSelected;
+  const allSelected = wallets.length > 0 && wallets.every(wallet => selectedWallets.has(wallet.walletId));
+  const someSelected = wallets.some(wallet => selectedWallets.has(wallet.walletId)) && !allSelected;
 
   return (
     <div className="glass-card rounded-2xl overflow-hidden">
@@ -126,86 +132,66 @@ export function WalletsTable({
                 aria-label={t('wallets.table.selectAll')}
               />
             </TableHead>
-            <TableHead>{renderSortableHeader('name', t('wallets.table.columns.user'))}</TableHead>
-            <TableHead>{t('wallets.table.columns.shippingNumber')}</TableHead>
+            <TableHead>{t('wallets.table.columns.walletId')}</TableHead>
+            <TableHead>{renderSortableHeader('owner', t('wallets.table.columns.owner'))}</TableHead>
             {visibleColumns.has('email') && <TableHead>{renderSortableHeader('email', t('wallets.table.columns.email'))}</TableHead>}
-            {visibleColumns.has('phone') && <TableHead>{renderSortableHeader('phone', t('wallets.table.columns.phone'))}</TableHead>}
-            {visibleColumns.has('role') && <TableHead>{renderSortableHeader('role', t('wallets.table.columns.role'))}</TableHead>}
+            {visibleColumns.has('balance') && <TableHead>{renderSortableHeader('balance', t('wallets.table.columns.balance'))}</TableHead>}
+            {visibleColumns.has('currency') && <TableHead>{t('wallets.table.columns.currency')}</TableHead>}
             {visibleColumns.has('status') && <TableHead>{t('wallets.table.columns.status')}</TableHead>}
-            {visibleColumns.has('country') && <TableHead>{renderSortableHeader('country', t('wallets.table.columns.country'))}</TableHead>}
-            {visibleColumns.has('joined') && <TableHead>{renderSortableHeader('joined', t('wallets.table.columns.joined'))}</TableHead>}
+            {visibleColumns.has('created') && <TableHead>{renderSortableHeader('created', t('wallets.table.columns.created'))}</TableHead>}
             <TableHead className="w-12"></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {users.map((user) => (
+          {wallets.map((wallet) => (
             <TableRow 
-              key={user._id}
+              key={wallet.walletId}
               className="cursor-pointer hover:bg-accent/20 transition-colors duration-150"
-              onClick={() => navigate(`/wallets/${user._id}`)}
+              onClick={() => navigate(`/wallets/${wallet.walletId}`)}
             >
               <TableCell onClick={(e) => e.stopPropagation()}>
                 <Checkbox
-                  checked={selectedUsers.has(user._id)}
-                  onCheckedChange={() => onSelectUser(user._id)}
+                  checked={selectedWallets.has(wallet.walletId)}
+                  onCheckedChange={() => onSelectWallet(wallet.walletId)}
                 />
               </TableCell>
               <TableCell>
-                <div className="flex items-center gap-3">
-                  <Avatar className="h-10 w-10">
-                    <AvatarFallback className="bg-primary/10 text-primary">
-                      {getInitials(user.firstName, user.lastName)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <div className="font-medium text-foreground">
-                      {user.firstName} {user.lastName}
-                    </div>
-                    {user.username && (
-                      <div className="text-sm text-muted-foreground">@{user.username}</div>
-                    )}
-                  </div>
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <WalletIcon className="h-4 w-4" />
+                  <span className="font-mono text-sm">{wallet.walletIdDisplay}</span>
                 </div>
               </TableCell>
               <TableCell>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Package className="h-4 w-4" />
-                  <span className="font-mono text-sm">{user.uniqueShippingNumber}</span>
+                <div className="font-medium text-foreground">
+                  {wallet.ownerName}
                 </div>
               </TableCell>
               {visibleColumns.has('email') && (
-                <TableCell className="text-muted-foreground">{user.email}</TableCell>
+                <TableCell className="text-muted-foreground">{wallet.ownerEmail}</TableCell>
               )}
-              {visibleColumns.has('phone') && (
-                <TableCell className="text-muted-foreground">{user.phoneNumber}</TableCell>
-              )}
-              {visibleColumns.has('role') && (
+              {visibleColumns.has('balance') && (
                 <TableCell>
-                  <Badge variant={user.userType === 'admin' ? 'default' : 'secondary'}>
-                    {t(`wallets.table.role.${user.userType}`)}
-                  </Badge>
+                  <span className="font-semibold text-foreground">{formatLYD(wallet.balance)}</span>
                 </TableCell>
+              )}
+              {visibleColumns.has('currency') && (
+                <TableCell className="text-muted-foreground uppercase">{wallet.currency}</TableCell>
               )}
               {visibleColumns.has('status') && (
                 <TableCell>
-                  <Badge variant={user.disabled ? 'destructive' : 'default'} className="gap-1">
-                    {user.disabled ? (
-                      <XCircle className="h-3 w-3" />
-                    ) : (
+                  <Badge variant={wallet.isActive ? 'default' : 'destructive'} className="gap-1">
+                    {wallet.isActive ? (
                       <CheckCircle2 className="h-3 w-3" />
+                    ) : (
+                      <XCircle className="h-3 w-3" />
                     )}
-                    {t(`wallets.table.status.${user.disabled ? 'disabled' : 'active'}`)}
+                    {t(`wallets.table.status.${wallet.isActive ? 'active' : 'inactive'}`)}
                   </Badge>
                 </TableCell>
               )}
-              {visibleColumns.has('country') && (
-                <TableCell className="text-muted-foreground capitalize">
-                  {user.address.country}
-                </TableCell>
-              )}
-              {visibleColumns.has('joined') && (
+              {visibleColumns.has('created') && (
                 <TableCell className="text-muted-foreground">
-                  {format(new Date(user.createdAt), 'MMM dd, yyyy')}
+                  {format(new Date(wallet.createdAt), 'MMM dd, yyyy')}
                 </TableCell>
               )}
               <TableCell onClick={(e) => e.stopPropagation()}>
@@ -218,34 +204,34 @@ export function WalletsTable({
                   <DropdownMenuContent align="end">
                     <DropdownMenuLabel>{t('wallets.table.columns.actions')}</DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => navigate(`/wallets/${user._id}`)}>
+                    <DropdownMenuItem onClick={() => navigate(`/wallets/${wallet.walletId}`)}>
                       <Eye className="h-4 w-4 mr-2" />
                       {t('wallets.actions.view')}
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => onEdit(user)}>
+                    <DropdownMenuItem onClick={() => onEdit(wallet)}>
                       <Edit className="h-4 w-4 mr-2" />
                       {t('wallets.actions.edit')}
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => copyToClipboard(user._id)}>
+                    <DropdownMenuItem onClick={() => copyToClipboard(wallet.walletId)}>
                       <Copy className="h-4 w-4 mr-2" />
                       {t('wallets.actions.copyId')}
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => onToggleStatus(user)}>
-                      {user.disabled ? (
-                        <>
-                          <CheckCircle2 className="h-4 w-4 mr-2" />
-                          {t('wallets.actions.activate')}
-                        </>
-                      ) : (
+                    <DropdownMenuItem onClick={() => onToggleStatus(wallet)}>
+                      {wallet.isActive ? (
                         <>
                           <XCircle className="h-4 w-4 mr-2" />
                           {t('wallets.actions.deactivate')}
                         </>
+                      ) : (
+                        <>
+                          <CheckCircle2 className="h-4 w-4 mr-2" />
+                          {t('wallets.actions.activate')}
+                        </>
                       )}
                     </DropdownMenuItem>
                     <DropdownMenuItem 
-                      onClick={() => onDelete(user)}
+                      onClick={() => onDelete(wallet)}
                       className="text-destructive focus:text-destructive"
                     >
                       <Trash2 className="h-4 w-4 mr-2" />
