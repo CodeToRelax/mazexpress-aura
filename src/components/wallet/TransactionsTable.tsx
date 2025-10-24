@@ -183,7 +183,7 @@ export function TransactionsTable({
                 )}
                 {visibleColumns.has('date') && (
                   <TableCell>
-                    {format(new Date(transaction.createdAt), 'MMM dd, yyyy HH:mm')}
+                    {format(new Date(transaction.createdAt), 'dd/MM/yyyy HH:mm')}
                   </TableCell>
                 )}
                 <TableCell className={`text-right font-semibold ${getTypeColor(transaction.type)}`}>

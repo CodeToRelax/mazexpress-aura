@@ -270,7 +270,7 @@ export function InvoicesTable({
                 
                 {visibleColumns.has('issueDate') && (
                   <TableCell>
-                    {invoice.issueDate ? format(new Date(invoice.issueDate), 'MMM dd, yyyy') : '-'}
+                    {invoice.issueDate ? format(new Date(invoice.issueDate), 'dd/MM/yyyy') : '-'}
                   </TableCell>
                 )}
                 
@@ -280,7 +280,7 @@ export function InvoicesTable({
                       "flex items-center gap-2",
                       overdue && "text-destructive font-medium"
                     )}>
-                      {format(new Date(invoice.dueDate), 'MMM dd, yyyy')}
+                      {format(new Date(invoice.dueDate), 'dd/MM/yyyy')}
                       {overdue && (
                         <Badge variant="destructive" className="text-xs">
                           <AlertTriangle className="h-3 w-3 mr-1" />

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2, Globe, Home } from 'lucide-react';
+import { Loader2, Calendar as CalendarIcon, Globe, Home } from 'lucide-react';
 import type { IShipment } from '@/types/shipment';
 import {
   Dialog,
@@ -39,6 +39,11 @@ import { toast } from '@/hooks/use-toast';
 import { shipmentsApi } from '@/utilities/api/shipments.api';
 import { updateShipmentSchema, type UpdateShipmentFormData } from '@/utilities/zod/shipment.schemas';
 import { Cities, ShippingMethod, ShipmentStatus } from '@/types/shipment';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { formatDateISO } from '@/utilities/helpers/dateHelpers';
+import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
 
 interface EditShipmentDialogProps {
   open: boolean;
@@ -386,9 +391,35 @@ export function EditShipmentDialog({ open, onOpenChange, shipment, onSuccess }: 
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>{t('shipments.form.fields.estimatedArrival')}</FormLabel>
-                      <FormControl>
-                        <Input type="date" {...field} value={field.value || ''} />
-                      </FormControl>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant="outline"
+                              className={cn(
+                                "w-full justify-start text-left font-normal",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {field.value ? format(new Date(field.value), 'dd/MM/yyyy') : 'Select date'}
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value ? new Date(field.value) : undefined}
+                            onSelect={(date) => {
+                              if (date) {
+                                field.onChange(formatDateISO(date));
+                              }
+                            }}
+                            initialFocus
+                            className="pointer-events-auto"
+                          />
+                        </PopoverContent>
+                      </Popover>
                       <FormMessage />
                     </FormItem>
                   )}

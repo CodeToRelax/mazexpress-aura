@@ -163,7 +163,7 @@ export default function ShipmentDetail() {
           <div className="text-sm text-muted-foreground">
             <p>
               {t('shipments.detail.statusUpdatedAt', {
-                date: format(new Date(shipment.updatedAt), 'PPP p')
+                date: format(new Date(shipment.updatedAt), 'dd/MM/yyyy HH:mm')
               })}
             </p>
           </div>
@@ -212,7 +212,7 @@ export default function ShipmentDetail() {
               <p className="text-sm text-muted-foreground">{t('shipments.table.columns.estimatedArrival')}</p>
               <p className="font-medium">
                 {shipment.estimatedArrival 
-                  ? format(new Date(shipment.estimatedArrival), 'MMM dd, yyyy')
+                  ? format(new Date(shipment.estimatedArrival), 'dd/MM/yyyy')
                   : 'N/A'
                 }
               </p>

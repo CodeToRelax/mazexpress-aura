@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Search, SlidersHorizontal, X, Info } from 'lucide-react';
+import { Search, SlidersHorizontal, X, Info, Calendar as CalendarIcon } from 'lucide-react';
 import type { ShipmentFilters } from '@/types/shipment';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -28,6 +28,11 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { formatDateISO } from '@/utilities/helpers/dateHelpers';
+import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
 
 interface ShipmentsFiltersProps {
   filters: ShipmentFilters;
@@ -268,20 +273,68 @@ export function ShipmentsFilters({
 
             <div className="space-y-2">
               <label className="text-sm font-medium">{t('shipments.filters.dateFrom')}</label>
-              <Input
-                type="date"
-                value={filters.createdAfter || ''}
-                onChange={(e) => handleFilterChange('createdAfter', e.target.value)}
-              />
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !filters.createdAfter && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {filters.createdAfter ? format(new Date(filters.createdAfter), 'dd/MM/yyyy') : 'Select date'}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={filters.createdAfter ? new Date(filters.createdAfter) : undefined}
+                    onSelect={(date) => {
+                      if (date) {
+                        handleFilterChange('createdAfter', formatDateISO(date));
+                      } else {
+                        handleFilterChange('createdAfter', undefined);
+                      }
+                    }}
+                    initialFocus
+                    className="pointer-events-auto"
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
 
             <div className="space-y-2">
               <label className="text-sm font-medium">{t('shipments.filters.dateTo')}</label>
-              <Input
-                type="date"
-                value={filters.createdBefore || ''}
-                onChange={(e) => handleFilterChange('createdBefore', e.target.value)}
-              />
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !filters.createdBefore && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {filters.createdBefore ? format(new Date(filters.createdBefore), 'dd/MM/yyyy') : 'Select date'}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={filters.createdBefore ? new Date(filters.createdBefore) : undefined}
+                    onSelect={(date) => {
+                      if (date) {
+                        handleFilterChange('createdBefore', formatDateISO(date));
+                      } else {
+                        handleFilterChange('createdBefore', undefined);
+                      }
+                    }}
+                    initialFocus
+                    className="pointer-events-auto"
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
         </SheetContent>

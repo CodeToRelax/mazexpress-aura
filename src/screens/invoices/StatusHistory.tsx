@@ -74,7 +74,7 @@ export function StatusHistory({ invoiceId, statusChanges }: StatusHistoryProps) 
                 {/* Timestamp */}
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Clock className="h-3 w-3" />
-                  <span>{format(new Date(change.changedAt), 'PPp')}</span>
+                  <span>{format(new Date(change.changedAt), 'dd/MM/yyyy HH:mm')}</span>
                 </div>
 
                 {/* Changed by */}

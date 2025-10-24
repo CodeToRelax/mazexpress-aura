@@ -3,7 +3,8 @@ import autoTable from 'jspdf-autotable';
 import { Invoice } from '@/types/invoice';
 import { calculateCBM, formatDimensions } from './invoiceHelpers';
 import { formatLYD } from './currencyHelpers';
-import { format } from 'date-fns';
+import { formatDate, formatDateTime } from './dateHelpers';
+import { format as formatDateFns } from 'date-fns';
 
 /**
  * Platform color palette (from index.css)
@@ -89,7 +90,7 @@ export async function generateInvoicePDF(invoice: Invoice): Promise<void> {
   doc.text('Issue date:', 130, infoStartY + 6);
   doc.setFont('helvetica', 'normal');
   doc.text(
-    invoice.issueDate ? format(new Date(invoice.issueDate), 'dd/MM/yyyy') : 'N/A',
+    invoice.issueDate ? formatDate(invoice.issueDate) : 'N/A',
     196,
     infoStartY + 6,
     { align: 'right' }
@@ -100,7 +101,7 @@ export async function generateInvoicePDF(invoice: Invoice): Promise<void> {
   doc.text('Due date:', 130, infoStartY + 12);
   doc.setFont('helvetica', 'normal');
   doc.text(
-    format(new Date(invoice.dueDate), 'dd/MM/yyyy'),
+    formatDate(invoice.dueDate),
     196,
     infoStartY + 12,
     { align: 'right' }
@@ -230,7 +231,7 @@ export async function generateInvoicePDF(invoice: Invoice): Promise<void> {
   doc.text('Thank you for your business!', 105, 200, { align: 'center' });
   
   // Save PDF
-  const filename = `invoice-${invoice.invoiceNumber || 'draft'}-${format(new Date(), 'yyyyMMdd')}.pdf`;
+  const filename = `invoice-${invoice.invoiceNumber || 'draft'}-${formatDateFns(new Date(), 'yyyyMMdd')}.pdf`;
   doc.save(filename);
 }
 
@@ -259,10 +260,10 @@ export async function generateBatchInvoicesPDF(invoices: Invoice[]): Promise<voi
     }
     
     doc.text(`Status: ${invoice.status}`, 14, 36);
-    doc.text(`Due: ${format(new Date(invoice.dueDate), 'dd/MM/yyyy')}`, 14, 42);
+    doc.text(`Due: ${formatDate(invoice.dueDate)}`, 14, 42);
     doc.text(`Amount Due: ${formatLYD(invoice.totals.due)}`, 14, 48);
   });
   
-  const filename = `invoices-batch-${format(new Date(), 'yyyyMMdd')}.pdf`;
+  const filename = `invoices-batch-${formatDateFns(new Date(), 'yyyyMMdd')}.pdf`;
   doc.save(filename);
 }

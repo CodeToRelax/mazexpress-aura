@@ -80,7 +80,7 @@ export function PaymentHistory({ invoice }: PaymentHistoryProps) {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">
-                      {paymentDate ? format(new Date(paymentDate), 'MMM dd, yyyy HH:mm') : '-'}
+                      {paymentDate ? format(new Date(paymentDate), 'dd/MM/yyyy HH:mm') : '-'}
                     </TableCell>
                     <TableCell className="text-sm">
                       {payment.reference || '-'}

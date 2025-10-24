@@ -83,7 +83,7 @@ export function TransactionCard({ transaction, onClick, className = '' }: Transa
                 {transaction.description}
               </p>
               <p className="text-xs text-muted-foreground mt-1">
-                {format(new Date(transaction.createdAt), 'MMM dd, yyyy HH:mm')}
+                {format(new Date(transaction.createdAt), 'dd/MM/yyyy HH:mm')}
               </p>
             </div>
           </div>

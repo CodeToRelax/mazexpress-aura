@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Calendar as CalendarIcon } from 'lucide-react';
 import type { User } from '@/types/user';
 import {
   Dialog,
@@ -30,6 +30,11 @@ import { aclApi } from '@/utilities/api/acl.api';
 import { updateUserSchema, type UpdateUserFormData } from '@/utilities/zod/user.schemas';
 import { ResponsiveFormLayout, FormSection, FormField } from '@/components/layout/ResponsiveFormLayout';
 import type { ACLPermission } from '@/types/acl';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { formatDateISO } from '@/utilities/helpers/dateHelpers';
+import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
 
 interface EditUserDialogProps {
   open: boolean;
@@ -290,11 +295,34 @@ export function EditUserDialog({ open, onOpenChange, user, onSuccess }: EditUser
 
               <FormField>
                 <Label htmlFor="birthdate">Birth Date *</Label>
-                <Input
-                  id="birthdate"
-                  type="date"
-                  {...register('birthdate')}
-                />
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !watch('birthdate') && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {watch('birthdate') ? format(new Date(watch('birthdate')), 'dd/MM/yyyy') : 'Select date'}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={watch('birthdate') ? new Date(watch('birthdate')) : undefined}
+                      onSelect={(date) => {
+                        if (date) {
+                          setValue('birthdate', formatDateISO(date), { shouldValidate: true });
+                        }
+                      }}
+                      disabled={(date) => date > new Date() || date < new Date('1900-01-01')}
+                      initialFocus
+                      className="pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
                 {errors.birthdate && (
                   <p className="text-sm text-destructive">{errors.birthdate.message}</p>
                 )}

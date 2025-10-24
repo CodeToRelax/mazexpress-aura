@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Search, SlidersHorizontal, X } from 'lucide-react';
+import { Search, SlidersHorizontal, X, Calendar as CalendarIcon } from 'lucide-react';
 import type { InvoiceFilters } from '@/types/invoice';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -21,6 +21,11 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { formatDateISO } from '@/utilities/helpers/dateHelpers';
+import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
 
 interface InvoicesFiltersProps {
   filters: InvoiceFilters;
@@ -114,20 +119,68 @@ export function InvoicesFilters({
 
             <div className="space-y-2">
               <label className="text-sm font-medium">{t('invoice.filter-dateFrom')}</label>
-              <Input
-                type="date"
-                value={filters.from || ''}
-                onChange={(e) => handleFilterChange('from', e.target.value)}
-              />
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !filters.from && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {filters.from ? format(new Date(filters.from), 'dd/MM/yyyy') : 'Select date'}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={filters.from ? new Date(filters.from) : undefined}
+                    onSelect={(date) => {
+                      if (date) {
+                        handleFilterChange('from', formatDateISO(date));
+                      } else {
+                        handleFilterChange('from', undefined);
+                      }
+                    }}
+                    initialFocus
+                    className="pointer-events-auto"
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
 
             <div className="space-y-2">
               <label className="text-sm font-medium">{t('invoice.filter-dateTo')}</label>
-              <Input
-                type="date"
-                value={filters.to || ''}
-                onChange={(e) => handleFilterChange('to', e.target.value)}
-              />
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !filters.to && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {filters.to ? format(new Date(filters.to), 'dd/MM/yyyy') : 'Select date'}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={filters.to ? new Date(filters.to) : undefined}
+                    onSelect={(date) => {
+                      if (date) {
+                        handleFilterChange('to', formatDateISO(date));
+                      } else {
+                        handleFilterChange('to', undefined);
+                      }
+                    }}
+                    initialFocus
+                    className="pointer-events-auto"
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
         </SheetContent>

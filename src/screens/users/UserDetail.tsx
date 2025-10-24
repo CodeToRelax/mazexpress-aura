@@ -139,7 +139,7 @@ export default function UserDetail() {
     
     if (isNaN(date.getTime())) return 'N/A';
     
-    return format(date, formatString);
+    return format(date, 'dd/MM/yyyy');
   };
 
   const handleEditTransaction = (transaction: Transaction) => {
