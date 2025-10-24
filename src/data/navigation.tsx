@@ -26,6 +26,13 @@ export const navigationItems: NavItemWithACL[] = [
     aclFlag: 'canViewUsers',
   },
   {
+    id: 'wallets',
+    labelKey: 'nav.wallets',
+    icon: Wallet,
+    href: '/wallets',
+    match: 'prefix',
+  },
+  {
     id: 'shipments',
     labelKey: 'nav.shipments',
     icon: Package,
@@ -48,13 +55,6 @@ export const navigationItems: NavItemWithACL[] = [
     href: '/warehouses',
     match: 'prefix',
     aclFlag: 'canViewWarehouses',
-  },
-  {
-    id: 'wallets',
-    labelKey: 'nav.wallets',
-    icon: Wallet,
-    href: '/wallets',
-    match: 'prefix',
   },
   {
     id: 'reports',
