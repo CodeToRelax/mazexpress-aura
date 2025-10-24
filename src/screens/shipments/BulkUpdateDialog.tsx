@@ -22,15 +22,17 @@ import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
 import { shipmentsApi } from '@/utilities/api/shipments.api';
 import { ShipmentStatus } from '@/types/shipment';
+import { INTERNATIONAL_STATUSES } from '@/utilities/helpers/shipmentStatusHelpers';
 
 interface BulkUpdateDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   selectedShipmentIds: string[];
   onSuccess: () => void;
+  isInternationalOnly?: boolean;
 }
 
-export function BulkUpdateDialog({ open, onOpenChange, selectedShipmentIds, onSuccess }: BulkUpdateDialogProps) {
+export function BulkUpdateDialog({ open, onOpenChange, selectedShipmentIds, onSuccess, isInternationalOnly = false }: BulkUpdateDialogProps) {
   const { t } = useTranslation();
   const { accessibleStatuses, isSuperAdmin } = useACL();
   const [selectedStatus, setSelectedStatus] = useState<ShipmentStatus | ''>('');
@@ -38,10 +40,12 @@ export function BulkUpdateDialog({ open, onOpenChange, selectedShipmentIds, onSu
   const [selectedOriginCountry, setSelectedOriginCountry] = useState<'libya' | 'turkey' | 'china' | 'uae' | ''>('');
   const [isUpdating, setIsUpdating] = useState(false);
 
-  // Filter statuses based on ACL
-  const availableStatuses = isSuperAdmin 
-    ? Object.values(ShipmentStatus)
-    : Object.values(ShipmentStatus).filter(status => accessibleStatuses.includes(status));
+  // Filter statuses based on ACL and shipment type
+  const availableStatuses = isInternationalOnly
+    ? INTERNATIONAL_STATUSES
+    : isSuperAdmin 
+      ? Object.values(ShipmentStatus)
+      : Object.values(ShipmentStatus).filter(status => accessibleStatuses.includes(status));
 
   const handleClose = () => {
     setSelectedStatus('');
@@ -121,7 +125,11 @@ export function BulkUpdateDialog({ open, onOpenChange, selectedShipmentIds, onSu
                 ))}
               </SelectContent>
             </Select>
-            {!isSuperAdmin && availableStatuses.length < Object.values(ShipmentStatus).length && (
+            {isInternationalOnly ? (
+              <p className="text-xs text-muted-foreground">
+                {t('shipments.bulkUpdate.internationalOnly')}
+              </p>
+            ) : !isSuperAdmin && availableStatuses.length < Object.values(ShipmentStatus).length && (
               <p className="text-xs text-muted-foreground">
                 {t('acl.onlyAccessibleStatuses', { defaultValue: 'Showing only statuses you can set' })}
               </p>

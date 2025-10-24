@@ -421,7 +421,8 @@
         "productInfo": "معلومات حول المنتج المشحون",
         "shippingCost": "من المسؤول عن دفع تكلفة الشحن",
         "autoDestination": "يتم تعيين الوجهة من مدينة العميل المسجلة",
-        "selectCustomerFirst": "اختر عميلاً لتعبئة الوجهة تلقائياً"
+        "selectCustomerFirst": "اختر عميلاً لتعبئة الوجهة تلقائياً",
+        "internationalStatusOnly": "الشحنات الدولية تستخدم تتبع مبسط من 4 مراحل"
       }
     },
       "filters": {
@@ -607,7 +608,8 @@
       "description": "تحديث حالة {{count}} شحنة محددة",
       "selectStatus": "اختر الحالة الجديدة",
       "selectTier": "تحديث الفئة (اختياري)",
-      "selectOriginCountry": "تحديث بلد المنشأ (اختياري)"
+      "selectOriginCountry": "تحديث بلد المنشأ (اختياري)",
+      "internationalOnly": "فقط حالات المراحل الأربع متاحة للشحنات الدولية"
     },
     "tier": {
       "a": "أ - قياسي",

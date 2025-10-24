@@ -434,7 +434,8 @@
         "productInfo": "Information about the product being shipped",
         "shippingCost": "Who is responsible for paying the shipping cost",
         "autoDestination": "Destination is set from customer's registered city",
-        "selectCustomerFirst": "Select a customer to auto-fill destination"
+        "selectCustomerFirst": "Select a customer to auto-fill destination",
+        "internationalStatusOnly": "International shipments use simplified 4-stage tracking"
       }
     },
     "title": "Shipments Management",
@@ -677,7 +678,8 @@
         "description": "Update status for {{count}} selected shipments",
         "selectStatus": "Select new status",
         "selectTier": "Update Tier (Optional)",
-        "selectOriginCountry": "Update Origin Country (Optional)"
+        "selectOriginCountry": "Update Origin Country (Optional)",
+        "internationalOnly": "Only 4-stage statuses available for international shipments"
       },
       "tier": {
         "a": "A - Standard",

@@ -39,6 +39,7 @@ import { toast } from '@/hooks/use-toast';
 import { shipmentsApi } from '@/utilities/api/shipments.api';
 import { updateShipmentSchema, type UpdateShipmentFormData } from '@/utilities/zod/shipment.schemas';
 import { Cities, ShippingMethod, ShipmentStatus } from '@/types/shipment';
+import { getAvailableStatuses } from '@/utilities/helpers/shipmentStatusHelpers';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { formatDateISO } from '@/utilities/helpers/dateHelpers';
@@ -208,26 +209,36 @@ export function EditShipmentDialog({ open, onOpenChange, shipment, onSuccess }: 
                 <FormField
                   control={form.control}
                   name="status"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('shipments.form.fields.status')}</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {Object.values(ShipmentStatus).map((status) => (
-                            <SelectItem key={status} value={status}>
-                              {t(`shipments.table.status.${status.replace(/ /g, '_')}`)}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  render={({ field }) => {
+                    const isDomestic = form.watch('isDomestic');
+                    const availableStatuses = getAvailableStatuses(isDomestic);
+                    
+                    return (
+                      <FormItem>
+                        <FormLabel>{t('shipments.form.fields.status')}</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {availableStatuses.map((status) => (
+                              <SelectItem key={status} value={status}>
+                                {t(`shipments.table.status.${status.replace(/ /g, '_')}`)}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        {!isDomestic && (
+                          <FormDescription className="text-xs">
+                            {t('shipments.form.descriptions.internationalStatusOnly')}
+                          </FormDescription>
+                        )}
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
                 />
               </div>
 

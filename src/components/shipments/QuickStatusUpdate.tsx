@@ -10,11 +10,12 @@ import { cn } from '@/lib/utils';
 interface QuickStatusUpdateProps {
   shipmentId: string;
   currentStatus: string;
+  isDomestic: boolean;
   onSuccess?: () => void;
   className?: string;
 }
 
-export function QuickStatusUpdate({ shipmentId, currentStatus, onSuccess, className }: QuickStatusUpdateProps) {
+export function QuickStatusUpdate({ shipmentId, currentStatus, isDomestic, onSuccess, className }: QuickStatusUpdateProps) {
   const { t } = useTranslation();
   const [isUpdating, setIsUpdating] = useState(false);
 
@@ -43,16 +44,23 @@ export function QuickStatusUpdate({ shipmentId, currentStatus, onSuccess, classN
     }
   };
 
-  const statuses = [
-    ShipmentStatus.PENDING,
-    ShipmentStatus.RECEIVED_AT_WAREHOUSE,
-    ShipmentStatus.IN_TRANSIT,
-    ShipmentStatus.SHIPPED_TO_DESTINATION,
-    ShipmentStatus.READY_FOR_PICK_UP,
-    ShipmentStatus.DELIVERED,
-    ShipmentStatus.CANCELLED,
-    ShipmentStatus.RETURNED,
-  ];
+  const statuses = isDomestic
+    ? [
+        ShipmentStatus.PENDING,
+        ShipmentStatus.RECEIVED_AT_WAREHOUSE,
+        ShipmentStatus.IN_TRANSIT,
+        ShipmentStatus.SHIPPED_TO_DESTINATION,
+        ShipmentStatus.READY_FOR_PICK_UP,
+        ShipmentStatus.DELIVERED,
+        ShipmentStatus.CANCELLED,
+        ShipmentStatus.RETURNED,
+      ]
+    : [
+        ShipmentStatus.RECEIVED_AT_WAREHOUSE,
+        ShipmentStatus.SHIPPED_TO_DESTINATION,
+        ShipmentStatus.READY_FOR_PICK_UP,
+        ShipmentStatus.DELIVERED,
+      ];
 
   return (
     <Select
