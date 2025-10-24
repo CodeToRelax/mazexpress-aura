@@ -21,6 +21,7 @@ export enum ShippingMethod {
 }
 
 export enum Cities {
+  // Libya Cities (30+ cities)
   BENGHAZI = 'benghazi',
   TRIPOLI = 'tripoli',
   MUSRATA = 'musrata',
@@ -37,7 +38,7 @@ export enum Cities {
   BANI_WALID = 'bani walid',
   SABRATHA = 'sabratha',
   ZUWARA = 'zuwara',
-  KUFRA = 'kufra',
+  KUFFRA = 'kufra',
   AL_MARJ = 'al marj',
   TARHUNA = 'tarhuna',
   UBARI = 'ubari',
@@ -46,9 +47,64 @@ export enum Cities {
   NALUT = 'nalut',
   JALU = 'jalu',
   BREGA = 'brega',
+  MISRATA = 'misrata',
+  AL_KHUMS = 'al khums',
+  DARNAH = 'darnah',
+  YAFRAN = 'yafran',
+  SHAHAT = 'shahat',
+  BAYDA = 'bayda',
+  MARSA_BREGA = 'marsa brega',
+
+  // Turkey Cities (15+ major cities)
   ISTANBUL = 'istanbul',
-  DUBAI = 'dubai',
+  ANKARA = 'ankara',
+  IZMIR = 'izmir',
+  BURSA = 'bursa',
+  ANTALYA = 'antalya',
+  ADANA = 'adana',
+  KONYA = 'konya',
+  GAZIANTEP = 'gaziantep',
+  MERSIN = 'mersin',
+  KAYSERI = 'kayseri',
+  ESKISEHIR = 'eskisehir',
+  DIYARBAKIR = 'diyarbakir',
+  SAMSUN = 'samsun',
+  DENIZLI = 'denizli',
+  MALATYA = 'malatya',
+  TRABZON = 'trabzon',
+  ERZURUM = 'erzurum',
+
+  // China Cities (15+ major cities)
   HONGKONG = 'hongkong',
+  BEIJING = 'beijing',
+  SHANGHAI = 'shanghai',
+  GUANGZHOU = 'guangzhou',
+  SHENZHEN = 'shenzhen',
+  CHENGDU = 'chengdu',
+  WUHAN = 'wuhan',
+  XI_AN = 'xi an',
+  NANJING = 'nanjing',
+  HANGZHOU = 'hangzhou',
+  TIANJIN = 'tianjin',
+  QINGDAO = 'qingdao',
+  DALIAN = 'dalian',
+  SUZHOU = 'suzhou',
+  CHONGQING = 'chongqing',
+  KUNMING = 'kunming',
+  HARBIN = 'harbin',
+
+  // UAE Cities (10+ cities - all 7 Emirates + major cities)
+  DUBAI = 'dubai',
+  ABU_DHABI = 'abu dhabi',
+  SHARJAH = 'sharjah',
+  AJMAN = 'ajman',
+  RAS_AL_KHAIMAH = 'ras al khaimah',
+  FUJAIRAH = 'fujairah',
+  UMM_AL_QUWAIN = 'umm al quwain',
+  AL_AIN = 'al ain',
+  KHOR_FAKKAN = 'khor fakkan',
+  DIBBA = 'dibba',
+  MADINAT_ZAID = 'madinat zaid',
 }
 
 export interface IShipmentSize {
