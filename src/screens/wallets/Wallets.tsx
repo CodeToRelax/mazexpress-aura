@@ -171,10 +171,29 @@ export default function Wallets() {
 
   const fetchStats = useCallback(async () => {
     try {
-      const response = await usersApi.getUsers({ limit: 1000 }); // Get all users for stats
-      const usersWithWallets = response.data.users.filter(
+      // Fetch stats using smaller targeted requests
+      const [customersResponse, activeUsersResponse, disabledUsersResponse] = await Promise.all([
+        usersApi.getUsers({ userType: 'customer', limit: 1 }),
+        usersApi.getUsers({ disabled: false, limit: 1 }),
+        usersApi.getUsers({ disabled: true, limit: 1 }),
+      ]);
+      
+      // Get total customers count from pagination
+      const totalCustomers = customersResponse.data.pagination.totalDocs;
+      
+      // Now fetch all customer pages to calculate balance
+      const totalPages = customersResponse.data.pagination.totalPages;
+      const pagePromises = [];
+      
+      for (let page = 1; page <= Math.min(totalPages, 10); page++) {
+        pagePromises.push(usersApi.getUsers({ userType: 'customer', page, limit: 10 }));
+      }
+      
+      const allPagesResponses = await Promise.all(pagePromises);
+      const allCustomers = allPagesResponses.flatMap(response => response.data.users);
+      
+      const usersWithWallets = allCustomers.filter(
         user => 
-          user.userType === 'customer' && 
           user.walletId && 
           typeof user.walletId === 'object'
       );
