@@ -27,7 +27,7 @@ export function WalletsStatsBar({ stats, onStatClick }: WalletsStatsBarProps) {
     },
     {
       icon: UserCheck,
-      label: t('wallets.stats.active'),
+      label: t('wallets.stats.activeWallets'),
       value: stats.activeWallets,
       color: 'text-green-600 dark:text-green-400',
       bgColor: 'bg-green-500/10',
@@ -35,7 +35,7 @@ export function WalletsStatsBar({ stats, onStatClick }: WalletsStatsBarProps) {
     },
     {
       icon: UserX,
-      label: t('wallets.stats.inactive'),
+      label: t('wallets.stats.inactiveWallets'),
       value: stats.inactiveWallets,
       color: 'text-red-600 dark:text-red-400',
       bgColor: 'bg-red-500/10',

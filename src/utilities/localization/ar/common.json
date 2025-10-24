@@ -153,6 +153,83 @@
       "largeDatasetWarning": "قد يستغرق تصدير {{count}} مستخدم بعض الوقت. يرجى الانتظار..."
     }
   },
+  "wallets": {
+    "title": "إدارة المحافظ",
+    "subtitle": "إدارة محافظ المستخدمين والمعاملات",
+    "table": {
+      "columns": {
+        "walletId": "معرف المحفظة",
+        "owner": "المالك",
+        "email": "البريد الإلكتروني",
+        "balance": "الرصيد",
+        "currency": "العملة",
+        "status": "الحالة",
+        "created": "تاريخ الإنشاء",
+        "actions": "الإجراءات"
+      },
+      "status": {
+        "active": "نشطة",
+        "inactive": "غير نشطة"
+      },
+      "selectAll": "تحديد الكل",
+      "showingResults": "عرض {{from}}-{{to}} من {{total}} محفظة",
+      "sortBy": "ترتيب حسب {{column}}"
+    },
+    "actions": {
+      "create": "إنشاء محفظة",
+      "edit": "تعديل",
+      "delete": "حذف",
+      "view": "عرض التفاصيل",
+      "activate": "تفعيل",
+      "deactivate": "تعطيل",
+      "copyId": "نسخ المعرف",
+      "export": "تصدير",
+      "refresh": "تحديث",
+      "resetFilters": "إعادة تعيين الفلاتر"
+    },
+    "filters": {
+      "searchPlaceholder": "الاسم، البريد...",
+      "advanced": "فلاتر متقدمة",
+      "status": "الحالة",
+      "createdAfter": "تم الإنشاء بعد",
+      "createdBefore": "تم الإنشاء قبل",
+      "allStatuses": "جميع الحالات"
+    },
+    "empty": {
+      "title": "لا توجد محافظ",
+      "description": "لا توجد محافظ مطابقة للفلاتر الحالية."
+    },
+    "stats": {
+      "totalWallets": "إجمالي المحافظ",
+      "activeWallets": "المحافظ النشطة",
+      "inactiveWallets": "المحافظ غير النشطة",
+      "totalBalance": "إجمالي الرصيد"
+    },
+    "messages": {
+      "deleteSuccess": "تم حذف المحفظة بنجاح",
+      "updateSuccess": "تم تحديث المحفظة بنجاح",
+      "createSuccess": "تم إنشاء المحفظة بنجاح",
+      "activateSuccess": "تم تفعيل المحفظة بنجاح",
+      "deactivateSuccess": "تم تعطيل المحفظة بنجاح",
+      "error": "حدث خطأ",
+      "copySuccess": "تم نسخ معرف المحفظة"
+    },
+    "columns": {
+      "visibility": "الأعمدة",
+      "showHide": "إظهار/إخفاء الأعمدة",
+      "hiddenCount": "{{count}} مخفي",
+      "resetDefault": "إعادة تعيين الافتراضي"
+    },
+    "form": {
+      "cancel": "إلغاء"
+    },
+    "export": {
+      "title": "تصدير المحافظ إلى CSV",
+      "description": "تصدير المحافظ إلى ملف CSV",
+      "success": "تم تصدير {{count}} محفظة بنجاح",
+      "error": "فشل تصدير المحافظ"
+    }
+  },
   "warehouses": {
     "title": "إدارة المستودعات",
     "subtitle": "إدارة المستودعات والمواقع",

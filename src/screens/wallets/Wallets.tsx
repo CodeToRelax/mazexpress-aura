@@ -126,9 +126,13 @@ export default function Wallets() {
       response.data.users.forEach(user => userMap.set(user._id, user));
       setUsersMap(userMap);
       
-      // Transform users to wallet-centric view (only users with wallets)
+      // Transform users to wallet-centric view (only customers with wallets)
       const walletViews: WalletView[] = response.data.users
-        .filter(user => user.walletId && typeof user.walletId === 'object')
+        .filter(user => 
+          user.userType === 'customer' && 
+          user.walletId && 
+          typeof user.walletId === 'object'
+        )
         .map(user => {
           const wallet = user.walletId as { _id: string; balance: number; currency: string; isActive: boolean };
           return {
@@ -169,7 +173,10 @@ export default function Wallets() {
     try {
       const response = await usersApi.getUsers({ limit: 1000 }); // Get all users for stats
       const usersWithWallets = response.data.users.filter(
-        user => user.walletId && typeof user.walletId === 'object'
+        user => 
+          user.userType === 'customer' && 
+          user.walletId && 
+          typeof user.walletId === 'object'
       );
       
       const activeWallets = usersWithWallets.filter(user => {
