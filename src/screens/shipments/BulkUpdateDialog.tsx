@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Loader2, PackageCheck } from 'lucide-react';
-import { useACL } from '@/hooks/useACL';
 import {
   Dialog,
   DialogContent,
@@ -29,51 +28,30 @@ interface BulkUpdateDialogProps {
   onOpenChange: (open: boolean) => void;
   selectedShipmentIds: string[];
   onSuccess: () => void;
-  isInternationalOnly?: boolean;
 }
 
-export function BulkUpdateDialog({ open, onOpenChange, selectedShipmentIds, onSuccess, isInternationalOnly = false }: BulkUpdateDialogProps) {
+export function BulkUpdateDialog({ open, onOpenChange, selectedShipmentIds, onSuccess }: BulkUpdateDialogProps) {
   const { t } = useTranslation();
-  const { accessibleStatuses, isSuperAdmin } = useACL();
   const [selectedStatus, setSelectedStatus] = useState<ShipmentStatus | ''>('');
-  const [selectedTier, setSelectedTier] = useState<'A' | 'B' | 'C' | 'D' | 'E' | ''>('');
-  const [selectedOriginCountry, setSelectedOriginCountry] = useState<'libya' | 'turkey' | 'china' | 'uae' | ''>('');
   const [isUpdating, setIsUpdating] = useState(false);
 
-  // Filter statuses based on ACL and shipment type
-  const availableStatuses = isInternationalOnly
-    ? INTERNATIONAL_STATUSES
-    : isSuperAdmin 
-      ? Object.values(ShipmentStatus)
-      : Object.values(ShipmentStatus).filter(status => accessibleStatuses.includes(status));
+  // Always use the 4 international statuses
+  const availableStatuses = INTERNATIONAL_STATUSES;
 
   const handleClose = () => {
     setSelectedStatus('');
-    setSelectedTier('');
-    setSelectedOriginCountry('');
     onOpenChange(false);
   };
 
   const handleConfirm = async () => {
-    if (!selectedStatus && !selectedTier && !selectedOriginCountry) return;
+    if (!selectedStatus) return;
 
     try {
       setIsUpdating(true);
-      const payload: any = {
+      const payload = {
         shipmentsId: selectedShipmentIds,
+        shipmentStatus: selectedStatus,
       };
-      
-      if (selectedStatus) {
-        payload.shipmentStatus = selectedStatus;
-      }
-      
-      if (selectedTier) {
-        payload.tier = selectedTier;
-      }
-
-      if (selectedOriginCountry) {
-        payload.originCountry = selectedOriginCountry;
-      }
       
       await shipmentsApi.bulkUpdateShipments(payload);
       toast({
@@ -125,46 +103,11 @@ export function BulkUpdateDialog({ open, onOpenChange, selectedShipmentIds, onSu
                 ))}
               </SelectContent>
             </Select>
-            {isInternationalOnly ? (
-              <p className="text-xs text-muted-foreground">
-                {t('shipments.bulkUpdate.internationalOnly')}
-              </p>
-            ) : !isSuperAdmin && availableStatuses.length < Object.values(ShipmentStatus).length && (
-              <p className="text-xs text-muted-foreground">
-                {t('acl.onlyAccessibleStatuses', { defaultValue: 'Showing only statuses you can set' })}
-              </p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="tier">{t('shipments.bulkUpdate.selectTier', { defaultValue: 'Update Tier (Optional)' })}</Label>
-            <Select value={selectedTier} onValueChange={(value) => setSelectedTier(value as 'A' | 'B' | 'C' | 'D' | 'E')}>
-              <SelectTrigger id="tier">
-                <SelectValue placeholder={t('shipments.form.placeholders.tier', { defaultValue: 'Select tier' })} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="A">{t('shipments.tier.a', { defaultValue: 'A - Standard' })}</SelectItem>
-                <SelectItem value="B">{t('shipments.tier.b', { defaultValue: 'B - Premium' })}</SelectItem>
-                <SelectItem value="C">{t('shipments.tier.c', { defaultValue: 'C - VIP' })}</SelectItem>
-                <SelectItem value="D">{t('shipments.tier.d', { defaultValue: 'D - Enterprise' })}</SelectItem>
-                <SelectItem value="E">{t('shipments.tier.e', { defaultValue: 'E - Ultimate' })}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="originCountry">{t('shipments.bulkUpdate.selectOriginCountry', { defaultValue: 'Update Origin Country (Optional)' })}</Label>
-            <Select value={selectedOriginCountry} onValueChange={(value) => setSelectedOriginCountry(value as 'libya' | 'turkey' | 'china' | 'uae')}>
-              <SelectTrigger id="originCountry">
-                <SelectValue placeholder={t('shipments.form.placeholders.originCountry', { defaultValue: 'Select origin country' })} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="libya">{t('shipments.originCountry.libya', { defaultValue: 'Libya' })}</SelectItem>
-                <SelectItem value="turkey">{t('shipments.originCountry.turkey', { defaultValue: 'Turkey' })}</SelectItem>
-                <SelectItem value="china">{t('shipments.originCountry.china', { defaultValue: 'China' })}</SelectItem>
-                <SelectItem value="uae">{t('shipments.originCountry.uae', { defaultValue: 'UAE' })}</SelectItem>
-              </SelectContent>
-            </Select>
+            <p className="text-xs text-muted-foreground">
+              {t('shipments.bulkUpdate.fourStagesOnly', { 
+                defaultValue: 'Using simplified 4-stage tracking for international shipments' 
+              })}
+            </p>
           </div>
 
           <div className="glass-card p-3 rounded-lg">
@@ -178,7 +121,7 @@ export function BulkUpdateDialog({ open, onOpenChange, selectedShipmentIds, onSu
           <Button variant="outline" onClick={handleClose} disabled={isUpdating}>
             {t('actions.cancel')}
           </Button>
-          <Button onClick={handleConfirm} disabled={(!selectedStatus && !selectedTier && !selectedOriginCountry) || isUpdating}>
+          <Button onClick={handleConfirm} disabled={!selectedStatus || isUpdating}>
             {isUpdating && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
             {t('shipments.actions.bulkUpdate')}
           </Button>
