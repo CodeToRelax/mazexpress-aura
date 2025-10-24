@@ -27,7 +27,7 @@ import { toast } from '@/hooks/use-toast';
 import { withdraw } from '@/utilities/api/wallet.api';
 import { withdrawalSchema, type WithdrawalInput } from '@/utilities/zod/wallet.schemas';
 import type { Wallet } from '@/types/wallet';
-import { formatLYD } from '@/utilities/helpers/currencyHelpers';
+import { formatLYD, parseInputToWholeUnits } from '@/utilities/helpers/currencyHelpers';
 
 interface WithdrawDialogProps {
   open: boolean;
@@ -74,7 +74,7 @@ export function WithdrawDialog({ open, onOpenChange, wallet }: WithdrawDialogPro
   });
 
   const onSubmit = (data: WithdrawalInput) => {
-    if (wallet && (data.amount * 100) > wallet.balance) {
+    if (wallet && parseInputToWholeUnits(data.amount) > wallet.balance) {
       toast({
         title: t('wallet.messages.insufficientBalance'),
         variant: 'destructive',
@@ -83,13 +83,13 @@ export function WithdrawDialog({ open, onOpenChange, wallet }: WithdrawDialogPro
     }
     setIsSubmitting(true);
     withdrawMutation.mutate({
-      amount: Math.round(data.amount * 100), // Convert to cents
+      amount: parseInputToWholeUnits(data.amount),
       description: data.description,
     });
   };
 
   const watchAmount = form.watch('amount');
-  const showInsufficientWarning = wallet && (watchAmount * 100) > wallet.balance;
+  const showInsufficientWarning = wallet && parseInputToWholeUnits(watchAmount) > wallet.balance;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

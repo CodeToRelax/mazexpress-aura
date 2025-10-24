@@ -1,7 +1,7 @@
 import { Wallet as WalletIcon } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useTranslation } from 'react-i18next';
-import { formatLYDFromCents } from '@/utilities/helpers/currencyHelpers';
+import { formatLYD } from '@/utilities/helpers/currencyHelpers';
 
 interface WalletBalanceProps {
   balance: number;
@@ -32,7 +32,7 @@ export function WalletBalance({
               {t('wallet.currentBalance')}
             </p>
             <p className="text-2xl font-bold">
-              {formatLYDFromCents(balance)}
+              {formatLYD(balance)}
             </p>
           </div>
         </div>

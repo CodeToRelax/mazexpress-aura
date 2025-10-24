@@ -16,6 +16,7 @@ import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
 import { Invoice } from '@/types/invoice';
 import { deleteInvoice } from '@/utilities/api/invoice.api';
+import { formatLYD } from '@/utilities/helpers/currencyHelpers';
 
 interface DeleteInvoiceDialogProps {
   open: boolean;
@@ -94,7 +95,7 @@ export function DeleteInvoiceDialog({
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">{t('invoice.fields.totalAmount')}:</span>
-              <span className="font-medium">{(invoice.totals.gross / 100).toFixed(2)} LYD</span>
+              <span className="font-medium">{formatLYD(invoice.totals.gross)}</span>
             </div>
           </div>
 
