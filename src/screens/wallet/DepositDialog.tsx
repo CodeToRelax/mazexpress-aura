@@ -87,9 +87,7 @@ export function DepositDialog({ open, onOpenChange, wallet }: DepositDialogProps
           <DialogDescription>
             {wallet && (
               <span className="text-sm">
-                {t('wallet.form.currentBalance', { 
-                  balance: formatLYD(wallet.balance).replace(' LYD', '')
-                })}
+                Current balance: {formatLYD(wallet.balance)}
               </span>
             )}
           </DialogDescription>
