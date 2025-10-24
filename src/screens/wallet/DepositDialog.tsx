@@ -25,7 +25,7 @@ import { toast } from '@/hooks/use-toast';
 import { deposit } from '@/utilities/api/wallet.api';
 import { depositSchema, type DepositInput } from '@/utilities/zod/wallet.schemas';
 import type { Wallet } from '@/types/wallet';
-import { formatLYD, parseInputToWholeUnits } from '@/utilities/helpers/currencyHelpers';
+import { formatLYD } from '@/utilities/helpers/currencyHelpers';
 
 interface DepositDialogProps {
   open: boolean;
@@ -74,7 +74,7 @@ export function DepositDialog({ open, onOpenChange, wallet }: DepositDialogProps
   const onSubmit = (data: DepositInput) => {
     setIsSubmitting(true);
     depositMutation.mutate({
-      amount: parseInputToWholeUnits(data.amount),
+      amount: data.amount,
       description: data.description,
     });
   };
