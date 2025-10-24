@@ -147,7 +147,7 @@ export function WalletsTable({
             <TableRow 
               key={wallet.walletId}
               className="cursor-pointer hover:bg-accent/20 transition-colors duration-150"
-              onClick={() => navigate(`/wallets/${wallet.walletId}`)}
+              onClick={() => navigate(`/users/${wallet.userId}?tab=wallet`)}
             >
               <TableCell onClick={(e) => e.stopPropagation()}>
                 <Checkbox
@@ -204,7 +204,7 @@ export function WalletsTable({
                   <DropdownMenuContent align="end">
                     <DropdownMenuLabel>{t('wallets.table.columns.actions')}</DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => navigate(`/wallets/${wallet.walletId}`)}>
+                    <DropdownMenuItem onClick={() => navigate(`/users/${wallet.userId}?tab=wallet`)}>
                       <Eye className="h-4 w-4 mr-2" />
                       {t('wallets.actions.view')}
                     </DropdownMenuItem>

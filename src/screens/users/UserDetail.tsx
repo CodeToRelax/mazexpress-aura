@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import { ArrowLeft, Mail, Phone, MapPin, Calendar, User as UserIcon, Package, Wallet as WalletIcon, Shield, Loader2, TrendingUp, Plus, Download } from 'lucide-react';
@@ -33,6 +33,8 @@ export default function UserDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
+  const [searchParams] = useSearchParams();
+  const defaultTab = searchParams.get('tab') || 'overview';
   const [user, setUser] = useState<User | null>(null);
   const [wallet, setWallet] = useState<Wallet | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -91,6 +93,13 @@ export default function UserDetail() {
 
     fetchUser();
   }, [id, navigate]);
+
+  // Auto-fetch wallet data when tab query parameter is 'wallet'
+  useEffect(() => {
+    if (defaultTab === 'wallet' && user && !wallet) {
+      fetchWalletData();
+    }
+  }, [defaultTab, user]);
 
   const fetchWalletData = async () => {
     if (!user?._id) return;
@@ -318,7 +327,7 @@ export default function UserDetail() {
       </div>
 
       {/* Main Content */}
-      <Tabs defaultValue="overview" className="w-full">
+      <Tabs defaultValue={defaultTab} className="w-full">
         <TabsList className={`grid w-full ${user.userType === 'admin' ? 'grid-cols-4' : 'grid-cols-4'}`}>
           <TabsTrigger value="overview">{t('users.detail.overview')}</TabsTrigger>
           <TabsTrigger value="profile">{t('users.detail.profile')}</TabsTrigger>
