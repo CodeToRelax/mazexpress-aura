@@ -123,8 +123,11 @@ export function DomesticShipmentDetailsForm({ control, isDisabled }: DomesticShi
                   type="number"
                   step="0.01"
                   disabled={isDisabled}
-                  onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
-                  value={field.value || ''}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    field.onChange(value === '' ? undefined : parseFloat(value));
+                  }}
+                  value={field.value ?? ''}
                 />
               </FormControl>
               <FormDescription>
