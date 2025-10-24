@@ -26,7 +26,7 @@ export interface User {
   userType: UserType;
   uniqueShippingNumber: string;
   privacyPolicy: UserPrivacyPolicy;
-  walletId?: string;
+  walletId?: string | { _id: string; balance: number; currency: string; isActive: boolean };
   disabled: boolean;
   createdAt: string;
   updatedAt: string;

@@ -372,7 +372,9 @@ export function UserDetailDialog({ user, open, onClose, onEdit }: UserDetailDial
                     <WalletIcon className="h-5 w-5 text-muted-foreground mt-0.5" />
                     <div>
                       <div className="text-sm text-muted-foreground">{t('users.detail.fields.walletId')}</div>
-                      <div className="font-medium font-mono text-sm">{user.walletId}</div>
+                      <div className="font-medium font-mono text-sm">
+                        {typeof user.walletId === 'string' ? user.walletId : user.walletId._id}
+                      </div>
                     </div>
                   </div>
                 )}

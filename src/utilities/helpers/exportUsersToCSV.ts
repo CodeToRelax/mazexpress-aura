@@ -117,7 +117,7 @@ function usersToCSV(users: User[]): string {
     escapeCSVField(formatStatus(user.disabled)),
     escapeCSVField(formatUserType(user.userType)),
     escapeCSVField(user.uniqueShippingNumber),
-    escapeCSVField(user.walletId || '-'),
+    escapeCSVField(typeof user.walletId === 'string' ? user.walletId : user.walletId?._id || '-'),
     escapeCSVField(formatDate(user.createdAt)),
     escapeCSVField(formatDate(user.updatedAt)),
   ]);
