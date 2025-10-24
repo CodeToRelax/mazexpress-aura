@@ -83,14 +83,12 @@ export function DepositDialog({ open, onOpenChange, wallet }: DepositDialogProps
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>{t('wallet.form.depositTitle')}</DialogTitle>
-          <DialogDescription>
-            {wallet && (
-              <span className="text-sm">
-                Current balance: {formatLYD(wallet.balance)}
-              </span>
-            )}
-          </DialogDescription>
+          <DialogTitle>{t("wallet.form.depositTitle")}</DialogTitle>
+          {wallet && (
+            <DialogDescription>
+              Current balance: {formatLYD(wallet.balance)}
+            </DialogDescription>
+          )}
         </DialogHeader>
 
         <Form {...form}>
