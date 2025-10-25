@@ -439,7 +439,8 @@
       "tooManyRequests": "Too many attempts. Please try again later",
       "network": "Network error. Please check your connection",
       "notAllowed": "This sign-in method is not allowed",
-      "unknown": "An unexpected error occurred. Please try again"
+      "unknown": "An unexpected error occurred. Please try again",
+      "customerNotAllowed": "This dashboard is for administrators only. Customer accounts cannot log in here."
     }
   },
   "actions": {

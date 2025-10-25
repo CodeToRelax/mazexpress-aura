@@ -2,10 +2,11 @@ import { useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { getFirebaseAuth } from '@/utilities/firebase/firebase';
 import { useAppDispatch, useAppSelector } from '@/utilities/redux';
-import { setUser } from '@/screens/auth/auth.slice';
+import { setUser, setError } from '@/screens/auth/auth.slice';
 import { setGlobalLoading } from '@/utilities/redux/ui.slice';
 import { setACL, clearACL, setACLError } from '@/utilities/redux/acl.slice';
 import { aclApi } from '@/utilities/api/acl.api';
+import { signOut } from '@/utilities/firebase/authHelpers';
 
 /**
  * Hook to manage authentication state
@@ -39,6 +40,25 @@ export function useAuth() {
             userType: aclData.userType,
             flags: aclData.frontendFlags,
           });
+          
+          // Block customer accounts from accessing the dashboard
+          if (aclData.userType === 'customer') {
+            console.warn('[useAuth] Customer login blocked:', aclData.userId);
+            
+            // Sign out the customer immediately
+            await signOut();
+            
+            // Set error in auth state
+            dispatch(setError('errors.auth.customerNotAllowed'));
+            
+            // Clear ACL and user data
+            dispatch(clearACL());
+            dispatch(setUser(null));
+            
+            return; // Stop execution
+          }
+          
+          // Only admins reach here
           dispatch(setACL(aclData));
         } catch (error) {
           console.error('[useAuth] Failed to fetch ACL data:', error);
