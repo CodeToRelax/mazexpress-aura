@@ -28,7 +28,20 @@ export const signupSchema = z.object({
   phoneNumber: z.string().min(1, 'Phone number is required'),
   birthdate: z
     .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, 'Birthdate must be in YYYY-MM-DD format'),
+    .regex(/^\d{2}\/\d{2}\/\d{4}$/, 'Birthdate must be in DD/MM/YYYY format')
+    .refine((date) => {
+      try {
+        const [day, month, year] = date.split('/').map(Number);
+        const dateObj = new Date(year, month - 1, day);
+        return dateObj.getDate() === day && 
+               dateObj.getMonth() === month - 1 && 
+               dateObj.getFullYear() === year &&
+               year >= 1900 &&
+               dateObj <= new Date();
+      } catch {
+        return false;
+      }
+    }, 'Invalid date'),
   address: z.object({
     street: z
       .string()
@@ -115,7 +128,20 @@ export const updateUserSchema = z.object({
   phoneNumber: z.string().min(1, 'Phone number is required'),
   birthdate: z
     .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, 'Birthdate must be in YYYY-MM-DD format'),
+    .regex(/^\d{2}\/\d{2}\/\d{4}$/, 'Birthdate must be in DD/MM/YYYY format')
+    .refine((date) => {
+      try {
+        const [day, month, year] = date.split('/').map(Number);
+        const dateObj = new Date(year, month - 1, day);
+        return dateObj.getDate() === day && 
+               dateObj.getMonth() === month - 1 && 
+               dateObj.getFullYear() === year &&
+               year >= 1900 &&
+               dateObj <= new Date();
+      } catch {
+        return false;
+      }
+    }, 'Invalid date'),
   address: z.object({
     street: z
       .string()

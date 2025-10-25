@@ -31,7 +31,7 @@ import { ResponsiveFormLayout, FormSection, FormField } from '@/components/layou
 import { CitySearchCombobox } from '@/components/ui/CitySearchCombobox';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { formatDateISO } from '@/utilities/helpers/dateHelpers';
+import { formatDateForBirthdate } from '@/utilities/helpers/dateHelpers';
 import { cn } from '@/lib/utils';
 
 interface CreateUserDialogProps {
@@ -243,21 +243,32 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
                     )}
                   >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {watch('birthdate') ? format(new Date(watch('birthdate')), 'dd/MM/yyyy') : 'Select date'}
+                      {watch('birthdate') ? watch('birthdate') : 'Select date (DD/MM/YYYY)'}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
                     <Calendar
                       mode="single"
-                      selected={watch('birthdate') ? new Date(watch('birthdate')) : undefined}
+                      selected={watch('birthdate') ? (() => {
+                        try {
+                          const [day, month, year] = watch('birthdate').split('/');
+                          return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+                        } catch {
+                          return undefined;
+                        }
+                      })() : undefined}
                       onSelect={(date) => {
                         if (date) {
-                          setValue('birthdate', formatDateISO(date), { shouldValidate: true });
+                          setValue('birthdate', formatDateForBirthdate(date), { shouldValidate: true });
                         }
                       }}
                       disabled={(date) => date > new Date() || date < new Date('1900-01-01')}
                       initialFocus
                       className="pointer-events-auto"
+                      captionLayout="dropdown-buttons"
+                      fromYear={1940}
+                      toYear={new Date().getFullYear()}
+                      defaultMonth={new Date(1990, 0)}
                     />
                   </PopoverContent>
                 </Popover>

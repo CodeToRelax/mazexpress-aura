@@ -73,6 +73,20 @@ export const parseDate = (dateString: string): Date | null => {
 };
 
 /**
+ * Format date to DD/MM/YYYY for birthdate API submissions
+ * Backend requires this specific format for birthdate fields
+ */
+export const formatDateForBirthdate = (date: Date): string => {
+  if (!date) return '';
+  try {
+    return format(date, 'dd/MM/yyyy'); // DD/MM/YYYY format
+  } catch (error) {
+    console.error('Error formatting birthdate:', error);
+    return '';
+  }
+};
+
+/**
  * Format date for CSV export
  */
 export const formatDateForExport = (date: string | Date): string => {
