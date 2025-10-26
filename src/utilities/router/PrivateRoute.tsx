@@ -16,16 +16,23 @@ export function PrivateRoute({ children }: PrivateRouteProps) {
   const { isAuthenticated, isInitialized } = useAuth();
   const { isAdmin, isLoaded } = useACL();
   
-  if (!isInitialized || !isLoaded) {
+  // Step 1: Wait for auth initialization
+  if (!isInitialized) {
     return <PageLoader />;
   }
   
+  // Step 2: If not authenticated, redirect immediately (don't wait for ACL)
   if (!isAuthenticated) {
     return <Navigate to={appConfig.auth.redirectAfterLogout} replace />;
   }
   
-  // Block if authenticated but not admin (fallback protection)
-  if (isAuthenticated && !isAdmin) {
+  // Step 3: Only wait for ACL if user is authenticated
+  if (!isLoaded) {
+    return <PageLoader />;
+  }
+  
+  // Step 4: Block if authenticated but not admin
+  if (!isAdmin) {
     return <Navigate to={appConfig.auth.redirectAfterLogout} replace />;
   }
   
