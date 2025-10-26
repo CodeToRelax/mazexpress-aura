@@ -32,7 +32,7 @@ const aclSlice = createSlice({
     clearACL: (state) => {
       console.log('[ACL Redux] Clearing ACL data');
       state.acl = null;
-      state.isLoaded = false;
+      state.isLoaded = true; // Mark as loaded - empty ACL state is still "loaded"
       state.error = null;
     },
     setACLError: (state, action: PayloadAction<string>) => {
