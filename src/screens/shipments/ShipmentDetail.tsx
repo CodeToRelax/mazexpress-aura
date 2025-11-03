@@ -15,6 +15,7 @@ import { toast } from '@/hooks/use-toast';
 import { useACL } from '@/hooks/useACL';
 import { ACLGuard } from '@/components/guards/ACLGuard';
 import { generateShipmentLabel } from '@/utilities/helpers/shipmentLabel';
+import { formatCityName } from '@/utilities/helpers/shipmentHelpers';
 
 export default function ShipmentDetail() {
   const { id } = useParams<{ id: string }>();
@@ -297,6 +298,16 @@ export default function ShipmentDetail() {
           <Separator />
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {shipment.domesticShipmentDetails.originCity && (
+              <div>
+                <p className="text-sm text-muted-foreground">{t('shipments.form.fields.originCity')}</p>
+                <p className="font-medium">{formatCityName(shipment.domesticShipmentDetails.originCity)}</p>
+              </div>
+            )}
+            <div>
+              <p className="text-sm text-muted-foreground">{t('shipments.form.fields.destinationCity')}</p>
+              <p className="font-medium">{formatCityName(shipment.shipmentDestination)}</p>
+            </div>
             {shipment.domesticShipmentDetails.senderName && (
               <div>
                 <p className="text-sm text-muted-foreground">{t('shipments.form.fields.senderName')}</p>

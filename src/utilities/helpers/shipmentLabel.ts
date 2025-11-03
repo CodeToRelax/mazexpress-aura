@@ -2,6 +2,7 @@ import JsBarcode from 'jsbarcode';
 import QRCode from 'qrcode';
 import type { IShipment } from '@/types/shipment';
 import logoImage from '@/assets/maz-express-logo.png';
+import { formatCityName } from './shipmentHelpers';
 
 // Generate domestic label HTML with Arabic text
 async function generateDomesticLabelHTML(shipment: IShipment): Promise<string> {
@@ -34,7 +35,9 @@ async function generateDomesticLabelHTML(shipment: IShipment): Promise<string> {
   const senderName = details?.senderName || 'N/A';
   const receiverName = details?.receiverName || 'N/A';
   const receiverPhone = details?.receiverPrimaryPhoneNumber || 'N/A';
-  const destination = details?.destination || shipment.shipmentDestination?.replace(/_/g, ' ') || 'N/A';
+  const originCity = details?.originCity ? formatCityName(details.originCity) : 'N/A';
+  const destinationCity = formatCityName(shipment.shipmentDestination) || 'N/A';
+  const detailedAddress = details?.destination || 'N/A';
   const productPrice = details?.productPrice || 0;
   const productQuantity = details?.productQuantity || 1;
   const note = details?.note || shipment.note || '-';
@@ -68,8 +71,16 @@ async function generateDomesticLabelHTML(shipment: IShipment): Promise<string> {
           <td class="value-text">${receiverPhone}</td>
         </tr>
         <tr>
-          <td class="label-arabic">الوجهة</td>
-          <td class="value-text">${destination}</td>
+          <td class="label-arabic">مدينة المنشأ</td>
+          <td class="value-text">${originCity}</td>
+        </tr>
+        <tr>
+          <td class="label-arabic">مدينة الوجهة</td>
+          <td class="value-text">${destinationCity}</td>
+        </tr>
+        <tr>
+          <td class="label-arabic">العنوان التفصيلي</td>
+          <td class="value-text">${detailedAddress}</td>
         </tr>
         <tr>
           <td class="label-arabic">سعر المنتج</td>

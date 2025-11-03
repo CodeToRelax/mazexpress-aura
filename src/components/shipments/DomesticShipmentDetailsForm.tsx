@@ -31,7 +31,7 @@ export function DomesticShipmentDetailsForm({ control, isDisabled }: DomesticShi
   }));
 
   return (
-    <div className="space-y-4 bg-accent/50 backdrop-blur-sm border border-accent rounded-2xl p-6">
+    <div className="space-y-4 glass-card rounded-2xl p-6">
       <div className="flex items-center gap-2 mb-4">
         <Home className="h-5 w-5 text-primary" />
         <h3 className="text-lg font-semibold">{t('shipments.form.fields.domesticDetails')}</h3>
@@ -203,10 +203,12 @@ export function DomesticShipmentDetailsForm({ control, isDisabled }: DomesticShi
                   {...field}
                   type="number"
                   step="1"
-                  min="1"
                   disabled={isDisabled}
-                  onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
-                  value={field.value || ''}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    field.onChange(value === '' ? undefined : parseInt(value));
+                  }}
+                  value={field.value ?? ''}
                 />
               </FormControl>
               <FormMessage />
