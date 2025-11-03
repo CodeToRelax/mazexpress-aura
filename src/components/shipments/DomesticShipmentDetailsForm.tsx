@@ -13,6 +13,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
+import { CitySearchCombobox } from '@/components/ui/CitySearchCombobox';
+import { Cities } from '@/types/shipment';
 
 interface DomesticShipmentDetailsFormProps {
   control: Control<any>;
@@ -21,6 +23,12 @@ interface DomesticShipmentDetailsFormProps {
 
 export function DomesticShipmentDetailsForm({ control, isDisabled }: DomesticShipmentDetailsFormProps) {
   const { t } = useTranslation();
+
+  // Convert Cities enum to CityOption array
+  const cityOptions = Object.values(Cities).map(city => ({
+    value: city,
+    label: city.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
+  }));
 
   return (
     <div className="space-y-4 bg-accent/50 backdrop-blur-sm border border-accent rounded-2xl p-6">
@@ -33,6 +41,51 @@ export function DomesticShipmentDetailsForm({ control, isDisabled }: DomesticShi
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Origin City - Optional */}
+        <FormField
+          control={control}
+          name="domesticShipmentDetails.originCity"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t('shipments.form.fields.originCity')}</FormLabel>
+              <FormControl>
+                <CitySearchCombobox
+                  cities={cityOptions}
+                  value={field.value}
+                  onChange={field.onChange}
+                  disabled={isDisabled}
+                  placeholder={t('shipments.form.placeholders.selectOriginCity')}
+                />
+              </FormControl>
+              <FormDescription>
+                {t('shipments.form.descriptions.originCity')}
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Destination City - Required */}
+        <FormField
+          control={control}
+          name="shipmentDestination"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t('shipments.form.fields.destinationCity')} *</FormLabel>
+              <FormControl>
+                <CitySearchCombobox
+                  cities={cityOptions}
+                  value={field.value}
+                  onChange={field.onChange}
+                  disabled={isDisabled}
+                  placeholder={t('shipments.form.placeholders.selectDestinationCity')}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         {/* Sender Name */}
         <FormField
           control={control}

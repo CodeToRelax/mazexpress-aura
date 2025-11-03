@@ -481,6 +481,8 @@
     "form": {
       "fields": {
         "domesticDetails": "تفاصيل الشحنة المحلية",
+        "originCity": "مدينة المنشأ",
+        "destinationCity": "مدينة الوجهة",
         "senderName": "اسم المرسل",
         "receiverName": "اسم المستلم",
         "receiverPrimaryPhone": "رقم الهاتف الأساسي",
@@ -493,8 +495,13 @@
         "customerPays": "العميل يدفع الشحن",
         "domesticNote": "ملاحظات الشحنة المحلية"
       },
+      "placeholders": {
+        "selectOriginCity": "اختر مدينة المنشأ (اختياري)",
+        "selectDestinationCity": "اختر مدينة الوجهة"
+      },
       "descriptions": {
         "domesticDetails": "تفاصيل إضافية للشحنات المحلية داخل ليبيا",
+        "originCity": "اختياري: المدينة التي تنطلق منها الشحنة",
         "phoneFormat": "أدخل رقم الهاتف بصيغة: +218XXXXXXXXX",
         "productInfo": "معلومات حول المنتج المشحون",
         "shippingCost": "من المسؤول عن دفع تكلفة الشحن",

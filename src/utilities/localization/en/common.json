@@ -480,6 +480,8 @@
     "form": {
       "fields": {
         "domesticDetails": "Domestic Shipment Details",
+        "originCity": "Origin City",
+        "destinationCity": "Destination City",
         "senderName": "Sender Name",
         "receiverName": "Receiver Name",
         "receiverPrimaryPhone": "Primary Phone Number",
@@ -492,8 +494,13 @@
         "customerPays": "Customer Pays Shipping",
         "domesticNote": "Domestic Shipment Notes"
       },
+      "placeholders": {
+        "selectOriginCity": "Select origin city (optional)",
+        "selectDestinationCity": "Select destination city"
+      },
       "descriptions": {
         "domesticDetails": "Additional details for domestic shipments within Libya",
+        "originCity": "Optional: Where the shipment originates from",
         "phoneFormat": "Enter phone number in format: +218XXXXXXXXX",
         "productInfo": "Information about the product being shipped",
         "shippingCost": "Who is responsible for paying the shipping cost",
