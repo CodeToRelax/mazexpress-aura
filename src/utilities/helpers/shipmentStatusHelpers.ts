@@ -7,10 +7,18 @@ export const INTERNATIONAL_STATUSES = [
   ShipmentStatus.DELIVERED,
 ];
 
-export const ALL_STATUSES: ShipmentStatus[] = Object.values(ShipmentStatus);
+export const DOMESTIC_STATUSES = [
+  ShipmentStatus.RECEIVED_AT_WAREHOUSE,
+  ShipmentStatus.IN_TRANSIT,
+  ShipmentStatus.SHIPPED_TO_DESTINATION,
+  ShipmentStatus.READY_FOR_PICK_UP,
+  ShipmentStatus.DELIVERED,
+  ShipmentStatus.CANCELLED,
+  ShipmentStatus.RETURNED,
+];
 
 export function getAvailableStatuses(isDomestic: boolean): ShipmentStatus[] {
-  return isDomestic ? ALL_STATUSES : [...INTERNATIONAL_STATUSES];
+  return isDomestic ? DOMESTIC_STATUSES : INTERNATIONAL_STATUSES;
 }
 
 export function isValidStatusForShipmentType(
