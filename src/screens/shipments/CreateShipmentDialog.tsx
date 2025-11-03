@@ -212,35 +212,7 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess }: CreateSh
                   )}
                 />
 
-                {form.watch('isDomestic') ? (
-                  <FormField
-                    control={form.control}
-                    name="tier"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('shipments.form.fields.tier')}</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder={t('shipments.form.placeholders.tier', { defaultValue: 'Select tier' })} />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="A">{t('shipments.tier.a', { defaultValue: 'A - Standard' })}</SelectItem>
-                            <SelectItem value="B">{t('shipments.tier.b', { defaultValue: 'B - Premium' })}</SelectItem>
-                            <SelectItem value="C">{t('shipments.tier.c', { defaultValue: 'C - VIP' })}</SelectItem>
-                            <SelectItem value="D">{t('shipments.tier.d', { defaultValue: 'D - Enterprise' })}</SelectItem>
-                            <SelectItem value="E">{t('shipments.tier.e', { defaultValue: 'E - Ultimate' })}</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormDescription>
-                          {t('shipments.form.descriptions.tier', { defaultValue: 'Pricing tier affects shipping costs' })}
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                ) : (
+                {!form.watch('isDomestic') && (
                   <FormField
                     control={form.control}
                     name="originCountry"
@@ -326,46 +298,6 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess }: CreateSh
                             ))}
                           </SelectContent>
                         </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="estimatedArrival"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('shipments.form.fields.estimatedArrival')}</FormLabel>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <FormControl>
-                            <Button
-                              variant="outline"
-                              className={cn(
-                                "w-full justify-start text-left font-normal bg-white dark:bg-card",
-                                !field.value && "text-muted-foreground"
-                              )}
-                            >
-                                <CalendarIcon className="mr-2 h-4 w-4" />
-                                {field.value ? format(new Date(field.value), 'dd/MM/yyyy') : 'Select date'}
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar
-                              mode="single"
-                              selected={field.value ? new Date(field.value) : undefined}
-                              onSelect={(date) => {
-                                if (date) {
-                                  field.onChange(formatDateISO(date));
-                                }
-                              }}
-                              initialFocus
-                              className="pointer-events-auto"
-                            />
-                          </PopoverContent>
-                        </Popover>
                         <FormMessage />
                       </FormItem>
                     )}

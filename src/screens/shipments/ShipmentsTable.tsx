@@ -77,7 +77,7 @@ export function ShipmentsTable({
   };
 
   const renderSortableHeader = (column: string, label: string) => {
-    const isSortable = onSort && ['esn', 'csn', 'status', 'tier', 'createdAt'].includes(column);
+    const isSortable = onSort && ['esn', 'csn', 'status', 'createdAt'].includes(column);
     
     if (!isSortable) {
       return label;
@@ -120,10 +120,7 @@ export function ShipmentsTable({
             {visibleColumns.has('destination') && <TableHead>{t('shipments.table.columns.destination')}</TableHead>}
             {visibleColumns.has('method') && <TableHead>{t('shipments.table.columns.method')}</TableHead>}
             {visibleColumns.has('status') && <TableHead>{renderSortableHeader('status', t('shipments.table.columns.status'))}</TableHead>}
-            {visibleColumns.has('tier') && <TableHead>{renderSortableHeader('tier', t('shipments.table.columns.tier'))}</TableHead>}
-            
             {visibleColumns.has('weight') && <TableHead>{t('shipments.table.columns.weight')}</TableHead>}
-            {visibleColumns.has('estimatedArrival') && <TableHead>{t('shipments.table.columns.estimatedArrival')}</TableHead>}
             <TableHead>{renderSortableHeader('createdAt', t('shipments.table.columns.createdAt'))}</TableHead>
             <TableHead className="w-12"></TableHead>
           </TableRow>
@@ -170,22 +167,9 @@ export function ShipmentsTable({
               {visibleColumns.has('status') && (
                 <TableCell>{getStatusBadge(shipment.status)}</TableCell>
               )}
-              {visibleColumns.has('tier') && (
-                <TableCell>
-                  <TierBadge tier={shipment.tier || 'A'} />
-                </TableCell>
-              )}
               {visibleColumns.has('weight') && (
                 <TableCell className="text-muted-foreground">
                   {shipment.size?.weight ? `${shipment.size.weight} kg` : 'N/A'}
-                </TableCell>
-              )}
-              {visibleColumns.has('estimatedArrival') && (
-                <TableCell className="text-muted-foreground">
-                  {shipment.estimatedArrival 
-                    ? format(new Date(shipment.estimatedArrival), 'MMM dd, yyyy')
-                    : 'N/A'
-                  }
                 </TableCell>
               )}
               <TableCell className="text-muted-foreground">

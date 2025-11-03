@@ -23,11 +23,8 @@ const TOGGLEABLE_COLUMNS = [
   { key: 'destination', labelKey: 'shipments.table.columns.destination' },
   { key: 'method', labelKey: 'shipments.table.columns.method' },
   { key: 'status', labelKey: 'shipments.table.columns.status' },
-  { key: 'tier', labelKey: 'shipments.table.columns.tier' },
-  
   { key: 'weight', labelKey: 'shipments.table.columns.weight' },
   { key: 'extraCosts', labelKey: 'shipments.table.columns.extraCosts' },
-  { key: 'estimatedArrival', labelKey: 'shipments.table.columns.estimatedArrival' },
 ];
 
 export function ColumnVisibilityToggle({

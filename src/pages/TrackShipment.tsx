@@ -181,18 +181,6 @@ export default function TrackShipment() {
                     </div>
                     <p className="font-medium capitalize">{t(`shipments.table.method.${shipment.shippingMethod}`)}</p>
                   </div>
-
-                  {shipment.estimatedArrival && (
-                    <div className="space-y-2">
-                      <div className="flex items-center text-sm text-muted-foreground">
-                        <Calendar className="h-4 w-4 mr-2" />
-                        {t('shipments.table.columns.estimatedArrival')}
-                      </div>
-                      <p className="font-medium">
-                        {new Date(shipment.estimatedArrival).toLocaleDateString()}
-                      </p>
-                    </div>
-                  )}
                 </div>
 
                 <Separator />

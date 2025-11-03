@@ -103,9 +103,9 @@ export default function Shipments() {
   const [visibleColumns, setVisibleColumns] = useState<Set<string>>(() => {
     try {
       const saved = localStorage.getItem('shipments-visible-columns');
-      return saved ? new Set(JSON.parse(saved)) : new Set(['isn', 'destination', 'method', 'status', 'weight', 'extraCosts', 'estimatedArrival']);
+      return saved ? new Set(JSON.parse(saved)) : new Set(['isn', 'destination', 'method', 'status', 'weight', 'extraCosts']);
     } catch {
-      return new Set(['isn', 'destination', 'method', 'status', 'weight', 'extraCosts', 'estimatedArrival']);
+      return new Set(['isn', 'destination', 'method', 'status', 'weight', 'extraCosts']);
     }
   });
 
@@ -127,7 +127,7 @@ export default function Shipments() {
   };
 
   const handleResetColumns = () => {
-    setVisibleColumns(new Set(['isn', 'destination', 'method', 'status', 'weight', 'extraCosts', 'estimatedArrival']));
+    setVisibleColumns(new Set(['isn', 'destination', 'method', 'status', 'weight', 'extraCosts']));
   };
 
   const fetchShipments = useCallback(async () => {

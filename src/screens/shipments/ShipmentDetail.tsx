@@ -121,7 +121,7 @@ export default function ShipmentDetail() {
       </div>
 
       {/* Shipment Numbers */}
-      <div className={`grid grid-cols-1 ${shipment.isDomestic ? 'md:grid-cols-4' : 'md:grid-cols-3'} gap-4`}>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="glass-card p-6 rounded-2xl">
           <p className="text-sm text-muted-foreground mb-2">{t('shipments.table.columns.esn')}</p>
           <p className="font-mono font-semibold text-lg">{shipment.esn}</p>
@@ -134,14 +134,6 @@ export default function ShipmentDetail() {
           <p className="text-sm text-muted-foreground mb-2">{t('shipments.table.columns.isn')}</p>
           <p className="font-mono font-semibold text-lg">{shipment.isn && shipment.isn !== '-' ? shipment.isn : 'N/A'}</p>
         </div>
-        {shipment.isDomestic && (
-          <div className="glass-card p-6 rounded-2xl">
-            <p className="text-sm text-muted-foreground mb-2">{t('shipments.table.columns.tier')}</p>
-            <div className="mt-2">
-              <TierBadge tier={shipment.tier || 'A'} />
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Delivery Status */}
@@ -207,19 +199,6 @@ export default function ShipmentDetail() {
               </div>
             </div>
           )}
-
-          <div className="flex items-start gap-3">
-            <Calendar className="h-5 w-5 text-muted-foreground mt-0.5" />
-            <div>
-              <p className="text-sm text-muted-foreground">{t('shipments.table.columns.estimatedArrival')}</p>
-              <p className="font-medium">
-                {shipment.estimatedArrival 
-                  ? format(new Date(shipment.estimatedArrival), 'dd/MM/yyyy')
-                  : 'N/A'
-                }
-              </p>
-            </div>
-          </div>
 
           <div className="flex items-start gap-3">
             <DollarSign className="h-5 w-5 text-muted-foreground mt-0.5" />
