@@ -57,7 +57,6 @@ interface UpdateStatusDialogProps {
 const statuses = [
   { value: 'DRAFT', label: 'Draft', icon: Edit },
   { value: 'SENT', label: 'Sent', icon: Send },
-  { value: 'PENDING', label: 'Pending', icon: Clock },
   { value: 'OVERDUE', label: 'Overdue', icon: AlertCircle },
   { value: 'REFUNDED', label: 'Refunded', icon: Undo },
   { value: 'DISPUTED', label: 'Disputed', icon: AlertTriangle },

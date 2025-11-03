@@ -105,7 +105,6 @@ export function InvoicesFilters({
                   <SelectItem value="all">{t('invoice.filter-allStatuses')}</SelectItem>
                   <SelectItem value="DRAFT">Draft</SelectItem>
                   <SelectItem value="SENT">Sent</SelectItem>
-                  <SelectItem value="PENDING">Pending</SelectItem>
                   <SelectItem value="PARTIALLY_PAID">Partially Paid</SelectItem>
                   <SelectItem value="PAID">Paid</SelectItem>
                   <SelectItem value="OVERDUE">Overdue</SelectItem>

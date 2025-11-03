@@ -72,7 +72,6 @@ export function ShipmentsFilters({
 
   // Filter statuses based on ACL
   const allStatuses = [
-    'pending',
     'in_transit',
     'ready_for_pick_up',
     'delivered',

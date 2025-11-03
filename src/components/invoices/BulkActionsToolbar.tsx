@@ -52,7 +52,6 @@ export function BulkActionsToolbar({
           <SelectContent>
             <SelectItem value="DRAFT">{t('invoice.status.DRAFT')}</SelectItem>
             <SelectItem value="SENT">{t('invoice.status.SENT')}</SelectItem>
-            <SelectItem value="PENDING">{t('invoice.status.PENDING')}</SelectItem>
             <SelectItem value="PARTIALLY_PAID">{t('invoice.status.PARTIALLY_PAID')}</SelectItem>
             <SelectItem value="PAID">{t('invoice.status.PAID')}</SelectItem>
             <SelectItem value="OVERDUE">{t('invoice.status.OVERDUE')}</SelectItem>

@@ -46,7 +46,6 @@ export function QuickStatusUpdate({ shipmentId, currentStatus, isDomestic, onSuc
 
   const statuses = isDomestic
     ? [
-        ShipmentStatus.PENDING,
         ShipmentStatus.RECEIVED_AT_WAREHOUSE,
         ShipmentStatus.IN_TRANSIT,
         ShipmentStatus.SHIPPED_TO_DESTINATION,

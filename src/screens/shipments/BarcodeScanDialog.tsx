@@ -317,7 +317,6 @@ export function BarcodeScanDialog({ open, onOpenChange, onSuccess }: BarcodeScan
                 <SelectValue placeholder={t('shipments.scanDialog.selectStatus')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="pending">{t('shipments.table.status.pending')}</SelectItem>
                 <SelectItem value="received at warehouse">{t('shipments.table.status.received_at_warehouse')}</SelectItem>
                 <SelectItem value="shipped to destination">{t('shipments.table.status.shipped_to_destination')}</SelectItem>
                 <SelectItem value="ready for pick up">{t('shipments.table.status.ready_for_pick_up')}</SelectItem>

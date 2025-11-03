@@ -124,7 +124,6 @@ export function TransactionsFilters({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">{t('wallet.filters.allStatuses')}</SelectItem>
-                  <SelectItem value="pending">{t('wallet.transaction.status.pending')}</SelectItem>
                   <SelectItem value="completed">{t('wallet.transaction.status.completed')}</SelectItem>
                   <SelectItem value="failed">{t('wallet.transaction.status.failed')}</SelectItem>
                 </SelectContent>
