@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Printer, XCircle, Edit, Package, FileText, Loader2, DollarSign } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { getInvoiceById } from '@/utilities/api/invoice.api';
+import { shipmentsApi } from '@/utilities/api/shipments.api';
+import { ShipmentStatus } from '@/types/shipment';
 import { InlineError } from '@/components/feedback/InlineError';
 import { PaymentDialog } from './PaymentDialog';
 import { CancelInvoiceDialog } from './CancelInvoiceDialog';
@@ -21,15 +23,43 @@ export default function InvoiceDetail() {
   const { id } = useParams<{ id: string }>();
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { hasFlag, acl } = useACL();
   const [paymentOpen, setPaymentOpen] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
+  const [updatingShipmentId, setUpdatingShipmentId] = useState<string | undefined>();
 
   const { data: invoice, isLoading, error } = useQuery({
     queryKey: ['invoice', id],
     queryFn: () => getInvoiceById(id!, i18n.language),
     enabled: !!id,
   });
+
+  const updateStatusMutation = useMutation({
+    mutationFn: ({ shipmentId, status }: { shipmentId: string; status: ShipmentStatus }) =>
+      shipmentsApi.updateShipmentStatus(shipmentId, status),
+    onSuccess: () => {
+      toast({
+        title: t('common.success'),
+        description: t('shipments.statusUpdateSuccess'),
+      });
+      queryClient.invalidateQueries({ queryKey: ['invoice', id] });
+      setUpdatingShipmentId(undefined);
+    },
+    onError: (error: any) => {
+      toast({
+        title: t('common.error'),
+        description: error.message,
+        variant: 'destructive',
+      });
+      setUpdatingShipmentId(undefined);
+    },
+  });
+
+  const handleStatusChange = (shipmentId: string, newStatus: ShipmentStatus) => {
+    setUpdatingShipmentId(shipmentId);
+    updateStatusMutation.mutate({ shipmentId, status: newStatus });
+  };
 
 
   const getStatusColor = (status: string) => {
@@ -71,6 +101,7 @@ export default function InvoiceDetail() {
   if (!invoice) return <InlineError message={t('invoice.notFound')} />;
 
   const canManageInvoices = hasFlag('canManageInvoices') || acl?.userType === 'admin';
+  const canUpdateShipmentStatus = acl?.userType === 'admin';
   const canPay = canManageInvoices && (invoice.status === 'PENDING' || invoice.status === 'SENT' || invoice.status === 'OVERDUE' || invoice.status === 'PARTIALLY_PAID') && invoice.totals.due > 0;
   const canCancel = canManageInvoices && invoice.status !== 'VOID' && invoice.status !== 'PAID';
   
@@ -145,7 +176,12 @@ export default function InvoiceDetail() {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          <InvoiceItemsTable items={invoice.items} />
+          <InvoiceItemsTable 
+            items={invoice.items}
+            onStatusChange={handleStatusChange}
+            canUpdateStatus={canUpdateShipmentStatus}
+            updatingShipmentId={updatingShipmentId}
+          />
         </CardContent>
       </Card>
 

@@ -2,13 +2,18 @@ import { useTranslation } from 'react-i18next';
 import { Package, Plus, Minus, DollarSign } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { InvoiceItem, InvoiceItemKind } from '@/types/invoice';
-import { IShipment } from '@/types/shipment';
+import { IShipment, ShipmentStatus } from '@/types/shipment';
 import { calculateCBM, formatDimensions } from '@/utilities/helpers/invoiceHelpers';
 import { formatLYD } from '@/utilities/helpers/currencyHelpers';
+import { getAvailableStatuses } from '@/utilities/helpers/shipmentStatusHelpers';
 
 interface InvoiceItemsTableProps {
   items: InvoiceItem[];
+  onStatusChange?: (shipmentId: string, newStatus: ShipmentStatus) => void;
+  canUpdateStatus?: boolean;
+  updatingShipmentId?: string;
 }
 
 function getItemKindIcon(kind: InvoiceItemKind) {
@@ -56,7 +61,12 @@ function getStatusBadgeVariant(status: string) {
   }
 }
 
-export function InvoiceItemsTable({ items }: InvoiceItemsTableProps) {
+export function InvoiceItemsTable({ 
+  items, 
+  onStatusChange, 
+  canUpdateStatus = false,
+  updatingShipmentId 
+}: InvoiceItemsTableProps) {
   const { t } = useTranslation();
 
   if (!items || items.length === 0) {
@@ -124,12 +134,31 @@ export function InvoiceItemsTable({ items }: InvoiceItemsTableProps) {
                 {/* Status Column */}
                 <TableCell>
                   {isShipment && shipment ? (
-                    <Badge 
-                      variant={getStatusBadgeVariant(shipment.status)} 
-                      className="text-xs"
-                    >
-                      {shipment.status}
-                    </Badge>
+                    canUpdateStatus && onStatusChange ? (
+                      <Select
+                        value={shipment.status}
+                        onValueChange={(value) => onStatusChange(shipment._id, value as ShipmentStatus)}
+                        disabled={updatingShipmentId === shipment._id}
+                      >
+                        <SelectTrigger className="w-[160px] h-8 text-xs">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="z-50">
+                          {getAvailableStatuses(shipment.isDomestic || false).map((status) => (
+                            <SelectItem key={status} value={status} className="text-xs">
+                              {status}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      <Badge 
+                        variant={getStatusBadgeVariant(shipment.status)} 
+                        className="text-xs"
+                      >
+                        {shipment.status}
+                      </Badge>
+                    )
                   ) : '-'}
                 </TableCell>
 
