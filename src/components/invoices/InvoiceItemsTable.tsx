@@ -8,6 +8,7 @@ import { IShipment, ShipmentStatus } from '@/types/shipment';
 import { calculateCBM, formatDimensions } from '@/utilities/helpers/invoiceHelpers';
 import { formatLYD } from '@/utilities/helpers/currencyHelpers';
 import { getAvailableStatuses } from '@/utilities/helpers/shipmentStatusHelpers';
+import { formatCityName } from '@/utilities/helpers/shipmentHelpers';
 
 interface InvoiceItemsTableProps {
   items: InvoiceItem[];
@@ -121,7 +122,7 @@ export function InvoiceItemsTable({
                 {/* Destination Column */}
                 <TableCell className="text-muted-foreground">
                   {isShipment && shipment 
-                    ? shipment.shipmentDestination 
+                    ? formatCityName(shipment.shipmentDestination) 
                     : <span className="capitalize">{item.kind.toLowerCase().replace('_', ' ')}</span>
                   }
                 </TableCell>

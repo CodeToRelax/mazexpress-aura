@@ -40,6 +40,23 @@ export const getCityTranslationKey = (city: string): string => {
 };
 
 /**
+ * Format city name for display
+ * Converts enum values to proper title case
+ * Examples:
+ * - "benghazi" → "Benghazi"
+ * - "al bayda" → "Al Bayda"
+ * - "ras al khaimah" → "Ras Al Khaimah"
+ */
+export const formatCityName = (city: string | undefined): string => {
+  if (!city) return '-';
+  
+  return city
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+};
+
+/**
  * Get shipping method translation key
  */
 export const getMethodTranslationKey = (method: string): string => {
