@@ -42,50 +42,54 @@ async function generateDomesticLabelHTML(shipment: IShipment): Promise<string> {
 
   return `
     <div class="label-container domestic">
-      <div class="domestic-header">
-        <div class="header-left">
-          <img src="${logoImage}" alt="MAZ Express" class="logo" />
-        </div>
-        <div class="header-right">
-          ${qrCodeDataUrl ? `<img src="${qrCodeDataUrl}" alt="QR Code" class="qr-code" />` : ''}
-          <div class="date-box">${date}</div>
-        </div>
-      </div>
+      <table class="header-table">
+        <tr>
+          <td class="logo-cell">
+            <img src="${logoImage}" alt="MAZ Express" class="logo" />
+          </td>
+          <td class="qr-cell">
+            ${qrCodeDataUrl ? `<img src="${qrCodeDataUrl}" alt="QR Code" class="qr-code" />` : ''}
+            <div class="date-box">${date}</div>
+          </td>
+        </tr>
+      </table>
       
-      <div class="domestic-info">
-        <div class="info-row">
-          <div class="label-arabic">اسم المرسل</div>
-          <div class="value-text">${senderName}</div>
-        </div>
-        <div class="info-row">
-          <div class="label-arabic">اسم المستلم</div>
-          <div class="value-text">${receiverName}</div>
-        </div>
-        <div class="info-row">
-          <div class="label-arabic">هاتف المستلم</div>
-          <div class="value-text">${receiverPhone}</div>
-        </div>
-        <div class="info-row">
-          <div class="label-arabic">الوجهة</div>
-          <div class="value-text">${destination}</div>
-        </div>
-        <div class="info-row">
-          <div class="label-arabic">سعر المنتج</div>
-          <div class="value-text">${productPrice}</div>
-        </div>
-        <div class="info-row">
-          <div class="label-arabic">العدد</div>
-          <div class="value-text">${productQuantity}</div>
-        </div>
-        <div class="info-row">
-          <div class="label-arabic">ملاحظة</div>
-          <div class="value-text">${note}</div>
-        </div>
-      </div>
+      <table class="info-table">
+        <tr>
+          <td class="label-arabic">اسم المرسل</td>
+          <td class="value-text">${senderName}</td>
+        </tr>
+        <tr>
+          <td class="label-arabic">اسم المستلم</td>
+          <td class="value-text">${receiverName}</td>
+        </tr>
+        <tr>
+          <td class="label-arabic">هاتف المستلم</td>
+          <td class="value-text">${receiverPhone}</td>
+        </tr>
+        <tr>
+          <td class="label-arabic">الوجهة</td>
+          <td class="value-text">${destination}</td>
+        </tr>
+        <tr>
+          <td class="label-arabic">سعر المنتج</td>
+          <td class="value-text">${productPrice}</td>
+        </tr>
+        <tr>
+          <td class="label-arabic">العدد</td>
+          <td class="value-text">${productQuantity}</td>
+        </tr>
+        <tr>
+          <td class="label-arabic">ملاحظة</td>
+          <td class="value-text">${note}</td>
+        </tr>
+      </table>
       
-      <div class="domestic-footer">
-        mazexpress2020@gmail.com
-      </div>
+      <table class="footer-table">
+        <tr>
+          <td class="footer-text">mazexpress2020@gmail.com</td>
+        </tr>
+      </table>
     </div>
   `;
 }
@@ -293,30 +297,41 @@ export async function generateShipmentLabel(shipment: IShipment): Promise<void> 
           padding: 0.2in;
         }
 
-        .domestic-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-start;
-          padding-bottom: 0.15in;
+        /* Header Table */
+        .header-table {
+          width: 100%;
+          table-layout: fixed;
+          border-collapse: collapse;
           border-bottom: 2px solid #000;
+          margin-bottom: 0.15in;
         }
 
-        .header-left .logo {
-          width: 2in;
+        .logo-cell {
+          width: 60%;
+          padding: 8px;
+          vertical-align: middle;
+        }
+
+        .qr-cell {
+          width: 40%;
+          padding: 8px;
+          text-align: center;
+          vertical-align: top;
+        }
+
+        .logo {
+          width: 100%;
+          max-width: 2in;
           height: auto;
           max-height: 0.6in;
-        }
-
-        .header-right {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 8px;
+          object-fit: contain;
         }
 
         .qr-code {
           width: 1in;
           height: 1in;
+          display: block;
+          margin: 0 auto 8px auto;
         }
 
         .date-box {
@@ -325,51 +340,51 @@ export async function generateShipmentLabel(shipment: IShipment): Promise<void> 
           font-size: 14px;
           font-weight: bold;
           text-align: center;
+          display: inline-block;
           min-width: 1in;
         }
 
-        .domestic-info {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          gap: 0;
+        /* Info Table */
+        .info-table {
+          width: 100%;
+          border-collapse: collapse;
+          margin: 0.15in 0;
         }
 
-        .domestic-info .info-row {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
+        .info-table td {
           border: 1px solid #000;
-          border-top: none;
           padding: 8px 12px;
+          vertical-align: middle;
           min-height: 0.45in;
         }
 
-        .domestic-info .info-row:first-child {
-          border-top: 1px solid #000;
-        }
-
         .label-arabic {
+          width: 35%;
           font-size: 18px;
           font-weight: bold;
           text-align: right;
           direction: rtl;
-          flex: 0 0 35%;
         }
 
         .value-text {
+          width: 65%;
           font-size: 16px;
           text-align: left;
           direction: ltr;
-          flex: 1;
           word-break: break-word;
         }
 
-        .domestic-footer {
-          text-align: center;
-          padding-top: 0.1in;
+        /* Footer Table */
+        .footer-table {
+          width: 100%;
+          border-collapse: collapse;
           border-top: 2px solid #000;
+          margin-top: 0.1in;
+        }
+
+        .footer-text {
+          padding: 8px;
+          text-align: center;
           font-size: 14px;
           font-weight: 500;
         }
@@ -567,30 +582,41 @@ export async function generateBulkShipmentLabels(shipments: IShipment[]): Promis
           padding: 0.2in;
         }
 
-        .domestic-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-start;
-          padding-bottom: 0.15in;
+        /* Header Table */
+        .header-table {
+          width: 100%;
+          table-layout: fixed;
+          border-collapse: collapse;
           border-bottom: 2px solid #000;
+          margin-bottom: 0.15in;
         }
 
-        .header-left .logo {
-          width: 2in;
+        .logo-cell {
+          width: 60%;
+          padding: 8px;
+          vertical-align: middle;
+        }
+
+        .qr-cell {
+          width: 40%;
+          padding: 8px;
+          text-align: center;
+          vertical-align: top;
+        }
+
+        .logo {
+          width: 100%;
+          max-width: 2in;
           height: auto;
           max-height: 0.6in;
-        }
-
-        .header-right {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 8px;
+          object-fit: contain;
         }
 
         .qr-code {
           width: 1in;
           height: 1in;
+          display: block;
+          margin: 0 auto 8px auto;
         }
 
         .date-box {
@@ -599,51 +625,51 @@ export async function generateBulkShipmentLabels(shipments: IShipment[]): Promis
           font-size: 14px;
           font-weight: bold;
           text-align: center;
+          display: inline-block;
           min-width: 1in;
         }
 
-        .domestic-info {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          gap: 0;
+        /* Info Table */
+        .info-table {
+          width: 100%;
+          border-collapse: collapse;
+          margin: 0.15in 0;
         }
 
-        .domestic-info .info-row {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
+        .info-table td {
           border: 1px solid #000;
-          border-top: none;
           padding: 8px 12px;
+          vertical-align: middle;
           min-height: 0.45in;
         }
 
-        .domestic-info .info-row:first-child {
-          border-top: 1px solid #000;
-        }
-
         .label-arabic {
+          width: 35%;
           font-size: 18px;
           font-weight: bold;
           text-align: right;
           direction: rtl;
-          flex: 0 0 35%;
         }
 
         .value-text {
+          width: 65%;
           font-size: 16px;
           text-align: left;
           direction: ltr;
-          flex: 1;
           word-break: break-word;
         }
 
-        .domestic-footer {
-          text-align: center;
-          padding-top: 0.1in;
+        /* Footer Table */
+        .footer-table {
+          width: 100%;
+          border-collapse: collapse;
           border-top: 2px solid #000;
+          margin-top: 0.1in;
+        }
+
+        .footer-text {
+          padding: 8px;
+          text-align: center;
           font-size: 14px;
           font-weight: 500;
         }
