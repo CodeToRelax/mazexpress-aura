@@ -16,7 +16,6 @@ import { InvoicesColumnVisibilityToggle } from './InvoicesColumnVisibilityToggle
 import { GenerateInvoiceDialog } from './GenerateInvoiceDialog';
 import { PaymentDialog } from './PaymentDialog';
 import { CancelInvoiceDialog } from './CancelInvoiceDialog';
-import { UpdateStatusDialog } from './UpdateStatusDialog';
 import { exportInvoicesToCSV } from '@/utilities/helpers/invoiceExport';
 import { useACL } from '@/hooks/useACL';
 
@@ -81,7 +80,6 @@ export default function Invoices() {
   const [showGenerateDialog, setShowGenerateDialog] = useState(false);
   const [invoiceToMakePayment, setInvoiceToMakePayment] = useState<Invoice | null>(null);
   const [invoiceToVoid, setInvoiceToVoid] = useState<Invoice | null>(null);
-  const [invoiceToUpdateStatus, setInvoiceToUpdateStatus] = useState<Invoice | null>(null);
 
   // Calculate stats from invoices (excluding REFUNDED and VOID)
   const activeInvoices = invoices.filter(i => !['REFUNDED', 'VOID'].includes(i.status));
@@ -204,10 +202,6 @@ export default function Invoices() {
 
   const handleMakePayment = (invoice: Invoice) => {
     setInvoiceToMakePayment(invoice);
-  };
-
-  const handleUpdateStatus = (invoice: Invoice) => {
-    setInvoiceToUpdateStatus(invoice);
   };
 
   const handleVoid = (invoice: Invoice) => {
@@ -343,7 +337,6 @@ export default function Invoices() {
               visibleColumns={visibleColumns}
               onRowClick={handleRowClick}
               onMakePayment={handleMakePayment}
-              onUpdateStatus={handleUpdateStatus}
               onVoid={handleVoid}
               isAdmin={hasFlag('canManageInvoices')}
             />
@@ -378,15 +371,6 @@ export default function Invoices() {
           invoice={invoiceToMakePayment}
           open={!!invoiceToMakePayment}
           onOpenChange={(open) => !open && setInvoiceToMakePayment(null)}
-        />
-      )}
-
-      {invoiceToUpdateStatus && (
-        <UpdateStatusDialog
-          invoice={invoiceToUpdateStatus}
-          open={!!invoiceToUpdateStatus}
-          onOpenChange={(open) => !open && setInvoiceToUpdateStatus(null)}
-          onSuccess={handleSuccess}
         />
       )}
 

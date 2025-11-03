@@ -9,7 +9,6 @@ import { getInvoiceById } from '@/utilities/api/invoice.api';
 import { InlineError } from '@/components/feedback/InlineError';
 import { PaymentDialog } from './PaymentDialog';
 import { CancelInvoiceDialog } from './CancelInvoiceDialog';
-import { UpdateStatusDialog } from './UpdateStatusDialog';
 import { PaymentHistory } from './PaymentHistory';
 import { useACL } from '@/hooks/useACL';
 import { formatLYD } from '@/utilities/helpers/currencyHelpers';
@@ -25,7 +24,6 @@ export default function InvoiceDetail() {
   const { hasFlag, acl } = useACL();
   const [paymentOpen, setPaymentOpen] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
-  const [updateStatusOpen, setUpdateStatusOpen] = useState(false);
 
   const { data: invoice, isLoading, error } = useQuery({
     queryKey: ['invoice', id],
@@ -123,12 +121,6 @@ export default function InvoiceDetail() {
               {t('invoice.actions.print')}
             </Button>
           )}
-          {canManageInvoices && invoice.status !== 'VOID' && (
-            <Button variant="outline" onClick={() => setUpdateStatusOpen(true)}>
-              <Edit className="h-4 w-4 mr-2" />
-              {t('invoice.actions.updateStatus')}
-            </Button>
-          )}
           {canCancel && (
             <Button 
               variant="destructive" 
@@ -193,12 +185,6 @@ export default function InvoiceDetail() {
       <CancelInvoiceDialog
         open={cancelOpen}
         onOpenChange={setCancelOpen}
-        invoice={invoice}
-      />
-
-      <UpdateStatusDialog
-        open={updateStatusOpen}
-        onOpenChange={setUpdateStatusOpen}
         invoice={invoice}
       />
     </div>

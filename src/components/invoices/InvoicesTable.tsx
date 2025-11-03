@@ -42,7 +42,6 @@ interface InvoicesTableProps {
   onSelectInvoice?: (invoiceId: string, selected: boolean) => void;
   onSelectAll?: (selected: boolean) => void;
   onMakePayment?: (invoice: Invoice) => void;
-  onUpdateStatus?: (invoice: Invoice) => void;
   onVoid?: (invoice: Invoice) => void;
   onEdit?: (invoice: Invoice) => void;
   onDelete?: (invoice: Invoice) => void;
@@ -62,7 +61,6 @@ export function InvoicesTable({
   onSelectInvoice,
   onSelectAll,
   onMakePayment,
-  onUpdateStatus,
   onVoid,
   onEdit,
   onDelete,
@@ -391,16 +389,6 @@ export function InvoicesTable({
                           >
                             <DollarSign className="h-4 w-4 mr-2" />
                             {t('invoice.actions.makePayment')}
-                          </DropdownMenuItem>
-                        )}
-                        
-                        {onUpdateStatus && (
-                          <DropdownMenuItem 
-                            onClick={() => onUpdateStatus(invoice)}
-                            className="cursor-pointer"
-                          >
-                            <Edit className="h-4 w-4 mr-2" />
-                            {t('invoice.actions.updateStatus')}
                           </DropdownMenuItem>
                         )}
                         
