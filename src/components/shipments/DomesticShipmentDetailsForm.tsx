@@ -41,30 +41,6 @@ export function DomesticShipmentDetailsForm({ control, isDisabled }: DomesticShi
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Origin City - Optional */}
-        <FormField
-          control={control}
-          name="domesticShipmentDetails.originCity"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t('shipments.form.fields.originCity')}</FormLabel>
-              <FormControl>
-                <CitySearchCombobox
-                  cities={cityOptions}
-                  value={field.value}
-                  onChange={field.onChange}
-                  disabled={isDisabled}
-                  placeholder={t('shipments.form.placeholders.selectOriginCity')}
-                />
-              </FormControl>
-              <FormDescription>
-                {t('shipments.form.descriptions.originCity')}
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
         {/* Destination City - Required */}
         <FormField
           control={control}

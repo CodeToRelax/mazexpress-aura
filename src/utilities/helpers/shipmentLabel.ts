@@ -35,7 +35,6 @@ async function generateDomesticLabelHTML(shipment: IShipment): Promise<string> {
   const senderName = details?.senderName || 'N/A';
   const receiverName = details?.receiverName || 'N/A';
   const receiverPhone = details?.receiverPrimaryPhoneNumber || 'N/A';
-  const originCity = details?.originCity ? formatCityName(details.originCity) : 'N/A';
   const destinationCity = formatCityName(shipment.shipmentDestination) || 'N/A';
   const detailedAddress = details?.destination || 'N/A';
   const productPrice = details?.productPrice || 0;
@@ -69,10 +68,6 @@ async function generateDomesticLabelHTML(shipment: IShipment): Promise<string> {
         <tr>
           <td class="label-arabic">هاتف المستلم</td>
           <td class="value-text">${receiverPhone}</td>
-        </tr>
-        <tr>
-          <td class="label-arabic">مدينة المنشأ</td>
-          <td class="value-text">${originCity}</td>
         </tr>
         <tr>
           <td class="label-arabic">مدينة الوجهة</td>

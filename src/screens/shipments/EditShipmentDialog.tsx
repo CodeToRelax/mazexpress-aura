@@ -131,9 +131,18 @@ export function EditShipmentDialog({ open, onOpenChange, shipment, onSuccess }: 
     try {
       setIsSubmitting(true);
       
+      // Remove originCity from domesticShipmentDetails as it's not part of API schema
+      const domesticDetails = data.domesticShipmentDetails 
+        ? {
+            ...data.domesticShipmentDetails,
+            originCity: undefined,
+          }
+        : undefined;
+      
       // If in weight-only mode, ensure dimensions are set to default values
       const submitData = {
         ...data,
+        domesticShipmentDetails: domesticDetails,
         size: sizeInputMode === 'weight' 
           ? { ...data.size, height: 1, width: 1, length: 1 }
           : data.size

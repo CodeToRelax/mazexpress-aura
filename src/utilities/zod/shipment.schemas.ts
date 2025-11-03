@@ -19,7 +19,6 @@ export const domesticShipmentDetailsSchema = z.object({
   receiverPrimaryPhoneNumber: z.string().regex(/^[\+]?[0-9\s\-\(\)]{7,20}$/, 'Invalid phone number format').optional().or(z.literal('')),
   receiverSecondaryPhoneNumber: z.string().regex(/^[\+]?[0-9\s\-\(\)]{7,20}$/, 'Invalid phone number format').optional().or(z.literal('')),
   destination: z.string().max(200).optional().or(z.literal('')),
-  originCity: z.nativeEnum(Cities).optional(),
   productPrice: z.number().min(0).max(1000000).optional(),
   productQuantity: z.number().min(1).max(10000).optional(),
   customerPaysShipping: z.boolean().optional(),
