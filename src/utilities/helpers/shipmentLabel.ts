@@ -1,6 +1,94 @@
 import JsBarcode from 'jsbarcode';
+import QRCode from 'qrcode';
 import type { IShipment } from '@/types/shipment';
 import logoImage from '@/assets/maz-express-logo.png';
+
+// Generate domestic label HTML with Arabic text
+async function generateDomesticLabelHTML(shipment: IShipment): Promise<string> {
+  // Generate QR code from ESN
+  let qrCodeDataUrl = '';
+  try {
+    qrCodeDataUrl = await QRCode.toDataURL(shipment.esn, {
+      width: 200,
+      margin: 1,
+      color: {
+        dark: '#000000',
+        light: '#FFFFFF'
+      }
+    });
+  } catch (error) {
+    console.error('Error generating QR code for ESN:', shipment.esn, error);
+  }
+
+  // Format date as DD.MM.YYYY
+  const formatDate = (dateString: string | undefined): string => {
+    if (!dateString) return new Date().toLocaleDateString('en-GB').replace(/\//g, '.');
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}.${month}.${year}`;
+  };
+
+  const details = shipment.domesticShipmentDetails;
+  const senderName = details?.senderName || 'N/A';
+  const receiverName = details?.receiverName || 'N/A';
+  const receiverPhone = details?.receiverPrimaryPhoneNumber || 'N/A';
+  const destination = details?.destination || shipment.shipmentDestination?.replace(/_/g, ' ') || 'N/A';
+  const productPrice = details?.productPrice || 0;
+  const productQuantity = details?.productQuantity || 1;
+  const note = details?.note || shipment.note || '-';
+  const date = formatDate(shipment.createdAt);
+
+  return `
+    <div class="label-container domestic">
+      <div class="domestic-header">
+        <div class="header-left">
+          <img src="${logoImage}" alt="MAZ Express" class="logo" />
+        </div>
+        <div class="header-right">
+          ${qrCodeDataUrl ? `<img src="${qrCodeDataUrl}" alt="QR Code" class="qr-code" />` : ''}
+          <div class="date-box">${date}</div>
+        </div>
+      </div>
+      
+      <div class="domestic-info">
+        <div class="info-row">
+          <div class="label-arabic">اسم المرسل</div>
+          <div class="value-text">${senderName}</div>
+        </div>
+        <div class="info-row">
+          <div class="label-arabic">اسم المستلم</div>
+          <div class="value-text">${receiverName}</div>
+        </div>
+        <div class="info-row">
+          <div class="label-arabic">هاتف المستلم</div>
+          <div class="value-text">${receiverPhone}</div>
+        </div>
+        <div class="info-row">
+          <div class="label-arabic">الوجهة</div>
+          <div class="value-text">${destination}</div>
+        </div>
+        <div class="info-row">
+          <div class="label-arabic">سعر المنتج</div>
+          <div class="value-text">${productPrice}</div>
+        </div>
+        <div class="info-row">
+          <div class="label-arabic">العدد</div>
+          <div class="value-text">${productQuantity}</div>
+        </div>
+        <div class="info-row">
+          <div class="label-arabic">ملاحظة</div>
+          <div class="value-text">${note}</div>
+        </div>
+      </div>
+      
+      <div class="domestic-footer">
+        mazexpress2020@gmail.com
+      </div>
+    </div>
+  `;
+}
 
 // Generate label HTML for a single shipment
 function generateLabelHTML(shipment: IShipment): string {
@@ -61,8 +149,11 @@ function generateLabelHTML(shipment: IShipment): string {
 }
 
 // Print single shipment label
-export function generateShipmentLabel(shipment: IShipment): void {
-  const labelHTML = generateLabelHTML(shipment);
+export async function generateShipmentLabel(shipment: IShipment): Promise<void> {
+  // Check if domestic and generate appropriate label
+  const labelHTML = shipment.isDomestic 
+    ? await generateDomesticLabelHTML(shipment)
+    : generateLabelHTML(shipment);
   
   if (!labelHTML) {
     alert('Failed to generate label for this shipment');
@@ -78,7 +169,7 @@ export function generateShipmentLabel(shipment: IShipment): void {
 
   const fullHTML = `
     <!DOCTYPE html>
-    <html lang="en">
+    <html lang="${shipment.isDomestic ? 'ar' : 'en'}" dir="${shipment.isDomestic ? 'rtl' : 'ltr'}">
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -96,7 +187,7 @@ export function generateShipmentLabel(shipment: IShipment): void {
         }
 
         body {
-          font-family: Arial, sans-serif;
+          font-family: Arial, Tahoma, sans-serif;
           background: white;
           color: black;
           padding: 0;
@@ -117,6 +208,7 @@ export function generateShipmentLabel(shipment: IShipment): void {
           page-break-after: auto;
         }
 
+        /* International Label Styles */
         .label-header {
           text-align: center;
           padding-bottom: 0.1in;
@@ -196,6 +288,92 @@ export function generateShipmentLabel(shipment: IShipment): void {
           border: 2px dashed #000;
         }
 
+        /* Domestic Label Styles */
+        .label-container.domestic {
+          padding: 0.2in;
+        }
+
+        .domestic-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          padding-bottom: 0.15in;
+          border-bottom: 2px solid #000;
+        }
+
+        .header-left .logo {
+          width: 2in;
+          height: auto;
+          max-height: 0.6in;
+        }
+
+        .header-right {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .qr-code {
+          width: 1in;
+          height: 1in;
+        }
+
+        .date-box {
+          border: 2px solid #000;
+          padding: 4px 8px;
+          font-size: 14px;
+          font-weight: bold;
+          text-align: center;
+          min-width: 1in;
+        }
+
+        .domestic-info {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          gap: 0;
+        }
+
+        .domestic-info .info-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border: 1px solid #000;
+          border-top: none;
+          padding: 8px 12px;
+          min-height: 0.45in;
+        }
+
+        .domestic-info .info-row:first-child {
+          border-top: 1px solid #000;
+        }
+
+        .label-arabic {
+          font-size: 18px;
+          font-weight: bold;
+          text-align: right;
+          direction: rtl;
+          flex: 0 0 35%;
+        }
+
+        .value-text {
+          font-size: 16px;
+          text-align: left;
+          direction: ltr;
+          flex: 1;
+          word-break: break-word;
+        }
+
+        .domestic-footer {
+          text-align: center;
+          padding-top: 0.1in;
+          border-top: 2px solid #000;
+          font-size: 14px;
+          font-weight: 500;
+        }
+
         @media print {
           body {
             -webkit-print-color-adjust: exact;
@@ -221,7 +399,7 @@ export function generateShipmentLabel(shipment: IShipment): void {
 }
 
 // Print multiple shipment labels
-export function generateBulkShipmentLabels(shipments: IShipment[]): void {
+export async function generateBulkShipmentLabels(shipments: IShipment[]): Promise<void> {
   if (shipments.length === 0) {
     alert('No shipments selected');
     return;
@@ -234,11 +412,15 @@ export function generateBulkShipmentLabels(shipments: IShipment[]): void {
     return;
   }
 
-  // Generate HTML for all shipments
-  const labelsHTML = shipments
-    .map(shipment => generateLabelHTML(shipment))
-    .filter(html => html !== '')
-    .join('\n');
+  // Generate HTML for all shipments (handle both domestic and international)
+  const labelPromises = shipments.map(shipment => 
+    shipment.isDomestic 
+      ? generateDomesticLabelHTML(shipment)
+      : Promise.resolve(generateLabelHTML(shipment))
+  );
+  
+  const labels = await Promise.all(labelPromises);
+  const labelsHTML = labels.filter(html => html !== '').join('\n');
 
   if (!labelsHTML) {
     alert('Failed to generate labels');
@@ -266,7 +448,7 @@ export function generateBulkShipmentLabels(shipments: IShipment[]): void {
         }
 
         body {
-          font-family: Arial, sans-serif;
+          font-family: Arial, Tahoma, sans-serif;
           background: white;
           color: black;
           padding: 0;
@@ -300,6 +482,7 @@ export function generateBulkShipmentLabels(shipments: IShipment[]): void {
           break-after: auto;
         }
 
+        /* International Label Styles */
         .label-header {
           text-align: center;
           padding-bottom: 0.1in;
@@ -377,6 +560,92 @@ export function generateBulkShipmentLabels(shipments: IShipment[]): void {
           padding: 20px;
           background: #f0f0f0;
           border: 2px dashed #000;
+        }
+
+        /* Domestic Label Styles */
+        .label-container.domestic {
+          padding: 0.2in;
+        }
+
+        .domestic-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          padding-bottom: 0.15in;
+          border-bottom: 2px solid #000;
+        }
+
+        .header-left .logo {
+          width: 2in;
+          height: auto;
+          max-height: 0.6in;
+        }
+
+        .header-right {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .qr-code {
+          width: 1in;
+          height: 1in;
+        }
+
+        .date-box {
+          border: 2px solid #000;
+          padding: 4px 8px;
+          font-size: 14px;
+          font-weight: bold;
+          text-align: center;
+          min-width: 1in;
+        }
+
+        .domestic-info {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          gap: 0;
+        }
+
+        .domestic-info .info-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border: 1px solid #000;
+          border-top: none;
+          padding: 8px 12px;
+          min-height: 0.45in;
+        }
+
+        .domestic-info .info-row:first-child {
+          border-top: 1px solid #000;
+        }
+
+        .label-arabic {
+          font-size: 18px;
+          font-weight: bold;
+          text-align: right;
+          direction: rtl;
+          flex: 0 0 35%;
+        }
+
+        .value-text {
+          font-size: 16px;
+          text-align: left;
+          direction: ltr;
+          flex: 1;
+          word-break: break-word;
+        }
+
+        .domestic-footer {
+          text-align: center;
+          padding-top: 0.1in;
+          border-top: 2px solid #000;
+          font-size: 14px;
+          font-weight: 500;
         }
 
         @media print {
