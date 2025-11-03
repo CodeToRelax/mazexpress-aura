@@ -302,6 +302,12 @@ export default function ShipmentDetail() {
               <p className="text-sm text-muted-foreground">{t('shipments.form.fields.destinationCity')}</p>
               <p className="font-medium">{formatCityName(shipment.shipmentDestination)}</p>
             </div>
+            {shipment.domesticShipmentDetails.originCity && (
+              <div>
+                <p className="text-sm text-muted-foreground">{t('shipments.form.fields.originCity')}</p>
+                <p className="font-medium">{formatCityName(shipment.domesticShipmentDetails.originCity)}</p>
+              </div>
+            )}
             {shipment.domesticShipmentDetails.senderName && (
               <div>
                 <p className="text-sm text-muted-foreground">{t('shipments.form.fields.senderName')}</p>

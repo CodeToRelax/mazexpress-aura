@@ -120,6 +120,7 @@ export interface IDomesticShipmentDetails {
   receiverPrimaryPhoneNumber?: string;
   receiverSecondaryPhoneNumber?: string;
   destination?: string;
+  originCity?: Cities;
   productPrice?: number;
   productQuantity?: number;
   customerPaysShipping?: boolean;

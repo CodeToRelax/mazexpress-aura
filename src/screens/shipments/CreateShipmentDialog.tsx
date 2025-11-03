@@ -100,20 +100,7 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess }: CreateSh
     try {
       setIsSubmitting(true);
       
-      // Remove originCity from domesticShipmentDetails as it's not part of API schema
-      const domesticDetails = data.domesticShipmentDetails 
-        ? {
-            ...data.domesticShipmentDetails,
-            originCity: undefined,
-          }
-        : undefined;
-      
-      const submitData = {
-        ...data,
-        domesticShipmentDetails: domesticDetails,
-      };
-      
-      await shipmentsApi.createShipment(submitData as any);
+      await shipmentsApi.createShipment(data as any);
       toast({
         title: t('status.success'),
         description: t('shipments.messages.createSuccess'),

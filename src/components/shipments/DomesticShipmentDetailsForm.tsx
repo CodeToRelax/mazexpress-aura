@@ -62,6 +62,27 @@ export function DomesticShipmentDetailsForm({ control, isDisabled }: DomesticShi
           )}
         />
 
+        {/* Origin City */}
+        <FormField
+          control={control}
+          name="domesticShipmentDetails.originCity"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t('shipments.form.fields.originCity')}</FormLabel>
+              <FormControl>
+                <CitySearchCombobox
+                  cities={cityOptions}
+                  value={field.value}
+                  onChange={field.onChange}
+                  disabled={isDisabled}
+                  placeholder={t('shipments.form.placeholders.selectOriginCity')}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         {/* Sender Name */}
         <FormField
           control={control}
