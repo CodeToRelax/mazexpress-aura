@@ -19,7 +19,6 @@ export const domesticShipmentDetailsSchema = z.object({
   receiverPrimaryPhoneNumber: z.string().regex(/^[\+]?[0-9\s\-\(\)]{7,20}$/, 'Invalid phone number format').optional().or(z.literal('')),
   receiverSecondaryPhoneNumber: z.string().regex(/^[\+]?[0-9\s\-\(\)]{7,20}$/, 'Invalid phone number format').optional().or(z.literal('')),
   destination: z.string().max(200).optional().or(z.literal('')),
-  originCity: z.nativeEnum(Cities).optional(),
   productPrice: z.number().min(0).max(1000000).optional(),
   productQuantity: z.number().min(1).max(10000).optional(),
   customerPaysShipping: z.boolean().optional(),
@@ -34,6 +33,7 @@ export const createShipmentSchema = z.object({
   shipmentDestination: z.nativeEnum(Cities, {
     errorMap: () => ({ message: 'Invalid destination' }),
   }),
+  originCity: z.nativeEnum(Cities).optional(),
   shippingMethod: z.nativeEnum(ShippingMethod, {
     errorMap: () => ({ message: 'Invalid shipping method' }),
   }).optional(),
@@ -52,6 +52,7 @@ export const updateShipmentSchema = z.object({
   csn: z.string().regex(/^[A-Za-z]{3}-[A-Za-z0-9]{3,4}$/i, 'Invalid CSN format').optional(),
   size: shipmentSizeSchema.optional(),
   shipmentDestination: z.nativeEnum(Cities).optional(),
+  originCity: z.nativeEnum(Cities).optional(),
   shippingMethod: z.nativeEnum(ShippingMethod).optional(),
   extraCosts: z.number().min(0).max(10000).optional(),
   note: z.string().max(500).optional().or(z.literal('')),

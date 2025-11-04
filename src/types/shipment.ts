@@ -120,7 +120,6 @@ export interface IDomesticShipmentDetails {
   receiverPrimaryPhoneNumber?: string;
   receiverSecondaryPhoneNumber?: string;
   destination?: string;
-  originCity?: Cities;
   productPrice?: number;
   productQuantity?: number;
   customerPaysShipping?: boolean;
@@ -134,6 +133,7 @@ export interface IShipment {
   csn: string;
   size: IShipmentSize;
   shipmentDestination: string;
+  originCity?: Cities;
   shippingMethod: string;
   extraCosts?: number;
   note?: string;
@@ -153,6 +153,7 @@ export interface CreateShipmentPayload {
   csn: string;
   size: IShipmentSize;
   shipmentDestination: string;
+  originCity?: Cities;
   shippingMethod: string;
   extraCosts?: number;
   note?: string;
@@ -168,6 +169,7 @@ export interface UpdateShipmentPayload {
   csn?: string;
   size?: Partial<IShipmentSize>;
   shipmentDestination?: string;
+  originCity?: Cities;
   shippingMethod?: string;
   extraCosts?: number;
   note?: string;

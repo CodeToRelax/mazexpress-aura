@@ -65,7 +65,7 @@ export function DomesticShipmentDetailsForm({ control, isDisabled }: DomesticShi
         {/* Origin City */}
         <FormField
           control={control}
-          name="domesticShipmentDetails.originCity"
+          name="originCity"
           render={({ field }) => (
             <FormItem>
               <FormLabel>{t('shipments.form.fields.originCity')}</FormLabel>
