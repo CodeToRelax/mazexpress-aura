@@ -293,7 +293,7 @@ export default function ShipmentDetail() {
         <div className="glass-card p-6 rounded-2xl space-y-4">
           <h3 className="text-lg font-semibold flex items-center gap-2">
             <Home className="h-5 w-5 text-primary" />
-            {t('shipments.form.fields.domesticDetails')}
+            {t('shipments.fields.domesticDetails')}
           </h3>
           <Separator />
           

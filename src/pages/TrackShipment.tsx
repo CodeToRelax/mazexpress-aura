@@ -191,25 +191,25 @@ export default function TrackShipment() {
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {shipment.size.weight && (
                       <div className="text-center p-3 bg-muted rounded-lg">
-                        <p className="text-sm text-muted-foreground">{t('shipments.form.fields.weight')}</p>
+                        <p className="text-sm text-muted-foreground">{t('shipments.fields.weight')}</p>
                         <p className="font-semibold">{shipment.size.weight} kg</p>
                       </div>
                     )}
                     {shipment.size.height && (
                       <div className="text-center p-3 bg-muted rounded-lg">
-                        <p className="text-sm text-muted-foreground">{t('shipments.form.fields.height')}</p>
+                        <p className="text-sm text-muted-foreground">{t('shipments.fields.height')}</p>
                         <p className="font-semibold">{shipment.size.height} cm</p>
                       </div>
                     )}
                     {shipment.size.width && (
                       <div className="text-center p-3 bg-muted rounded-lg">
-                        <p className="text-sm text-muted-foreground">{t('shipments.form.fields.width')}</p>
+                        <p className="text-sm text-muted-foreground">{t('shipments.fields.width')}</p>
                         <p className="font-semibold">{shipment.size.width} cm</p>
                       </div>
                     )}
                     {shipment.size.length && (
                       <div className="text-center p-3 bg-muted rounded-lg">
-                        <p className="text-sm text-muted-foreground">{t('shipments.form.fields.length')}</p>
+                        <p className="text-sm text-muted-foreground">{t('shipments.fields.length')}</p>
                         <p className="font-semibold">{shipment.size.length} cm</p>
                       </div>
                     )}

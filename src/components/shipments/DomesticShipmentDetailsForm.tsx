@@ -34,10 +34,10 @@ export function DomesticShipmentDetailsForm({ control, isDisabled }: DomesticShi
     <div className="space-y-4 glass-card rounded-2xl p-6">
       <div className="flex items-center gap-2 mb-4">
         <Home className="h-5 w-5 text-primary" />
-        <h3 className="text-lg font-semibold">{t('shipments.form.fields.domesticDetails')}</h3>
+        <h3 className="text-lg font-semibold">{t('shipments.fields.domesticDetails')}</h3>
       </div>
       <p className="text-sm text-muted-foreground mb-4">
-        {t('shipments.form.descriptions.domesticDetails')}
+        {t('shipments.descriptions.domesticDetails')}
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -47,14 +47,14 @@ export function DomesticShipmentDetailsForm({ control, isDisabled }: DomesticShi
           name="shipmentDestination"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('shipments.form.fields.destinationCity')} *</FormLabel>
+              <FormLabel>{t('shipments.fields.destinationCity')} *</FormLabel>
               <FormControl>
                 <CitySearchCombobox
                   cities={cityOptions}
                   value={field.value}
                   onChange={field.onChange}
                   disabled={isDisabled}
-                  placeholder={t('shipments.form.placeholders.selectDestinationCity')}
+                  placeholder={t('shipments.placeholders.selectDestinationCity')}
                 />
               </FormControl>
               <FormMessage />
@@ -68,14 +68,14 @@ export function DomesticShipmentDetailsForm({ control, isDisabled }: DomesticShi
           name="originCity"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('shipments.form.fields.originCity')}</FormLabel>
+              <FormLabel>{t('shipments.fields.originCity')}</FormLabel>
               <FormControl>
                 <CitySearchCombobox
                   cities={cityOptions}
                   value={field.value}
                   onChange={field.onChange}
                   disabled={isDisabled}
-                  placeholder={t('shipments.form.placeholders.selectOriginCity')}
+                  placeholder={t('shipments.placeholders.selectOriginCity')}
                 />
               </FormControl>
               <FormMessage />
@@ -89,7 +89,7 @@ export function DomesticShipmentDetailsForm({ control, isDisabled }: DomesticShi
           name="domesticShipmentDetails.senderName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('shipments.form.fields.senderName')}</FormLabel>
+              <FormLabel>{t('shipments.fields.senderName')}</FormLabel>
               <FormControl>
                   <Input
                     {...field}
@@ -107,7 +107,7 @@ export function DomesticShipmentDetailsForm({ control, isDisabled }: DomesticShi
           name="domesticShipmentDetails.receiverName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('shipments.form.fields.receiverName')}</FormLabel>
+              <FormLabel>{t('shipments.fields.receiverName')}</FormLabel>
               <FormControl>
                   <Input
                     {...field}
@@ -125,7 +125,7 @@ export function DomesticShipmentDetailsForm({ control, isDisabled }: DomesticShi
           name="domesticShipmentDetails.receiverPrimaryPhoneNumber"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('shipments.form.fields.receiverPrimaryPhone')}</FormLabel>
+              <FormLabel>{t('shipments.fields.receiverPrimaryPhone')}</FormLabel>
               <FormControl>
                   <Input
                     {...field}
@@ -134,7 +134,7 @@ export function DomesticShipmentDetailsForm({ control, isDisabled }: DomesticShi
                   />
               </FormControl>
               <FormDescription>
-                {t('shipments.form.descriptions.phoneFormat')}
+                {t('shipments.descriptions.phoneFormat')}
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -147,7 +147,7 @@ export function DomesticShipmentDetailsForm({ control, isDisabled }: DomesticShi
           name="domesticShipmentDetails.receiverSecondaryPhoneNumber"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('shipments.form.fields.receiverSecondaryPhone')}</FormLabel>
+              <FormLabel>{t('shipments.fields.receiverSecondaryPhone')}</FormLabel>
               <FormControl>
                   <Input
                     {...field}
@@ -166,7 +166,7 @@ export function DomesticShipmentDetailsForm({ control, isDisabled }: DomesticShi
           name="domesticShipmentDetails.productPrice"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('shipments.form.fields.productPrice')}</FormLabel>
+              <FormLabel>{t('shipments.fields.productPrice')}</FormLabel>
               <FormControl>
                 <Input
                   {...field}
@@ -181,7 +181,7 @@ export function DomesticShipmentDetailsForm({ control, isDisabled }: DomesticShi
                 />
               </FormControl>
               <FormDescription>
-                {t('shipments.form.descriptions.productInfo')}
+                {t('shipments.descriptions.productInfo')}
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -194,7 +194,7 @@ export function DomesticShipmentDetailsForm({ control, isDisabled }: DomesticShi
           name="domesticShipmentDetails.productQuantity"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('shipments.form.fields.productQuantity')}</FormLabel>
+              <FormLabel>{t('shipments.fields.productQuantity')}</FormLabel>
               <FormControl>
                 <Input
                   {...field}
@@ -219,7 +219,7 @@ export function DomesticShipmentDetailsForm({ control, isDisabled }: DomesticShi
           name="domesticShipmentDetails.destination"
           render={({ field }) => (
             <FormItem className="col-span-full">
-              <FormLabel>{t('shipments.form.fields.detailedDestination')}</FormLabel>
+              <FormLabel>{t('shipments.fields.detailedDestination')}</FormLabel>
               <FormControl>
                 <Textarea
                   {...field}
@@ -238,7 +238,7 @@ export function DomesticShipmentDetailsForm({ control, isDisabled }: DomesticShi
           name="domesticShipmentDetails.customerPaysShipping"
           render={({ field }) => (
             <FormItem className="col-span-full">
-              <FormLabel>{t('shipments.form.fields.shippingPayment')}</FormLabel>
+              <FormLabel>{t('shipments.fields.shippingPayment')}</FormLabel>
               <FormControl>
                 <RadioGroup
                   onValueChange={(value) => field.onChange(value === 'customer')}
@@ -249,19 +249,19 @@ export function DomesticShipmentDetailsForm({ control, isDisabled }: DomesticShi
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="company" id="company-pays" />
                     <Label htmlFor="company-pays" className="cursor-pointer">
-                      {t('shipments.form.fields.companyPays')}
+                      {t('shipments.fields.companyPays')}
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="customer" id="customer-pays" />
                     <Label htmlFor="customer-pays" className="cursor-pointer">
-                      {t('shipments.form.fields.customerPays')}
+                      {t('shipments.fields.customerPays')}
                     </Label>
                   </div>
                 </RadioGroup>
               </FormControl>
               <FormDescription>
-                {t('shipments.form.descriptions.shippingCost')}
+                {t('shipments.descriptions.shippingCost')}
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -274,7 +274,7 @@ export function DomesticShipmentDetailsForm({ control, isDisabled }: DomesticShi
           name="domesticShipmentDetails.note"
           render={({ field }) => (
             <FormItem className="col-span-full">
-              <FormLabel>{t('shipments.form.fields.domesticNote')}</FormLabel>
+              <FormLabel>{t('shipments.fields.domesticNote')}</FormLabel>
               <FormControl>
                   <Textarea
                     {...field}

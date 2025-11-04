@@ -175,7 +175,7 @@ export function EditShipmentDialog({ open, onOpenChange, shipment, onSuccess }: 
                   name="csn"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('shipments.form.fields.csn')}</FormLabel>
+                      <FormLabel>{t('shipments.fields.csn')}</FormLabel>
                       <FormControl>
                         <Input {...field} placeholder={t('shipments.form.placeholders.csn')} disabled />
                       </FormControl>

@@ -114,7 +114,7 @@ export default function PriceCalculator() {
                       name="shippingMethod"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{t('shipments.form.fields.method')}</FormLabel>
+                          <FormLabel>{t('shipments.fields.method')}</FormLabel>
                           <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
                               <SelectTrigger>
@@ -147,7 +147,7 @@ export default function PriceCalculator() {
                       name="destination"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{t('shipments.form.fields.destination')}</FormLabel>
+                          <FormLabel>{t('shipments.fields.destination')}</FormLabel>
                           <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
                               <SelectTrigger>
@@ -191,11 +191,11 @@ export default function PriceCalculator() {
                       name="tier"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{t('shipments.form.fields.tier')}</FormLabel>
+                          <FormLabel>{t('shipments.fields.tier')}</FormLabel>
                           <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
                               <SelectTrigger>
-                                <SelectValue placeholder={t('shipments.form.placeholders.tier', { defaultValue: 'Select tier' })} />
+                                <SelectValue placeholder={t('shipments.placeholders.tier', { defaultValue: 'Select tier' })} />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
@@ -241,11 +241,11 @@ export default function PriceCalculator() {
                         name="weight"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>{t('shipments.form.fields.weight')}</FormLabel>
+                            <FormLabel>{t('shipments.fields.weight')}</FormLabel>
                             <FormControl>
                               <Input
                                 type="text"
-                                placeholder={t('shipments.form.placeholders.weight')}
+                                placeholder={t('shipments.placeholders.weight')}
                                 {...field}
                               />
                             </FormControl>
@@ -266,7 +266,7 @@ export default function PriceCalculator() {
                           name="dimensions.height"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>{t('shipments.form.fields.height')}</FormLabel>
+                              <FormLabel>{t('shipments.fields.height')}</FormLabel>
                               <FormControl>
                                 <Input
                                   type="number"
@@ -284,7 +284,7 @@ export default function PriceCalculator() {
                           name="dimensions.width"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>{t('shipments.form.fields.width')}</FormLabel>
+                              <FormLabel>{t('shipments.fields.width')}</FormLabel>
                               <FormControl>
                                 <Input
                                   type="number"
@@ -302,7 +302,7 @@ export default function PriceCalculator() {
                           name="dimensions.length"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>{t('shipments.form.fields.length')}</FormLabel>
+                              <FormLabel>{t('shipments.fields.length')}</FormLabel>
                               <FormControl>
                                 <Input
                                   type="number"

@@ -138,7 +138,7 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess }: CreateSh
                   name="csn"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('shipments.form.fields.csn')}</FormLabel>
+                      <FormLabel>{t('shipments.fields.csn')}</FormLabel>
                       <FormControl>
                         <CustomerSearchCombobox
                           value={field.value}
@@ -166,9 +166,9 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess }: CreateSh
                     name="isn"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('shipments.form.fields.isn')} <span className="text-muted-foreground text-xs">({t('common.optional', { defaultValue: 'Optional' })})</span></FormLabel>
+                        <FormLabel>{t('shipments.fields.isn')} <span className="text-muted-foreground text-xs">({t('common.optional', { defaultValue: 'Optional' })})</span></FormLabel>
                         <FormControl>
-                          <Input {...field} placeholder={t('shipments.form.placeholders.isn')} />
+                          <Input {...field} placeholder={t('shipments.placeholders.isn')} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -184,7 +184,7 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess }: CreateSh
                   name="isDomestic"
                   render={({ field }) => (
                     <FormItem className="col-span-full">
-                      <FormLabel>{t('shipments.form.fields.shipmentType')}</FormLabel>
+                      <FormLabel>{t('shipments.fields.shipmentType')}</FormLabel>
                       <FormControl>
                         <div className="flex gap-2">
                           <Button
@@ -194,7 +194,7 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess }: CreateSh
                             onClick={() => field.onChange(false)}
                           >
                             <Globe className="h-4 w-4 mr-2" />
-                            {t('shipments.form.fields.international')}
+                            {t('shipments.fields.international')}
                           </Button>
                           <Button
                             type="button"
@@ -203,7 +203,7 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess }: CreateSh
                             onClick={() => field.onChange(true)}
                           >
                             <Home className="h-4 w-4 mr-2" />
-                            {t('shipments.form.fields.domestic')}
+                            {t('shipments.fields.domestic')}
                           </Button>
                         </div>
                       </FormControl>
@@ -218,11 +218,11 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess }: CreateSh
                     name="originCountry"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('shipments.form.fields.originCountry')}</FormLabel>
+                        <FormLabel>{t('shipments.fields.originCountry')}</FormLabel>
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder={t('shipments.form.placeholders.originCountry', { defaultValue: 'Select origin country' })} />
+                              <SelectValue placeholder={t('shipments.placeholders.originCountry', { defaultValue: 'Select origin country' })} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -261,7 +261,7 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess }: CreateSh
                     name="shipmentDestination"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('shipments.form.fields.destination')}</FormLabel>
+                        <FormLabel>{t('shipments.fields.destination')}</FormLabel>
                         <FormControl>
                           <CitySearchCombobox
                             cities={Object.values(Cities).map((city) => ({
@@ -283,7 +283,7 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess }: CreateSh
                     name="shippingMethod"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('shipments.form.fields.method')}</FormLabel>
+                        <FormLabel>{t('shipments.fields.method')}</FormLabel>
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger>
@@ -308,7 +308,7 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess }: CreateSh
                     name="extraCosts"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('shipments.form.fields.extraCosts')}</FormLabel>
+                        <FormLabel>{t('shipments.fields.extraCosts')}</FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
@@ -344,7 +344,7 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess }: CreateSh
                     name="size.weight"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('shipments.form.fields.weight')}</FormLabel>
+                        <FormLabel>{t('shipments.fields.weight')}</FormLabel>
                         <FormControl>
                           <Input
                             type="number"
@@ -352,7 +352,7 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess }: CreateSh
                             {...field}
                             value={field.value || ''}
                             onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
-                            placeholder={t('shipments.form.placeholders.weight')}
+                            placeholder={t('shipments.placeholders.weight')}
                           />
                         </FormControl>
                         <FormMessage />
@@ -366,7 +366,7 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess }: CreateSh
                       name="size.weight"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{t('shipments.form.fields.weight')}</FormLabel>
+                          <FormLabel>{t('shipments.fields.weight')}</FormLabel>
                           <FormControl>
                             <Input
                               type="number"
@@ -374,7 +374,7 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess }: CreateSh
                               {...field}
                               value={field.value || ''}
                               onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
-                              placeholder={t('shipments.form.placeholders.weight')}
+                              placeholder={t('shipments.placeholders.weight')}
                             />
                           </FormControl>
                           <FormMessage />
@@ -387,7 +387,7 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess }: CreateSh
                   name="size.height"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('shipments.form.fields.height')}</FormLabel>
+                      <FormLabel>{t('shipments.fields.height')}</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -395,7 +395,7 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess }: CreateSh
                           {...field}
                           value={field.value || ''}
                           onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
-                          placeholder={t('shipments.form.placeholders.height')}
+                          placeholder={t('shipments.placeholders.height')}
                         />
                       </FormControl>
                       <FormMessage />
@@ -408,7 +408,7 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess }: CreateSh
                   name="size.width"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('shipments.form.fields.width')}</FormLabel>
+                      <FormLabel>{t('shipments.fields.width')}</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -416,7 +416,7 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess }: CreateSh
                           {...field}
                           value={field.value || ''}
                           onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
-                          placeholder={t('shipments.form.placeholders.width')}
+                          placeholder={t('shipments.placeholders.width')}
                         />
                       </FormControl>
                       <FormMessage />
@@ -429,7 +429,7 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess }: CreateSh
                       name="size.length"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{t('shipments.form.fields.length')}</FormLabel>
+                          <FormLabel>{t('shipments.fields.length')}</FormLabel>
                           <FormControl>
                             <Input
                               type="number"
@@ -437,7 +437,7 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess }: CreateSh
                               {...field}
                               value={field.value || ''}
                               onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
-                              placeholder={t('shipments.form.placeholders.length')}
+                              placeholder={t('shipments.placeholders.length')}
                             />
                           </FormControl>
                           <FormMessage />
@@ -460,11 +460,11 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess }: CreateSh
                   name="note"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('shipments.form.fields.note')}</FormLabel>
+                      <FormLabel>{t('shipments.fields.note')}</FormLabel>
                       <FormControl>
                         <Textarea 
                           {...field} 
-                          placeholder={t('shipments.form.placeholders.note')}
+                          placeholder={t('shipments.placeholders.note')}
                           rows={3}
                         />
                       </FormControl>
