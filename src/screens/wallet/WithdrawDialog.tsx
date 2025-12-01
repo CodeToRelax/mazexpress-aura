@@ -124,9 +124,15 @@ export function WithdrawDialog({ open, onOpenChange, wallet }: WithdrawDialogPro
                     <Input
                       type="number"
                       step="0.01"
+                      min="0"
                       placeholder={t('wallet.form.amountPlaceholder')}
                       {...field}
-                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                      value={field.value || ''}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        field.onChange(val === '' ? 0 : parseFloat(val));
+                      }}
+                      onFocus={(e) => e.target.select()}
                     />
                   </FormControl>
                   <FormMessage />

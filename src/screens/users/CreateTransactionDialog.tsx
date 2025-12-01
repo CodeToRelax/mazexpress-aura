@@ -177,13 +177,17 @@ export function CreateTransactionDialog({
                     <Input
                       type="number"
                       step="0.01"
+                      min="0"
                       placeholder="0.00"
                       {...field}
+                      value={field.value || ''}
                       onChange={(e) => {
-                        const value = e.target.value === '' ? 0 : parseFloat(e.target.value);
+                        const val = e.target.value;
+                        const value = val === '' ? 0 : parseFloat(val);
                         console.log('[CreateTransactionDialog] Amount changed to:', value);
                         field.onChange(value);
                       }}
+                      onFocus={(e) => e.target.select()}
                     />
                   </FormControl>
                   <FormMessage />
