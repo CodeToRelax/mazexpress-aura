@@ -158,7 +158,12 @@ export function RefundTransactionDialog({
                       placeholder="Enter refund amount"
                       disabled={true}
                       {...field}
-                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                      value={field.value || ''}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        field.onChange(val === '' ? 0 : parseFloat(val));
+                      }}
+                      onFocus={(e) => e.target.select()}
                       className="bg-muted cursor-not-allowed"
                     />
                   </FormControl>
