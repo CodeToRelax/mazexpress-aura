@@ -417,7 +417,46 @@
   },
   "dashboard": {
     "welcome": "مرحباً بك في إدارة مازإكسبرس",
-    "placeholder": "لوحة التحكم قادمة في المرحلة الثانية"
+    "placeholder": "لوحة التحكم قادمة في المرحلة الثانية",
+    "quickActions": {
+      "title": "إجراءات سريعة",
+      "createAccount": "إنشاء حساب",
+      "createShipment": "إنشاء شحنة",
+      "createDomestic": "شحنة محلية"
+    },
+    "periods": {
+      "today": "اليوم",
+      "week": "هذا الأسبوع",
+      "month": "هذا الشهر",
+      "year": "هذه السنة"
+    },
+    "cards": {
+      "airShipments": "الشحنات الجوية",
+      "seaShipments": "الشحنات البحرية",
+      "totalCustomers": "إجمالي العملاء",
+      "newThisPeriod": "{{count}} جديد هذه الفترة",
+      "walletBalances": "أرصدة العملاء",
+      "totalWallets": "إجمالي المحافظ",
+      "positive": "موجب",
+      "negative": "سالب",
+      "invoicesDue": "فواتير مستحقة",
+      "overdueCount": "{{count}} متأخرة",
+      "deliveredPackages": "الطرود المسلمة",
+      "vsPreviousPeriod": "مقابل {{count}} الفترة السابقة"
+    },
+    "status": {
+      "inTransit": "قيد النقل",
+      "delivered": "تم التسليم",
+      "atWarehouse": "في المستودع",
+      "readyPickup": "جاهز للاستلام"
+    },
+    "charts": {
+      "shipmentsComparison": "مقارنة الشحنات الجوية والبحرية",
+      "air": "جوي",
+      "sea": "بحري",
+      "totalAir": "إجمالي الجوي",
+      "totalSea": "إجمالي البحري"
+    }
   },
   "shipments": {
     "title": "إدارة الشحنات",

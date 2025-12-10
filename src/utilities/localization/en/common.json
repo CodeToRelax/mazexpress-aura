@@ -474,7 +474,46 @@
   },
   "dashboard": {
     "welcome": "Welcome to MazExpress Admin",
-    "placeholder": "Dashboard coming in Phase 2"
+    "placeholder": "Dashboard coming in Phase 2",
+    "quickActions": {
+      "title": "Quick Actions",
+      "createAccount": "Create Account",
+      "createShipment": "Create Shipment",
+      "createDomestic": "Domestic Shipment"
+    },
+    "periods": {
+      "today": "Today",
+      "week": "This Week",
+      "month": "This Month",
+      "year": "This Year"
+    },
+    "cards": {
+      "airShipments": "Air Shipments",
+      "seaShipments": "Sea Shipments",
+      "totalCustomers": "Total Customers",
+      "newThisPeriod": "{{count}} new this period",
+      "walletBalances": "Customer Balances",
+      "totalWallets": "total wallets",
+      "positive": "Positive",
+      "negative": "Negative",
+      "invoicesDue": "Invoices Due",
+      "overdueCount": "{{count}} overdue",
+      "deliveredPackages": "Delivered Packages",
+      "vsPreviousPeriod": "vs {{count}} previous period"
+    },
+    "status": {
+      "inTransit": "In Transit",
+      "delivered": "Delivered",
+      "atWarehouse": "At Warehouse",
+      "readyPickup": "Ready for Pickup"
+    },
+    "charts": {
+      "shipmentsComparison": "Air vs Sea Shipments",
+      "air": "Air",
+      "sea": "Sea",
+      "totalAir": "Total Air",
+      "totalSea": "Total Sea"
+    }
   },
   "shipments": {
     "fields": {
