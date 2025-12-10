@@ -39,6 +39,13 @@
     --success: 160 84% 39%;
     --warning: 43 96% 56%;
     
+    /* Chart Colors */
+    --chart-1: 193 98% 44%;
+    --chart-2: 160 84% 39%;
+    --chart-3: 43 96% 56%;
+    --chart-4: 0 84% 60%;
+    --chart-5: 270 50% 50%;
+    
     /* Pastel Toast Colors */
     --toast-success-bg: 142 76% 92%;
     --toast-success-text: 142 71% 25%;
@@ -110,6 +117,13 @@
     --shadow-glass: 0 2px 12px 0 rgba(0, 0, 0, 0.25);
     --shadow-glass-hover: 0 4px 16px 0 rgba(0, 0, 0, 0.3);
     --glow-primary: 0 0 20px hsla(var(--primary-glow), 0.2);
+    
+    /* Chart Colors - Dark Mode */
+    --chart-1: 191 75% 52%;
+    --chart-2: 160 70% 45%;
+    --chart-3: 43 96% 56%;
+    --chart-4: 0 84% 60%;
+    --chart-5: 270 50% 60%;
     
     /* Pastel Toast Colors - Dark Mode */
     --toast-success-bg: 142 60% 20%;
