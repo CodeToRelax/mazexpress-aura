@@ -49,9 +49,10 @@ interface CreateShipmentDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
+  defaultDomestic?: boolean;
 }
 
-export function CreateShipmentDialog({ open, onOpenChange, onSuccess }: CreateShipmentDialogProps) {
+export function CreateShipmentDialog({ open, onOpenChange, onSuccess, defaultDomestic = false }: CreateShipmentDialogProps) {
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [sizeInputMode, setSizeInputMode] = useState<'weight' | 'dimensions'>('weight');
@@ -64,7 +65,7 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess }: CreateSh
       isn: '',
       shipmentDestination: undefined,
       shippingMethod: undefined,
-      isDomestic: false,
+      isDomestic: defaultDomestic,
       size: {
         weight: 1,
         height: 1,
@@ -90,11 +91,37 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess }: CreateSh
 
   useEffect(() => {
     if (!open) {
-      form.reset();
+      form.reset({
+        csn: '',
+        isn: '',
+        shipmentDestination: undefined,
+        shippingMethod: undefined,
+        isDomestic: defaultDomestic,
+        size: {
+          weight: 1,
+          height: 1,
+          width: 1,
+          length: 1,
+        },
+        extraCosts: 0,
+        note: '',
+        estimatedArrival: '',
+        domesticShipmentDetails: {
+          senderName: '',
+          receiverName: '',
+          receiverPrimaryPhoneNumber: '',
+          receiverSecondaryPhoneNumber: '',
+          destination: '',
+          productPrice: undefined,
+          productQuantity: undefined,
+          customerPaysShipping: false,
+          note: '',
+        },
+      });
       setSizeInputMode('weight');
       setSelectedCustomer(null);
     }
-  }, [open, form]);
+  }, [open, form, defaultDomestic]);
 
   const onSubmit = async (data: CreateShipmentFormData) => {
     try {
