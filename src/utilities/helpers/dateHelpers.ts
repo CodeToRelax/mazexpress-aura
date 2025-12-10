@@ -92,3 +92,35 @@ export const formatDateForBirthdate = (date: Date): string => {
 export const formatDateForExport = (date: string | Date): string => {
   return formatDateTime(date);
 };
+
+/**
+ * Get date range from period (week, month, year)
+ */
+export const getDateRangeFromPeriod = (period: 'week' | 'month' | 'year' | 'today'): { startDate: string; endDate: string } => {
+  const now = new Date();
+  const endDate = formatDateISO(now);
+  
+  let startDate: Date;
+  
+  switch (period) {
+    case 'today':
+      startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      break;
+    case 'week':
+      startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      break;
+    case 'month':
+      startDate = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+      break;
+    case 'year':
+      startDate = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+      break;
+    default:
+      startDate = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+  }
+  
+  return {
+    startDate: formatDateISO(startDate),
+    endDate,
+  };
+};
