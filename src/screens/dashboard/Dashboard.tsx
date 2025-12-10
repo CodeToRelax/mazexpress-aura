@@ -24,10 +24,8 @@ export default function Dashboard() {
         <CustomerGrowthCard />
         <WalletBalanceCard />
         <InvoicesDueCard />
+        <ShipmentsComparisonChart />
       </div>
-
-      {/* Comparison Chart */}
-      <ShipmentsComparisonChart />
     </div>
   );
 }
