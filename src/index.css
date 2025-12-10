@@ -188,6 +188,7 @@
       radial-gradient(circle at 20% 30%, hsla(var(--primary), 0.1) 0%, transparent 50%),
       radial-gradient(circle at 80% 70%, hsla(var(--primary-light), 0.08) 0%, transparent 50%);
     animation: float 20s ease-in-out infinite;
+    pointer-events: none;
   }
   
   .glass-background::after {
