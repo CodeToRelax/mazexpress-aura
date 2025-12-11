@@ -199,8 +199,8 @@ export function AddCityDialog({ open, onOpenChange, onSuccess, existingCities }:
                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-[--radix-popover-trigger-width] p-0 border-border z-50 bg-popover" align="start">
-                    <Command className="bg-popover">
+                <PopoverContent className="w-[--radix-popover-trigger-width] p-0 border-border z-50 bg-white dark:bg-gray-900" align="start">
+                  <Command className="bg-white dark:bg-gray-900">
                       <CommandInput placeholder={t('settings.domesticCities.searchCities')} />
                       <CommandList>
                         <CommandEmpty>{t('settings.domesticCities.noCityFound')}</CommandEmpty>
