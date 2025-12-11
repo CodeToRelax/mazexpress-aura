@@ -1246,6 +1246,9 @@
     "no": "No",
     "cancel": "Cancel",
     "error": "Error",
+    "success": "Success",
+    "delete": "Delete",
+    "save": "Save",
     "processing": "Processing...",
     "optional": "Optional",
     "selectAll": "Select All",
@@ -1254,5 +1257,29 @@
     "resetDefault": "Reset to Default",
     "actions": "Actions",
     "saving": "Saving..."
+  },
+  "settings": {
+    "domesticCities": {
+      "title": "Domestic Cities Configuration",
+      "description": "Manage shipping tiers for Libyan cities",
+      "addCity": "Add City",
+      "addCityTitle": "Add New City",
+      "addCityDescription": "Configure shipping tiers for a new Libyan city",
+      "cityName": "City Name",
+      "cityNamePlaceholder": "e.g., Tripoli, Benghazi",
+      "tier": "Tier",
+      "tiers": "Shipping Tiers",
+      "noCities": "No cities configured. Add your first city to get started.",
+      "cityAdded": "City \"{{city}}\" added successfully",
+      "cityUpdated": "City \"{{city}}\" updated successfully",
+      "cityDeleted": "City \"{{city}}\" deleted successfully",
+      "cityExists": "This city already exists",
+      "fetchFailed": "Failed to load domestic cities configuration",
+      "addFailed": "Failed to add city",
+      "updateFailed": "Failed to update city",
+      "deleteFailed": "Failed to delete city",
+      "deleteCityTitle": "Delete City",
+      "deleteCityDescription": "Are you sure you want to delete {{city}}? This will remove all tier pricing for this city. This action cannot be undone."
+    }
   }
 }
