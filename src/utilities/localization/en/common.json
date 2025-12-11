@@ -551,6 +551,13 @@
       "international": "International",
       "domestic": "Domestic"
     },
+    "tiers": {
+      "A": "Tier A",
+      "B": "Tier B",
+      "C": "Tier C",
+      "D": "Tier D",
+      "E": "Tier E"
+    },
     "placeholders": {
       "selectOriginCity": "Select origin city (optional)",
       "selectDestinationCity": "Select destination city",
@@ -562,6 +569,7 @@
       "width": "Enter width in centimeters",
       "length": "Enter length in centimeters",
       "tier": "Select pricing tier",
+      "selectTier": "Select tier",
       "originCountry": "Select origin country",
       "senderName": "Enter full sender name",
       "receiverName": "Enter full receiver name",
