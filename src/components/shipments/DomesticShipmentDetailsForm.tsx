@@ -47,7 +47,7 @@ export function DomesticShipmentDetailsForm({ control, isDisabled }: DomesticShi
         {t('shipments.descriptions.domesticDetails')}
       </p>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Destination City - Required */}
         <FormField
           control={control}
