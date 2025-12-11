@@ -1,10 +1,10 @@
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useState, useMemo } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Check, ChevronsUpDown } from 'lucide-react';
 
 import {
   Dialog,
@@ -17,13 +17,67 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
 import { addDomesticCity } from '@/utilities/api/config.api';
 
+// List of Libyan cities
+const LIBYAN_CITIES = [
+  'tripoli',
+  'benghazi',
+  'misrata',
+  'al_bayda',
+  'zawiya',
+  'zliten',
+  'ajdabiya',
+  'tobruk',
+  'sirte',
+  'al_khums',
+  'derna',
+  'sabha',
+  'gharyan',
+  'tarhuna',
+  'bani_walid',
+  'al_marj',
+  'zintan',
+  'nalut',
+  'ghadames',
+  'al_jufra',
+  'ubari',
+  'murzuq',
+  'ghat',
+  'kufra',
+  'al_jawf',
+  'yafran',
+  'jadu',
+  'kabaw',
+  'msallata',
+  'brega',
+  'ras_lanuf',
+  'suluq',
+];
+
+const formatCityLabel = (city: string): string => {
+  return city
+    .split('_')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
+
 const addCitySchema = z.object({
-  cityName: z.string()
-    .min(2, 'City name must be at least 2 characters')
-    .max(50, 'City name must be less than 50 characters')
-    .regex(/^[a-zA-Z\s_]+$/, 'City name can only contain letters, spaces, and underscores'),
+  cityName: z.string().min(1, 'Please select a city'),
   A: z.coerce.number().min(0, 'Must be at least 0'),
   B: z.coerce.number().min(0, 'Must be at least 0'),
   C: z.coerce.number().min(0, 'Must be at least 0'),
@@ -43,6 +97,7 @@ interface AddCityDialogProps {
 export function AddCityDialog({ open, onOpenChange, onSuccess, existingCities }: AddCityDialogProps) {
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [popoverOpen, setPopoverOpen] = useState(false);
 
   const form = useForm<AddCityFormData>({
     resolver: zodResolver(addCitySchema),
@@ -56,10 +111,13 @@ export function AddCityDialog({ open, onOpenChange, onSuccess, existingCities }:
     },
   });
 
+  // Filter out already existing cities
+  const availableCities = useMemo(() => {
+    return LIBYAN_CITIES.filter(city => !existingCities.includes(city));
+  }, [existingCities]);
+
   const onSubmit = async (data: AddCityFormData) => {
-    const normalizedCity = data.cityName.toLowerCase().replace(/\s+/g, '_');
-    
-    if (existingCities.includes(normalizedCity)) {
+    if (existingCities.includes(data.cityName)) {
       form.setError('cityName', {
         type: 'manual',
         message: t('settings.domesticCities.cityExists'),
@@ -69,7 +127,7 @@ export function AddCityDialog({ open, onOpenChange, onSuccess, existingCities }:
 
     setIsSubmitting(true);
     try {
-      await addDomesticCity(normalizedCity, {
+      await addDomesticCity(data.cityName, {
         A: data.A,
         B: data.B,
         C: data.C,
@@ -78,7 +136,7 @@ export function AddCityDialog({ open, onOpenChange, onSuccess, existingCities }:
       });
       
       toast.success(t('common.success'), {
-        description: t('settings.domesticCities.cityAdded', { city: data.cityName }),
+        description: t('settings.domesticCities.cityAdded', { city: formatCityLabel(data.cityName) }),
       });
       
       form.reset();
@@ -95,11 +153,14 @@ export function AddCityDialog({ open, onOpenChange, onSuccess, existingCities }:
   const handleOpenChange = (open: boolean) => {
     if (!open) {
       form.reset();
+      setPopoverOpen(false);
     }
     onOpenChange(open);
   };
 
   const tierLabels = ['A', 'B', 'C', 'D', 'E'] as const;
+
+  const selectedCity = form.watch('cityName');
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -113,11 +174,61 @@ export function AddCityDialog({ open, onOpenChange, onSuccess, existingCities }:
         
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="cityName">{t('settings.domesticCities.cityName')}</Label>
-            <Input
-              id="cityName"
-              placeholder={t('settings.domesticCities.cityNamePlaceholder')}
-              {...form.register('cityName')}
+            <Label>{t('settings.domesticCities.cityName')}</Label>
+            <Controller
+              name="cityName"
+              control={form.control}
+              render={({ field }) => (
+                <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={popoverOpen}
+                      className="w-full justify-between bg-background hover:bg-accent"
+                      disabled={isSubmitting}
+                      type="button"
+                    >
+                      {field.value ? (
+                        <span className="truncate">{formatCityLabel(field.value)}</span>
+                      ) : (
+                        <span className="text-muted-foreground">
+                          {t('settings.domesticCities.selectCity')}
+                        </span>
+                      )}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[--radix-popover-trigger-width] p-0 border-border z-50 bg-popover" align="start">
+                    <Command className="bg-popover">
+                      <CommandInput placeholder={t('settings.domesticCities.searchCities')} />
+                      <CommandList>
+                        <CommandEmpty>{t('settings.domesticCities.noCityFound')}</CommandEmpty>
+                        <CommandGroup>
+                          {availableCities.map((city) => (
+                            <CommandItem
+                              key={city}
+                              value={formatCityLabel(city)}
+                              onSelect={() => {
+                                field.onChange(city);
+                                setPopoverOpen(false);
+                              }}
+                            >
+                              <Check
+                                className={cn(
+                                  'mr-2 h-4 w-4',
+                                  field.value === city ? 'opacity-100' : 'opacity-0'
+                                )}
+                              />
+                              {formatCityLabel(city)}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+              )}
             />
             {form.formState.errors.cityName && (
               <p className="text-sm text-destructive">{form.formState.errors.cityName.message}</p>
