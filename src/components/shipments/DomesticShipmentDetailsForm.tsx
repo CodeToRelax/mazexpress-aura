@@ -1,4 +1,5 @@
-import { Control } from 'react-hook-form';
+import { useState, useEffect } from 'react';
+import { Control, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Home } from 'lucide-react';
 import {
@@ -22,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { getDomesticCities, TiersConfig } from '@/utilities/api/config.api';
 
 interface DomesticShipmentDetailsFormProps {
   control: Control<any>;
@@ -30,6 +32,26 @@ interface DomesticShipmentDetailsFormProps {
 
 export function DomesticShipmentDetailsForm({ control, isDisabled }: DomesticShipmentDetailsFormProps) {
   const { t } = useTranslation();
+  const [tierPrices, setTierPrices] = useState<Record<string, TiersConfig>>({});
+
+  // Watch the destination city to update tier labels
+  const selectedCity = useWatch({ control, name: 'shipmentDestination' });
+
+  // Fetch domestic cities configuration
+  useEffect(() => {
+    getDomesticCities()
+      .then(data => setTierPrices(data.domestic))
+      .catch(console.error);
+  }, []);
+
+  // Helper to get tier label with price
+  const getTierLabel = (tier: 'A' | 'B' | 'C' | 'D' | 'E') => {
+    const cityTiers = selectedCity ? tierPrices[selectedCity] : null;
+    if (cityTiers && cityTiers[tier] !== undefined) {
+      return `${t('shipments.tiers.' + tier)} - ${cityTiers[tier]} LYD`;
+    }
+    return t('shipments.tiers.' + tier);
+  };
 
   // Convert Cities enum to CityOption array
   const cityOptions = Object.values(Cities).map(city => ({
@@ -108,11 +130,11 @@ export function DomesticShipmentDetailsForm({ control, isDisabled }: DomesticShi
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent className="bg-background">
-                  <SelectItem value="A">{t('shipments.tiers.A')}</SelectItem>
-                  <SelectItem value="B">{t('shipments.tiers.B')}</SelectItem>
-                  <SelectItem value="C">{t('shipments.tiers.C')}</SelectItem>
-                  <SelectItem value="D">{t('shipments.tiers.D')}</SelectItem>
-                  <SelectItem value="E">{t('shipments.tiers.E')}</SelectItem>
+                  <SelectItem value="A">{getTierLabel('A')}</SelectItem>
+                  <SelectItem value="B">{getTierLabel('B')}</SelectItem>
+                  <SelectItem value="C">{getTierLabel('C')}</SelectItem>
+                  <SelectItem value="D">{getTierLabel('D')}</SelectItem>
+                  <SelectItem value="E">{getTierLabel('E')}</SelectItem>
                 </SelectContent>
               </Select>
               <FormDescription>
