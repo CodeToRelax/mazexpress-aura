@@ -533,11 +533,20 @@
         "shippingPayment": "دفع الشحن",
         "companyPays": "الشركة تدفع الشحن",
         "customerPays": "العميل يدفع الشحن",
-        "domesticNote": "ملاحظات الشحنة المحلية"
+        "domesticNote": "ملاحظات الشحنة المحلية",
+        "tier": "فئة التسعير"
+      },
+      "tiers": {
+        "A": "الفئة أ",
+        "B": "الفئة ب",
+        "C": "الفئة ج",
+        "D": "الفئة د",
+        "E": "الفئة هـ"
       },
       "placeholders": {
         "selectOriginCity": "اختر مدينة المنشأ (اختياري)",
-        "selectDestinationCity": "اختر مدينة الوجهة"
+        "selectDestinationCity": "اختر مدينة الوجهة",
+        "selectTier": "اختر الفئة"
       },
       "descriptions": {
         "domesticDetails": "تفاصيل إضافية للشحنات المحلية داخل ليبيا",
@@ -547,7 +556,8 @@
         "shippingCost": "من المسؤول عن دفع تكلفة الشحن",
         "autoDestination": "يتم تعيين الوجهة من مدينة العميل المسجلة",
         "selectCustomerFirst": "اختر عميلاً لتعبئة الوجهة تلقائياً",
-        "internationalStatusOnly": "الشحنات الدولية تستخدم تتبع مبسط من 4 مراحل"
+        "internationalStatusOnly": "الشحنات الدولية تستخدم تتبع مبسط من 4 مراحل",
+        "tier": "فئة التسعير تؤثر على تكاليف الشحن بناءً على مضاعفات الفئة المحلية"
       }
     },
       "filters": {

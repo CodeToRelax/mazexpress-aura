@@ -15,6 +15,13 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { CitySearchCombobox } from '@/components/ui/CitySearchCombobox';
 import { Cities } from '@/types/shipment';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface DomesticShipmentDetailsFormProps {
   control: Control<any>;
@@ -40,7 +47,7 @@ export function DomesticShipmentDetailsForm({ control, isDisabled }: DomesticShi
         {t('shipments.descriptions.domesticDetails')}
       </p>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Destination City - Required */}
         <FormField
           control={control}
@@ -78,6 +85,39 @@ export function DomesticShipmentDetailsForm({ control, isDisabled }: DomesticShi
                   placeholder={t('shipments.placeholders.selectOriginCity')}
                 />
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Tier Selection */}
+        <FormField
+          control={control}
+          name="tier"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t('shipments.fields.tier')}</FormLabel>
+              <Select 
+                onValueChange={field.onChange} 
+                value={field.value}
+                disabled={isDisabled}
+              >
+                <FormControl>
+                  <SelectTrigger className="bg-background">
+                    <SelectValue placeholder={t('shipments.placeholders.selectTier')} />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent className="bg-background">
+                  <SelectItem value="A">{t('shipments.tiers.A')}</SelectItem>
+                  <SelectItem value="B">{t('shipments.tiers.B')}</SelectItem>
+                  <SelectItem value="C">{t('shipments.tiers.C')}</SelectItem>
+                  <SelectItem value="D">{t('shipments.tiers.D')}</SelectItem>
+                  <SelectItem value="E">{t('shipments.tiers.E')}</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormDescription>
+                {t('shipments.descriptions.tier')}
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
