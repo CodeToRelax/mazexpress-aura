@@ -40,13 +40,29 @@ export function DomesticShipmentDetailsForm({ control, isDisabled }: DomesticShi
   // Fetch domestic cities configuration
   useEffect(() => {
     getDomesticCities()
-      .then(data => setTierPrices(data.domestic))
+      .then(data => {
+        console.log('Domestic cities data:', data);
+        setTierPrices(data.domestic);
+      })
       .catch(console.error);
   }, []);
 
   // Helper to get tier label with price
   const getTierLabel = (tier: 'A' | 'B' | 'C' | 'D' | 'E') => {
-    const cityTiers = selectedCity ? tierPrices[selectedCity] : null;
+    if (!selectedCity) {
+      return t('shipments.tiers.' + tier);
+    }
+    
+    // Normalize the city key for lookup (handle different cases)
+    const normalizedCity = selectedCity.toLowerCase();
+    
+    // Find matching city in tierPrices (case-insensitive)
+    const cityKey = Object.keys(tierPrices).find(
+      key => key.toLowerCase() === normalizedCity
+    );
+    
+    const cityTiers = cityKey ? tierPrices[cityKey] : null;
+    
     if (cityTiers && cityTiers[tier] !== undefined) {
       return `${t('shipments.tiers.' + tier)} - ${cityTiers[tier]} LYD`;
     }
