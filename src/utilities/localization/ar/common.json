@@ -455,7 +455,8 @@
       "air": "جوي",
       "sea": "بحري",
       "totalAir": "إجمالي الجوي",
-      "totalSea": "إجمالي البحري"
+      "totalSea": "إجمالي البحري",
+      "totalShipments": "إجمالي الشحنات"
     }
   },
   "shipments": {

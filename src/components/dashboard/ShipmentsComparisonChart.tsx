@@ -24,7 +24,7 @@ export function ShipmentsComparisonChart() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['shipments', 'all-for-pie-chart'],
-    queryFn: () => shipmentsApi.getShipments({ limit: 10000 }),
+    queryFn: () => shipmentsApi.getShipments({ limit: 100 }),
   });
 
   const chartData = useMemo(() => {

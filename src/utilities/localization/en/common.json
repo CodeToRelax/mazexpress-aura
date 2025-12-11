@@ -512,7 +512,8 @@
       "air": "Air",
       "sea": "Sea",
       "totalAir": "Total Air",
-      "totalSea": "Total Sea"
+      "totalSea": "Total Sea",
+      "totalShipments": "Total Shipments"
     }
   },
   "shipments": {
