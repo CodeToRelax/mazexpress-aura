@@ -4,9 +4,9 @@ import { Settings, Loader2, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CountryConfigCard } from './CountryConfigCard';
-import { DomesticTiersCard } from './DomesticTiersCard';
+import { DomesticCitiesCard } from './DomesticCitiesCard';
 import { ExchangeRateCard } from './ExchangeRateCard';
-import { getSystemConfig, type DomesticTiers } from '@/utilities/api/config.api';
+import { getSystemConfig } from '@/utilities/api/config.api';
 import { toast } from '@/hooks/use-toast';
 
 interface CountryConfig {
@@ -18,7 +18,6 @@ interface CountryConfig {
 
 interface SystemConfigData {
   lydExchangeRate: number;
-  domesticTiers: DomesticTiers;
   countries: Record<string, CountryConfig>;
 }
 
@@ -41,14 +40,6 @@ export default function SystemSettings() {
       const data = await getSystemConfig();
       setConfig({
         lydExchangeRate: data.lydExchangeRate,
-        // Provide default tiers if not present in API response
-        domesticTiers: data.domesticTiers || {
-          A: 1.0,
-          B: 1.2,
-          C: 1.5,
-          D: 2.0,
-          E: 2.5
-        },
         countries: data.countries,
       });
       if (isRefresh) {
@@ -120,17 +111,15 @@ export default function SystemSettings() {
         </motion.div>
       )}
 
-      {/* Domestic Tiers Section */}
-      {config && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.05 }}
-          className="mb-8"
-        >
-          <DomesticTiersCard tiers={config.domesticTiers} onUpdate={fetchConfig} />
-        </motion.div>
-      )}
+      {/* Domestic Cities Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.05 }}
+        className="mb-8"
+      >
+        <DomesticCitiesCard onUpdate={fetchConfig} />
+      </motion.div>
 
       {/* Country Configuration Tabs */}
       <motion.div
