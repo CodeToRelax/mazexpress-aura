@@ -20,6 +20,7 @@ import { TransactionsFilters } from '@/screens/wallet/TransactionsFilters';
 import { TransactionsPagination } from '@/screens/wallet/TransactionsPagination';
 import { TransactionsColumnVisibilityToggle } from '@/screens/wallet/TransactionsColumnVisibilityToggle';
 import { CreateTransactionDialog } from './CreateTransactionDialog';
+import { CreateUserWalletDialog } from './CreateUserWalletDialog';
 import { EditTransactionDialog } from './EditTransactionDialog';
 import { RefundTransactionDialog } from './RefundTransactionDialog';
 import { EditUserDialog } from './EditUserDialog';
@@ -60,6 +61,7 @@ export default function UserDetail() {
   const [isRefundTransactionOpen, setIsRefundTransactionOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [isEditUserOpen, setIsEditUserOpen] = useState(false);
+  const [isCreateWalletOpen, setIsCreateWalletOpen] = useState(false);
   
   // Transaction filters and settings
   const [transactionFilters, setTransactionFilters] = useState<any>({
@@ -583,7 +585,11 @@ export default function UserDetail() {
               <CardContent className="flex flex-col items-center justify-center py-12">
                 <WalletIcon className="h-12 w-12 text-muted-foreground mb-4" />
                 <p className="text-lg font-medium mb-2">No Wallet</p>
-                <p className="text-sm text-muted-foreground">This user does not have a wallet yet</p>
+                <p className="text-sm text-muted-foreground mb-4">This user does not have a wallet yet</p>
+                <Button onClick={() => setIsCreateWalletOpen(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create Wallet
+                </Button>
               </CardContent>
             </Card>
           )}
@@ -640,6 +646,14 @@ export default function UserDetail() {
         onOpenChange={setIsEditUserOpen}
         user={user}
         onSuccess={handleEditUserSuccess}
+      />
+
+      <CreateUserWalletDialog
+        open={isCreateWalletOpen}
+        onOpenChange={setIsCreateWalletOpen}
+        userId={user._id}
+        userName={`${user.firstName} ${user.lastName}`}
+        onSuccess={fetchWalletData}
       />
     </div>
   );
