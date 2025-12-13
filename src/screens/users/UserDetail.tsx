@@ -126,13 +126,21 @@ export default function UserDetail() {
         hasPrevPage: transactionData.pagination?.hasPrevPage ?? false,
         hasNextPage: transactionData.pagination?.hasNextPage ?? false,
       });
-    } catch (error) {
-      console.error('[UserDetail] Error fetching wallet data:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to load wallet data',
-        variant: 'destructive',
-      });
+    } catch (error: any) {
+      // Silently handle 404 errors (wallet not found) - this is expected for users without wallets
+      const isNotFound = error?.message?.includes('404') || 
+                         error?.message?.toLowerCase().includes('not found') ||
+                         error?.status === 404;
+      
+      if (!isNotFound) {
+        console.error('[UserDetail] Error fetching wallet data:', error);
+        toast({
+          title: 'Error',
+          description: 'Failed to load wallet data',
+          variant: 'destructive',
+        });
+      }
+      // For 404 errors, wallet remains null and the "No Wallet" state will be shown
     } finally {
       setIsLoadingWallet(false);
     }
