@@ -4,7 +4,7 @@ import { Settings, Loader2, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CountryConfigCard } from './CountryConfigCard';
-import { DomesticCitiesCard } from './DomesticCitiesCard';
+import { DomesticRoutesCard } from './DomesticRoutesCard';
 import { ExchangeRateCard } from './ExchangeRateCard';
 import { getSystemConfig } from '@/utilities/api/config.api';
 import { toast } from '@/hooks/use-toast';
@@ -111,14 +111,14 @@ export default function SystemSettings() {
         </motion.div>
       )}
 
-      {/* Domestic Cities Section */}
+      {/* Domestic Routes Section */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.05 }}
         className="mb-8"
       >
-        <DomesticCitiesCard onUpdate={fetchConfig} />
+        <DomesticRoutesCard onUpdate={fetchConfig} />
       </motion.div>
 
       {/* Country Configuration Tabs */}

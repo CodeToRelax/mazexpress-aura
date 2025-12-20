@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { getDomesticCities, TiersConfig } from '@/utilities/api/config.api';
+import { getDomesticRoutes } from '@/utilities/api/config.api';
 
 interface DomesticShipmentDetailsFormProps {
   control: Control<any>;
@@ -32,45 +32,57 @@ interface DomesticShipmentDetailsFormProps {
 
 export function DomesticShipmentDetailsForm({ control, isDisabled }: DomesticShipmentDetailsFormProps) {
   const { t } = useTranslation();
-  const [tierPrices, setTierPrices] = useState<Record<string, TiersConfig>>({});
+  const [routePrices, setRoutePrices] = useState<Record<string, Record<string, number>>>({});
+  const [originCities, setOriginCities] = useState<string[]>([]);
 
-  // Watch the destination city to update tier labels
-  const selectedCity = useWatch({ control, name: 'shipmentDestination' });
+  // Watch origin and destination cities for price calculation
+  const originCity = useWatch({ control, name: 'originCity' });
+  const destinationCity = useWatch({ control, name: 'shipmentDestination' });
 
-  // Fetch domestic cities configuration
+  // Fetch domestic routes configuration
   useEffect(() => {
-    getDomesticCities()
+    getDomesticRoutes()
       .then(data => {
-        console.log('Domestic cities data:', data);
-        setTierPrices(data.domestic);
+        console.log('Domestic routes data:', data);
+        setRoutePrices(data.domestic);
+        setOriginCities(data.originCities);
       })
       .catch(console.error);
   }, []);
 
-  // Helper to get tier label with price
-  const getTierLabel = (tier: 'A' | 'B' | 'C' | 'D' | 'E') => {
-    if (!selectedCity) {
-      return t('shipments.tiers.' + tier);
+  // Get available destination cities based on selected origin
+  const getAvailableDestinations = () => {
+    if (!originCity) {
+      // If no origin selected, show all unique destinations
+      const allDests = new Set<string>();
+      Object.values(routePrices).forEach(routes => {
+        Object.keys(routes).forEach(dest => allDests.add(dest));
+      });
+      return Array.from(allDests);
     }
-    
-    // Normalize the city key for lookup (handle different cases)
-    const normalizedCity = selectedCity.toLowerCase();
-    
-    // Find matching city in tierPrices (case-insensitive)
-    const cityKey = Object.keys(tierPrices).find(
-      key => key.toLowerCase() === normalizedCity
-    );
-    
-    const cityTiers = cityKey ? tierPrices[cityKey] : null;
-    
-    if (cityTiers && cityTiers[tier] !== undefined) {
-      return `${t('shipments.tiers.' + tier)} - ${cityTiers[tier]} LYD`;
-    }
-    return t('shipments.tiers.' + tier);
+    const normalizedOrigin = originCity.toLowerCase();
+    const originRoutes = routePrices[normalizedOrigin];
+    return originRoutes ? Object.keys(originRoutes) : [];
   };
 
-  // Convert Cities enum to CityOption array
-  const cityOptions = Object.values(Cities).map(city => ({
+  // Get route price for display
+  const getRoutePrice = () => {
+    if (!originCity || !destinationCity) return null;
+    const normalizedOrigin = originCity.toLowerCase();
+    const normalizedDest = destinationCity.toLowerCase();
+    return routePrices[normalizedOrigin]?.[normalizedDest] ?? null;
+  };
+
+  const routePrice = getRoutePrice();
+
+  // Convert origin cities to options
+  const originCityOptions = originCities.map(city => ({
+    value: city,
+    label: city.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
+  }));
+
+  // Convert available destinations to options
+  const destCityOptions = getAvailableDestinations().map(city => ({
     value: city,
     label: city.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
   }));
@@ -86,37 +98,16 @@ export function DomesticShipmentDetailsForm({ control, isDisabled }: DomesticShi
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Destination City - Required */}
-        <FormField
-          control={control}
-          name="shipmentDestination"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t('shipments.fields.destinationCity')} *</FormLabel>
-              <FormControl>
-                <CitySearchCombobox
-                  cities={cityOptions}
-                  value={field.value}
-                  onChange={field.onChange}
-                  disabled={isDisabled}
-                  placeholder={t('shipments.placeholders.selectDestinationCity')}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
         {/* Origin City */}
         <FormField
           control={control}
           name="originCity"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('shipments.fields.originCity')}</FormLabel>
+              <FormLabel>{t('shipments.fields.originCity')} *</FormLabel>
               <FormControl>
                 <CitySearchCombobox
-                  cities={cityOptions}
+                  cities={originCityOptions}
                   value={field.value}
                   onChange={field.onChange}
                   disabled={isDisabled}
@@ -128,38 +119,34 @@ export function DomesticShipmentDetailsForm({ control, isDisabled }: DomesticShi
           )}
         />
 
-        {/* Tier Selection */}
+        {/* Destination City - Required */}
         <FormField
           control={control}
-          name="tier"
+          name="shipmentDestination"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('shipments.fields.tier')}</FormLabel>
-              <Select 
-                onValueChange={field.onChange} 
-                value={field.value}
-                disabled={isDisabled}
-              >
-                <FormControl>
-                  <SelectTrigger className="bg-background">
-                    <SelectValue placeholder={t('shipments.placeholders.selectTier')} />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent className="bg-background">
-                  <SelectItem value="A">{getTierLabel('A')}</SelectItem>
-                  <SelectItem value="B">{getTierLabel('B')}</SelectItem>
-                  <SelectItem value="C">{getTierLabel('C')}</SelectItem>
-                  <SelectItem value="D">{getTierLabel('D')}</SelectItem>
-                  <SelectItem value="E">{getTierLabel('E')}</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormDescription>
-                {t('shipments.descriptions.tier')}
-              </FormDescription>
+              <FormLabel>{t('shipments.fields.destinationCity')} *</FormLabel>
+              <FormControl>
+                <CitySearchCombobox
+                  cities={destCityOptions}
+                  value={field.value}
+                  onChange={field.onChange}
+                  disabled={isDisabled}
+                  placeholder={t('shipments.placeholders.selectDestinationCity')}
+                />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
+
+        {/* Route Price Display */}
+        {routePrice !== null && (
+          <div className="col-span-full p-3 bg-primary/10 rounded-lg">
+            <p className="text-sm text-muted-foreground">{t('shipments.fields.shippingPrice')}</p>
+            <p className="text-lg font-bold text-primary">{routePrice} LYD</p>
+          </div>
+        )}
 
         {/* Sender Name */}
         <FormField
