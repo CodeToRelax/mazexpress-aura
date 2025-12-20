@@ -44,8 +44,9 @@ export function DomesticShipmentDetailsForm({ control, isDisabled }: DomesticShi
     getDomesticRoutes()
       .then(data => {
         console.log('Domestic routes data:', data);
-        setRoutePrices(data.domestic);
-        setOriginCities(data.originCities);
+        setRoutePrices(data.domestic || {});
+        // API returns 'cities' not 'originCities'
+        setOriginCities(data.cities || Object.keys(data.domestic || {}));
       })
       .catch(console.error);
   }, []);

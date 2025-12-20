@@ -64,8 +64,9 @@ export function DomesticRoutesCard({ onUpdate }: DomesticRoutesCardProps) {
   const fetchRoutes = async () => {
     try {
       const data = await getDomesticRoutes();
-      setRoutes(data.domestic);
-      setOriginCities(data.originCities);
+      setRoutes(data.domestic || {});
+      // API returns 'cities' not 'originCities'
+      setOriginCities(data.cities || Object.keys(data.domestic || {}));
     } catch (error) {
       toast.error(t('common.error'), {
         description: error instanceof Error ? error.message : t('settings.domesticRoutes.fetchFailed'),

@@ -12,7 +12,7 @@ interface CountryShippingConfig {
 // New city-to-city routing types
 interface DomesticRoutesResponse {
   domestic: Record<string, Record<string, number>>; // { originCity: { destCity: price } }
-  originCities: string[];
+  cities: string[]; // API returns 'cities' field
 }
 
 interface OriginCityRoutesResponse {
