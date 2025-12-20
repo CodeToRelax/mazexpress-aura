@@ -119,17 +119,49 @@ export default function Wallets() {
       setLoading(true);
       setHasError(false);
       setErrorMessage('');
-      const response = await usersApi.getUsers(filters);
+      
+      // Fetch first page to get total count
+      const firstPageResponse = await usersApi.getUsers({ 
+        userType: 'customer', 
+        limit: 100,
+        sortBy: filters.sortBy,
+        sortOrder: filters.sortOrder,
+        disabled: filters.disabled,
+        createdAfter: filters.createdAfter,
+        createdBefore: filters.createdBefore,
+      });
+      
+      const totalPages = firstPageResponse.data.pagination.totalPages;
+      
+      // Fetch remaining pages if needed (max 10 pages = 1000 users)
+      const pagePromises = [];
+      for (let page = 2; page <= Math.min(totalPages, 10); page++) {
+        pagePromises.push(usersApi.getUsers({ 
+          userType: 'customer', 
+          page, 
+          limit: 100,
+          sortBy: filters.sortBy,
+          sortOrder: filters.sortOrder,
+          disabled: filters.disabled,
+          createdAfter: filters.createdAfter,
+          createdBefore: filters.createdBefore,
+        }));
+      }
+      
+      const allResponses = await Promise.all(pagePromises);
+      const allUsers = [
+        ...firstPageResponse.data.users,
+        ...allResponses.flatMap(r => r.data.users)
+      ];
       
       // Build a map of users by ID
       const userMap = new Map<string, User>();
-      response.data.users.forEach(user => userMap.set(user._id, user));
+      allUsers.forEach(user => userMap.set(user._id, user));
       setUsersMap(userMap);
       
-      // Transform users to wallet-centric view (only customers with wallets)
-      const walletViews: WalletView[] = response.data.users
+      // Filter to only users with wallets and transform to wallet view
+      const allWalletViews: WalletView[] = allUsers
         .filter(user => 
-          user.userType === 'customer' && 
           user.walletId && 
           typeof user.walletId === 'object'
         )
@@ -148,8 +180,28 @@ export default function Wallets() {
           };
         });
       
-      setWallets(walletViews);
-      setPagination(response.data.pagination);
+      // Apply client-side pagination based on actual wallet count
+      const limit = filters.limit || 10;
+      const page = filters.page || 1;
+      const startIndex = (page - 1) * limit;
+      const paginatedWallets = allWalletViews.slice(startIndex, startIndex + limit);
+      
+      setWallets(paginatedWallets);
+      
+      // Calculate accurate pagination based on wallet count
+      const totalWallets = allWalletViews.length;
+      const calculatedTotalPages = Math.ceil(totalWallets / limit) || 1;
+      
+      setPagination({
+        currentPage: page,
+        totalPages: calculatedTotalPages,
+        totalDocs: totalWallets,
+        limit,
+        hasNextPage: page < calculatedTotalPages,
+        hasPrevPage: page > 1,
+        nextPage: page < calculatedTotalPages ? page + 1 : null,
+        prevPage: page > 1 ? page - 1 : null,
+      });
     } catch (error) {
       console.error('Failed to fetch wallets:', error);
       const message = error instanceof Error ? error.message : 'Unknown error';
