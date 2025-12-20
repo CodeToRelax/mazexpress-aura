@@ -563,7 +563,7 @@ export default function Wallets() {
               </div>
             ))}
           </div>
-        ) : wallets.length === 0 ? (
+        ) : wallets.length === 0 && pagination.totalDocs === 0 ? (
           <div className="glass-card rounded-2xl p-12 text-center">
             <div className="w-20 h-20 rounded-2xl bg-muted/30 mx-auto flex items-center justify-center mb-4">
               <WalletIcon className="h-10 w-10 text-muted-foreground" />
@@ -577,21 +577,37 @@ export default function Wallets() {
           </div>
         ) : (
           <>
-            <WalletsTable
-              wallets={wallets}
-              selectedWallets={selectedWallets}
-              visibleColumns={visibleColumns}
-              onSelectWallet={handleSelectWallet}
-              onSelectAll={handleSelectAll}
-              sortBy={filters.sortBy}
-              sortOrder={filters.sortOrder}
-              onSort={handleSort}
-            />
-            <WalletsPagination
-              pagination={pagination}
-              onPageChange={handlePageChange}
-              onLimitChange={handleLimitChange}
-            />
+            {wallets.length === 0 ? (
+              <div className="glass-card rounded-2xl p-12 text-center">
+                <div className="w-20 h-20 rounded-2xl bg-muted/30 mx-auto flex items-center justify-center mb-4">
+                  <WalletIcon className="h-10 w-10 text-muted-foreground" />
+                </div>
+                <h2 className="text-xl font-semibold text-foreground mb-2">
+                  No wallets on this page
+                </h2>
+                <p className="text-muted-foreground">
+                  Try navigating to a different page or adjusting your filters.
+                </p>
+              </div>
+            ) : (
+              <WalletsTable
+                wallets={wallets}
+                selectedWallets={selectedWallets}
+                visibleColumns={visibleColumns}
+                onSelectWallet={handleSelectWallet}
+                onSelectAll={handleSelectAll}
+                sortBy={filters.sortBy}
+                sortOrder={filters.sortOrder}
+                onSort={handleSort}
+              />
+            )}
+            {pagination.totalDocs > 0 && (
+              <WalletsPagination
+                pagination={pagination}
+                onPageChange={handlePageChange}
+                onLimitChange={handleLimitChange}
+              />
+            )}
           </>
         )}
       </motion.div>
