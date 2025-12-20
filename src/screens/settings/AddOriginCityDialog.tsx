@@ -25,16 +25,18 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { CitySearchCombobox } from '@/components/ui/CitySearchCombobox';
+import { getAvailableCities } from '@/data/libyanCities';
 
 import { addOriginCity } from '@/utilities/api/config.api';
 
 const routeSchema = z.object({
-  destinationCity: z.string().min(2, 'City name must be at least 2 characters').max(50),
+  destinationCity: z.string().min(1, 'Destination city is required'),
   price: z.coerce.number().min(0, 'Price must be at least 0'),
 });
 
 const formSchema = z.object({
-  originCity: z.string().min(2, 'City name must be at least 2 characters').max(50),
+  originCity: z.string().min(1, 'Origin city is required'),
   routes: z.array(routeSchema).min(1, 'At least one destination is required'),
 }).refine((data) => {
   const destinationCities = data.routes.map(r => r.destinationCity.toLowerCase());
@@ -81,6 +83,21 @@ export function AddOriginCityDialog({
     control: form.control,
     name: 'routes',
   });
+
+  const originCity = form.watch('originCity');
+  const routes = form.watch('routes');
+
+  // Get available cities for origin (exclude existing origins)
+  const availableOriginCities = getAvailableCities(existingOriginCities);
+
+  // Get available cities for destinations (exclude origin and already selected destinations)
+  const getAvailableDestinationCities = (currentIndex: number) => {
+    const selectedDestinations = routes
+      .map((r, i) => i !== currentIndex ? r.destinationCity : '')
+      .filter(Boolean);
+    const excludeCities = [...selectedDestinations, originCity].filter(Boolean);
+    return getAvailableCities(excludeCities);
+  };
 
   const onSubmit = async (data: FormData) => {
     // Check if origin city already exists
@@ -137,9 +154,11 @@ export function AddOriginCityDialog({
                 <FormItem>
                   <FormLabel>{t('settings.domesticRoutes.originCity')}</FormLabel>
                   <FormControl>
-                    <Input
+                    <CitySearchCombobox
+                      cities={availableOriginCities}
+                      value={field.value}
+                      onChange={field.onChange}
                       placeholder={t('settings.domesticRoutes.enterCityName')}
-                      {...field}
                     />
                   </FormControl>
                   <FormMessage />
@@ -157,9 +176,11 @@ export function AddOriginCityDialog({
                     render={({ field }) => (
                       <FormItem className="flex-1">
                         <FormControl>
-                          <Input
+                          <CitySearchCombobox
+                            cities={getAvailableDestinationCities(index)}
+                            value={field.value}
+                            onChange={field.onChange}
                             placeholder={t('settings.domesticRoutes.destinationCity')}
-                            {...field}
                           />
                         </FormControl>
                         <FormMessage />
