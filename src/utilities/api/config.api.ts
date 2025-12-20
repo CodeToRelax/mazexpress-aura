@@ -9,32 +9,29 @@ interface CountryShippingConfig {
   airShippingFactor: number;
 }
 
-interface TiersConfig {
-  A: number;
-  B: number;
-  C: number;
-  D: number;
-  E: number;
+// New city-to-city routing types
+interface DomesticRoutesResponse {
+  domestic: Record<string, Record<string, number>>; // { originCity: { destCity: price } }
+  originCities: string[];
 }
 
-interface DomesticCitiesResponse {
-  domestic: Record<string, TiersConfig>;
-  cities: string[];
+interface OriginCityRoutesResponse {
+  originCity: string;
+  routes: Record<string, number>;
+  destinationCities: string[];
 }
 
-interface CityConfigResponse {
-  city: string;
-  A: number;
-  B: number;
-  C: number;
-  D: number;
-  E: number;
+interface RoutePrice {
+  originCity: string;
+  destinationCity: string;
+  price: number;
+  currency: string;
 }
 
 interface SystemConfig {
   _id: string;
   lydExchangeRate: number;
-  domestic: Record<string, TiersConfig>;
+  domestic: Record<string, Record<string, number>>;
   countries: Record<string, CountryShippingConfig>;
   updatedBy?: string;
   createdAt: string;
@@ -173,9 +170,9 @@ export async function updateExchangeRate(
   return result.data;
 }
 
-// Domestic Cities API Functions
+// Domestic Routes API Functions (City-to-City Pricing)
 
-export async function getDomesticCities(): Promise<DomesticCitiesResponse> {
+export async function getDomesticRoutes(): Promise<DomesticRoutesResponse> {
   const token = await getAuthToken();
   
   if (!token) {
@@ -189,21 +186,21 @@ export async function getDomesticCities(): Promise<DomesticCitiesResponse> {
   });
   
   if (!response.ok) {
-    throw new Error('Failed to fetch domestic cities configuration');
+    throw new Error('Failed to fetch domestic routes');
   }
   
   const result = await response.json();
   return result.data;
 }
 
-export async function getDomesticCityConfig(city: string): Promise<CityConfigResponse> {
+export async function getOriginCityRoutes(originCity: string): Promise<OriginCityRoutesResponse> {
   const token = await getAuthToken();
   
   if (!token) {
     throw new Error('Authentication required');
   }
   
-  const response = await fetch(`${API_BASE_URL}/api/config/domestic/${encodeURIComponent(city)}`, {
+  const response = await fetch(`${API_BASE_URL}/api/config/domestic/${encodeURIComponent(originCity)}`, {
     headers: {
       'Authorization': `Bearer ${token}`,
     },
@@ -211,85 +208,170 @@ export async function getDomesticCityConfig(city: string): Promise<CityConfigRes
   
   if (!response.ok) {
     if (response.status === 404) {
-      throw new Error(`City "${city}" not found`);
+      throw new Error(`Origin city "${originCity}" not found`);
     }
-    throw new Error(`Failed to fetch configuration for ${city}`);
+    throw new Error(`Failed to fetch routes for ${originCity}`);
   }
   
   const result = await response.json();
   return result.data;
 }
 
-export async function addDomesticCity(
-  city: string,
-  tiers: TiersConfig
-): Promise<CityConfigResponse> {
+export async function getRoutePrice(originCity: string, destinationCity: string): Promise<RoutePrice> {
   const token = await getAuthToken();
   
   if (!token) {
     throw new Error('Authentication required');
   }
   
-  const response = await fetch(`${API_BASE_URL}/api/config/domestic/${encodeURIComponent(city)}`, {
+  const response = await fetch(
+    `${API_BASE_URL}/api/config/domestic/${encodeURIComponent(originCity)}/${encodeURIComponent(destinationCity)}`,
+    {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    }
+  );
+  
+  if (!response.ok) {
+    if (response.status === 404) {
+      throw new Error(`Route from "${originCity}" to "${destinationCity}" not found`);
+    }
+    throw new Error('Failed to fetch route price');
+  }
+  
+  const result = await response.json();
+  return result.data;
+}
+
+export async function addOriginCity(
+  originCity: string,
+  routes: Record<string, number>
+): Promise<OriginCityRoutesResponse> {
+  const token = await getAuthToken();
+  
+  if (!token) {
+    throw new Error('Authentication required');
+  }
+  
+  const response = await fetch(`${API_BASE_URL}/api/config/domestic/${encodeURIComponent(originCity)}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`,
     },
-    body: JSON.stringify(tiers),
+    body: JSON.stringify(routes),
   });
   
   if (!response.ok) {
     const error = await response.json();
     if (response.status === 409) {
-      throw new Error(`City "${city}" already exists`);
+      throw new Error(`Origin city "${originCity}" already exists`);
     }
-    throw new Error(error.error?.message || 'Failed to add city');
+    throw new Error(error.error?.message || 'Failed to add origin city');
   }
   
   const result = await response.json();
   return result.data;
 }
 
-export async function updateDomesticCity(
-  city: string,
-  tiers: Partial<TiersConfig>
-): Promise<CityConfigResponse> {
+export async function updateOriginCityRoutes(
+  originCity: string,
+  routes: Record<string, number>
+): Promise<OriginCityRoutesResponse> {
   const token = await getAuthToken();
   
   if (!token) {
     throw new Error('Authentication required');
   }
   
-  const response = await fetch(`${API_BASE_URL}/api/config/domestic/${encodeURIComponent(city)}`, {
+  const response = await fetch(`${API_BASE_URL}/api/config/domestic/${encodeURIComponent(originCity)}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`,
     },
-    body: JSON.stringify(tiers),
+    body: JSON.stringify(routes),
   });
   
   if (!response.ok) {
     const error = await response.json();
     if (response.status === 404) {
-      throw new Error(`City "${city}" not found`);
+      throw new Error(`Origin city "${originCity}" not found`);
     }
-    throw new Error(error.error?.message || 'Failed to update city configuration');
+    throw new Error(error.error?.message || 'Failed to update routes');
   }
   
   const result = await response.json();
   return result.data;
 }
 
-export async function deleteDomesticCity(city: string): Promise<void> {
+export async function setRoutePrice(
+  originCity: string,
+  destinationCity: string,
+  price: number
+): Promise<RoutePrice> {
   const token = await getAuthToken();
   
   if (!token) {
     throw new Error('Authentication required');
   }
   
-  const response = await fetch(`${API_BASE_URL}/api/config/domestic/${encodeURIComponent(city)}`, {
+  const response = await fetch(
+    `${API_BASE_URL}/api/config/domestic/${encodeURIComponent(originCity)}/${encodeURIComponent(destinationCity)}`,
+    {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ price }),
+    }
+  );
+  
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error?.message || 'Failed to set route price');
+  }
+  
+  const result = await response.json();
+  return result.data;
+}
+
+export async function deleteRoute(originCity: string, destinationCity: string): Promise<void> {
+  const token = await getAuthToken();
+  
+  if (!token) {
+    throw new Error('Authentication required');
+  }
+  
+  const response = await fetch(
+    `${API_BASE_URL}/api/config/domestic/${encodeURIComponent(originCity)}/${encodeURIComponent(destinationCity)}`,
+    {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    }
+  );
+  
+  if (!response.ok) {
+    const error = await response.json();
+    if (response.status === 404) {
+      throw new Error(`Route not found`);
+    }
+    throw new Error(error.error?.message || 'Failed to delete route');
+  }
+}
+
+export async function deleteOriginCity(originCity: string): Promise<void> {
+  const token = await getAuthToken();
+  
+  if (!token) {
+    throw new Error('Authentication required');
+  }
+  
+  const response = await fetch(`${API_BASE_URL}/api/config/domestic/${encodeURIComponent(originCity)}`, {
     method: 'DELETE',
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -299,13 +381,19 @@ export async function deleteDomesticCity(city: string): Promise<void> {
   if (!response.ok) {
     const error = await response.json();
     if (response.status === 400) {
-      throw new Error('Cannot delete the last city');
+      throw new Error('Cannot delete the last origin city');
     }
     if (response.status === 404) {
-      throw new Error(`City "${city}" not found`);
+      throw new Error(`Origin city "${originCity}" not found`);
     }
-    throw new Error(error.error?.message || 'Failed to delete city');
+    throw new Error(error.error?.message || 'Failed to delete origin city');
   }
 }
 
-export type { TiersConfig, DomesticCitiesResponse, CityConfigResponse, CountryShippingConfig, SystemConfig };
+export type { 
+  DomesticRoutesResponse, 
+  OriginCityRoutesResponse, 
+  RoutePrice, 
+  CountryShippingConfig, 
+  SystemConfig 
+};
