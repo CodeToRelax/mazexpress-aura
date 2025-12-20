@@ -299,12 +299,12 @@ export default function ShipmentDetail() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <p className="text-sm text-muted-foreground">{t('shipments.form.fields.destinationCity')}</p>
+            <p className="text-sm text-muted-foreground">{t('shipments.fields.destinationCity')}</p>
             <p className="font-medium">{formatCityName(shipment.shipmentDestination)}</p>
           </div>
           {shipment.originCity && (
             <div>
-              <p className="text-sm text-muted-foreground">{t('shipments.form.fields.originCity')}</p>
+              <p className="text-sm text-muted-foreground">{t('shipments.fields.originCity')}</p>
               <p className="font-medium">{formatCityName(shipment.originCity)}</p>
             </div>
           )}
