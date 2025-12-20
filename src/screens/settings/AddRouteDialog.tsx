@@ -24,11 +24,13 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { CitySearchCombobox } from '@/components/ui/CitySearchCombobox';
+import { getAvailableCities } from '@/data/libyanCities';
 
 import { setRoutePrice } from '@/utilities/api/config.api';
 
 const formSchema = z.object({
-  destinationCity: z.string().min(2, 'City name must be at least 2 characters').max(50),
+  destinationCity: z.string().min(1, 'Destination city is required'),
   price: z.coerce.number().min(0, 'Price must be at least 0'),
 });
 
@@ -67,28 +69,13 @@ export function AddRouteDialog({
     },
   });
 
+  // Get available cities (exclude origin and existing destinations)
+  const availableDestinationCities = getAvailableCities([originCity, ...existingDestinations]);
+
   const onSubmit = async (data: FormData) => {
-    const destLower = data.destinationCity.toLowerCase();
-    
-    // Validate not same as origin
-    if (destLower === originCity.toLowerCase()) {
-      form.setError('destinationCity', { 
-        message: t('settings.domesticRoutes.sameCityError') 
-      });
-      return;
-    }
-
-    // Validate not already exists
-    if (existingDestinations.some(d => d.toLowerCase() === destLower)) {
-      form.setError('destinationCity', { 
-        message: t('settings.domesticRoutes.routeExists') 
-      });
-      return;
-    }
-
     setIsSubmitting(true);
     try {
-      await setRoutePrice(originCity, destLower, data.price);
+      await setRoutePrice(originCity, data.destinationCity.toLowerCase(), data.price);
       toast.success(t('common.success'), {
         description: t('settings.domesticRoutes.routeAdded'),
       });
@@ -134,9 +121,11 @@ export function AddRouteDialog({
                 <FormItem>
                   <FormLabel>{t('settings.domesticRoutes.destinationCity')}</FormLabel>
                   <FormControl>
-                    <Input
+                    <CitySearchCombobox
+                      cities={availableDestinationCities}
+                      value={field.value}
+                      onChange={field.onChange}
                       placeholder={t('settings.domesticRoutes.enterCityName')}
-                      {...field}
                     />
                   </FormControl>
                   <FormMessage />

@@ -58,8 +58,8 @@ export function CitySearchCombobox({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0 border-border z-50" align="start">
-        <Command className="bg-background">
+      <PopoverContent className="w-full p-0 border-border z-50 bg-white dark:bg-gray-900" align="start">
+        <Command className="bg-white dark:bg-gray-900">
           <CommandInput placeholder="Search cities..." />
           <CommandList>
             <CommandEmpty>No city found.</CommandEmpty>
