@@ -5,7 +5,7 @@ import { Plus, Trash2, MapPin, Loader2, Route } from 'lucide-react';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+
 import {
   Table,
   TableBody,
@@ -195,110 +195,107 @@ export function DomesticRoutesCard({ onUpdate }: DomesticRoutesCardProps) {
               <p>{t('settings.domesticRoutes.noRoutes')}</p>
             </div>
           ) : (
-            <ScrollArea className="w-full">
-              <div className="min-w-max">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="sticky left-0 bg-background z-10 min-w-[140px]">
-                        {t('settings.domesticRoutes.fromTo')}
+            <div className="w-full overflow-x-auto scrollbar-thick">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="sticky left-0 bg-background z-10 min-w-[140px]">
+                      {t('settings.domesticRoutes.fromTo')}
+                    </TableHead>
+                    {allDestinationCities.map(city => (
+                      <TableHead key={city} className="text-center min-w-[100px]">
+                        {formatCityName(city)}
                       </TableHead>
-                      {allDestinationCities.map(city => (
-                        <TableHead key={city} className="text-center min-w-[100px]">
-                          {formatCityName(city)}
-                        </TableHead>
-                      ))}
-                      <TableHead className="sticky right-[50px] bg-background z-10 text-center min-w-[60px]">
-                        <Plus className="h-4 w-4 mx-auto text-muted-foreground" />
-                      </TableHead>
-                      <TableHead className="sticky right-0 bg-background z-10 w-[50px]" />
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {originCities.map(originCity => (
-                      <TableRow key={originCity}>
-                        <TableCell className="sticky left-0 bg-background z-10 font-medium">
-                          {formatCityName(originCity)}
-                        </TableCell>
-                        {allDestinationCities.map(destCity => {
-                          const isSameCity = originCity.toLowerCase() === destCity.toLowerCase();
-                          const price = routes[originCity]?.[destCity];
-                          const hasRoute = price !== undefined;
+                    ))}
+                    <TableHead className="sticky right-[50px] bg-background z-10 text-center min-w-[60px]">
+                      <Plus className="h-4 w-4 mx-auto text-muted-foreground" />
+                    </TableHead>
+                    <TableHead className="sticky right-0 bg-background z-10 w-[50px]" />
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {originCities.map(originCity => (
+                    <TableRow key={originCity}>
+                      <TableCell className="sticky left-0 bg-background z-10 font-medium">
+                        {formatCityName(originCity)}
+                      </TableCell>
+                      {allDestinationCities.map(destCity => {
+                        const isSameCity = originCity.toLowerCase() === destCity.toLowerCase();
+                        const price = routes[originCity]?.[destCity];
+                        const hasRoute = price !== undefined;
 
-                          if (isSameCity) {
-                            return (
-                              <TableCell key={destCity} className="text-center">
-                                <span className="text-muted-foreground">—</span>
-                              </TableCell>
-                            );
-                          }
-
-                          if (hasRoute) {
-                            return (
-                              <TableCell key={destCity} className="text-center p-1">
-                                <EditableRouteCell
-                                  price={price}
-                                  originCity={originCity}
-                                  destinationCity={destCity}
-                                  onSave={handlePriceUpdate}
-                                  onDelete={() => setDeleteRouteData({ origin: originCity, destination: destCity })}
-                                />
-                              </TableCell>
-                            );
-                          }
-
+                        if (isSameCity) {
                           return (
                             <TableCell key={destCity} className="text-center">
-                              <span className="text-muted-foreground/50">-</span>
+                              <span className="text-muted-foreground">—</span>
                             </TableCell>
                           );
-                        })}
-                        <TableCell className="sticky right-[50px] bg-background z-10 text-center">
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="h-8 w-8 p-0"
-                                  onClick={() => handleAddRoute(originCity)}
-                                >
-                                  <Plus className="h-4 w-4" />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                {t('settings.domesticRoutes.addRoute')}
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        </TableCell>
-                        <TableCell className="sticky right-0 bg-background z-10">
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
-                                  onClick={() => setDeleteOriginData(originCity)}
-                                  disabled={originCities.length <= 1}
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                {t('settings.domesticRoutes.deleteOriginCity')}
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-              <ScrollBar orientation="horizontal" className="h-4" />
-            </ScrollArea>
+                        }
+
+                        if (hasRoute) {
+                          return (
+                            <TableCell key={destCity} className="text-center p-1">
+                              <EditableRouteCell
+                                price={price}
+                                originCity={originCity}
+                                destinationCity={destCity}
+                                onSave={handlePriceUpdate}
+                                onDelete={() => setDeleteRouteData({ origin: originCity, destination: destCity })}
+                              />
+                            </TableCell>
+                          );
+                        }
+
+                        return (
+                          <TableCell key={destCity} className="text-center">
+                            <span className="text-muted-foreground/50">-</span>
+                          </TableCell>
+                        );
+                      })}
+                      <TableCell className="sticky right-[50px] bg-background z-10 text-center">
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 w-8 p-0"
+                                onClick={() => handleAddRoute(originCity)}
+                              >
+                                <Plus className="h-4 w-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              {t('settings.domesticRoutes.addRoute')}
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </TableCell>
+                      <TableCell className="sticky right-0 bg-background z-10">
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+                                onClick={() => setDeleteOriginData(originCity)}
+                                disabled={originCities.length <= 1}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              {t('settings.domesticRoutes.deleteOriginCity')}
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           )}
         </CardContent>
       </Card>
