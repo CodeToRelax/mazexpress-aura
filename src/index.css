@@ -306,7 +306,7 @@
   }
   
   .scrollbar-thick::-webkit-scrollbar {
-    height: 16px;
+    height: 24px;
     display: block;
   }
   
