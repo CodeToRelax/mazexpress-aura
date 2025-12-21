@@ -208,10 +208,10 @@ export function DomesticRoutesCard({ onUpdate }: DomesticRoutesCardProps) {
                           {formatCityName(city)}
                         </TableHead>
                       ))}
-                      <TableHead className="text-center min-w-[60px]">
+                      <TableHead className="sticky right-[50px] bg-background z-10 text-center min-w-[60px]">
                         <Plus className="h-4 w-4 mx-auto text-muted-foreground" />
                       </TableHead>
-                      <TableHead className="w-[50px]" />
+                      <TableHead className="sticky right-0 bg-background z-10 w-[50px]" />
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -253,7 +253,7 @@ export function DomesticRoutesCard({ onUpdate }: DomesticRoutesCardProps) {
                             </TableCell>
                           );
                         })}
-                        <TableCell className="text-center">
+                        <TableCell className="sticky right-[50px] bg-background z-10 text-center">
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger asChild>
@@ -272,7 +272,7 @@ export function DomesticRoutesCard({ onUpdate }: DomesticRoutesCardProps) {
                             </Tooltip>
                           </TooltipProvider>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="sticky right-0 bg-background z-10">
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger asChild>
@@ -297,7 +297,7 @@ export function DomesticRoutesCard({ onUpdate }: DomesticRoutesCardProps) {
                   </TableBody>
                 </Table>
               </div>
-              <ScrollBar orientation="horizontal" />
+              <ScrollBar orientation="horizontal" className="h-4" />
             </ScrollArea>
           )}
         </CardContent>
