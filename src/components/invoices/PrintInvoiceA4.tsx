@@ -346,6 +346,7 @@ export default function PrintInvoiceA4(props: Props) {
         <img className="bg" width="300" src="/assets/images/logo/logo.png" alt="" />
         <div className="inner-wrapper">
           <div className="top">
+            {/* // */}
             <div
               style={{
                 direction: "rtl",
@@ -375,13 +376,19 @@ export default function PrintInvoiceA4(props: Props) {
                 style={{
                   display: "flex",
                   flexDirection: "column",
-                  gap: 2,
-                  lineHeight: 1.3,
+                  gap: 3,
+                  lineHeight: 1.35,
                 }}
               >
                 <span style={{ fontSize: 14, fontWeight: 800 }}>MAZEXPRESS</span>
-                <span style={{ fontSize: 12 }}>بنغازي, ليبيا</span>
+
                 <span style={{ fontSize: 12, direction: "ltr" }}>0919497423</span>
+
+                <span style={{ fontSize: 12, direction: "ltr" }}>info@mazexpress.com.ly</span>
+
+                <span style={{ fontSize: 12 }}>ﻻندلس</span>
+                <span style={{ fontSize: 12 }}>الفويهات، ارض بن عﲇ، شارع ا</span>
+                <span style={{ fontSize: 12 }}>بنغازي, ليبيا</span>
               </div>
 
               {/* Divider */}
@@ -421,6 +428,7 @@ export default function PrintInvoiceA4(props: Props) {
                 </div>
               </div>
             </div>
+            {/* // */}
             <div className="logo-section">
               <img width="160" src="/assets/images/logo/Logos-text.png" alt="MAZ Express" />
               <h2>#{String(invoiceNumber).slice(-6)}</h2>
