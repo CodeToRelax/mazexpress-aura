@@ -405,6 +405,30 @@
     "viewOnMaps": "عرض على خرائط جوجل",
     "viewVideo": "مشاهدة فيديو يوتيوب"
   },
+  "profile": {
+    "title": "حسابي",
+    "subtitle": "عرض وإدارة معلومات حسابك",
+    "myAccount": "حسابي",
+    "sections": {
+      "accountInfo": "معلومات الحساب",
+      "addressInfo": "معلومات العنوان",
+      "security": "الأمان والوصول"
+    },
+    "fields": {
+      "email": "البريد الإلكتروني",
+      "phone": "رقم الهاتف",
+      "adminCountry": "بلد المسؤول",
+      "createdAt": "تاريخ إنشاء الحساب",
+      "city": "المدينة",
+      "country": "البلد",
+      "street": "الشارع",
+      "locationDescription": "وصف الموقع",
+      "lastSignIn": "آخر تسجيل دخول",
+      "accountStatus": "حالة الحساب",
+      "shippingNumber": "رقم الشحن",
+      "memberSince": "عضو منذ"
+    }
+  },
   "acl": {
     "countryRestriction": "قيود الوصول حسب البلد",
     "noAccessToStatus": "وصول الحالة مقيد",

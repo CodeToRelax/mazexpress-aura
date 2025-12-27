@@ -462,6 +462,30 @@
     "viewOnMaps": "View on Google Maps",
     "viewVideo": "View YouTube Video"
   },
+  "profile": {
+    "title": "My Account",
+    "subtitle": "View and manage your account information",
+    "myAccount": "My Account",
+    "sections": {
+      "accountInfo": "Account Information",
+      "addressInfo": "Address Information",
+      "security": "Security & Access"
+    },
+    "fields": {
+      "email": "Email Address",
+      "phone": "Phone Number",
+      "adminCountry": "Admin Country",
+      "createdAt": "Account Created",
+      "city": "City",
+      "country": "Country",
+      "street": "Street",
+      "locationDescription": "Location Description",
+      "lastSignIn": "Last Sign In",
+      "accountStatus": "Account Status",
+      "shippingNumber": "Shipping Number",
+      "memberSince": "Member Since"
+    }
+  },
   "acl": {
     "countryRestriction": "Country-Based Access Restriction",
     "noAccessToStatus": "Status Access Restricted",

@@ -25,6 +25,7 @@ import Invoices from "@/screens/invoices/Invoices";
 import InvoiceDetail from "@/screens/invoices/InvoiceDetail";
 import TrackShipment from "@/pages/TrackShipment";
 import PriceCalculator from "@/pages/PriceCalculator";
+import MyProfile from "@/screens/profile/MyProfile";
 import NotFound from "./pages/NotFound";
 
 // Initialize Firebase on app start
@@ -54,6 +55,7 @@ const App = () => {
             {/* Protected Routes */}
             <Route element={<PrivateRoute><AppLayout /></PrivateRoute>}>
               <Route path="/" element={<Dashboard />} />
+              <Route path="/profile" element={<MyProfile />} />
               <Route path="/users" element={<Users />} />
               <Route path="/users/:id" element={<UserDetail />} />
               <Route path="/wallets" element={<Wallets />} />
