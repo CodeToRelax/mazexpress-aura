@@ -56,6 +56,7 @@ export function WalletsStatsBar({ stats, onStatClick }: WalletsStatsBarProps) {
       color: 'text-orange-600 dark:text-orange-400',
       bgColor: 'bg-orange-500/10',
       filterType: 'negative' as const,
+      smallValue: true,
     },
     {
       icon: TrendingUp,
@@ -65,6 +66,7 @@ export function WalletsStatsBar({ stats, onStatClick }: WalletsStatsBarProps) {
       color: 'text-blue-600 dark:text-blue-400',
       bgColor: 'bg-blue-500/10',
       filterType: 'positive' as const,
+      smallValue: true,
     },
   ];
 
@@ -85,7 +87,7 @@ export function WalletsStatsBar({ stats, onStatClick }: WalletsStatsBarProps) {
             </div>
             <div className="min-w-0">
               <p className="text-sm text-muted-foreground truncate">{stat.label}</p>
-              <p className="text-2xl font-bold text-foreground">{stat.value}</p>
+              <p className={`${stat.smallValue ? 'text-lg' : 'text-2xl'} font-bold text-foreground`}>{stat.value}</p>
               {stat.subValue && (
                 <p className="text-xs text-muted-foreground">{stat.subValue}</p>
               )}
