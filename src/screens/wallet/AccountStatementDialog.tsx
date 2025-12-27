@@ -122,6 +122,7 @@ export function AccountStatementDialog({ open, onOpenChange, wallet: initialWall
         dateTo,
         customerName: userName || (walletUserId ? `${walletUserId.firstName} ${walletUserId.lastName}` : undefined),
         customerEmail: walletUserId?.email,
+        locale: i18n.language as 'en' | 'ar',
       });
       
       toast({
