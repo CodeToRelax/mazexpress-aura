@@ -17,7 +17,7 @@ import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
-import { getWallet, getTransactions } from '@/utilities/api/wallet.api';
+import { getWallet, getTransactions, getUserTransactions } from '@/utilities/api/wallet.api';
 import { generateAccountStatementPDF } from '@/utilities/helpers/accountStatementPDF';
 import type { Wallet } from '@/types/wallet';
 
@@ -25,11 +25,13 @@ interface AccountStatementDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   wallet?: Wallet | null;
+  userId?: string; // For admin view - fetch transactions for specific user
+  userName?: string; // For PDF - customer name override
 }
 
 type PresetPeriod = 'last7days' | 'last30days' | 'thisMonth' | 'lastMonth' | 'thisYear' | 'custom';
 
-export function AccountStatementDialog({ open, onOpenChange, wallet: initialWallet }: AccountStatementDialogProps) {
+export function AccountStatementDialog({ open, onOpenChange, wallet: initialWallet, userId, userName }: AccountStatementDialogProps) {
   const { t, i18n } = useTranslation();
   const today = new Date();
   
@@ -47,14 +49,19 @@ export function AccountStatementDialog({ open, onOpenChange, wallet: initialWall
   
   const wallet = initialWallet || fetchedWallet;
   
-  // Preview query for transaction count
+  // Preview query for transaction count - use admin API if userId provided
   const { data: previewData, isLoading: previewLoading } = useQuery({
-    queryKey: ['statement-preview', dateFrom.toISOString(), dateTo.toISOString()],
-    queryFn: () => getTransactions({
-      dateFrom: format(dateFrom, 'yyyy-MM-dd'),
-      dateTo: format(dateTo, 'yyyy-MM-dd'),
-      limit: 1,
-    }, i18n.language),
+    queryKey: ['statement-preview', userId, dateFrom.toISOString(), dateTo.toISOString()],
+    queryFn: () => {
+      const filters = {
+        dateFrom: format(dateFrom, 'yyyy-MM-dd'),
+        dateTo: format(dateTo, 'yyyy-MM-dd'),
+        limit: 1,
+      };
+      return userId 
+        ? getUserTransactions(userId, filters, i18n.language)
+        : getTransactions(filters, i18n.language);
+    },
     enabled: open,
   });
   
@@ -116,34 +123,38 @@ export function AccountStatementDialog({ open, onOpenChange, wallet: initialWall
     setIsGenerating(true);
     
     try {
-      // Fetch all transactions for the period
+      // Fetch all transactions for the period - use admin API if userId provided
       const allTransactions = [];
       let page = 1;
       let hasMore = true;
       
       while (hasMore) {
-        const response = await getTransactions({
+        const filters = {
           dateFrom: format(dateFrom, 'yyyy-MM-dd'),
           dateTo: format(dateTo, 'yyyy-MM-dd'),
           page,
           limit: 100,
-        }, i18n.language);
+        };
+        
+        const response = userId 
+          ? await getUserTransactions(userId, filters, i18n.language)
+          : await getTransactions(filters, i18n.language);
         
         allTransactions.push(...response.transactions);
         hasMore = response.pagination.hasNextPage;
         page++;
       }
       
-      // Get user info from wallet
-      const userId = typeof wallet.userId === 'object' ? wallet.userId : null;
+      // Get user info from wallet or use provided userName
+      const walletUserId = typeof wallet.userId === 'object' ? wallet.userId : null;
       
       await generateAccountStatementPDF({
         wallet,
         transactions: allTransactions,
         dateFrom,
         dateTo,
-        customerName: userId ? `${userId.firstName} ${userId.lastName}` : undefined,
-        customerEmail: userId?.email,
+        customerName: userName || (walletUserId ? `${walletUserId.firstName} ${walletUserId.lastName}` : undefined),
+        customerEmail: walletUserId?.email,
       });
       
       toast({
