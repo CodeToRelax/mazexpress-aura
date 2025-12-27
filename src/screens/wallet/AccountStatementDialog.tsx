@@ -228,16 +228,6 @@ export function AccountStatementDialog({ open, onOpenChange, wallet: initialWall
                 {format(dateFrom, 'dd/MM/yyyy')} - {format(dateTo, 'dd/MM/yyyy')}
               </span>
             </div>
-            <div className="flex items-center justify-between text-sm mt-2">
-              <span className="text-muted-foreground">{t('wallet.statement.transactionCount')}</span>
-              <span className="font-medium">
-                {previewLoading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  previewData?.pagination.totalItems || 0
-                )}
-              </span>
-            </div>
             {wallet && (
               <div className="flex items-center justify-between text-sm mt-2">
                 <span className="text-muted-foreground">{t('wallet.statement.currentBalance')}</span>
