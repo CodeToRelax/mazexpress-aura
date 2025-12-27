@@ -37,10 +37,8 @@ export default function MyProfile() {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
 
   const fetchProfile = useCallback(async () => {
-    if (!firebaseUser?.email) return;
-    
     try {
-      const response = await usersApi.getUserByEmail(firebaseUser.email);
+      const response = await usersApi.getMyProfile();
       if (response.success) {
         setProfile(response.data);
       }
@@ -49,7 +47,7 @@ export default function MyProfile() {
     } finally {
       setLoading(false);
     }
-  }, [firebaseUser?.email]);
+  }, []);
 
   useEffect(() => {
     fetchProfile();
