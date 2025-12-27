@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Wallet, UserCheck, UserX, TrendingDown, TrendingUp } from 'lucide-react';
+import { Wallet, WalletMinimal, WalletCards, TrendingDown, TrendingUp } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { formatLYD } from '@/utilities/helpers/currencyHelpers';
 
@@ -31,7 +31,7 @@ export function WalletsStatsBar({ stats, onStatClick }: WalletsStatsBarProps) {
       filterType: 'all' as const,
     },
     {
-      icon: UserCheck,
+      icon: WalletMinimal,
       label: t('wallets.stats.activeWallets'),
       value: stats.activeWallets,
       subValue: null,
@@ -40,7 +40,7 @@ export function WalletsStatsBar({ stats, onStatClick }: WalletsStatsBarProps) {
       filterType: 'active' as const,
     },
     {
-      icon: UserX,
+      icon: WalletCards,
       label: t('wallets.stats.inactiveWallets'),
       value: stats.inactiveWallets,
       subValue: null,
