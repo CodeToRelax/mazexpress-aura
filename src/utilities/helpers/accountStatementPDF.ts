@@ -233,45 +233,6 @@ export async function generateAccountStatementPDF(data: StatementData): Promise<
     },
   });
   
-  // ===== SUMMARY SECTION =====
-  const finalY = (doc as any).lastAutoTable.finalY || 200;
-  let yPos = finalY + 12;
-  
-  // Summary box
-  doc.setFillColor(colors.headerBg[0], colors.headerBg[1], colors.headerBg[2]);
-  doc.roundedRect(120, yPos - 4, 76, 42, 2, 2, 'F');
-  
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(10);
-  doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
-  doc.text('SUMMARY', 124, yPos + 2);
-  
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(9);
-  
-  yPos += 9;
-  doc.text('Total Deposits:', 124, yPos);
-  doc.setTextColor(colors.depositGreen[0], colors.depositGreen[1], colors.depositGreen[2]);
-  doc.text(`+${formatLYD(summary.deposits)}`, 192, yPos, { align: 'right' });
-  
-  yPos += 6;
-  doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
-  doc.text('Total Refunds:', 124, yPos);
-  doc.setTextColor(colors.refundBlue[0], colors.refundBlue[1], colors.refundBlue[2]);
-  doc.text(`+${formatLYD(summary.refunds)}`, 192, yPos, { align: 'right' });
-  
-  yPos += 6;
-  doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
-  doc.text('Total Withdrawals:', 124, yPos);
-  doc.setTextColor(colors.withdrawRed[0], colors.withdrawRed[1], colors.withdrawRed[2]);
-  doc.text(`-${formatLYD(summary.withdrawals)}`, 192, yPos, { align: 'right' });
-  
-  yPos += 6;
-  doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
-  doc.text('Total Deductions:', 124, yPos);
-  doc.setTextColor(colors.withdrawRed[0], colors.withdrawRed[1], colors.withdrawRed[2]);
-  doc.text(`-${formatLYD(summary.deductions)}`, 192, yPos, { align: 'right' });
-  
   // ===== FOOTER =====
   doc.setFontSize(8);
   doc.setFont('helvetica', 'italic');
