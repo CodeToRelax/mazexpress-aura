@@ -134,8 +134,7 @@ export const usersApi = {
       },
     });
 
-    const result = await handleResponse<{ success: boolean; data: { data: User } }>(response);
-    return { success: result.success, data: result.data.data };
+    return handleResponse(response);
   },
 
   async getStats(): Promise<{
