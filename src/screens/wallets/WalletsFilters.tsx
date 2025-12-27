@@ -28,8 +28,8 @@ import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 
 interface WalletsFiltersProps {
-  filters: UserFilters;
-  onFiltersChange: (filters: UserFilters) => void;
+  filters: UserFilters & { balanceFilter?: 'positive' | 'negative' | 'zero' };
+  onFiltersChange: (filters: UserFilters & { balanceFilter?: 'positive' | 'negative' | 'zero' }) => void;
   onClearFilters: () => void;
   activeFilterCount: number;
 }
@@ -50,7 +50,7 @@ export function WalletsFilters({
     }
   }, [debouncedSearch]);
 
-  const handleFilterChange = (key: keyof UserFilters, value: any) => {
+  const handleFilterChange = (key: string, value: any) => {
     onFiltersChange({ ...filters, [key]: value, page: 1 });
   };
 
@@ -174,6 +174,26 @@ export function WalletsFilters({
                 </PopoverContent>
               </Popover>
             </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">{t('wallets.filters.balance')}</label>
+              <Select
+                value={filters.balanceFilter || 'all'}
+                onValueChange={(value) => 
+                  handleFilterChange('balanceFilter', value === 'all' ? undefined : value)
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{t('wallets.filters.allBalances')}</SelectItem>
+                  <SelectItem value="positive">{t('wallets.filters.positiveBalance')}</SelectItem>
+                  <SelectItem value="negative">{t('wallets.filters.negativeBalance')}</SelectItem>
+                  <SelectItem value="zero">{t('wallets.filters.zeroBalance')}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </SheetContent>
       </Sheet>
@@ -200,11 +220,20 @@ export function ActiveFiltersBadges({
 }: WalletsFiltersProps) {
   const { t } = useTranslation();
 
-  const handleFilterChange = (key: keyof UserFilters, value: any) => {
+  const handleFilterChange = (key: string, value: any) => {
     onFiltersChange({ ...filters, [key]: value, page: 1 });
   };
 
   if (activeFilterCount === 0) return null;
+
+  const getBalanceFilterLabel = () => {
+    switch (filters.balanceFilter) {
+      case 'positive': return t('wallets.filters.positiveBalance');
+      case 'negative': return t('wallets.filters.negativeBalance');
+      case 'zero': return t('wallets.filters.zeroBalance');
+      default: return '';
+    }
+  };
 
   return (
     <div className="flex items-center gap-2 flex-wrap">
@@ -230,6 +259,15 @@ export function ActiveFiltersBadges({
                 createdBefore: undefined 
               });
             }}
+          />
+        </Badge>
+      )}
+      {filters.balanceFilter && (
+        <Badge variant="secondary" className="gap-1">
+          {getBalanceFilterLabel()}
+          <X 
+            className="h-3 w-3 cursor-pointer" 
+            onClick={() => handleFilterChange('balanceFilter', undefined)}
           />
         </Badge>
       )}

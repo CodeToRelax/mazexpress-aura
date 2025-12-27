@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Wallet, UserCheck, UserX } from 'lucide-react';
+import { Wallet, UserCheck, UserX, TrendingDown, TrendingUp } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { formatLYD } from '@/utilities/helpers/currencyHelpers';
 
@@ -9,8 +9,12 @@ interface WalletsStatsBarProps {
     activeWallets: number;
     inactiveWallets: number;
     totalBalance: number;
+    positiveBalanceCount: number;
+    negativeBalanceCount: number;
+    totalPositiveBalance: number;
+    totalNegativeBalance: number;
   };
-  onStatClick: (filterType: 'all' | 'active' | 'inactive') => void;
+  onStatClick: (filterType: 'all' | 'active' | 'inactive' | 'positive' | 'negative') => void;
 }
 
 export function WalletsStatsBar({ stats, onStatClick }: WalletsStatsBarProps) {
@@ -21,6 +25,7 @@ export function WalletsStatsBar({ stats, onStatClick }: WalletsStatsBarProps) {
       icon: Wallet,
       label: t('wallets.stats.totalWallets'),
       value: stats.totalWallets,
+      subValue: null,
       color: 'text-primary',
       bgColor: 'bg-primary/10',
       filterType: 'all' as const,
@@ -29,6 +34,7 @@ export function WalletsStatsBar({ stats, onStatClick }: WalletsStatsBarProps) {
       icon: UserCheck,
       label: t('wallets.stats.activeWallets'),
       value: stats.activeWallets,
+      subValue: null,
       color: 'text-green-600 dark:text-green-400',
       bgColor: 'bg-green-500/10',
       filterType: 'active' as const,
@@ -37,22 +43,33 @@ export function WalletsStatsBar({ stats, onStatClick }: WalletsStatsBarProps) {
       icon: UserX,
       label: t('wallets.stats.inactiveWallets'),
       value: stats.inactiveWallets,
+      subValue: null,
       color: 'text-red-600 dark:text-red-400',
       bgColor: 'bg-red-500/10',
       filterType: 'inactive' as const,
     },
     {
-      icon: Wallet,
-      label: t('wallets.stats.totalBalance'),
-      value: formatLYD(stats.totalBalance),
+      icon: TrendingDown,
+      label: t('wallets.stats.negativeBalance'),
+      value: formatLYD(Math.abs(stats.totalNegativeBalance)),
+      subValue: t('wallets.stats.customersCount', { count: stats.negativeBalanceCount }),
+      color: 'text-orange-600 dark:text-orange-400',
+      bgColor: 'bg-orange-500/10',
+      filterType: 'negative' as const,
+    },
+    {
+      icon: TrendingUp,
+      label: t('wallets.stats.positiveBalance'),
+      value: formatLYD(stats.totalPositiveBalance),
+      subValue: t('wallets.stats.customersCount', { count: stats.positiveBalanceCount }),
       color: 'text-blue-600 dark:text-blue-400',
       bgColor: 'bg-blue-500/10',
-      filterType: null,
+      filterType: 'positive' as const,
     },
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
       {statCards.map((stat, index) => (
         <motion.div
           key={stat.label}
@@ -69,6 +86,9 @@ export function WalletsStatsBar({ stats, onStatClick }: WalletsStatsBarProps) {
             <div className="min-w-0">
               <p className="text-sm text-muted-foreground truncate">{stat.label}</p>
               <p className="text-2xl font-bold text-foreground">{stat.value}</p>
+              {stat.subValue && (
+                <p className="text-xs text-muted-foreground">{stat.subValue}</p>
+              )}
             </div>
           </div>
         </motion.div>
