@@ -6,6 +6,9 @@ import LogosText from '@/assets/Logos-text.png';
 import Logo2 from '@/assets/logo-2.png';
 import CairoFontUrl from '@/assets/fonts/Cairo-Regular.ttf';
 
+// Re-export the browser print approach for use alongside jsPDF
+export { printArabicInvoice, generateArabicShipmentInvoicePDFPrint } from './printInvoice';
+
 /**
  * Arabic Shipment Invoice PDF Generator
  * Uses embedded Cairo font for proper Arabic text rendering
