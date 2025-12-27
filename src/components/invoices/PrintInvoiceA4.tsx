@@ -442,7 +442,6 @@ export default function PrintInvoiceA4(props: Props) {
                   <th>وزن الطرد KG</th>
                   <th>رقم التتبع</th>
                   <th>CBM</th>
-                  <th>الوزن بالابعاد</th>
                   <th style={{ borderTopLeftRadius: 32 }}>تكاليف إضافية</th>
                 </tr>
               </thead>
@@ -453,7 +452,6 @@ export default function PrintInvoiceA4(props: Props) {
                     <td>{shipment.size.weight}</td>
                     <td>{shipment.esn || "-"}</td>
                     <td>{shipment.size.length * shipment.size.width * shipment.size.height}</td>
-                    <td>{(shipment.size.length * shipment.size.width * shipment.size.height) / 5000}</td>
                     <td>{shipment.extraCosts}</td>
                   </tr>
                 ))}
@@ -521,7 +519,6 @@ export default function PrintInvoiceA4(props: Props) {
                     <th>وزن الطرد KG</th>
                     <th>رقم التتبع</th>
                     <th>CBM</th>
-                    <th>الوزن بالابعاد</th>
                     <th style={{ borderTopLeftRadius: 32 }}>تكاليف إضافية</th>
                   </tr>
                 </thead>
@@ -532,7 +529,6 @@ export default function PrintInvoiceA4(props: Props) {
                       <td>{shipment.size.weight}</td>
                       <td>{shipment.esn || "-"}</td>
                       <td>{shipment.size.length * shipment.size.width * shipment.size.height}</td>
-                      <td>{(shipment.size.length * shipment.size.width * shipment.size.height) / 5000}</td>
                       <td>{shipment.extraCosts}</td>
                     </tr>
                   ))}
