@@ -101,7 +101,7 @@ export async function printArabicInvoice(
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Invoice #${invoice.invoiceNumber}</title>
+      <title>Invoice #${String(invoice.invoiceNumber).slice(-6)}</title>
     </head>
     <body>
       ${html}
