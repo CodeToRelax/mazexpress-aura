@@ -104,6 +104,27 @@ export const usersApi = {
     return handleResponse(response);
   },
 
+  async getUserByEmail(email: string): Promise<{ success: boolean; data: User }> {
+    const token = await getAuthToken();
+    const params = new URLSearchParams({
+      email: email,
+      limit: '1',
+    });
+    
+    const response = await fetch(`${API_BASE_URL}/api/users?${params}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const result = await handleResponse<UsersListResponse>(response);
+    if (result.data.users.length === 0) {
+      throw new Error('User not found');
+    }
+    return { success: true, data: result.data.users[0] };
+  },
+
   async getStats(): Promise<{
     totalUsers: number;
     totalCustomers: number;
