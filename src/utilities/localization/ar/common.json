@@ -427,6 +427,20 @@
       "accountStatus": "حالة الحساب",
       "shippingNumber": "رقم الشحن",
       "memberSince": "عضو منذ"
+    },
+    "actions": {
+      "edit": "تعديل الملف الشخصي",
+      "save": "حفظ التغييرات",
+      "cancel": "إلغاء"
+    },
+    "editDialog": {
+      "title": "تعديل الملف الشخصي",
+      "description": "تحديث معلوماتك الشخصية"
+    },
+    "emailReadOnly": "لا يمكن تغيير البريد الإلكتروني لأنه مرتبط بالمصادقة",
+    "messages": {
+      "updateSuccess": "تم تحديث الملف الشخصي بنجاح",
+      "updateError": "فشل تحديث الملف الشخصي"
     }
   },
   "acl": {
