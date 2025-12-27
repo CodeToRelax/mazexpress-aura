@@ -35,12 +35,6 @@ export interface Invoice {
     lastName: string;
     email: string;
     uniqueShippingNumber: string;
-    address?: {
-      city?: string;
-      street?: string;
-      specificDescription?: string;
-      country?: string;
-    };
   };
   status: InvoiceStatus;
   totals: {

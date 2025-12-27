@@ -15,7 +15,6 @@ type Props = {
   invoiceNumber: string | number;
   date: Date | string | number;
   userFullName: string;
-  userAddress?: string;
   shipments: Shipment[];
   totalWeight: number;
   shippingCost: number | string;
@@ -33,18 +32,19 @@ type Props = {
  * - Your existing print function can print the container that includes this component.
  */
 export default function PrintInvoiceA4(props: Props) {
-  const { invoiceNumber, date, userFullName, userAddress, shipments, totalWeight, shippingCost, extraCosts, totalPrice } = props;
+  const { invoiceNumber, date, userFullName, shipments, totalWeight, shippingCost, extraCosts, totalPrice } = props;
 
   const op = useMemo(() => shipments.slice(0, 12), [shipments]);
   const moreOp = useMemo(() => shipments.slice(12), [shipments]);
 
-  // Format date with dash separator (YYYY-MM-DD)
+  // Angular: date | formatDate
   const formatDate = (d: Props["date"]) => {
     const dt = d instanceof Date ? d : new Date(d);
-    const year = dt.getFullYear();
-    const month = String(dt.getMonth() + 1).padStart(2, '0');
-    const day = String(dt.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
+    return new Intl.DateTimeFormat("ar-LY", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(dt);
   };
 
   // Angular: totalPrice | currency : ' '
@@ -418,18 +418,6 @@ export default function PrintInvoiceA4(props: Props) {
                 >
                   <span style={{ fontSize: 12, fontWeight: 700 }}>الاسم</span>
                   <span style={{ fontSize: 12, fontWeight: 600 }}>{userFullName}</span>
-                </div>
-
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "baseline",
-                    gap: 12,
-                  }}
-                >
-                  <span style={{ fontSize: 12, fontWeight: 700 }}>العنوان</span>
-                  <span style={{ fontSize: 12, fontWeight: 600 }}>{userAddress || '-'}</span>
                 </div>
               </div>
             </div>

@@ -55,18 +55,6 @@ function getUserFullName(invoice: Invoice): string {
 }
 
 /**
- * Get user address from invoice
- */
-function getUserAddress(invoice: Invoice): string {
-  if (typeof invoice.userId === 'object' && invoice.userId?.address) {
-    const { city, street, specificDescription } = invoice.userId.address;
-    const parts = [street, specificDescription, city].filter(Boolean);
-    return parts.length > 0 ? parts.join(', ') : '-';
-  }
-  return '-';
-}
-
-/**
  * Print Arabic invoice using browser print dialog
  * Opens a new window with the invoice and triggers print
  */
@@ -78,7 +66,6 @@ export async function printArabicInvoice(
   const shipments = extractShipmentData(invoice.items || []);
   const totalWeight = calculateTotalWeight(shipments);
   const userFullName = getUserFullName(invoice);
-  const userAddress = getUserAddress(invoice);
   
   // Calculate totals
   const shippingCost = options?.shippingCost || 0;
@@ -90,7 +77,6 @@ export async function printArabicInvoice(
     invoiceNumber: invoice.invoiceNumber,
     date: invoice.issueDate || invoice.createdAt,
     userFullName,
-    userAddress,
     shipments,
     totalWeight,
     shippingCost,
