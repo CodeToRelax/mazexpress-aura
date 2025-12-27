@@ -58,7 +58,7 @@ export default function PrintInvoiceA4(props: Props) {
 
   // Angular: totalPrice | currency : ' '
   const formatNumberLikeCurrencyPipe = (n: number) => {
-    return new Intl.NumberFormat("ar-LY", {
+    return new Intl.NumberFormat("en-US", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(n);
@@ -182,8 +182,10 @@ export default function PrintInvoiceA4(props: Props) {
 .wrapper .top {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 10px;
+  align-items: flex-start;
+  padding: 15px;
+  border-bottom: 2px solid var(--blue-color);
+  margin-bottom: 10px;
 }
 
 .wrapper .top .details {
@@ -192,22 +194,54 @@ export default function PrintInvoiceA4(props: Props) {
   text-align: right;
 }
 
+.wrapper .top .details h2 {
+  margin-bottom: 8px;
+}
+
 .wrapper .top .details span {
   font-size: 14px;
+}
+
+.wrapper .top .company-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 12px;
+}
+
+.wrapper .top .company-info .company-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--blue-color);
+}
+
+.wrapper .top .logo-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.wrapper .top .logo-section h2 {
+  font-size: 24px;
+  margin-top: 8px;
 }
 
 .wrapper .invoice {
   width: 100%;
   display: flex;
   flex-direction: column;
-  margin-top: 15px;
+  margin-top: 12px;
+  background: rgba(54, 125, 163, 0.05);
+  padding: 8px 12px;
+  border-radius: 8px;
 }
 
 .wrapper .invoice .head {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   text-align: right;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
 .wrapper .invoice span {
@@ -219,7 +253,7 @@ export default function PrintInvoiceA4(props: Props) {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 5px;
+  margin-bottom: 4px;
 }
 
 .wrapper .items {
@@ -328,17 +362,11 @@ export default function PrintInvoiceA4(props: Props) {
           <div className="top">
             <div className="details">
               <h2>فاتورة</h2>
-              <span></span>
-              <span></span>
-              <span></span>
-              <span></span>
-              <span>0919497423</span>
-              <span>MAZ EXPRESS</span>
-              <span>الموقع</span>
-              <span>بنغازي, ليبيا</span>
-              <span></span>
-              <span></span>
-              <span></span>
+              <div className="company-info">
+                <span className="company-name">MAZ EXPRESS</span>
+                <span>بنغازي, ليبيا</span>
+                <span>0919497423</span>
+              </div>
               <div className="invoice">
                 <div>
                   <span className="head">التاريخ</span>
@@ -350,14 +378,13 @@ export default function PrintInvoiceA4(props: Props) {
                 </div>
               </div>
             </div>
-
-            <div>
-              <h2>#{invoiceNumber}</h2>
+            <div className="logo-section">
               <img
                 width="160"
                 src="/assets/images/logo/Logos-text.png"
-                alt=""
+                alt="MAZ Express"
               />
+              <h2>#{invoiceNumber}</h2>
             </div>
           </div>
 
