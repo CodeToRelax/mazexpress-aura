@@ -194,7 +194,12 @@
       "status": "الحالة",
       "createdAfter": "تم الإنشاء بعد",
       "createdBefore": "تم الإنشاء قبل",
-      "allStatuses": "جميع الحالات"
+      "allStatuses": "جميع الحالات",
+      "balance": "الرصيد",
+      "allBalances": "جميع الأرصدة",
+      "positiveBalance": "موجب (مستحق لهم)",
+      "negativeBalance": "سالب (مستحق لنا)",
+      "zeroBalance": "رصيد صفري"
     },
     "empty": {
       "title": "لا توجد محافظ",
@@ -204,7 +209,10 @@
       "totalWallets": "إجمالي المحافظ",
       "activeWallets": "المحافظ النشطة",
       "inactiveWallets": "المحافظ غير النشطة",
-      "totalBalance": "إجمالي الرصيد"
+      "totalBalance": "إجمالي الرصيد",
+      "positiveBalance": "الرصيد الموجب",
+      "negativeBalance": "الرصيد السالب",
+      "customersCount": "{{count}} عملاء"
     },
     "messages": {
       "deleteSuccess": "تم حذف المحفظة بنجاح",

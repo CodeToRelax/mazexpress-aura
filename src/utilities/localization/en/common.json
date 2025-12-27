@@ -65,7 +65,12 @@
       "status": "Status",
       "createdAfter": "Created After",
       "createdBefore": "Created Before",
-      "allStatuses": "All Statuses"
+      "allStatuses": "All Statuses",
+      "balance": "Balance",
+      "allBalances": "All Balances",
+      "positiveBalance": "Positive (We Owe)",
+      "negativeBalance": "Negative (Owed to Us)",
+      "zeroBalance": "Zero Balance"
     },
     "empty": {
       "title": "No wallets found",
@@ -75,7 +80,10 @@
       "totalWallets": "Total Wallets",
       "activeWallets": "Active Wallets",
       "inactiveWallets": "Inactive Wallets",
-      "totalBalance": "Total Balance"
+      "totalBalance": "Total Balance",
+      "positiveBalance": "Positive Balance",
+      "negativeBalance": "Negative Balance",
+      "customersCount": "{{count}} customers"
     },
     "messages": {
       "deleteSuccess": "Wallet deleted successfully",

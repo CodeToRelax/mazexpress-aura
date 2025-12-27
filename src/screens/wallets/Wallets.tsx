@@ -62,10 +62,14 @@ export default function Wallets() {
     activeWallets: 0,
     inactiveWallets: 0,
     totalBalance: 0,
+    positiveBalanceCount: 0,
+    negativeBalanceCount: 0,
+    totalPositiveBalance: 0,
+    totalNegativeBalance: 0,
   });
 
   // Initialize from localStorage
-  const [filters, setFilters] = useState<UserFilters>(() => {
+  const [filters, setFilters] = useState<UserFilters & { balanceFilter?: 'positive' | 'negative' | 'zero' }>(() => {
     try {
       const savedFilters = localStorage.getItem(STORAGE_KEYS.FILTERS);
       const savedLimit = localStorage.getItem(STORAGE_KEYS.TABLE_LIMIT);
@@ -79,6 +83,7 @@ export default function Wallets() {
         disabled: parsedFilters.disabled,
         createdAfter: parsedFilters.createdAfter,
         createdBefore: parsedFilters.createdBefore,
+        balanceFilter: parsedFilters.balanceFilter,
       };
     } catch {
       return {
@@ -182,22 +187,33 @@ export default function Wallets() {
           };
         });
       
+      // Apply client-side balance filtering
+      let filteredWallets = allWalletViews;
+      if (filters.balanceFilter === 'positive') {
+        filteredWallets = allWalletViews.filter(w => w.balance > 0);
+      } else if (filters.balanceFilter === 'negative') {
+        filteredWallets = allWalletViews.filter(w => w.balance < 0);
+      } else if (filters.balanceFilter === 'zero') {
+        filteredWallets = allWalletViews.filter(w => w.balance === 0);
+      }
+      
       // Apply client-side pagination based on actual wallet count
       const limit = filters.limit || 10;
       const page = filters.page || 1;
       const startIndex = (page - 1) * limit;
-      const paginatedWallets = allWalletViews.slice(startIndex, startIndex + limit);
+      const paginatedWallets = filteredWallets.slice(startIndex, startIndex + limit);
       
       setWallets(paginatedWallets);
       
-      // Calculate accurate pagination based on wallet count
-      const totalWallets = allWalletViews.length;
-      const calculatedTotalPages = Math.ceil(totalWallets / limit) || 1;
+      // Calculate accurate pagination based on filtered wallet count
+      const totalFilteredWallets = filteredWallets.length;
+      
+      const calculatedTotalPages = Math.ceil(totalFilteredWallets / limit) || 1;
       
       setPagination({
         currentPage: page,
         totalPages: calculatedTotalPages,
-        totalDocs: totalWallets,
+        totalDocs: totalFilteredWallets,
         limit,
         hasNextPage: page < calculatedTotalPages,
         hasPrevPage: page > 1,
@@ -262,11 +278,36 @@ export default function Wallets() {
         return sum + wallet.balance;
       }, 0);
       
+      // Calculate positive and negative balance stats
+      const positiveWallets = usersWithWallets.filter(user => {
+        const wallet = user.walletId as { _id: string; balance: number; currency: string; isActive: boolean };
+        return wallet.balance > 0;
+      });
+      
+      const negativeWallets = usersWithWallets.filter(user => {
+        const wallet = user.walletId as { _id: string; balance: number; currency: string; isActive: boolean };
+        return wallet.balance < 0;
+      });
+      
+      const totalPositiveBalance = positiveWallets.reduce((sum, user) => {
+        const wallet = user.walletId as { _id: string; balance: number; currency: string; isActive: boolean };
+        return sum + wallet.balance;
+      }, 0);
+      
+      const totalNegativeBalance = negativeWallets.reduce((sum, user) => {
+        const wallet = user.walletId as { _id: string; balance: number; currency: string; isActive: boolean };
+        return sum + wallet.balance;
+      }, 0);
+      
       setWalletStats({
         totalWallets: usersWithWallets.length,
         activeWallets,
         inactiveWallets: usersWithWallets.length - activeWallets,
         totalBalance,
+        positiveBalanceCount: positiveWallets.length,
+        negativeBalanceCount: negativeWallets.length,
+        totalPositiveBalance,
+        totalNegativeBalance,
       });
     } catch (err) {
       console.error('Failed to fetch stats:', err);
@@ -313,10 +354,11 @@ export default function Wallets() {
       limit: filters.limit,
       sortBy: 'createdAt',
       sortOrder: 'desc',
+      balanceFilter: undefined,
     });
   };
 
-  const handleStatClick = (filterType: 'all' | 'active' | 'inactive') => {
+  const handleStatClick = (filterType: 'all' | 'active' | 'inactive' | 'positive' | 'negative') => {
     switch (filterType) {
       case 'all':
         setFilters({
@@ -324,12 +366,14 @@ export default function Wallets() {
           limit: filters.limit,
           sortBy: 'createdAt',
           sortOrder: 'desc',
+          balanceFilter: undefined,
         });
         break;
       case 'active':
         setFilters(prev => ({
           ...prev,
           disabled: false,
+          balanceFilter: undefined,
           page: 1,
         }));
         break;
@@ -337,6 +381,23 @@ export default function Wallets() {
         setFilters(prev => ({
           ...prev,
           disabled: true,
+          balanceFilter: undefined,
+          page: 1,
+        }));
+        break;
+      case 'positive':
+        setFilters(prev => ({
+          ...prev,
+          disabled: undefined,
+          balanceFilter: 'positive',
+          page: 1,
+        }));
+        break;
+      case 'negative':
+        setFilters(prev => ({
+          ...prev,
+          disabled: undefined,
+          balanceFilter: 'negative',
           page: 1,
         }));
         break;
