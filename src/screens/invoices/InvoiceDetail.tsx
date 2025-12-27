@@ -17,6 +17,7 @@ import { formatLYD } from '@/utilities/helpers/currencyHelpers';
 import { InvoiceStatusBadge } from '@/components/invoices/InvoiceStatusBadge';
 import { InvoiceItemsTable } from '@/components/invoices/InvoiceItemsTable';
 import { generateInvoicePDF } from '@/utilities/helpers/invoicePDF';
+import { generateArabicShipmentInvoicePDF } from '@/utilities/helpers/arabicInvoicePDF';
 import { toast } from '@/hooks/use-toast';
 
 export default function InvoiceDetail() {
@@ -107,7 +108,7 @@ export default function InvoiceDetail() {
   
   const handlePrint = async () => {
     try {
-      await generateInvoicePDF(invoice);
+      await generateArabicShipmentInvoicePDF(invoice);
       toast({
         title: t('common.success'),
         description: 'Invoice PDF generated successfully',
