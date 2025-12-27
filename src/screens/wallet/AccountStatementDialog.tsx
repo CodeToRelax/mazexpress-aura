@@ -179,6 +179,9 @@ export function AccountStatementDialog({ open, onOpenChange, wallet: initialWall
                     onSelect={(date) => date && setDateFrom(date)}
                     disabled={(date) => date > new Date()}
                     initialFocus
+                    captionLayout="dropdown"
+                    fromYear={2020}
+                    toYear={new Date().getFullYear()}
                     className={cn("p-3 pointer-events-auto")}
                   />
                 </PopoverContent>
@@ -207,6 +210,9 @@ export function AccountStatementDialog({ open, onOpenChange, wallet: initialWall
                     onSelect={(date) => date && setDateTo(date)}
                     disabled={(date) => date > new Date() || date < dateFrom}
                     initialFocus
+                    captionLayout="dropdown"
+                    fromYear={2020}
+                    toYear={new Date().getFullYear()}
                     className={cn("p-3 pointer-events-auto")}
                   />
                 </PopoverContent>
