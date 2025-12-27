@@ -1071,6 +1071,29 @@
       "manageWallets": "Manage Wallets",
       "allWallets": "All Wallets",
       "searchByUser": "Search by User"
+    },
+    "statement": {
+      "button": "Statement",
+      "title": "Account Statement",
+      "description": "Generate a PDF statement for a specific date range",
+      "quickSelect": "Quick Select",
+      "dateFrom": "From Date",
+      "dateTo": "To Date",
+      "selectDate": "Select date",
+      "period": "Statement Period",
+      "transactionCount": "Transactions",
+      "currentBalance": "Current Balance",
+      "generate": "Generate PDF",
+      "success": "Statement generated successfully",
+      "error": "Failed to generate statement",
+      "noWallet": "No wallet found",
+      "presets": {
+        "last7days": "Last 7 Days",
+        "last30days": "Last 30 Days",
+        "thisMonth": "This Month",
+        "lastMonth": "Last Month",
+        "thisYear": "This Year"
+      }
     }
   },
   "invoice": {

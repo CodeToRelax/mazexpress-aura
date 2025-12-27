@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { Plus, Minus, ArrowUpRight } from 'lucide-react';
+import { Plus, Minus, ArrowUpRight, FileText } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { WalletBalance } from '@/components/wallet/WalletBalance';
 import { TransactionCard } from '@/components/wallet/TransactionCard';
 import { DepositDialog } from './DepositDialog';
 import { WithdrawDialog } from './WithdrawDialog';
+import { AccountStatementDialog } from './AccountStatementDialog';
 import { getWallet, getTransactions } from '@/utilities/api/wallet.api';
 import { PageLoader } from '@/components/feedback/PageLoader';
 import { InlineError } from '@/components/feedback/InlineError';
@@ -18,6 +19,7 @@ export default function WalletDashboard() {
   const navigate = useNavigate();
   const [depositOpen, setDepositOpen] = useState(false);
   const [withdrawOpen, setWithdrawOpen] = useState(false);
+  const [statementOpen, setStatementOpen] = useState(false);
 
   const { data: wallet, isLoading: walletLoading, error: walletError } = useQuery({
     queryKey: ['wallet'],
@@ -39,6 +41,10 @@ export default function WalletDashboard() {
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">{t('wallet.dashboard')}</h1>
         <div className="flex gap-2">
+          <Button onClick={() => setStatementOpen(true)} variant="outline" className="gap-2">
+            <FileText className="h-4 w-4" />
+            {t('wallet.statement.button')}
+          </Button>
           <Button onClick={() => setDepositOpen(true)} className="gap-2">
             <Plus className="h-4 w-4" />
             {t('wallet.deposit')}
@@ -82,6 +88,7 @@ export default function WalletDashboard() {
 
       <DepositDialog open={depositOpen} onOpenChange={setDepositOpen} wallet={wallet || null} />
       <WithdrawDialog open={withdrawOpen} onOpenChange={setWithdrawOpen} wallet={wallet || null} />
+      <AccountStatementDialog open={statementOpen} onOpenChange={setStatementOpen} wallet={wallet || null} />
     </div>
   );
 }
