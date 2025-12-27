@@ -138,36 +138,8 @@ export async function generateAccountStatementPDF(data: StatementData): Promise<
   doc.text(`Wallet ID: ${wallet._id}`, 14, infoStartY + 19);
   doc.text(`Currency: ${wallet.currency}`, 14, infoStartY + 25);
   
-  // Right column - Account summary box
-  doc.setFillColor(colors.headerBg[0], colors.headerBg[1], colors.headerBg[2]);
-  doc.roundedRect(110, infoStartY - 3, 86, 34, 2, 2, 'F');
-  
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(10);
-  doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
-  
-  // Opening Balance
-  doc.text('Opening Balance:', 114, infoStartY + 5);
-  doc.text(formatLYD(summary.openingBalance), 192, infoStartY + 5, { align: 'right' });
-  
-  // Total Credits
-  doc.setTextColor(colors.depositGreen[0], colors.depositGreen[1], colors.depositGreen[2]);
-  doc.text('Total Credits:', 114, infoStartY + 13);
-  doc.text(`+${formatLYD(summary.totalCredits)}`, 192, infoStartY + 13, { align: 'right' });
-  
-  // Total Debits
-  doc.setTextColor(colors.withdrawRed[0], colors.withdrawRed[1], colors.withdrawRed[2]);
-  doc.text('Total Debits:', 114, infoStartY + 21);
-  doc.text(`-${formatLYD(summary.totalDebits)}`, 192, infoStartY + 21, { align: 'right' });
-  
-  // Closing Balance
-  doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-  doc.setFontSize(11);
-  doc.text('Closing Balance:', 114, infoStartY + 29);
-  doc.text(formatLYD(summary.closingBalance), 192, infoStartY + 29, { align: 'right' });
-  
   // ===== TRANSACTIONS TABLE =====
-  const tableStartY = infoStartY + 42;
+  const tableStartY = infoStartY + 32;
   
   // Sort transactions by date (newest first)
   const sortedTransactions = [...transactions].sort(
