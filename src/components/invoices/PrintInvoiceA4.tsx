@@ -386,8 +386,7 @@ export default function PrintInvoiceA4(props: Props) {
 
                 <span style={{ fontSize: 12, direction: "ltr" }}>info@mazexpress.com.ly</span>
 
-                <span style={{ fontSize: 12 }}>ﻻندلس</span>
-                <span style={{ fontSize: 12 }}>الفويهات، ارض بن عﲇ، شارع ا</span>
+                <span style={{ fontSize: 12 }}>الفويهات، ارض بن علي، شارع الاندلس</span>
                 <span style={{ fontSize: 12 }}>بنغازي, ليبيا</span>
               </div>
 
