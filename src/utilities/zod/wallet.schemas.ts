@@ -34,7 +34,7 @@ export const withdrawalSchema = z.object({
 export const adminTransactionSchema = z.object({
   walletId: z.string().min(1, 'Wallet ID is required'),
   type: z.enum(['deposit', 'withdrawal', 'deduction', 'refund', 'transfer'], {
-    errorMap: () => ({ message: 'Type must be deposit, withdrawal, deduction, refund, or transfer' }),
+    errorMap: () => ({ message: 'Please select a transaction type' }),
   }),
   amount: z.coerce.number()
     .min(0.01, 'Amount must be at least 0.01 LYD')
