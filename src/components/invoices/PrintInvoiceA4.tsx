@@ -32,16 +32,7 @@ type Props = {
  * - Your existing print function can print the container that includes this component.
  */
 export default function PrintInvoiceA4(props: Props) {
-  const {
-    invoiceNumber,
-    date,
-    userFullName,
-    shipments,
-    totalWeight,
-    shippingCost,
-    extraCosts,
-    totalPrice,
-  } = props;
+  const { invoiceNumber, date, userFullName, shipments, totalWeight, shippingCost, extraCosts, totalPrice } = props;
 
   const op = useMemo(() => shipments.slice(0, 12), [shipments]);
   const moreOp = useMemo(() => shipments.slice(12), [shipments]);
@@ -352,18 +343,13 @@ export default function PrintInvoiceA4(props: Props) {
   const PageOne = (
     <div className="outer-wrapper">
       <section className="wrapper">
-        <img
-          className="bg"
-          width="300"
-          src="/assets/images/logo/logo.png"
-          alt=""
-        />
+        <img className="bg" width="300" src="/assets/images/logo/logo.png" alt="" />
         <div className="inner-wrapper">
           <div className="top">
             <div className="details">
               <h2>فاتورة</h2>
               <div className="company-info">
-                <span className="company-name">MAZ EXPRESS</span>
+                <span className="company-name">MAZEXPRESS</span>
                 <span>بنغازي, ليبيا</span>
                 <span>0919497423</span>
               </div>
@@ -379,12 +365,8 @@ export default function PrintInvoiceA4(props: Props) {
               </div>
             </div>
             <div className="logo-section">
-              <img
-                width="160"
-                src="/assets/images/logo/Logos-text.png"
-                alt="MAZ Express"
-              />
-              <h2>#{invoiceNumber}</h2>
+              <img width="160" src="/assets/images/logo/Logos-text.png" alt="MAZ Express" />
+              <h2>#{String(invoiceNumber).slice(-6)}</h2>
             </div>
           </div>
 
@@ -405,18 +387,9 @@ export default function PrintInvoiceA4(props: Props) {
                   <tr key={index} className={index % 2 === 1 ? "grey" : ""}>
                     <td>{index + 1}</td>
                     <td>{shipment.size.weight}</td>
-                    <td>{shipment.esn || '-'}</td>
-                    <td>
-                      {shipment.size.length *
-                        shipment.size.width *
-                        shipment.size.height}
-                    </td>
-                    <td>
-                      {(shipment.size.length *
-                        shipment.size.width *
-                        shipment.size.height) /
-                        5000}
-                    </td>
+                    <td>{shipment.esn || "-"}</td>
+                    <td>{shipment.size.length * shipment.size.width * shipment.size.height}</td>
+                    <td>{(shipment.size.length * shipment.size.width * shipment.size.height) / 5000}</td>
                     <td>{shipment.extraCosts}</td>
                   </tr>
                 ))}
@@ -449,18 +422,14 @@ export default function PrintInvoiceA4(props: Props) {
 
             <div className="total">
               <div>
-                <strong>
-                  {" "}
-                  إجمالي السعر {formatNumberLikeCurrencyPipe(totalPrice)} دينار{" "}
-                </strong>
+                <strong> إجمالي السعر {formatNumberLikeCurrencyPipe(totalPrice)} دينار </strong>
               </div>
 
               <div>
                 <small>يرجى مراعاة ان اقل وزن يمكن احتسابه هو 3 كيلو غرام.</small>
                 <small>
                   نؤكد أيًضا أننا نحتسب تكلفة الشحن بناًء على كل من الوزن الفعلي والوزن الحجمي،
-                  <br />
-                  و يتم احتساب ا لأعلى منهما.
+                  <br />و يتم احتساب ا لأعلى منهما.
                 </small>
                 <small>يرجى مراعاة ان شركة ماز اكسبريس غير مسؤولة عن البضائع القابلة للكسر.</small>
                 <small>نوصي بفحص الشحنة عند ا لاستلام.</small>
@@ -478,12 +447,7 @@ export default function PrintInvoiceA4(props: Props) {
     shipments.length > 12 ? (
       <div className="outer-wrapper">
         <section className="wrapper">
-          <img
-            className="bg"
-            width="300"
-            src="/assets/images/logo/logo.png"
-            alt=""
-          />
+          <img className="bg" width="300" src="/assets/images/logo/logo.png" alt="" />
           <div className="inner-wrapper">
             <div className="items">
               <table>
@@ -502,18 +466,9 @@ export default function PrintInvoiceA4(props: Props) {
                     <tr key={index} className={index % 2 === 1 ? "grey" : ""}>
                       <td>{index + 1 + op.length}</td>
                       <td>{shipment.size.weight}</td>
-                      <td>{shipment.esn || '-'}</td>
-                      <td>
-                        {shipment.size.length *
-                          shipment.size.width *
-                          shipment.size.height}
-                      </td>
-                      <td>
-                        {(shipment.size.length *
-                          shipment.size.width *
-                          shipment.size.height) /
-                          5000}
-                      </td>
+                      <td>{shipment.esn || "-"}</td>
+                      <td>{shipment.size.length * shipment.size.width * shipment.size.height}</td>
+                      <td>{(shipment.size.length * shipment.size.width * shipment.size.height) / 5000}</td>
                       <td>{shipment.extraCosts}</td>
                     </tr>
                   ))}
@@ -544,18 +499,14 @@ export default function PrintInvoiceA4(props: Props) {
 
             <div className="total">
               <div>
-                <strong>
-                  {" "}
-                  إجمالي السعر {formatNumberLikeCurrencyPipe(totalPrice)} دينار{" "}
-                </strong>
+                <strong> إجمالي السعر {formatNumberLikeCurrencyPipe(totalPrice)} دينار </strong>
               </div>
 
               <div>
                 <small>يرجى مراعاة ان اقل وزن يمكن احتسابه هو 3 كيلو غرام.</small>
                 <small>
                   نؤكد أيًضا أننا نحتسب تكلفة الشحن بناًء على كل من الوزن الفعلي والوزن الحجمي،
-                  <br />
-                  و يتم احتساب ا لأعلى منهما.
+                  <br />و يتم احتساب ا لأعلى منهما.
                 </small>
                 <small>يرجى مراعاة ان شركة ماز اكسبريس غير مسؤولة عن البضائع القابلة للكسر.</small>
                 <small>نوصي بفحص الشحنة عند ا لاستلام.</small>
