@@ -169,6 +169,13 @@ export default function PrintInvoiceA4(props: Props) {
 .wrapper h2 {
   margin: 0;
   font-size: 32px;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.wrapper img {
+  max-width: 100%;
+  height: auto;
 }
 
 .wrapper .top {
@@ -221,6 +228,12 @@ export default function PrintInvoiceA4(props: Props) {
   flex-direction: column;
 }
 
+.wrapper .items table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
 .wrapper .items tr.grey {
   background-color: rgba(128, 128, 128, 0.3);
 }
@@ -230,6 +243,13 @@ export default function PrintInvoiceA4(props: Props) {
   font-weight: 700;
   text-align: right;
   margin-bottom: 4px;
+}
+
+.wrapper .items td,
+.wrapper .items th {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .wrapper .items td {
