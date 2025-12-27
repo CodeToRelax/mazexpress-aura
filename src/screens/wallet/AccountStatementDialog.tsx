@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
-import { format, subDays, startOfMonth, endOfMonth, subMonths, startOfYear } from 'date-fns';
+import { format, subDays, startOfMonth, endOfMonth, subMonths, startOfYear, startOfDay, endOfDay } from 'date-fns';
 import { FileText, Calendar, Download, Loader2 } from 'lucide-react';
 import {
   Dialog,
@@ -29,16 +29,25 @@ interface AccountStatementDialogProps {
   userName?: string; // For PDF - customer name override
 }
 
-type PresetPeriod = 'last7days' | 'last30days' | 'thisMonth' | 'lastMonth' | 'thisYear' | 'custom';
+type PresetPeriod = 'today' | 'last7days' | 'last30days' | 'thisMonth' | 'lastMonth' | 'thisYear' | 'custom';
 
 export function AccountStatementDialog({ open, onOpenChange, wallet: initialWallet, userId, userName }: AccountStatementDialogProps) {
   const { t, i18n } = useTranslation();
-  const today = new Date();
   
-  const [dateFrom, setDateFrom] = useState<Date>(subDays(today, 30));
-  const [dateTo, setDateTo] = useState<Date>(today);
+  const [dateFrom, setDateFrom] = useState<Date>(() => subDays(new Date(), 30));
+  const [dateTo, setDateTo] = useState<Date>(() => new Date());
   const [selectedPreset, setSelectedPreset] = useState<PresetPeriod>('last30days');
   const [isGenerating, setIsGenerating] = useState(false);
+  
+  // Reset state when dialog opens
+  useEffect(() => {
+    if (open) {
+      const now = new Date();
+      setDateFrom(subDays(now, 30));
+      setDateTo(now);
+      setSelectedPreset('last30days');
+    }
+  }, [open]);
   
   // Fetch wallet if not provided
   const { data: fetchedWallet } = useQuery({
@@ -70,6 +79,10 @@ export function AccountStatementDialog({ open, onOpenChange, wallet: initialWall
     const now = new Date();
     
     switch (preset) {
+      case 'today':
+        setDateFrom(startOfDay(now));
+        setDateTo(endOfDay(now));
+        break;
       case 'last7days':
         setDateFrom(subDays(now, 7));
         setDateTo(now);
@@ -175,6 +188,7 @@ export function AccountStatementDialog({ open, onOpenChange, wallet: initialWall
   };
   
   const presets: { key: PresetPeriod; label: string }[] = [
+    { key: 'today', label: t('dashboard.periods.today') },
     { key: 'last7days', label: t('wallet.statement.presets.last7days') },
     { key: 'last30days', label: t('wallet.statement.presets.last30days') },
     { key: 'thisMonth', label: t('wallet.statement.presets.thisMonth') },
@@ -236,7 +250,7 @@ export function AccountStatementDialog({ open, onOpenChange, wallet: initialWall
                     mode="single"
                     selected={dateFrom}
                     onSelect={handleDateFromChange}
-                    disabled={(date) => date > today}
+                    disabled={(date) => date > new Date()}
                     initialFocus
                     className="pointer-events-auto"
                   />
@@ -264,7 +278,7 @@ export function AccountStatementDialog({ open, onOpenChange, wallet: initialWall
                     mode="single"
                     selected={dateTo}
                     onSelect={handleDateToChange}
-                    disabled={(date) => date > today || date < dateFrom}
+                    disabled={(date) => date > new Date() || date < dateFrom}
                     initialFocus
                     className="pointer-events-auto"
                   />
