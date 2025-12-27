@@ -95,7 +95,7 @@ interface StatementData {
   dateTo: Date;
   customerName?: string;
   customerEmail?: string;
-  locale?: 'en' | 'ar';
+  locale?: string;
 }
 
 /**
@@ -169,9 +169,10 @@ function calculateSummary(transactions: Transaction[], openingBalance: number) {
 /**
  * Format transaction type for display
  */
-function formatType(type: string, locale: 'en' | 'ar'): string {
+function formatType(type: string, locale: string): string {
+  const normalizedLocale: 'en' | 'ar' = locale?.startsWith('ar') ? 'ar' : 'en';
   const key = type.toLowerCase() as keyof typeof typeTranslations.en;
-  return typeTranslations[locale][key] || type.charAt(0).toUpperCase() + type.slice(1).toLowerCase();
+  return typeTranslations[normalizedLocale][key] || type.charAt(0).toUpperCase() + type.slice(1).toLowerCase();
 }
 
 /**
@@ -179,8 +180,10 @@ function formatType(type: string, locale: 'en' | 'ar'): string {
  */
 export async function generateAccountStatementPDF(data: StatementData): Promise<void> {
   const { wallet, transactions, dateFrom, dateTo, customerName, customerEmail, locale = 'en' } = data;
-  const t = translations[locale];
-  const isRTL = locale === 'ar';
+  // Normalize locale to 'en' or 'ar', defaulting to 'en' if unrecognized (handles 'en-US', 'ar-LY', etc.)
+  const normalizedLocale: 'en' | 'ar' = locale?.startsWith('ar') ? 'ar' : 'en';
+  const t = translations[normalizedLocale];
+  const isRTL = normalizedLocale === 'ar';
   
   const doc = new jsPDF({
     orientation: 'portrait',
