@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { 
@@ -11,7 +11,8 @@ import {
   User as UserIcon,
   Globe,
   Clock,
-  CheckCircle
+  CheckCircle,
+  Pencil
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -23,6 +24,7 @@ import { useACL } from '@/hooks/useACL';
 import { usersApi } from '@/utilities/api/users.api';
 import { User } from '@/types/user';
 import { format } from 'date-fns';
+import { EditProfileDialog } from './EditProfileDialog';
 
 export default function MyProfile() {
   const { t } = useTranslation();
@@ -32,25 +34,26 @@ export default function MyProfile() {
   
   const [profile, setProfile] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+
+  const fetchProfile = useCallback(async () => {
+    if (!acl?.userId) return;
+    
+    try {
+      const response = await usersApi.getUserById(acl.userId);
+      if (response.success) {
+        setProfile(response.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch profile:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [acl?.userId]);
 
   useEffect(() => {
-    async function fetchProfile() {
-      if (!acl?.userId) return;
-      
-      try {
-        const response = await usersApi.getUserById(acl.userId);
-        if (response.success) {
-          setProfile(response.data);
-        }
-      } catch (error) {
-        console.error('Failed to fetch profile:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
     fetchProfile();
-  }, [acl?.userId]);
+  }, [fetchProfile]);
 
   const displayName = profile 
     ? `${profile.firstName} ${profile.lastName}`
@@ -95,13 +98,17 @@ export default function MyProfile() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+        <Button variant="ghost" size="icon" onClick={() => navigate('/dashboard')}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <div>
+        <div className="flex-1">
           <h1 className="text-2xl font-bold">{t('profile.title')}</h1>
           <p className="text-muted-foreground text-sm">{t('profile.subtitle')}</p>
         </div>
+        <Button variant="outline" onClick={() => setEditDialogOpen(true)}>
+          <Pencil className="h-4 w-4 ltr:mr-2 rtl:ml-2" />
+          {t('profile.actions.edit')}
+        </Button>
       </div>
 
       {/* Profile Header Card */}
@@ -261,6 +268,19 @@ export default function MyProfile() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Edit Profile Dialog */}
+      {profile && (
+        <EditProfileDialog
+          open={editDialogOpen}
+          onOpenChange={setEditDialogOpen}
+          profile={profile}
+          onSuccess={() => {
+            fetchProfile();
+            setEditDialogOpen(false);
+          }}
+        />
+      )}
     </div>
   );
 }

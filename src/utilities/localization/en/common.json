@@ -484,6 +484,20 @@
       "accountStatus": "Account Status",
       "shippingNumber": "Shipping Number",
       "memberSince": "Member Since"
+    },
+    "actions": {
+      "edit": "Edit Profile",
+      "save": "Save Changes",
+      "cancel": "Cancel"
+    },
+    "editDialog": {
+      "title": "Edit Profile",
+      "description": "Update your personal information"
+    },
+    "emailReadOnly": "Email cannot be changed as it's tied to authentication",
+    "messages": {
+      "updateSuccess": "Profile updated successfully",
+      "updateError": "Failed to update profile"
     }
   },
   "acl": {
