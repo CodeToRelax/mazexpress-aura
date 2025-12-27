@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
-import { ArrowLeft, Mail, Phone, MapPin, Calendar, User as UserIcon, Package, Wallet as WalletIcon, Shield, Loader2, TrendingUp, Plus, Download } from 'lucide-react';
+import { ArrowLeft, Mail, Phone, MapPin, Calendar, User as UserIcon, Package, Wallet as WalletIcon, Shield, Loader2, TrendingUp, Plus, Download, ChevronDown, FileText } from 'lucide-react';
 import type { User } from '@/types/user';
 import type { Wallet } from '@/types/wallet';
 import type { Transaction } from '@/types/wallet';
@@ -13,7 +13,14 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { ACLManagementTab } from './ACLManagementTab';
+import { AccountStatementDialog } from '@/screens/wallet/AccountStatementDialog';
 import { WalletBalance } from '@/components/wallet/WalletBalance';
 import { TransactionsTable } from '@/components/wallet/TransactionsTable';
 import { TransactionsStatsBar } from '@/screens/wallet/TransactionsStatsBar';
@@ -67,7 +74,8 @@ export default function UserDetail() {
   const [isRefundTransactionOpen, setIsRefundTransactionOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [isEditUserOpen, setIsEditUserOpen] = useState(false);
-  const [isCreateWalletOpen, setIsCreateWalletOpen] = useState(false);
+const [isCreateWalletOpen, setIsCreateWalletOpen] = useState(false);
+  const [isAccountStatementOpen, setIsAccountStatementOpen] = useState(false);
   
   // Transaction filters and settings
   const [transactionFilters, setTransactionFilters] = useState<any>({
@@ -727,15 +735,28 @@ export default function UserDetail() {
                       onToggleColumn={handleToggleColumn}
                       onReset={handleResetColumns}
                     />
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={handleExportCSV}
-                      title={t('wallet.actions.exportCSV')}
-                    >
-                      <Download className="h-4 w-4 mr-2" />
-                      Export CSV
-                    </Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="sm">
+                          <Download className="h-4 w-4 mr-2" />
+                          {t('common.export')}
+                          <ChevronDown className="h-4 w-4 ml-2" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent 
+                        align="end" 
+                        className="bg-white dark:bg-card z-50 shadow-lg border"
+                      >
+                        <DropdownMenuItem onClick={() => setIsAccountStatementOpen(true)}>
+                          <FileText className="h-4 w-4 mr-2" />
+                          {t('wallet.statement.title')} (PDF)
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={handleExportCSV}>
+                          <Download className="h-4 w-4 mr-2" />
+                          {t('wallet.actions.exportCSV')}
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                     <Button 
                       variant="default" 
                       size="sm" 
@@ -858,6 +879,12 @@ export default function UserDetail() {
         userId={user._id}
         userName={`${user.firstName} ${user.lastName}`}
         onSuccess={fetchWalletData}
+      />
+
+      <AccountStatementDialog
+        open={isAccountStatementOpen}
+        onOpenChange={setIsAccountStatementOpen}
+        wallet={wallet || undefined}
       />
     </div>
   );
