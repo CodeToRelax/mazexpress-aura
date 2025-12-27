@@ -1132,8 +1132,9 @@
   "common": {
     "yes": "نعم",
     "no": "لا",
-    "cancel": "إلغاء",
-    "error": "خطأ",
+  "cancel": "إلغاء",
+  "export": "تصدير",
+  "error": "خطأ",
     "success": "نجاح",
     "delete": "حذف",
     "save": "حفظ",

@@ -1323,8 +1323,9 @@
   "common": {
     "yes": "Yes",
     "no": "No",
-    "cancel": "Cancel",
-    "error": "Error",
+  "cancel": "Cancel",
+  "export": "Export",
+  "error": "Error",
     "success": "Success",
     "delete": "Delete",
     "save": "Save",
