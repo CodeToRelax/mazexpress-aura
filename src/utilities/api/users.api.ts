@@ -125,6 +125,18 @@ export const usersApi = {
     return { success: true, data: result.data.users[0] };
   },
 
+  async getMyProfile(): Promise<{ success: boolean; data: User }> {
+    const token = await getAuthToken();
+    const response = await fetch(`${API_BASE_URL}/api/auth/profile`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    return handleResponse(response);
+  },
+
   async getStats(): Promise<{
     totalUsers: number;
     totalCustomers: number;
