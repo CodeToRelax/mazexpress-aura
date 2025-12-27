@@ -4,9 +4,9 @@ import { ShipmentStatus, ShippingMethod, Cities } from '@/types/shipment';
 // Shipment Size Schema - Either weight OR all dimensions required
 export const shipmentSizeSchema = z.object({
   weight: z.number().min(0.1).max(1000).optional(),
-  height: z.number().min(1).max(200).optional(),
-  width: z.number().min(1).max(200).optional(),
-  length: z.number().min(1).max(200).optional(),
+  height: z.number().min(1).max(400).optional(),
+  width: z.number().min(1).max(400).optional(),
+  length: z.number().min(1).max(400).optional(),
 }).refine(
   (data) => data.weight || (data.height && data.width && data.length),
   { message: 'Either weight OR all dimensions must be provided' }
