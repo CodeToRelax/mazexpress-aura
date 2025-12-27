@@ -1,8 +1,8 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { Receipt, RotateCw, Download } from 'lucide-react';
+import { Receipt, RotateCw, Download, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
 import { PageLoader } from '@/components/feedback/PageLoader';
@@ -16,6 +16,7 @@ import { TransactionsStatsBar } from './TransactionsStatsBar';
 import { TransactionsColumnVisibilityToggle } from './TransactionsColumnVisibilityToggle';
 import { EditTransactionDialog } from '../users/EditTransactionDialog';
 import { DeleteTransactionDialog } from '../users/DeleteTransactionDialog';
+import { AccountStatementDialog } from './AccountStatementDialog';
 import { exportTransactionsToCSV } from '@/utilities/helpers/transactionExport';
 import type { Transaction } from '@/types/wallet';
 
@@ -67,6 +68,7 @@ export default function Transactions() {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [transactionToEdit, setTransactionToEdit] = useState<Transaction | null>(null);
   const [transactionToDelete, setTransactionToDelete] = useState<Transaction | null>(null);
+  const [statementOpen, setStatementOpen] = useState(false);
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['transactions', filters, i18n.language],
@@ -329,6 +331,15 @@ export default function Transactions() {
             type="button"
             variant="outline"
             size="icon"
+            onClick={() => setStatementOpen(true)}
+            title={t('wallet.statement.button')}
+          >
+            <FileText className="h-4 w-4" />
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
             onClick={handleExportCSV}
             title={t('wallet.actions.exportCSV')}
           >
@@ -397,6 +408,11 @@ export default function Transactions() {
           onSuccess={handleDeleteSuccess}
         />
       )}
+
+      <AccountStatementDialog
+        open={statementOpen}
+        onOpenChange={setStatementOpen}
+      />
     </div>
   );
 }
