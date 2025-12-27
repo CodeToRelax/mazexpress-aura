@@ -604,6 +604,7 @@
         "esn": "ESN",
         "csn": "CSN",
         "isn": "ISN",
+        "origin": "Origin",
         "destination": "Destination",
         "method": "Method",
         "status": "Status",
@@ -1264,7 +1265,13 @@
     "columns": "Columns",
     "resetDefault": "Reset to Default",
     "actions": "Actions",
-    "saving": "Saving..."
+    "saving": "Saving...",
+    "countries": {
+      "turkey": "Turkey",
+      "china": "China",
+      "uae": "UAE",
+      "libya": "Libya"
+    }
   },
   "settings": {
     "domesticCities": {

@@ -117,6 +117,7 @@ export function ShipmentsTable({
             <TableHead>{renderSortableHeader('esn', t('shipments.table.columns.esn'))}</TableHead>
             <TableHead>{renderSortableHeader('csn', t('shipments.table.columns.csn'))}</TableHead>
             {visibleColumns.has('isn') && <TableHead>{t('shipments.table.columns.isn')}</TableHead>}
+            {visibleColumns.has('origin') && <TableHead>{t('shipments.table.columns.origin')}</TableHead>}
             {visibleColumns.has('destination') && <TableHead>{t('shipments.table.columns.destination')}</TableHead>}
             {visibleColumns.has('method') && <TableHead>{t('shipments.table.columns.method')}</TableHead>}
             {visibleColumns.has('status') && <TableHead>{renderSortableHeader('status', t('shipments.table.columns.status'))}</TableHead>}
@@ -150,6 +151,11 @@ export function ShipmentsTable({
               {visibleColumns.has('isn') && (
                 <TableCell className="text-muted-foreground">
                   {shipment.isn && shipment.isn !== '-' ? shipment.isn : 'N/A'}
+                </TableCell>
+              )}
+              {visibleColumns.has('origin') && (
+                <TableCell className="capitalize">
+                  {shipment.originCountry ? t(`common.countries.${shipment.originCountry.toLowerCase()}`) : 'N/A'}
                 </TableCell>
               )}
               {visibleColumns.has('destination') && (

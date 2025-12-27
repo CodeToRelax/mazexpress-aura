@@ -20,6 +20,7 @@ interface ColumnVisibilityToggleProps {
 
 const TOGGLEABLE_COLUMNS = [
   { key: 'isn', labelKey: 'shipments.table.columns.isn' },
+  { key: 'origin', labelKey: 'shipments.table.columns.origin' },
   { key: 'destination', labelKey: 'shipments.table.columns.destination' },
   { key: 'method', labelKey: 'shipments.table.columns.method' },
   { key: 'status', labelKey: 'shipments.table.columns.status' },
