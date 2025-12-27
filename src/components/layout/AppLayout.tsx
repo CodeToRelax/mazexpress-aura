@@ -1,41 +1,16 @@
 import { useState } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
-import { LogOut, Menu } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
+import { Outlet } from 'react-router-dom';
+import { Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { signOut } from '@/utilities/firebase/authHelpers';
-import { useAppDispatch } from '@/utilities/redux';
-import { logout } from '@/screens/auth/auth.slice';
-import { clearACL } from '@/utilities/redux/acl.slice';
-import { appConfig } from '@/app.config';
-import { ThemeToggle } from '@/components/ui/ThemeToggle';
-import { LanguageToggle } from '@/components/ui/LanguageToggle';
-import { SettingsToggle } from '@/components/ui/SettingsToggle';
 import { navigationItems } from '@/data/navigation';
 import { TopNav } from '@/components/navigation/TopNav';
 import { MobileSidenav } from '@/components/navigation/MobileSidenav';
+import { UserDropdown } from '@/components/navigation/UserDropdown';
 // import { ACLDebugPanel } from '@/components/debug/ACLDebugPanel';
 
 export function AppLayout() {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
-  const dispatch = useAppDispatch();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
-
-  const handleSignOut = async () => {
-    const { error } = await signOut();
-    
-    if (error) {
-      toast.error(t(error));
-    } else {
-      dispatch(logout());
-      dispatch(clearACL());
-      toast.success(t('status.success'));
-      navigate(appConfig.auth.redirectAfterLogout);
-    }
-  };
 
   const toggleGroup = (groupId: string) => {
     setExpandedGroups((prev) => {
@@ -79,25 +54,8 @@ export function AppLayout() {
           {/* Desktop Navigation */}
           <TopNav items={navigationItems} />
           
-          {/* Desktop Actions */}
-          <div className="hidden xl:flex items-center gap-2">
-            {/* <ThemeToggle /> */}
-            {/* <LanguageToggle /> */}
-            <SettingsToggle />
-            <Button variant="ghost" size="sm" onClick={handleSignOut} className="gap-2">
-              <LogOut className="h-4 w-4" />
-              {t('actions.signOut')}
-            </Button>
-          </div>
-
-          {/* Mobile Actions */}
-          <div className="flex xl:hidden items-center gap-2">
-            {/* <ThemeToggle /> */}
-            <SettingsToggle />
-            <Button variant="ghost" size="icon" onClick={handleSignOut}>
-              <LogOut className="h-4 w-4" />
-            </Button>
-          </div>
+          {/* User Dropdown */}
+          <UserDropdown />
         </div>
       </header>
 
