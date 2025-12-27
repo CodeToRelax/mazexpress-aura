@@ -195,16 +195,14 @@ export async function generateAccountStatementPDF(data: StatementData): Promise<
   const pageHeight = doc.internal.pageSize.getHeight(); // 297mm
   const margin = 14;
 
-  // Load Cairo font for Arabic
-  if (isRTL) {
-    try {
-      const cairoBase64 = await loadFontAsBase64(CairoFontUrl);
-      doc.addFileToVFS('Cairo-Regular.ttf', cairoBase64);
-      doc.addFont('Cairo-Regular.ttf', 'Cairo', 'normal');
-      doc.addFont('Cairo-Regular.ttf', 'Cairo', 'bold');
-    } catch (e) {
-      console.error('Could not load Cairo font:', e);
-    }
+  // Always load Cairo font to handle Arabic text in descriptions
+  try {
+    const cairoBase64 = await loadFontAsBase64(CairoFontUrl);
+    doc.addFileToVFS('Cairo-Regular.ttf', cairoBase64);
+    doc.addFont('Cairo-Regular.ttf', 'Cairo', 'normal');
+    doc.addFont('Cairo-Regular.ttf', 'Cairo', 'bold');
+  } catch (e) {
+    console.error('Could not load Cairo font:', e);
   }
 
   // Load logos
@@ -257,26 +255,26 @@ export async function generateAccountStatementPDF(data: StatementData): Promise<
   if (isRTL) {
     // RTL Layout
     // Right: Title
-    doc.setFontSize(24);
+    doc.setFontSize(16);
     doc.setFont(fontFamily, 'bold');
     doc.setTextColor(colors.black[0], colors.black[1], colors.black[2]);
     doc.text(t.title, pageWidth - margin, 25, { align: 'right' });
     
     // Left: Company branding with logo
     if (logo2Base64) {
-      doc.addImage(logo2Base64, 'PNG', margin, 12, 50, 17);
+      doc.addImage(logo2Base64, 'PNG', margin, 12, 40, 14);
     }
   } else {
     // LTR Layout
     // Left: Title
-    doc.setFontSize(24);
+    doc.setFontSize(16);
     doc.setFont(fontFamily, 'bold');
     doc.setTextColor(colors.black[0], colors.black[1], colors.black[2]);
     doc.text(t.title, margin, 25);
     
     // Right: Company branding with logo
     if (logo2Base64) {
-      doc.addImage(logo2Base64, 'PNG', pageWidth - margin - 50, 12, 50, 17);
+      doc.addImage(logo2Base64, 'PNG', pageWidth - margin - 40, 12, 40, 14);
     }
   }
   
@@ -477,7 +475,7 @@ export async function generateAccountStatementPDF(data: StatementData): Promise<
       fontSize: 8,
       textColor: colors.textDark,
       cellPadding: 2,
-      font: fontFamily,
+      font: 'Cairo', // Always use Cairo for table body to render Arabic descriptions
     },
     columnStyles,
     styles: {
