@@ -7,21 +7,19 @@ import LogosText from '@/assets/Logos-text.png';
 import Logo2 from '@/assets/logo-2.png';
 import CairoFontUrl from '@/assets/fonts/Cairo-Regular.ttf';
 
-// Color palette - modern style with #367da3 primary
+// Color palette - matching invoice style #367da3
 const colors = {
   primary: [54, 125, 163] as [number, number, number], // #367da3
   primaryLight: [84, 196, 224] as [number, number, number],
   headerBg: [54, 125, 163] as [number, number, number], // #367da3
-  textDark: [30, 30, 30] as [number, number, number],
-  textMuted: [100, 100, 100] as [number, number, number],
-  border: [220, 220, 220] as [number, number, number],
+  textDark: [0, 0, 0] as [number, number, number],
+  textMuted: [80, 80, 80] as [number, number, number],
+  border: [230, 230, 230] as [number, number, number],
   white: [255, 255, 255] as [number, number, number],
   black: [0, 0, 0] as [number, number, number],
   depositGreen: [34, 197, 94] as [number, number, number],
   withdrawRed: [239, 68, 68] as [number, number, number],
   refundBlue: [59, 130, 246] as [number, number, number],
-  rowAlt: [249, 250, 251] as [number, number, number], // #f9fafb - alternating row color
-  divider: [200, 200, 200] as [number, number, number],
 };
 
 // Translations
@@ -115,9 +113,9 @@ async function loadFontAsBase64(url: string): Promise<string> {
 }
 
 /**
- * Load image as base64 with dimensions
+ * Load image as base64
  */
-async function loadImageAsBase64WithDimensions(src: string): Promise<{ base64: string; width: number; height: number }> {
+async function loadImageAsBase64(src: string): Promise<string> {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.crossOrigin = 'Anonymous';
@@ -127,23 +125,11 @@ async function loadImageAsBase64WithDimensions(src: string): Promise<{ base64: s
       canvas.height = img.height;
       const ctx = canvas.getContext('2d');
       ctx?.drawImage(img, 0, 0);
-      resolve({
-        base64: canvas.toDataURL('image/png'),
-        width: img.width,
-        height: img.height,
-      });
+      resolve(canvas.toDataURL('image/png'));
     };
     img.onerror = reject;
     img.src = src;
   });
-}
-
-/**
- * Load image as base64 (simple version)
- */
-async function loadImageAsBase64(src: string): Promise<string> {
-  const result = await loadImageAsBase64WithDimensions(src);
-  return result.base64;
 }
 
 /**
@@ -219,27 +205,16 @@ export async function generateAccountStatementPDF(data: StatementData): Promise<
     console.error('Could not load Cairo font:', e);
   }
 
-  // Load logos with dimensions for proper aspect ratio
+  // Load logos
   let logosTextBase64: string | null = null;
-  let logo2Data: { base64: string; width: number; height: number } | null = null;
+  let logo2Base64: string | null = null;
   try {
-    const [logosResult, logo2Result] = await Promise.all([
+    [logosTextBase64, logo2Base64] = await Promise.all([
       loadImageAsBase64(LogosText),
-      loadImageAsBase64WithDimensions(Logo2),
+      loadImageAsBase64(Logo2),
     ]);
-    logosTextBase64 = logosResult;
-    logo2Data = logo2Result;
   } catch (e) {
     console.warn('Could not load logos:', e);
-  }
-  
-  // Calculate logo dimensions - width-based (35mm width, auto height)
-  const logoMaxWidth = 35;
-  let logoWidth = logoMaxWidth;
-  let logoHeight = 12; // fallback
-  if (logo2Data) {
-    const aspectRatio = logo2Data.height / logo2Data.width;
-    logoHeight = logoMaxWidth * aspectRatio;
   }
   
   // Calculate opening balance (balance before first transaction or current balance if no transactions)
@@ -276,172 +251,156 @@ export async function generateAccountStatementPDF(data: StatementData): Promise<
   const fontFamily = isRTL ? 'Cairo' : 'helvetica';
   doc.setFont(fontFamily, 'normal');
 
-  // ===== HEADER SECTION (Modern Clean Design) =====
-  const headerY = 18;
-  
+  // ===== HEADER SECTION =====
   if (isRTL) {
-    // RTL Layout - Title on right, Logo on left
-    doc.setFontSize(14);
+    // RTL Layout
+    // Right: Title
+    doc.setFontSize(16);
     doc.setFont(fontFamily, 'bold');
-    doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-    doc.text(t.title, pageWidth - margin, headerY, { align: 'right' });
+    doc.setTextColor(colors.black[0], colors.black[1], colors.black[2]);
+    doc.text(t.title, pageWidth - margin, 25, { align: 'right' });
     
-    // Logo with proper proportions
-    if (logo2Data) {
-      doc.addImage(logo2Data.base64, 'PNG', margin, headerY - 6, logoWidth, logoHeight);
+    // Left: Company branding with logo
+    if (logo2Base64) {
+      doc.addImage(logo2Base64, 'PNG', margin, 12, 40, 14);
     }
   } else {
-    // LTR Layout - Title on left, Logo on right
-    doc.setFontSize(14);
+    // LTR Layout
+    // Left: Title
+    doc.setFontSize(16);
     doc.setFont(fontFamily, 'bold');
-    doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-    doc.text(t.title, margin, headerY);
+    doc.setTextColor(colors.black[0], colors.black[1], colors.black[2]);
+    doc.text(t.title, margin, 25);
     
-    // Logo with proper proportions
-    if (logo2Data) {
-      doc.addImage(logo2Data.base64, 'PNG', pageWidth - margin - logoWidth, headerY - 6, logoWidth, logoHeight);
+    // Right: Company branding with logo
+    if (logo2Base64) {
+      doc.addImage(logo2Base64, 'PNG', pageWidth - margin - 40, 12, 40, 14);
     }
   }
   
-  // Header divider line
-  const dividerY = headerY + 10;
-  doc.setDrawColor(colors.divider[0], colors.divider[1], colors.divider[2]);
-  doc.setLineWidth(0.3);
-  doc.line(margin, dividerY, pageWidth - margin, dividerY);
-  
-  // ===== INFORMATION SECTION (Two columns with modern spacing) =====
-  const infoStartY = 38;
+  // ===== INFORMATION SECTION (Two columns) =====
+  const infoStartY = 45;
   
   if (isRTL) {
-    // RTL Layout - Account Holder on right, Statement details on left
-    
-    // Account Holder section with subtle background
-    doc.setFillColor(colors.rowAlt[0], colors.rowAlt[1], colors.rowAlt[2]);
-    doc.roundedRect(pageWidth / 2 + 5, infoStartY - 4, pageWidth / 2 - margin - 5, 32, 2, 2, 'F');
-    
-    doc.setFontSize(8);
-    doc.setFont(fontFamily, 'bold');
-    doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
-    doc.text(t.accountHolder, pageWidth - margin - 3, infoStartY + 2, { align: 'right' });
-    
+    // RTL Layout - Right side: Company info & Account Holder
+    doc.setFontSize(9);
+    doc.setFont(fontFamily, 'normal');
     doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
+    doc.text(t.companyName, pageWidth - margin, infoStartY, { align: 'right' });
+    doc.text(t.companySubtitle, pageWidth - margin, infoStartY + 5, { align: 'right' });
+    
+    // Account Holder section
+    doc.setFontSize(11);
+    doc.setFont(fontFamily, 'bold');
+    doc.text(t.accountHolder, pageWidth - margin, infoStartY + 18, { align: 'right' });
+    
+    doc.setFont(fontFamily, 'normal');
     doc.setFontSize(10);
-    let holderY = infoStartY + 10;
+    let holderY = infoStartY + 25;
     if (customerName) {
       doc.setFont(fontFamily, 'bold');
-      doc.text(customerName, pageWidth - margin - 3, holderY, { align: 'right' });
+      doc.text(customerName, pageWidth - margin, holderY, { align: 'right' });
       doc.setFont(fontFamily, 'normal');
-      holderY += 5;
+      holderY += 6;
     }
     if (customerEmail) {
-      doc.setFontSize(9);
-      doc.text(customerEmail, pageWidth - margin - 3, holderY, { align: 'right' });
-      holderY += 5;
+      doc.text(customerEmail, pageWidth - margin, holderY, { align: 'right' });
+      holderY += 6;
     }
-    doc.setFontSize(8);
-    doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
-    doc.text(`${t.walletId} ${wallet._id}`, pageWidth - margin - 3, holderY, { align: 'right' });
+    doc.text(`${t.walletId} ${wallet._id}`, pageWidth - margin, holderY, { align: 'right' });
     
     // Left side: Statement details
-    doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
-    doc.setFontSize(9);
-    let detailY = infoStartY + 2;
+    doc.setFont(fontFamily, 'bold');
+    doc.setFontSize(10);
     
     // Statement Number
+    doc.text(t.statementNo, margin + 60, infoStartY, { align: 'right' });
     doc.setFont(fontFamily, 'normal');
-    doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
-    doc.text(t.statementNo, margin, detailY);
-    doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
-    doc.text(`STM-${formatDateFns(dateFrom, 'yyyyMMdd')}`, margin + 35, detailY);
-    detailY += 6;
+    doc.text(`STM-${formatDateFns(dateFrom, 'yyyyMMdd')}`, margin, infoStartY);
     
     // Period
-    doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
-    doc.text(t.period, margin, detailY);
-    doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
-    doc.text(`${formatDateFns(dateFrom, 'dd/MM/yyyy')} - ${formatDateFns(dateTo, 'dd/MM/yyyy')}`, margin + 35, detailY);
-    detailY += 6;
+    doc.setFont(fontFamily, 'bold');
+    doc.text(t.period, margin + 60, infoStartY + 6, { align: 'right' });
+    doc.setFont(fontFamily, 'normal');
+    doc.text(
+      `${formatDateFns(dateFrom, 'dd/MM/yyyy')} - ${formatDateFns(dateTo, 'dd/MM/yyyy')}`,
+      margin,
+      infoStartY + 6
+    );
     
     // Generated Date
-    doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
-    doc.text(t.generated, margin, detailY);
-    doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
-    doc.text(formatDateFns(new Date(), 'dd/MM/yyyy HH:mm'), margin + 35, detailY);
-    detailY += 6;
+    doc.setFont(fontFamily, 'bold');
+    doc.text(t.generated, margin + 60, infoStartY + 12, { align: 'right' });
+    doc.setFont(fontFamily, 'normal');
+    doc.text(formatDateFns(new Date(), 'dd/MM/yyyy HH:mm'), margin, infoStartY + 12);
     
     // Currency
-    doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
-    doc.text(t.currency, margin, detailY);
-    doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
-    doc.text(wallet.currency, margin + 35, detailY);
-  } else {
-    // LTR Layout - Account Holder on left, Statement details on right
-    
-    // Account Holder section with subtle background
-    doc.setFillColor(colors.rowAlt[0], colors.rowAlt[1], colors.rowAlt[2]);
-    doc.roundedRect(margin, infoStartY - 4, pageWidth / 2 - margin - 5, 32, 2, 2, 'F');
-    
-    doc.setFontSize(8);
     doc.setFont(fontFamily, 'bold');
-    doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
-    doc.text(t.accountHolder, margin + 3, infoStartY + 2);
-    
+    doc.text(t.currency, margin + 60, infoStartY + 18, { align: 'right' });
+    doc.setFont(fontFamily, 'normal');
+    doc.text(wallet.currency, margin, infoStartY + 18);
+  } else {
+    // LTR Layout - Left: Company info & Account Holder
+    doc.setFontSize(9);
     doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
+    doc.text(t.companyName, margin, infoStartY);
+    doc.text(t.companySubtitle, margin, infoStartY + 5);
+    
+    // Account Holder section
+    doc.setFontSize(11);
+    doc.setFont(fontFamily, 'bold');
+    doc.text(t.accountHolder, margin, infoStartY + 18);
+    
+    doc.setFont(fontFamily, 'normal');
     doc.setFontSize(10);
-    let holderY = infoStartY + 10;
+    let holderY = infoStartY + 25;
     if (customerName) {
       doc.setFont(fontFamily, 'bold');
-      doc.text(customerName, margin + 3, holderY);
+      doc.text(customerName, margin, holderY);
       doc.setFont(fontFamily, 'normal');
-      holderY += 5;
+      holderY += 6;
     }
     if (customerEmail) {
-      doc.setFontSize(9);
-      doc.text(customerEmail, margin + 3, holderY);
-      holderY += 5;
+      doc.text(customerEmail, margin, holderY);
+      holderY += 6;
     }
-    doc.setFontSize(8);
-    doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
-    doc.text(`${t.walletId} ${wallet._id}`, margin + 3, holderY);
+    doc.text(`${t.walletId} ${wallet._id}`, margin, holderY);
     
     // Right column - Statement details
-    doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
-    doc.setFontSize(9);
-    let detailY = infoStartY + 2;
-    const rightColStart = pageWidth / 2 + 10;
-    const rightColValue = pageWidth - margin;
+    doc.setFont(fontFamily, 'bold');
+    doc.setFontSize(10);
     
     // Statement Number
+    doc.text(t.statementNo, 130, infoStartY);
     doc.setFont(fontFamily, 'normal');
-    doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
-    doc.text(t.statementNo, rightColStart, detailY);
-    doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
-    doc.text(`STM-${formatDateFns(dateFrom, 'yyyyMMdd')}`, rightColValue, detailY, { align: 'right' });
-    detailY += 6;
+    doc.text(`STM-${formatDateFns(dateFrom, 'yyyyMMdd')}`, 196, infoStartY, { align: 'right' });
     
     // Period
-    doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
-    doc.text(t.period, rightColStart, detailY);
-    doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
-    doc.text(`${formatDateFns(dateFrom, 'dd/MM/yyyy')} - ${formatDateFns(dateTo, 'dd/MM/yyyy')}`, rightColValue, detailY, { align: 'right' });
-    detailY += 6;
+    doc.setFont(fontFamily, 'bold');
+    doc.text(t.period, 130, infoStartY + 6);
+    doc.setFont(fontFamily, 'normal');
+    doc.text(
+      `${formatDateFns(dateFrom, 'dd/MM/yyyy')} - ${formatDateFns(dateTo, 'dd/MM/yyyy')}`,
+      196,
+      infoStartY + 6,
+      { align: 'right' }
+    );
     
     // Generated Date
-    doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
-    doc.text(t.generated, rightColStart, detailY);
-    doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
-    doc.text(formatDateFns(new Date(), 'dd/MM/yyyy HH:mm'), rightColValue, detailY, { align: 'right' });
-    detailY += 6;
+    doc.setFont(fontFamily, 'bold');
+    doc.text(t.generated, 130, infoStartY + 12);
+    doc.setFont(fontFamily, 'normal');
+    doc.text(formatDateFns(new Date(), 'dd/MM/yyyy HH:mm'), 196, infoStartY + 12, { align: 'right' });
     
     // Currency
-    doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
-    doc.text(t.currency, rightColStart, detailY);
-    doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
-    doc.text(wallet.currency, rightColValue, detailY, { align: 'right' });
+    doc.setFont(fontFamily, 'bold');
+    doc.text(t.currency, 130, infoStartY + 18);
+    doc.setFont(fontFamily, 'normal');
+    doc.text(wallet.currency, 196, infoStartY + 18, { align: 'right' });
   }
   
   // ===== TRANSACTIONS TABLE =====
-  const tableStartY = 80;
+  const tableStartY = 100;
   
   // Sort transactions by date (newest first)
   const sortedTransactions = [...transactions].sort(
@@ -497,7 +456,7 @@ export async function generateAccountStatementPDF(data: StatementData): Promise<
     6: { cellWidth: 24, halign: 'right' as const, fontStyle: 'bold' as const },     // Balance
   };
   
-  // Generate table with modern styling
+  // Generate table
   autoTable(doc, {
     startY: tableStartY,
     head: headers,
@@ -509,85 +468,89 @@ export async function generateAccountStatementPDF(data: StatementData): Promise<
       fontSize: 8,
       fontStyle: 'bold',
       halign: 'center',
-      cellPadding: 4,
-      font: 'Cairo', // Use Cairo for headers too
+      cellPadding: 3,
+      font: fontFamily,
     },
     bodyStyles: {
       fontSize: 8,
       textColor: colors.textDark,
-      cellPadding: 3.5,
+      cellPadding: 2,
       font: 'Cairo', // Always use Cairo for table body to render Arabic descriptions
-    },
-    alternateRowStyles: {
-      fillColor: colors.rowAlt, // Alternating row colors
     },
     columnStyles,
     styles: {
       lineColor: colors.border,
       lineWidth: 0.1,
-      font: 'Cairo', // Default to Cairo for all text
-      overflow: 'linebreak',
+      font: fontFamily,
     },
     margin: { left: margin, right: margin },
-    didParseCell: function(data) {
-      // Ensure Cairo font is used for all cells
-      data.cell.styles.font = 'Cairo';
-    },
   });
   
-  // ===== TOTALS SECTION (Modern boxed summary) =====
+  // ===== TOTALS SECTION =====
   const finalY = (doc as any).lastAutoTable.finalY || 150;
-  const totalsBoxY = finalY + 10;
-  const totalsBoxWidth = 80;
-  const totalsBoxHeight = 38;
+  let yPos = finalY + 15;
   
-  // Draw totals box background
-  const totalsBoxX = isRTL ? margin : pageWidth - margin - totalsBoxWidth;
-  doc.setFillColor(colors.rowAlt[0], colors.rowAlt[1], colors.rowAlt[2]);
-  doc.roundedRect(totalsBoxX, totalsBoxY, totalsBoxWidth, totalsBoxHeight, 2, 2, 'F');
-  
-  doc.setFont('Cairo', 'normal');
-  doc.setFontSize(9);
-  doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
-  
-  let yPos = totalsBoxY + 7;
-  const labelX = isRTL ? totalsBoxX + totalsBoxWidth - 3 : totalsBoxX + 3;
-  const valueX = isRTL ? totalsBoxX + 3 : totalsBoxX + totalsBoxWidth - 3;
-  const labelAlign = isRTL ? 'right' as const : 'left' as const;
-  const valueAlign = isRTL ? 'left' as const : 'right' as const;
-  
-  // Opening Balance
-  doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
-  doc.text(t.openingBalance, labelX, yPos, { align: labelAlign });
-  doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
-  doc.text(formatLYD(summary.openingBalance), valueX, yPos, { align: valueAlign });
-  yPos += 6;
-  
-  // Total Debits
-  doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
-  doc.text(t.totalDebits, labelX, yPos, { align: labelAlign });
-  doc.setTextColor(colors.withdrawRed[0], colors.withdrawRed[1], colors.withdrawRed[2]);
-  doc.text(formatLYD(summary.totalDebits), valueX, yPos, { align: valueAlign });
-  yPos += 6;
-  
-  // Total Credits
-  doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
-  doc.text(t.totalCredits, labelX, yPos, { align: labelAlign });
-  doc.setTextColor(colors.depositGreen[0], colors.depositGreen[1], colors.depositGreen[2]);
-  doc.text(formatLYD(summary.totalCredits), valueX, yPos, { align: valueAlign });
-  yPos += 8;
-  
-  // Closing Balance (bold, highlighted)
-  doc.setDrawColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-  doc.setLineWidth(0.5);
-  doc.line(totalsBoxX + 3, yPos - 3, totalsBoxX + totalsBoxWidth - 3, yPos - 3);
-  
-  doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
-  doc.setFont('Cairo', 'bold');
+  doc.setFont(fontFamily, 'normal');
   doc.setFontSize(10);
-  doc.text(t.closingBalance, labelX, yPos + 2, { align: labelAlign });
-  doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-  doc.text(formatLYD(summary.closingBalance), valueX, yPos + 2, { align: valueAlign });
+  doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
+  
+  if (isRTL) {
+    const totalsX = pageWidth - margin;
+    const valueX = margin + 40;
+    
+    // Opening Balance
+    doc.text(t.openingBalance, totalsX, yPos, { align: 'right' });
+    doc.text(formatLYD(summary.openingBalance), valueX, yPos, { align: 'right' });
+    yPos += 6;
+    
+    // Total Debits
+    doc.text(t.totalDebits, totalsX, yPos, { align: 'right' });
+    doc.setTextColor(colors.withdrawRed[0], colors.withdrawRed[1], colors.withdrawRed[2]);
+    doc.text(formatLYD(summary.totalDebits), valueX, yPos, { align: 'right' });
+    yPos += 6;
+    
+    // Total Credits
+    doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
+    doc.text(t.totalCredits, totalsX, yPos, { align: 'right' });
+    doc.setTextColor(colors.depositGreen[0], colors.depositGreen[1], colors.depositGreen[2]);
+    doc.text(formatLYD(summary.totalCredits), valueX, yPos, { align: 'right' });
+    yPos += 8;
+    
+    // Closing Balance (bold, larger)
+    doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
+    doc.setFont(fontFamily, 'bold');
+    doc.setFontSize(12);
+    doc.text(t.closingBalance, totalsX, yPos, { align: 'right' });
+    doc.text(formatLYD(summary.closingBalance), valueX, yPos, { align: 'right' });
+  } else {
+    const totalsX = 130;
+    const rightColX = 196;
+    
+    // Opening Balance
+    doc.text(t.openingBalance, totalsX, yPos);
+    doc.text(formatLYD(summary.openingBalance), rightColX, yPos, { align: 'right' });
+    yPos += 6;
+    
+    // Total Debits
+    doc.text(t.totalDebits, totalsX, yPos);
+    doc.setTextColor(colors.withdrawRed[0], colors.withdrawRed[1], colors.withdrawRed[2]);
+    doc.text(formatLYD(summary.totalDebits), rightColX, yPos, { align: 'right' });
+    yPos += 6;
+    
+    // Total Credits
+    doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
+    doc.text(t.totalCredits, totalsX, yPos);
+    doc.setTextColor(colors.depositGreen[0], colors.depositGreen[1], colors.depositGreen[2]);
+    doc.text(formatLYD(summary.totalCredits), rightColX, yPos, { align: 'right' });
+    yPos += 8;
+    
+    // Closing Balance (bold, larger)
+    doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
+    doc.setFont(fontFamily, 'bold');
+    doc.setFontSize(12);
+    doc.text(t.closingBalance, totalsX, yPos);
+    doc.text(formatLYD(summary.closingBalance), rightColX, yPos, { align: 'right' });
+  }
   
   // Save PDF
   const fromStr = formatDateFns(dateFrom, 'yyyyMMdd');
