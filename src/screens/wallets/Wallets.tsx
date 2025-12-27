@@ -256,7 +256,7 @@ export default function Wallets() {
       const pagePromises = [];
       
       for (let page = 1; page <= Math.min(totalPages, 10); page++) {
-        pagePromises.push(usersApi.getUsers({ userType: 'customer', page, limit: 10 }));
+        pagePromises.push(usersApi.getUsers({ userType: 'customer', page, limit: 100 }));
       }
       
       const allPagesResponses = await Promise.all(pagePromises);
