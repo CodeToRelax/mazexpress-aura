@@ -718,3 +718,241 @@ export async function generateBulkShipmentLabels(shipments: IShipment[]): Promis
     }, 250);
   };
 }
+
+// ============================================
+// ANGULAR-STYLE LABELS (768x1153px page size)
+// ============================================
+
+// Generate Angular-style label HTML for a single shipment
+function generateAngularLabelHTML(shipment: IShipment, stampSrc?: string): string {
+  const size = shipment.size || { length: 0, width: 0, height: 0, weight: 0 };
+  const dims = `${size.length || 0} X ${size.width || 0} X ${size.height || 0} CM`;
+  const weightText = `الوزن ${size.weight || 0} KG`;
+  const destination = formatCityName(shipment.shipmentDestination) || shipment.shipmentDestination || 'N/A';
+
+  // Generate Codabar barcode
+  const canvas = document.createElement('canvas');
+  let barcodeDataUrl = '';
+  
+  try {
+    JsBarcode(canvas, shipment.esn, {
+      format: 'codabar',
+      displayValue: false,
+      margin: 0,
+      width: 2,
+      height: 150,
+    });
+    barcodeDataUrl = canvas.toDataURL('image/png');
+  } catch (error) {
+    console.error('Error generating Codabar barcode for ESN:', shipment.esn, error);
+  }
+
+  return `
+    <div class="print-label-page">
+      ${stampSrc ? `<img src="${stampSrc}" alt="STAMP" class="print-label-stamp" />` : ''}
+      <div class="print-label-csn">${shipment.csn}</div>
+      <div class="print-label-box">
+        <div class="print-label-dims">${dims}</div>
+        <div class="print-label-weight">${weightText}</div>
+        <div class="print-label-dest">${destination}</div>
+      </div>
+      <div class="print-label-barcode-wrap">
+        ${barcodeDataUrl 
+          ? `<img src="${barcodeDataUrl}" alt="Barcode" style="width: 500px; height: 150px; display: block;" />`
+          : `<div style="font-size: 36px; font-weight: bold; font-family: monospace;">${shipment.esn}</div>`
+        }
+        <div class="print-label-tracking">${shipment.esn}</div>
+      </div>
+    </div>
+  `;
+}
+
+// Get CSS for Angular-style labels
+function getAngularLabelCSS(): string {
+  return `
+/* ====== PRINT PAGE SIZE (MUST MATCH ANGULAR) ====== */
+@page {
+  size: 768px 1153px;
+  margin: 0;
+  padding: 0;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  direction: ltr;
+  font-family: Cairo, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+@media print {
+  html, body { width: 768px; height: 1153px; }
+}
+
+.print-label-page {
+  width: 768px;
+  height: 1153px;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  page-break-after: always;
+  break-after: page;
+}
+
+.print-label-stamp {
+  width: 300px;
+  margin-bottom: -125px;
+  transform: translateY(-40px);
+  display: block;
+}
+
+.print-label-csn {
+  font-size: 110px;
+  line-height: 1;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+  max-width: 740px;
+}
+
+.print-label-box {
+  width: 740px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-top: 1px solid #000;
+  border-bottom: 1px solid #000;
+  margin-top: 10px;
+  padding: 18px 10px;
+  gap: 10px;
+}
+
+.print-label-dims {
+  font-size: 80px;
+  line-height: 1.1;
+  font-weight: 700;
+  text-align: center;
+}
+
+.print-label-weight {
+  font-size: 90px;
+  line-height: 1.1;
+  font-weight: 800;
+  text-align: center;
+  direction: rtl;
+}
+
+.print-label-dest {
+  font-size: 90px;
+  line-height: 1.1;
+  font-weight: 800;
+  text-align: center;
+  direction: rtl;
+}
+
+.print-label-barcode-wrap {
+  width: 740px;
+  margin-top: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.print-label-tracking {
+  width: 500px;
+  font-size: 48px;
+  line-height: 1.1;
+  font-weight: 800;
+  text-align: center;
+  margin-top: 12px;
+  direction: ltr;
+}
+
+@media print {
+  .print-label-page {
+    overflow: hidden;
+  }
+}
+`;
+}
+
+// Print single shipment with Angular-style label
+export async function generateAngularStyleLabel(shipment: IShipment, stampSrc?: string): Promise<void> {
+  const labelHTML = generateAngularLabelHTML(shipment, stampSrc);
+  
+  const printWindow = window.open('', '_blank');
+  
+  if (!printWindow) {
+    alert('Please allow pop-ups to print labels');
+    return;
+  }
+
+  const fullHTML = `
+    <!DOCTYPE html>
+    <html lang="ar" dir="ltr">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Shipment Label - ${shipment.csn}</title>
+      <style>${getAngularLabelCSS()}</style>
+    </head>
+    <body>
+      ${labelHTML}
+    </body>
+    </html>
+  `;
+
+  printWindow.document.write(fullHTML);
+  printWindow.document.close();
+
+  printWindow.onload = () => {
+    setTimeout(() => {
+      printWindow.print();
+    }, 250);
+  };
+}
+
+// Print multiple shipments with Angular-style labels
+export async function generateBulkAngularStyleLabels(shipments: IShipment[], stampSrc?: string): Promise<void> {
+  if (shipments.length === 0) {
+    alert('No shipments selected');
+    return;
+  }
+
+  const printWindow = window.open('', '_blank');
+  
+  if (!printWindow) {
+    alert('Please allow pop-ups to print labels');
+    return;
+  }
+
+  const labelsHTML = shipments
+    .map(shipment => generateAngularLabelHTML(shipment, stampSrc))
+    .join('\n');
+
+  const fullHTML = `
+    <!DOCTYPE html>
+    <html lang="ar" dir="ltr">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Shipment Labels (${shipments.length} labels)</title>
+      <style>${getAngularLabelCSS()}</style>
+    </head>
+    <body>
+      ${labelsHTML}
+    </body>
+    </html>
+  `;
+
+  printWindow.document.write(fullHTML);
+  printWindow.document.close();
+
+  printWindow.onload = () => {
+    setTimeout(() => {
+      printWindow.print();
+    }, 250);
+  };
+}
