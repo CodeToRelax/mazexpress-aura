@@ -96,8 +96,7 @@ export default function UserDetail() {
     new Set(['origin', 'destination', 'method', 'status', 'weight', 'createdAt'])
   );
   const [selectedShipments, setSelectedShipments] = useState<Set<string>>(new Set());
-  const [shipmentSortBy, setShipmentSortBy] = useState<string>('createdAt');
-  const [shipmentSortOrder, setShipmentSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [shipmentSort, setShipmentSort] = useState<string>('-createdAt');
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -143,7 +142,7 @@ export default function UserDetail() {
       const response = await shipmentsApi.getShipments({
         ...shipmentFilters,
         csn: user.uniqueShippingNumber,
-        sort: `${shipmentSortBy}:${shipmentSortOrder}`,
+        sort: shipmentSort,
       });
       
       setShipments(response.data.shipments || []);
@@ -337,7 +336,7 @@ export default function UserDetail() {
     if (user?.uniqueShippingNumber && shipments.length > 0) {
       fetchShipmentsData();
     }
-  }, [shipmentFilters, shipmentSortBy, shipmentSortOrder]);
+  }, [shipmentFilters, shipmentSort]);
 
   // Shipment handlers
   const handleShipmentFiltersChange = (newFilters: ShipmentFiltersType) => {
@@ -357,12 +356,18 @@ export default function UserDetail() {
   };
 
   const handleShipmentSort = (column: string) => {
-    if (shipmentSortBy === column) {
-      setShipmentSortOrder(shipmentSortOrder === 'asc' ? 'desc' : 'asc');
+    const currentColumn = shipmentSort.startsWith('-') ? shipmentSort.substring(1) : shipmentSort;
+    const currentOrder = shipmentSort.startsWith('-') ? 'desc' : 'asc';
+
+    let newSort: string;
+    if (currentColumn === column) {
+      newSort = currentOrder === 'asc' ? `-${column}` : column;
     } else {
-      setShipmentSortBy(column);
-      setShipmentSortOrder('desc');
+      newSort = column; // Default to ascending for new column
     }
+
+    setShipmentSort(newSort);
+    setShipmentFilters(prev => ({ ...prev, page: 1 }));
   };
 
   const handleToggleShipmentColumn = (columnKey: string) => {
@@ -644,8 +649,8 @@ export default function UserDetail() {
                 onEdit={() => {}}
                 onDelete={() => {}}
                 visibleColumns={shipmentVisibleColumns}
-                sortBy={shipmentSortBy}
-                sortOrder={shipmentSortOrder}
+                sortBy={shipmentSort.startsWith('-') ? shipmentSort.substring(1) : shipmentSort}
+                sortOrder={shipmentSort.startsWith('-') ? 'desc' : 'asc'}
                 onSort={handleShipmentSort}
               />
 
