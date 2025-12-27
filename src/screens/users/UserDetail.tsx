@@ -885,6 +885,8 @@ const [isCreateWalletOpen, setIsCreateWalletOpen] = useState(false);
         open={isAccountStatementOpen}
         onOpenChange={setIsAccountStatementOpen}
         wallet={wallet || undefined}
+        userId={user._id}
+        userName={`${user.firstName} ${user.lastName}`}
       />
     </div>
   );
