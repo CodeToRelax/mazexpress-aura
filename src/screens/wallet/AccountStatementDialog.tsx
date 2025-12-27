@@ -158,12 +158,20 @@ export function AccountStatementDialog({ open, onOpenChange, wallet: initialWall
         page++;
       }
       
+      // Filter transactions by date range (client-side filtering for accuracy)
+      const fromStart = startOfDay(dateFrom);
+      const toEnd = endOfDay(dateTo);
+      const filteredTransactions = allTransactions.filter(tx => {
+        const txDate = new Date(tx.createdAt);
+        return txDate >= fromStart && txDate <= toEnd;
+      });
+      
       // Get user info from wallet or use provided userName
       const walletUserId = typeof wallet.userId === 'object' ? wallet.userId : null;
       
       await generateAccountStatementPDF({
         wallet,
-        transactions: allTransactions,
+        transactions: filteredTransactions,
         dateFrom,
         dateTo,
         customerName: userName || (walletUserId ? `${walletUserId.firstName} ${walletUserId.lastName}` : undefined),
