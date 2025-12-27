@@ -93,7 +93,7 @@ export async function generateAccountStatementPDF(data: StatementData): Promise<
   
   // ===== HEADER SECTION =====
   // Left: "ACCOUNT STATEMENT" title
-  doc.setFontSize(22);
+  doc.setFontSize(24);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(colors.black[0], colors.black[1], colors.black[2]);
   doc.text('ACCOUNT STATEMENT', 14, 25);
@@ -109,37 +109,73 @@ export async function generateAccountStatementPDF(data: StatementData): Promise<
   doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
   doc.text('Shipping & Logistics', 196, 27, { align: 'right' });
   
-  // Statement period
-  doc.setFontSize(10);
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
-  doc.text(`Statement Period: ${formatDateFns(dateFrom, 'dd/MM/yyyy')} - ${formatDateFns(dateTo, 'dd/MM/yyyy')}`, 14, 35);
-  doc.text(`Generated: ${formatDateFns(new Date(), 'dd/MM/yyyy HH:mm')}`, 14, 41);
+  // ===== INFORMATION SECTION (Two columns) =====
+  const infoStartY = 45;
   
-  // ===== ACCOUNT INFORMATION SECTION =====
-  const infoStartY = 52;
+  // Left column - Company info
+  doc.setFontSize(9);
+  doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
+  doc.text('MazExpress', 14, infoStartY);
+  doc.text('Shipping & Logistics Solutions', 14, infoStartY + 5);
   
-  // Left column - Account holder
+  // Account Holder section
   doc.setFontSize(11);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
-  doc.text('ACCOUNT HOLDER', 14, infoStartY);
+  doc.text('ACCOUNT HOLDER', 14, infoStartY + 18);
   
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(10);
   if (customerName) {
     doc.setFont('helvetica', 'bold');
-    doc.text(customerName, 14, infoStartY + 7);
+    doc.text(customerName, 14, infoStartY + 25);
     doc.setFont('helvetica', 'normal');
   }
   if (customerEmail) {
-    doc.text(customerEmail, 14, infoStartY + 13);
+    doc.text(customerEmail, 14, infoStartY + 31);
   }
-  doc.text(`Wallet ID: ${wallet._id}`, 14, infoStartY + 19);
-  doc.text(`Currency: ${wallet.currency}`, 14, infoStartY + 25);
+  doc.text(`Wallet ID: ${wallet._id}`, 14, infoStartY + 37);
+  
+  // Right column - Statement details
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10);
+  doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
+  
+  // Statement Number
+  doc.text('Statement No:', 130, infoStartY);
+  doc.setFont('helvetica', 'normal');
+  doc.text(`STM-${formatDateFns(dateFrom, 'yyyyMMdd')}`, 196, infoStartY, { align: 'right' });
+  
+  // Period
+  doc.setFont('helvetica', 'bold');
+  doc.text('Period:', 130, infoStartY + 6);
+  doc.setFont('helvetica', 'normal');
+  doc.text(
+    `${formatDateFns(dateFrom, 'dd/MM/yyyy')} - ${formatDateFns(dateTo, 'dd/MM/yyyy')}`,
+    196,
+    infoStartY + 6,
+    { align: 'right' }
+  );
+  
+  // Generated Date
+  doc.setFont('helvetica', 'bold');
+  doc.text('Generated:', 130, infoStartY + 12);
+  doc.setFont('helvetica', 'normal');
+  doc.text(
+    formatDateFns(new Date(), 'dd/MM/yyyy HH:mm'),
+    196,
+    infoStartY + 12,
+    { align: 'right' }
+  );
+  
+  // Currency
+  doc.setFont('helvetica', 'bold');
+  doc.text('Currency:', 130, infoStartY + 18);
+  doc.setFont('helvetica', 'normal');
+  doc.text(wallet.currency, 196, infoStartY + 18, { align: 'right' });
   
   // ===== TRANSACTIONS TABLE =====
-  const tableStartY = infoStartY + 32;
+  const tableStartY = 100;
   
   // Sort transactions by date (newest first)
   const sortedTransactions = [...transactions].sort(
@@ -200,17 +236,42 @@ export async function generateAccountStatementPDF(data: StatementData): Promise<
       lineColor: colors.border,
       lineWidth: 0.1,
     },
-    alternateRowStyles: {
-      fillColor: [250, 250, 250],
-    },
   });
   
-  // ===== FOOTER =====
-  doc.setFontSize(8);
-  doc.setFont('helvetica', 'italic');
-  doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
-  doc.text('This is a computer-generated statement and does not require a signature.', 105, 280, { align: 'center' });
-  doc.text('Thank you for banking with MazExpress!', 105, 285, { align: 'center' });
+  // ===== TOTALS SECTION =====
+  const finalY = (doc as any).lastAutoTable.finalY || 150;
+  let yPos = finalY + 15;
+  const totalsX = 130;
+  const rightColX = 196;
+  
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
+  
+  // Opening Balance
+  doc.text('Opening Balance:', totalsX, yPos);
+  doc.text(formatLYD(summary.openingBalance), rightColX, yPos, { align: 'right' });
+  yPos += 6;
+  
+  // Total Debits
+  doc.text('Total Debits:', totalsX, yPos);
+  doc.setTextColor(colors.withdrawRed[0], colors.withdrawRed[1], colors.withdrawRed[2]);
+  doc.text(formatLYD(summary.totalDebits), rightColX, yPos, { align: 'right' });
+  yPos += 6;
+  
+  // Total Credits
+  doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
+  doc.text('Total Credits:', totalsX, yPos);
+  doc.setTextColor(colors.depositGreen[0], colors.depositGreen[1], colors.depositGreen[2]);
+  doc.text(formatLYD(summary.totalCredits), rightColX, yPos, { align: 'right' });
+  yPos += 8;
+  
+  // Closing Balance (bold, larger)
+  doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(12);
+  doc.text('Closing Balance:', totalsX, yPos);
+  doc.text(formatLYD(summary.closingBalance), rightColX, yPos, { align: 'right' });
   
   // Save PDF
   const fromStr = formatDateFns(dateFrom, 'yyyyMMdd');
