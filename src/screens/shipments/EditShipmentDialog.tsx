@@ -374,7 +374,14 @@ export function EditShipmentDialog({ open, onOpenChange, shipment, onSuccess }: 
                     <FormItem>
                       <FormLabel>{t('shipments.form.fields.extraCosts')}</FormLabel>
                       <FormControl>
-                        <Input type="number" step="0.01" {...field} onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} />
+                        <Input
+                          type="number"
+                          step="0.01"
+                          {...field}
+                          value={field.value ?? ''}
+                          onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : 0)}
+                          placeholder={t('shipments.placeholders.extraCosts', { defaultValue: '0.00' })}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
