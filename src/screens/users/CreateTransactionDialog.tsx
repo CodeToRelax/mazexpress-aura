@@ -51,7 +51,7 @@ export function CreateTransactionDialog({
     resolver: zodResolver(adminTransactionSchema),
     defaultValues: {
       walletId: '',
-      type: 'deposit',
+      type: '' as any,
       amount: 0,
       description: '',
       reference: '',
@@ -64,7 +64,7 @@ export function CreateTransactionDialog({
       console.log('[CreateTransactionDialog] Setting walletId in form:', walletId);
       form.reset({
         walletId: walletId,
-        type: 'deposit',
+        type: '' as any,
         amount: 0,
         description: '',
         reference: '',
@@ -149,7 +149,7 @@ export function CreateTransactionDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Type</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value || ''}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select transaction type" />
