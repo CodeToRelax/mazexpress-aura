@@ -346,21 +346,78 @@ export default function PrintInvoiceA4(props: Props) {
         <img className="bg" width="300" src="/assets/images/logo/logo.png" alt="" />
         <div className="inner-wrapper">
           <div className="top">
-            <div className="details">
-              <h2>فاتورة</h2>
-              <div className="company-info">
-                <span className="company-name">MAZEXPRESS</span>
-                <span>بنغازي, ليبيا</span>
-                <span>0919497423</span>
+            <div
+              style={{
+                direction: "rtl",
+                textAlign: "right",
+                width: 320,
+                padding: "16px 18px",
+                border: "1px solid #111",
+                borderRadius: 12,
+                display: "flex",
+                flexDirection: "column",
+                gap: 12,
+              }}
+            >
+              <h2
+                style={{
+                  margin: 0,
+                  fontSize: 20,
+                  fontWeight: 800,
+                  letterSpacing: 0.3,
+                }}
+              >
+                فاتورة
+              </h2>
+
+              {/* Company info */}
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 2,
+                  lineHeight: 1.3,
+                }}
+              >
+                <span style={{ fontSize: 14, fontWeight: 800 }}>MAZEXPRESS</span>
+                <span style={{ fontSize: 12 }}>بنغازي, ليبيا</span>
+                <span style={{ fontSize: 12, direction: "ltr" }}>0919497423</span>
               </div>
-              <div className="invoice">
-                <div>
-                  <span className="head">التاريخ</span>
-                  <span>{formatDate(date)}</span>
+
+              {/* Divider */}
+              <div style={{ borderTop: "1px solid #111", marginTop: 6 }} />
+
+              {/* Invoice meta */}
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 8,
+                  marginTop: 4,
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "baseline",
+                    gap: 12,
+                  }}
+                >
+                  <span style={{ fontSize: 12, fontWeight: 700 }}>التاريخ</span>
+                  <span style={{ fontSize: 12, fontWeight: 600, direction: "ltr" }}>{formatDate(date)}</span>
                 </div>
-                <div>
-                  <span className="head">الاسم</span>
-                  <span>{userFullName}</span>
+
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "baseline",
+                    gap: 12,
+                  }}
+                >
+                  <span style={{ fontSize: 12, fontWeight: 700 }}>الاسم</span>
+                  <span style={{ fontSize: 12, fontWeight: 600 }}>{userFullName}</span>
                 </div>
               </div>
             </div>
