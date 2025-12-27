@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 
 type Shipment = {
+  esn?: string;
   size: {
     weight: number;
     length: number;
@@ -366,7 +367,7 @@ export default function PrintInvoiceA4(props: Props) {
                 <tr>
                   <th style={{ borderTopRightRadius: 32 }}>رقم</th>
                   <th>وزن الطرد KG</th>
-                  <th>ابعاد الطرد CM</th>
+                  <th>رقم التتبع</th>
                   <th>CBM</th>
                   <th>الوزن بالابعاد</th>
                   <th style={{ borderTopLeftRadius: 32 }}>تكاليف إضافية</th>
@@ -377,10 +378,7 @@ export default function PrintInvoiceA4(props: Props) {
                   <tr key={index} className={index % 2 === 1 ? "grey" : ""}>
                     <td>{index + 1}</td>
                     <td>{shipment.size.weight}</td>
-                    <td>
-                      {shipment.size.length} X {shipment.size.width} X{" "}
-                      {shipment.size.height}
-                    </td>
+                    <td>{shipment.esn || '-'}</td>
                     <td>
                       {shipment.size.length *
                         shipment.size.width *
@@ -466,7 +464,7 @@ export default function PrintInvoiceA4(props: Props) {
                   <tr>
                     <th style={{ borderTopRightRadius: 32 }}>رقم</th>
                     <th>وزن الطرد KG</th>
-                    <th>ابعاد الطرد CM</th>
+                    <th>رقم التتبع</th>
                     <th>CBM</th>
                     <th>الوزن بالابعاد</th>
                     <th style={{ borderTopLeftRadius: 32 }}>تكاليف إضافية</th>
@@ -477,10 +475,7 @@ export default function PrintInvoiceA4(props: Props) {
                     <tr key={index} className={index % 2 === 1 ? "grey" : ""}>
                       <td>{index + 1 + op.length}</td>
                       <td>{shipment.size.weight}</td>
-                      <td>
-                        {shipment.size.length} X {shipment.size.width} X{" "}
-                        {shipment.size.height}
-                      </td>
+                      <td>{shipment.esn || '-'}</td>
                       <td>
                         {shipment.size.length *
                           shipment.size.width *

@@ -4,6 +4,7 @@ import React from 'react';
 import PrintInvoiceA4 from '@/components/invoices/PrintInvoiceA4';
 
 interface ShipmentData {
+  esn?: string;
   size: {
     weight: number;
     length: number;
@@ -24,6 +25,7 @@ function extractShipmentData(items: InvoiceItem[]): ShipmentData[] {
       const size = shipment?.size || {};
       
       return {
+        esn: shipment?.esn || '',
         size: {
           weight: size.weight || 0,
           length: size.length || 0,
