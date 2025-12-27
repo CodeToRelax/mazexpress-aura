@@ -129,6 +129,7 @@ export default function Wallets() {
         disabled: filters.disabled,
         createdAfter: filters.createdAfter,
         createdBefore: filters.createdBefore,
+        search: filters.search,
       });
       
       const totalPages = firstPageResponse.data.pagination.totalPages;
@@ -145,6 +146,7 @@ export default function Wallets() {
           disabled: filters.disabled,
           createdAfter: filters.createdAfter,
           createdBefore: filters.createdBefore,
+          search: filters.search,
         }));
       }
       
