@@ -6,6 +6,7 @@ import { ArrowLeft, Mail, Phone, MapPin, Calendar, User as UserIcon, Package, Wa
 import type { User } from '@/types/user';
 import type { Wallet } from '@/types/wallet';
 import type { Transaction } from '@/types/wallet';
+import type { IShipment, ShipmentFilters as ShipmentFiltersType } from '@/types/shipment';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -19,6 +20,10 @@ import { TransactionsStatsBar } from '@/screens/wallet/TransactionsStatsBar';
 import { TransactionsFilters } from '@/screens/wallet/TransactionsFilters';
 import { TransactionsPagination } from '@/screens/wallet/TransactionsPagination';
 import { TransactionsColumnVisibilityToggle } from '@/screens/wallet/TransactionsColumnVisibilityToggle';
+import { ShipmentsTable } from '@/screens/shipments/ShipmentsTable';
+import { ShipmentsFilters } from '@/screens/shipments/ShipmentsFilters';
+import { ShipmentsPagination } from '@/screens/shipments/ShipmentsPagination';
+import { ColumnVisibilityToggle as ShipmentsColumnVisibilityToggle } from '@/screens/shipments/ColumnVisibilityToggle';
 import { CreateTransactionDialog } from './CreateTransactionDialog';
 import { CreateUserWalletDialog } from './CreateUserWalletDialog';
 import { EditTransactionDialog } from './EditTransactionDialog';
@@ -26,6 +31,7 @@ import { RefundTransactionDialog } from './RefundTransactionDialog';
 import { EditUserDialog } from './EditUserDialog';
 import { usersApi } from '@/utilities/api/users.api';
 import { getWalletByUserId, getUserTransactions } from '@/utilities/api/wallet.api';
+import { shipmentsApi } from '@/utilities/api/shipments.api';
 import { exportUserTransactionsToCSV } from '@/utilities/helpers/transactionExport';
 import { toast } from '@/hooks/use-toast';
 import { formatLYD } from '@/utilities/helpers/currencyHelpers';
@@ -74,6 +80,25 @@ export default function UserDetail() {
   const [sortBy, setSortBy] = useState<string>('createdAt');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
+  // Shipments state
+  const [shipments, setShipments] = useState<IShipment[]>([]);
+  const [shipmentsPagination, setShipmentsPagination] = useState({
+    totalDocs: 0,
+    limit: 10,
+    totalPages: 0,
+    page: 1,
+    hasPrevPage: false,
+    hasNextPage: false,
+  });
+  const [isLoadingShipments, setIsLoadingShipments] = useState(false);
+  const [shipmentFilters, setShipmentFilters] = useState<ShipmentFiltersType>({ page: 1, limit: 10 });
+  const [shipmentVisibleColumns, setShipmentVisibleColumns] = useState<Set<string>>(
+    new Set(['origin', 'destination', 'method', 'status', 'weight', 'createdAt'])
+  );
+  const [selectedShipments, setSelectedShipments] = useState<Set<string>>(new Set());
+  const [shipmentSortBy, setShipmentSortBy] = useState<string>('createdAt');
+  const [shipmentSortOrder, setShipmentSortOrder] = useState<'asc' | 'desc'>('desc');
+
   useEffect(() => {
     const fetchUser = async () => {
       if (!id) return;
@@ -102,6 +127,45 @@ export default function UserDetail() {
       fetchWalletData();
     }
   }, [defaultTab, user]);
+
+  // Auto-fetch shipments data when tab query parameter is 'shipments'
+  useEffect(() => {
+    if (defaultTab === 'shipments' && user && shipments.length === 0) {
+      fetchShipmentsData();
+    }
+  }, [defaultTab, user]);
+
+  const fetchShipmentsData = async () => {
+    if (!user?.uniqueShippingNumber) return;
+    
+    setIsLoadingShipments(true);
+    try {
+      const response = await shipmentsApi.getShipments({
+        ...shipmentFilters,
+        csn: user.uniqueShippingNumber,
+        sort: `${shipmentSortBy}:${shipmentSortOrder}`,
+      });
+      
+      setShipments(response.data.shipments || []);
+      setShipmentsPagination({
+        totalDocs: response.data.pagination?.totalDocs ?? 0,
+        limit: response.data.pagination?.limit ?? 10,
+        totalPages: response.data.pagination?.totalPages ?? 0,
+        page: response.data.pagination?.currentPage ?? 1,
+        hasPrevPage: response.data.pagination?.hasPrevPage ?? false,
+        hasNextPage: response.data.pagination?.hasNextPage ?? false,
+      });
+    } catch (error) {
+      console.error('[UserDetail] Error fetching shipments data:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to load shipments data',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoadingShipments(false);
+    }
+  };
 
   const fetchWalletData = async () => {
     if (!user?._id) return;
@@ -268,6 +332,77 @@ export default function UserDetail() {
     }
   }, [transactionFilters, sortBy, sortOrder]);
 
+  // Refetch shipments when filters change
+  useEffect(() => {
+    if (user?.uniqueShippingNumber && shipments.length > 0) {
+      fetchShipmentsData();
+    }
+  }, [shipmentFilters, shipmentSortBy, shipmentSortOrder]);
+
+  // Shipment handlers
+  const handleShipmentFiltersChange = (newFilters: ShipmentFiltersType) => {
+    setShipmentFilters({ ...newFilters, page: 1 });
+  };
+
+  const handleClearShipmentFilters = () => {
+    setShipmentFilters({ page: 1, limit: shipmentFilters.limit });
+  };
+
+  const handleShipmentPageChange = (page: number) => {
+    setShipmentFilters({ ...shipmentFilters, page });
+  };
+
+  const handleShipmentLimitChange = (limit: number) => {
+    setShipmentFilters({ ...shipmentFilters, limit, page: 1 });
+  };
+
+  const handleShipmentSort = (column: string) => {
+    if (shipmentSortBy === column) {
+      setShipmentSortOrder(shipmentSortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setShipmentSortBy(column);
+      setShipmentSortOrder('desc');
+    }
+  };
+
+  const handleToggleShipmentColumn = (columnKey: string) => {
+    const newVisibleColumns = new Set(shipmentVisibleColumns);
+    if (newVisibleColumns.has(columnKey)) {
+      newVisibleColumns.delete(columnKey);
+    } else {
+      newVisibleColumns.add(columnKey);
+    }
+    setShipmentVisibleColumns(newVisibleColumns);
+  };
+
+  const handleResetShipmentColumns = () => {
+    setShipmentVisibleColumns(new Set(['origin', 'destination', 'method', 'status', 'weight', 'createdAt']));
+  };
+
+  const handleSelectShipment = (shipmentId: string) => {
+    const newSelected = new Set(selectedShipments);
+    if (newSelected.has(shipmentId)) {
+      newSelected.delete(shipmentId);
+    } else {
+      newSelected.add(shipmentId);
+    }
+    setSelectedShipments(newSelected);
+  };
+
+  const handleSelectAllShipments = (selected: boolean) => {
+    if (selected) {
+      setSelectedShipments(new Set(shipments.map(s => s._id)));
+    } else {
+      setSelectedShipments(new Set());
+    }
+  };
+
+  const getShipmentActiveFiltersCount = () => {
+    return Object.keys(shipmentFilters).filter(
+      key => key !== 'page' && key !== 'limit' && key !== 'csn' && shipmentFilters[key as keyof ShipmentFiltersType]
+    ).length;
+  };
+
   const handleEditUserSuccess = async () => {
     setIsEditUserOpen(false);
     if (!id) return;
@@ -338,19 +473,23 @@ export default function UserDetail() {
 
       {/* Main Content */}
       <Tabs defaultValue={defaultTab} className="w-full">
-        <TabsList className={`grid w-full ${user.userType === 'admin' ? 'grid-cols-4' : 'grid-cols-4'}`}>
+        <TabsList className={`grid w-full ${user.userType === 'admin' ? 'grid-cols-5' : 'grid-cols-5'}`}>
           <TabsTrigger value="overview">{t('users.detail.overview')}</TabsTrigger>
           <TabsTrigger value="profile">{t('users.detail.profile')}</TabsTrigger>
+          <TabsTrigger value="shipments" onClick={fetchShipmentsData}>
+            <Package className="h-4 w-4 ltr:mr-2 rtl:ml-2" />
+            {t('users.detail.shipments', { defaultValue: 'Shipments' })}
+          </TabsTrigger>
           {user.userType !== 'admin' && (
             <TabsTrigger value="wallet" onClick={fetchWalletData}>
-              <WalletIcon className="h-4 w-4 mr-2" />
+              <WalletIcon className="h-4 w-4 ltr:mr-2 rtl:ml-2" />
               Wallet
             </TabsTrigger>
           )}
           <TabsTrigger value="metadata">Metadata</TabsTrigger>
           {user.userType === 'admin' && (
             <TabsTrigger value="acl">
-              <Shield className="h-4 w-4 mr-2" />
+              <Shield className="h-4 w-4 ltr:mr-2 rtl:ml-2" />
               {t('acl:permissions')}
             </TabsTrigger>
           )}
@@ -470,6 +609,58 @@ export default function UserDetail() {
               </div>
             </div>
           </div>
+        </TabsContent>
+
+        <TabsContent value="shipments" className="space-y-4 mt-6">
+          {isLoadingShipments ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          ) : (
+            <div className="glass-card p-6 rounded-2xl space-y-4">
+              <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+                <h3 className="font-semibold text-lg">
+                  {t('users.detail.shipments', { defaultValue: 'Shipments' })} ({shipmentsPagination.totalDocs})
+                </h3>
+                <ShipmentsColumnVisibilityToggle
+                  visibleColumns={shipmentVisibleColumns}
+                  onToggleColumn={handleToggleShipmentColumn}
+                  onReset={handleResetShipmentColumns}
+                />
+              </div>
+              
+              <ShipmentsFilters
+                filters={shipmentFilters}
+                onFiltersChange={handleShipmentFiltersChange}
+                onClearFilters={handleClearShipmentFilters}
+                activeFilterCount={getShipmentActiveFiltersCount()}
+              />
+              
+              <ShipmentsTable
+                shipments={shipments}
+                selectedShipments={selectedShipments}
+                onSelectShipment={handleSelectShipment}
+                onSelectAll={handleSelectAllShipments}
+                onEdit={() => {}}
+                onDelete={() => {}}
+                visibleColumns={shipmentVisibleColumns}
+                sortBy={shipmentSortBy}
+                sortOrder={shipmentSortOrder}
+                onSort={handleShipmentSort}
+              />
+
+              <ShipmentsPagination
+                currentPage={shipmentsPagination.page}
+                totalPages={shipmentsPagination.totalPages}
+                totalItems={shipmentsPagination.totalDocs}
+                itemsPerPage={shipmentsPagination.limit}
+                hasPrevPage={shipmentsPagination.hasPrevPage}
+                hasNextPage={shipmentsPagination.hasNextPage}
+                onPageChange={handleShipmentPageChange}
+                onLimitChange={handleShipmentLimitChange}
+              />
+            </div>
+          )}
         </TabsContent>
 
         <TabsContent value="metadata" className="space-y-4 mt-6">
