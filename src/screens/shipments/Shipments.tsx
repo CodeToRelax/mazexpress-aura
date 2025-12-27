@@ -22,7 +22,7 @@ import { DeleteShipmentDialog } from './DeleteShipmentDialog';
 import { BulkUpdateDialog } from './BulkUpdateDialog';
 import { BulkDeleteDialog } from './BulkDeleteDialog';
 import { BarcodeScanDialog } from './BarcodeScanDialog';
-import { generateBulkShipmentLabels } from '@/utilities/helpers/shipmentLabel';
+import { generateBulkAngularStyleLabels } from '@/utilities/helpers/shipmentLabel';
 
 // localStorage keys
 const STORAGE_KEYS = {
@@ -368,7 +368,7 @@ export default function Shipments() {
 
   const handleBulkPrintLabels = () => {
     const selectedShipmentsList = shipments.filter(s => selectedShipments.has(s._id));
-    generateBulkShipmentLabels(selectedShipmentsList);
+    generateBulkAngularStyleLabels(selectedShipmentsList);
   };
 
   const handleSort = (column: string) => {
