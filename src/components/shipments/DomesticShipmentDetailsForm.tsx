@@ -279,6 +279,35 @@ export function DomesticShipmentDetailsForm({ control, isDisabled }: DomesticShi
           )}
         />
 
+        {/* Extra Costs */}
+        <FormField
+          control={control}
+          name="extraCosts"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t('shipments.form.fields.extraCosts')}</FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  type="number"
+                  step="0.01"
+                  disabled={isDisabled}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    field.onChange(value === '' ? 0 : parseFloat(value));
+                  }}
+                  value={field.value ?? ''}
+                  placeholder={t('shipments.placeholders.extraCosts', { defaultValue: '0.00' })}
+                />
+              </FormControl>
+              <FormDescription>
+                {t('shipments.descriptions.extraCosts', { defaultValue: 'Additional costs for this shipment' })}
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         {/* Detailed Destination - Full Width */}
         <FormField
           control={control}
