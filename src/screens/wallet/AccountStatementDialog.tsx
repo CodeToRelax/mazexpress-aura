@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
-import { format, subDays, startOfMonth, endOfMonth, subMonths, startOfYear, startOfDay, endOfDay } from 'date-fns';
+import { format, subDays, startOfDay, endOfDay } from 'date-fns';
 import { FileText, Calendar, Download, Loader2 } from 'lucide-react';
 import {
   Dialog,
@@ -25,18 +25,15 @@ interface AccountStatementDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   wallet?: Wallet | null;
-  userId?: string; // For admin view - fetch transactions for specific user
-  userName?: string; // For PDF - customer name override
+  userId?: string;
+  userName?: string;
 }
-
-type PresetPeriod = 'today' | 'last7days' | 'last30days' | 'thisMonth' | 'lastMonth' | 'thisYear' | 'custom';
 
 export function AccountStatementDialog({ open, onOpenChange, wallet: initialWallet, userId, userName }: AccountStatementDialogProps) {
   const { t, i18n } = useTranslation();
   
   const [dateFrom, setDateFrom] = useState<Date>(() => subDays(new Date(), 30));
   const [dateTo, setDateTo] = useState<Date>(() => new Date());
-  const [selectedPreset, setSelectedPreset] = useState<PresetPeriod>('last30days');
   const [isGenerating, setIsGenerating] = useState(false);
   
   // Reset state when dialog opens
@@ -45,7 +42,6 @@ export function AccountStatementDialog({ open, onOpenChange, wallet: initialWall
       const now = new Date();
       setDateFrom(subDays(now, 30));
       setDateTo(now);
-      setSelectedPreset('last30days');
     }
   }, [open]);
   
@@ -58,7 +54,7 @@ export function AccountStatementDialog({ open, onOpenChange, wallet: initialWall
   
   const wallet = initialWallet || fetchedWallet;
   
-  // Preview query for transaction count - use admin API if userId provided
+  // Preview query for transaction count
   const { data: previewData, isLoading: previewLoading } = useQuery({
     queryKey: ['statement-preview', userId, dateFrom.toISOString(), dateTo.toISOString()],
     queryFn: () => {
@@ -74,56 +70,6 @@ export function AccountStatementDialog({ open, onOpenChange, wallet: initialWall
     enabled: open,
   });
   
-  const handlePresetChange = (preset: PresetPeriod) => {
-    setSelectedPreset(preset);
-    const now = new Date();
-    
-    switch (preset) {
-      case 'today':
-        setDateFrom(startOfDay(now));
-        setDateTo(endOfDay(now));
-        break;
-      case 'last7days':
-        setDateFrom(subDays(now, 7));
-        setDateTo(now);
-        break;
-      case 'last30days':
-        setDateFrom(subDays(now, 30));
-        setDateTo(now);
-        break;
-      case 'thisMonth':
-        setDateFrom(startOfMonth(now));
-        setDateTo(endOfMonth(now));
-        break;
-      case 'lastMonth':
-        const lastMonth = subMonths(now, 1);
-        setDateFrom(startOfMonth(lastMonth));
-        setDateTo(endOfMonth(lastMonth));
-        break;
-      case 'thisYear':
-        setDateFrom(startOfYear(now));
-        setDateTo(now);
-        break;
-      case 'custom':
-        // Keep current dates
-        break;
-    }
-  };
-  
-  const handleDateFromChange = (date: Date | undefined) => {
-    if (date) {
-      setDateFrom(date);
-      setSelectedPreset('custom');
-    }
-  };
-  
-  const handleDateToChange = (date: Date | undefined) => {
-    if (date) {
-      setDateTo(date);
-      setSelectedPreset('custom');
-    }
-  };
-  
   const handleGeneratePDF = async () => {
     if (!wallet) {
       toast({
@@ -136,7 +82,7 @@ export function AccountStatementDialog({ open, onOpenChange, wallet: initialWall
     setIsGenerating(true);
     
     try {
-      // Fetch all transactions for the period - use admin API if userId provided
+      // Fetch all transactions for the period
       const allTransactions = [];
       let page = 1;
       let hasMore = true;
@@ -195,15 +141,6 @@ export function AccountStatementDialog({ open, onOpenChange, wallet: initialWall
     }
   };
   
-  const presets: { key: PresetPeriod; label: string }[] = [
-    { key: 'today', label: t('dashboard.periods.today') },
-    { key: 'last7days', label: t('wallet.statement.presets.last7days') },
-    { key: 'last30days', label: t('wallet.statement.presets.last30days') },
-    { key: 'thisMonth', label: t('wallet.statement.presets.thisMonth') },
-    { key: 'lastMonth', label: t('wallet.statement.presets.lastMonth') },
-    { key: 'thisYear', label: t('wallet.statement.presets.thisYear') },
-  ];
-  
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
@@ -218,25 +155,7 @@ export function AccountStatementDialog({ open, onOpenChange, wallet: initialWall
         </DialogHeader>
         
         <div className="space-y-4 py-4">
-          {/* Quick presets */}
-          <div className="space-y-2">
-            <Label>{t('wallet.statement.quickSelect')}</Label>
-            <div className="flex flex-wrap gap-2">
-              {presets.map((preset) => (
-                <Button
-                  key={preset.key}
-                  type="button"
-                  variant={selectedPreset === preset.key ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => handlePresetChange(preset.key)}
-                >
-                  {preset.label}
-                </Button>
-              ))}
-            </div>
-          </div>
-          
-          {/* Custom date range */}
+          {/* Date range */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>{t('wallet.statement.dateFrom')}</Label>
@@ -253,14 +172,14 @@ export function AccountStatementDialog({ open, onOpenChange, wallet: initialWall
                     {dateFrom ? format(dateFrom, 'dd/MM/yyyy') : t('wallet.statement.selectDate')}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
+                <PopoverContent className="w-auto p-0 z-50" align="start">
                   <CalendarComponent
                     mode="single"
                     selected={dateFrom}
-                    onSelect={handleDateFromChange}
+                    onSelect={(date) => date && setDateFrom(date)}
                     disabled={(date) => date > new Date()}
                     initialFocus
-                    className="pointer-events-auto"
+                    className={cn("p-3 pointer-events-auto")}
                   />
                 </PopoverContent>
               </Popover>
@@ -281,14 +200,14 @@ export function AccountStatementDialog({ open, onOpenChange, wallet: initialWall
                     {dateTo ? format(dateTo, 'dd/MM/yyyy') : t('wallet.statement.selectDate')}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
+                <PopoverContent className="w-auto p-0 z-50" align="start">
                   <CalendarComponent
                     mode="single"
                     selected={dateTo}
-                    onSelect={handleDateToChange}
+                    onSelect={(date) => date && setDateTo(date)}
                     disabled={(date) => date > new Date() || date < dateFrom}
                     initialFocus
-                    className="pointer-events-auto"
+                    className={cn("p-3 pointer-events-auto")}
                   />
                 </PopoverContent>
               </Popover>
