@@ -84,14 +84,12 @@ export default function PrintInvoiceA4(props: Props) {
   font-style: normal;
 }
 
-/* -------------------- PAGE SETUP (EXACT) -------------------- */
+/* -------------------- PAGE SETUP (A4 Standard) -------------------- */
 @page {
-  size: 2480px 3508px;
+  size: A4 portrait;
   margin: 0;
-  padding: 0;
 }
 
-/* Ensure printing doesn't shrink or apply margins */
 @media print {
   html, body {
     margin: 0 !important;
@@ -99,9 +97,16 @@ export default function PrintInvoiceA4(props: Props) {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
+  .outer-wrapper {
+    page-break-after: always;
+    page-break-inside: avoid;
+  }
+  .outer-wrapper:last-child {
+    page-break-after: auto;
+  }
 }
 
-/* -------------------- ORIGINAL SCSS (converted) -------------------- */
+/* -------------------- STYLES (A4 scaled) -------------------- */
 :root {
   --blue-color: #367da3;
 }
@@ -110,29 +115,30 @@ export default function PrintInvoiceA4(props: Props) {
   margin: 0;
   padding: 0;
   font-family: Cairo, sans-serif;
+  box-sizing: border-box;
 }
 
 .outer-wrapper {
-  padding: 100px 60px;
-  height: 100vh;
-  width: 100vw;
+  width: 210mm;
+  height: 297mm;
+  padding: 8mm 5mm;
   background-color: white;
 }
 
 .wrapper {
-  border-top: 20px var(--blue-color) solid;
-  border-bottom: 20px var(--blue-color) solid;
+  border-top: 6px var(--blue-color) solid;
+  border-bottom: 6px var(--blue-color) solid;
   position: relative;
   width: 100%;
   height: 100%;
-  padding: 30px 60px;
+  padding: 8px 15px;
   padding-bottom: 0;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   direction: rtl;
   background-color: white;
-  overflow-y: scroll;
+  overflow: hidden;
 }
 
 .wrapper .bg {
@@ -162,14 +168,14 @@ export default function PrintInvoiceA4(props: Props) {
 
 .wrapper h2 {
   margin: 0;
-  font-size: 130px;
+  font-size: 32px;
 }
 
 .wrapper .top {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 40px;
+  padding: 10px;
 }
 
 .wrapper .top .details {
@@ -179,25 +185,25 @@ export default function PrintInvoiceA4(props: Props) {
 }
 
 .wrapper .top .details span {
-  font-size: 55px;
+  font-size: 14px;
 }
 
 .wrapper .invoice {
   width: 100%;
   display: flex;
   flex-direction: column;
-  margin-top: 60px;
+  margin-top: 15px;
 }
 
 .wrapper .invoice .head {
-  font-size: 55px;
+  font-size: 14px;
   font-weight: 700;
   text-align: right;
-  margin-bottom: 15px;
+  margin-bottom: 4px;
 }
 
 .wrapper .invoice span {
-  font-size: 45px;
+  font-size: 12px;
   text-align: right;
 }
 
@@ -205,11 +211,11 @@ export default function PrintInvoiceA4(props: Props) {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 20px;
+  margin-bottom: 5px;
 }
 
 .wrapper .items {
-  margin-top: 60px;
+  margin-top: 15px;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -220,36 +226,36 @@ export default function PrintInvoiceA4(props: Props) {
 }
 
 .wrapper .items span {
-  font-size: 55px;
+  font-size: 14px;
   font-weight: 700;
   text-align: right;
-  margin-bottom: 15px;
+  margin-bottom: 4px;
 }
 
 .wrapper .items td {
-  font-size: 50px;
+  font-size: 11px;
   text-align: right;
-  padding: 15px 35px;
-  border-bottom: 2px solid rgba(5, 5, 5, 0.06);
+  padding: 4px 8px;
+  border-bottom: 1px solid rgba(5, 5, 5, 0.06);
   color: black;
 }
 
 .wrapper .items td small {
-  font-size: 40px;
+  font-size: 10px;
 }
 
 .wrapper .items th {
   position: relative;
-  font-size: 50px;
+  font-size: 11px;
   text-align: right;
-  padding: 35px;
+  padding: 8px;
 }
 
 .wrapper .items th:not(:last-child)::before {
   position: absolute;
   top: 50%;
   inset-inline-end: 0;
-  width: 1.5px;
+  width: 1px;
   height: 1.6em;
   background-color: black;
   transform: translateY(-50%);
@@ -258,9 +264,9 @@ export default function PrintInvoiceA4(props: Props) {
 }
 
 .wrapper .total {
-  font-size: 60px;
+  font-size: 14px;
   font-weight: 700;
-  margin-bottom: 50px;
+  margin-bottom: 10px;
   text-align: right;
   display: flex;
   align-items: flex-end;
@@ -268,17 +274,23 @@ export default function PrintInvoiceA4(props: Props) {
 }
 
 .wrapper .total .box {
-  width: 500px;
-  height: 250px;
+  width: 120px;
+  height: 60px;
   border: 1px solid black;
-  margin-left: 30px;
-  margin-top: 100px;
+  margin-left: 8px;
+  margin-top: 20px;
 }
 
 .wrapper .total div strong {
-  font-size: 35px;
-  margin-bottom: 25px;
+  font-size: 12px;
+  margin-bottom: 6px;
   font-weight: 800;
+}
+
+.wrapper .total div small {
+  font-size: 9px;
+  display: block;
+  margin-bottom: 2px;
 }
 `;
 
@@ -287,7 +299,7 @@ export default function PrintInvoiceA4(props: Props) {
       <section className="wrapper">
         <img
           className="bg"
-          width="1200"
+          width="300"
           src="/assets/images/logo/logo.png"
           alt=""
         />
@@ -321,7 +333,7 @@ export default function PrintInvoiceA4(props: Props) {
             <div>
               <h2>#{invoiceNumber}</h2>
               <img
-                width="650"
+                width="160"
                 src="/assets/images/logo/Logos-text.png"
                 alt=""
               />
@@ -423,7 +435,7 @@ export default function PrintInvoiceA4(props: Props) {
         <section className="wrapper">
           <img
             className="bg"
-            width="1200"
+            width="300"
             src="/assets/images/logo/logo.png"
             alt=""
           />
