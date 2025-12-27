@@ -67,7 +67,7 @@ export function UserDropdown() {
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="end" className="w-64 bg-popover">
+      <DropdownMenuContent align="end" className="w-64 bg-white dark:bg-zinc-900 border shadow-lg">
         {/* User info header */}
         <div className="px-3 py-3">
           <div className="flex items-center gap-3">
