@@ -4,6 +4,9 @@ import type { IShipment } from '@/types/shipment';
 import logoImage from '@/assets/maz-express-logo.png';
 import { formatCityName } from './shipmentHelpers';
 
+// Re-export 10x10 cm label functions
+export { generateLabel10x10, generateBulkLabels10x10 } from '@/components/shipments/PrintLabel10x10';
+
 // Generate domestic label HTML with Arabic text
 async function generateDomesticLabelHTML(shipment: IShipment): Promise<string> {
   // Generate QR code from ESN
