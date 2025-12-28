@@ -292,9 +292,9 @@ export default function PrintInvoiceA4(props: Props) {
 
 .wrapper .items th {
   position: relative;
-  font-size: 11px;
+  font-size: 16px;
   text-align: right;
-  padding: 8px;
+  padding: 10px 12px;
 }
 
 .wrapper .items th:not(:last-child)::before {
