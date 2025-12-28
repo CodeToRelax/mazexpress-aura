@@ -408,7 +408,7 @@ export default function PrintInvoiceA4(props: Props) {
                     alignItems: "baseline",
                   }}
                 >
-                  <span style={{ fontSize: 12, fontWeight: 700 }}>التاريخ</span>
+                  <span style={{ fontSize: 12, fontWeight: 700 }}>التاريخ: </span>
                   <span style={{ fontSize: 12, fontWeight: 600, direction: "ltr" }}>{formatDate(date)}</span>
                 </div>
 
@@ -419,7 +419,7 @@ export default function PrintInvoiceA4(props: Props) {
                     alignItems: "baseline",
                   }}
                 >
-                  <span style={{ fontSize: 12, fontWeight: 700 }}>:الاسم </span>
+                  <span style={{ fontSize: 12, fontWeight: 700 }}>الاسم: </span>
                   <span style={{ fontSize: 12, fontWeight: 600 }}>{userFullName}</span>
                 </div>
               </div>
