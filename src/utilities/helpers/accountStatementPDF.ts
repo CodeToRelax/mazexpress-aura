@@ -230,11 +230,11 @@ export async function generateAccountStatementPDF(data: StatementData): Promise<
   }
 
   // Load logos
-  let logosTextBase64: string | null = null;
+  let logosTextData: { base64: string; width: number; height: number } | null = null;
   let logo2Data: { base64: string; width: number; height: number } | null = null;
   try {
-    [logosTextBase64, logo2Data] = await Promise.all([
-      loadImageAsBase64(LogosText),
+    [logosTextData, logo2Data] = await Promise.all([
+      loadImageWithDimensions(LogosText),
       loadImageWithDimensions(Logo2),
     ]);
   } catch (e) {
@@ -254,14 +254,14 @@ export async function generateAccountStatementPDF(data: StatementData): Promise<
   doc.rect(0, pageHeight - 5, pageWidth, 5, 'F'); // Bottom border
 
   // ===== WATERMARK (Center background) =====
-  if (logosTextBase64) {
+  if (logosTextData) {
     doc.saveGraphicsState();
     // @ts-ignore - setGState exists in jsPDF
     doc.setGState(new doc.GState({ opacity: 0.1 }));
     const watermarkWidth = 120;
-    const watermarkHeight = 40;
+    const watermarkHeight = watermarkWidth * (logosTextData.height / logosTextData.width);
     doc.addImage(
-      logosTextBase64,
+      logosTextData.base64,
       'PNG',
       (pageWidth - watermarkWidth) / 2,
       (pageHeight - watermarkHeight) / 2,
