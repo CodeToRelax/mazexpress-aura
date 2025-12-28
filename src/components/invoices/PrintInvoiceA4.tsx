@@ -20,6 +20,8 @@ type Props = {
   shippingCost: number | string;
   extraCosts: number | string;
   totalPrice: number;
+  exchangeRate?: number;
+  totalPriceInDollars?: number;
 };
 
 /**
@@ -32,7 +34,7 @@ type Props = {
  * - Your existing print function can print the container that includes this component.
  */
 export default function PrintInvoiceA4(props: Props) {
-  const { invoiceNumber, date, userFullName, shipments, totalWeight, shippingCost, extraCosts, totalPrice } = props;
+  const { invoiceNumber, date, userFullName, shipments, totalWeight, shippingCost, extraCosts, totalPrice, exchangeRate, totalPriceInDollars } = props;
 
   const op = useMemo(() => shipments.slice(0, 12), [shipments]);
   const moreOp = useMemo(() => shipments.slice(12), [shipments]);
@@ -327,7 +329,7 @@ export default function PrintInvoiceA4(props: Props) {
 }
 
 .wrapper .total div strong {
-  font-size: 12px;
+  font-size: 18px;
   margin-bottom: 6px;
   font-weight: 800;
 }
@@ -479,6 +481,9 @@ export default function PrintInvoiceA4(props: Props) {
             <div className="total">
               <div>
                 <strong> إجمالي السعر {formatNumberLikeCurrencyPipe(totalPrice)} دينار </strong>
+                {totalPriceInDollars && totalPriceInDollars > 0 && (
+                  <strong style={{ display: 'block', marginTop: 4 }}> المبلغ بالدولار: ${formatNumberLikeCurrencyPipe(totalPriceInDollars)} </strong>
+                )}
               </div>
 
               <div>
@@ -554,6 +559,9 @@ export default function PrintInvoiceA4(props: Props) {
             <div className="total">
               <div>
                 <strong> إجمالي السعر {formatNumberLikeCurrencyPipe(totalPrice)} دينار </strong>
+                {totalPriceInDollars && totalPriceInDollars > 0 && (
+                  <strong style={{ display: 'block', marginTop: 4 }}> المبلغ بالدولار: ${formatNumberLikeCurrencyPipe(totalPriceInDollars)} </strong>
+                )}
               </div>
 
               <div>
