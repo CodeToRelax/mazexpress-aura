@@ -2,6 +2,7 @@ import { Invoice, InvoiceItem } from '@/types/invoice';
 import ReactDOMServer from 'react-dom/server';
 import React from 'react';
 import PrintInvoiceA4 from '@/components/invoices/PrintInvoiceA4';
+import { getSystemConfig } from '@/utilities/api/config.api';
 
 interface ShipmentData {
   esn?: string;
@@ -67,10 +68,22 @@ export async function printArabicInvoice(
   const totalWeight = calculateTotalWeight(shipments);
   const userFullName = getUserFullName(invoice);
   
+  // Fetch current exchange rate from system config
+  let exchangeRate = 0;
+  try {
+    const config = await getSystemConfig();
+    exchangeRate = config.lydExchangeRate || 0;
+  } catch (error) {
+    console.error('Failed to fetch exchange rate:', error);
+  }
+  
   // Calculate totals
   const shippingCost = options?.shippingCost || 0;
   const extraCosts = shipments.reduce((sum, s) => sum + (Number(s.extraCosts) || 0), 0);
   const totalPrice = invoice.totals?.gross || 0;
+  
+  // Calculate dollar equivalent
+  const totalPriceInDollars = exchangeRate > 0 ? totalPrice / exchangeRate : 0;
 
   // Create the React element
   const element = React.createElement(PrintInvoiceA4, {
@@ -82,6 +95,8 @@ export async function printArabicInvoice(
     shippingCost,
     extraCosts,
     totalPrice,
+    exchangeRate,
+    totalPriceInDollars,
   });
 
   // Render to HTML string
