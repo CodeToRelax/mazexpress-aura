@@ -18,7 +18,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { cn } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
 import { getWallet, getTransactions, getUserTransactions } from '@/utilities/api/wallet.api';
-import { generateAccountStatementPDF } from '@/utilities/helpers/accountStatementPDF';
+import { printAccountStatement } from '@/utilities/helpers/printAccountStatement';
 import type { Wallet } from '@/types/wallet';
 
 interface AccountStatementDialogProps {
@@ -115,7 +115,7 @@ export function AccountStatementDialog({ open, onOpenChange, wallet: initialWall
       // Get user info from wallet or use provided userName
       const walletUserId = typeof wallet.userId === 'object' ? wallet.userId : null;
       
-      await generateAccountStatementPDF({
+      await printAccountStatement({
         wallet,
         transactions: filteredTransactions,
         dateFrom,
