@@ -279,15 +279,15 @@ export default function PrintInvoiceA4(props: Props) {
 }
 
 .wrapper .items td {
-  font-size: 11px;
+  font-size: 14px;
   text-align: right;
-  padding: 4px 8px;
+  padding: 6px 10px;
   border-bottom: 1px solid rgba(5, 5, 5, 0.06);
   color: black;
 }
 
 .wrapper .items td small {
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .wrapper .items th {
@@ -368,7 +368,7 @@ export default function PrintInvoiceA4(props: Props) {
                   letterSpacing: 0.3,
                 }}
               >
-                فاتورة
+                فاتورة رقم: {String(invoiceNumber).slice(-6)}
               </h2>
 
               {/* Company info */}
@@ -430,7 +430,6 @@ export default function PrintInvoiceA4(props: Props) {
             {/* // */}
             <div className="logo-section">
               <img width="160" src="/assets/images/logo/Logos-text.png" alt="MAZ Express" />
-              <h2>#{String(invoiceNumber).slice(-6)}</h2>
             </div>
           </div>
 
