@@ -41,8 +41,8 @@ export default function PrintInvoiceA4(props: Props) {
   const formatDate = (d: Props["date"]) => {
     const dt = d instanceof Date ? d : new Date(d);
     const year = dt.getFullYear();
-    const month = String(dt.getMonth() + 1).padStart(2, '0');
-    const day = String(dt.getDate()).padStart(2, '0');
+    const month = String(dt.getMonth() + 1).padStart(2, "0");
+    const day = String(dt.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
 
@@ -419,7 +419,7 @@ export default function PrintInvoiceA4(props: Props) {
                     alignItems: "baseline",
                   }}
                 >
-                  <span style={{ fontSize: 12, fontWeight: 700 }}>الاسم</span>
+                  <span style={{ fontSize: 12, fontWeight: 700 }}>:الاسم </span>
                   <span style={{ fontSize: 12, fontWeight: 600 }}>{userFullName}</span>
                 </div>
               </div>
