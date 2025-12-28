@@ -35,7 +35,7 @@ import {
 import { ACLGuard } from '@/components/guards/ACLGuard';
 import { StatusBadge } from '@/components/shipments/StatusBadge';
 import { TierBadge } from '@/components/shipments/TierBadge';
-import { generateAngularStyleLabel } from '@/utilities/helpers/shipmentLabel';
+import { generateLabel10x10 } from '@/utilities/helpers/shipmentLabel';
 
 interface ShipmentsTableProps {
   shipments: IShipment[];
@@ -195,7 +195,7 @@ export function ShipmentsTable({
                       <Eye className="h-4 w-4 mr-2" />
                       {t('shipments.actions.view')}
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => generateAngularStyleLabel(shipment)}>
+                    <DropdownMenuItem onClick={() => generateLabel10x10(shipment)}>
                       <Printer className="h-4 w-4 mr-2" />
                       Print Label
                     </DropdownMenuItem>
