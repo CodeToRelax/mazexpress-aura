@@ -40,7 +40,7 @@ const translations = {
   },
   ar: {
     title: 'كشف الحساب',
-    accountHolder: 'صاحب الحساب',
+    accountHolder: 'بيانات الحساب',
     statementNo: 'رقم الكشف:',
     period: 'الفترة:',
     generated: 'تاريخ الإنشاء:',
@@ -59,7 +59,7 @@ const translations = {
     closingBalance: 'الرصيد الختامي:',
     noTransactions: 'لا توجد معاملات في هذه الفترة',
     companyName: 'ماز إكسبريس',
-    companySubtitle: 'شحن و خدمات لوجستية',
+    companySubtitle: 'للشحن والتوصيل',
   },
 };
 
