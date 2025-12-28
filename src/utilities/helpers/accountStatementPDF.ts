@@ -6,6 +6,22 @@ import { format as formatDateFns } from 'date-fns';
 import LogosText from '@/assets/Logos-text.png';
 import Logo2 from '@/assets/logo-2.png';
 import CairoFontUrl from '@/assets/fonts/Cairo-Regular.ttf';
+import ArabicReshaper from 'arabic-reshaper';
+
+/**
+ * Reshape Arabic text for proper PDF rendering
+ * Arabic letters change form based on position (initial, medial, final, isolated)
+ * jsPDF doesn't support this natively, so we use arabic-reshaper
+ */
+function reshapeArabic(text: string): string {
+  if (!text) return text;
+  // Only reshape if text contains Arabic characters
+  const hasArabic = /[\u0600-\u06FF]/.test(text);
+  if (hasArabic) {
+    return ArabicReshaper.convertArabic(text);
+  }
+  return text;
+}
 
 // Color palette - matching invoice style #367da3
 const colors = {
@@ -282,7 +298,7 @@ export async function generateAccountStatementPDF(data: StatementData): Promise<
     doc.setFontSize(16);
     doc.setFont(fontFamily, 'bold');
     doc.setTextColor(colors.black[0], colors.black[1], colors.black[2]);
-    doc.text(t.title, pageWidth - margin, 25, { align: 'right' });
+    doc.text(reshapeArabic(t.title), pageWidth - margin, 25, { align: 'right' });
     
     // Left: Company branding with logo (width-based, auto height)
     if (logo2Data) {
@@ -296,7 +312,7 @@ export async function generateAccountStatementPDF(data: StatementData): Promise<
     doc.setFontSize(16);
     doc.setFont(fontFamily, 'bold');
     doc.setTextColor(colors.black[0], colors.black[1], colors.black[2]);
-    doc.text(t.title, margin, 25);
+    doc.text(reshapeArabic(t.title), margin, 25);
     
     // Right: Company branding with logo (width-based, auto height)
     if (logo2Data) {
@@ -314,20 +330,20 @@ export async function generateAccountStatementPDF(data: StatementData): Promise<
     doc.setFontSize(9);
     doc.setFont(fontFamily, 'normal');
     doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
-    doc.text(t.companyName, pageWidth - margin, infoStartY, { align: 'right' });
-    doc.text(t.companySubtitle, pageWidth - margin, infoStartY + 5, { align: 'right' });
+    doc.text(reshapeArabic(t.companyName), pageWidth - margin, infoStartY, { align: 'right' });
+    doc.text(reshapeArabic(t.companySubtitle), pageWidth - margin, infoStartY + 5, { align: 'right' });
     
     // Account Holder section
     doc.setFontSize(11);
     doc.setFont(fontFamily, 'bold');
-    doc.text(t.accountHolder, pageWidth - margin, infoStartY + 18, { align: 'right' });
+    doc.text(reshapeArabic(t.accountHolder), pageWidth - margin, infoStartY + 18, { align: 'right' });
     
     doc.setFont(fontFamily, 'normal');
     doc.setFontSize(10);
     let holderY = infoStartY + 25;
     if (customerName) {
       doc.setFont(fontFamily, 'bold');
-      doc.text(customerName, pageWidth - margin, holderY, { align: 'right' });
+      doc.text(reshapeArabic(customerName), pageWidth - margin, holderY, { align: 'right' });
       doc.setFont(fontFamily, 'normal');
       holderY += 6;
     }
@@ -335,20 +351,20 @@ export async function generateAccountStatementPDF(data: StatementData): Promise<
       doc.text(customerEmail, pageWidth - margin, holderY, { align: 'right' });
       holderY += 6;
     }
-    doc.text(`${t.walletId} ${wallet._id}`, pageWidth - margin, holderY, { align: 'right' });
+    doc.text(reshapeArabic(`${t.walletId} ${wallet._id}`), pageWidth - margin, holderY, { align: 'right' });
     
     // Left side: Statement details
     doc.setFont(fontFamily, 'bold');
     doc.setFontSize(10);
     
     // Statement Number
-    doc.text(t.statementNo, margin + 60, infoStartY, { align: 'right' });
+    doc.text(reshapeArabic(t.statementNo), margin + 60, infoStartY, { align: 'right' });
     doc.setFont(fontFamily, 'normal');
     doc.text(`STM-${formatDateFns(dateFrom, 'yyyyMMdd')}`, margin, infoStartY);
     
     // Period
     doc.setFont(fontFamily, 'bold');
-    doc.text(t.period, margin + 60, infoStartY + 6, { align: 'right' });
+    doc.text(reshapeArabic(t.period), margin + 60, infoStartY + 6, { align: 'right' });
     doc.setFont(fontFamily, 'normal');
     doc.text(
       `${formatDateFns(dateFrom, 'dd/MM/yyyy')} - ${formatDateFns(dateTo, 'dd/MM/yyyy')}`,
@@ -358,33 +374,33 @@ export async function generateAccountStatementPDF(data: StatementData): Promise<
     
     // Generated Date
     doc.setFont(fontFamily, 'bold');
-    doc.text(t.generated, margin + 60, infoStartY + 12, { align: 'right' });
+    doc.text(reshapeArabic(t.generated), margin + 60, infoStartY + 12, { align: 'right' });
     doc.setFont(fontFamily, 'normal');
     doc.text(formatDateFns(new Date(), 'dd/MM/yyyy HH:mm'), margin, infoStartY + 12);
     
     // Currency
     doc.setFont(fontFamily, 'bold');
-    doc.text(t.currency, margin + 60, infoStartY + 18, { align: 'right' });
+    doc.text(reshapeArabic(t.currency), margin + 60, infoStartY + 18, { align: 'right' });
     doc.setFont(fontFamily, 'normal');
     doc.text(wallet.currency, margin, infoStartY + 18);
   } else {
     // LTR Layout - Left: Company info & Account Holder
     doc.setFontSize(9);
     doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
-    doc.text(t.companyName, margin, infoStartY);
-    doc.text(t.companySubtitle, margin, infoStartY + 5);
+    doc.text(reshapeArabic(t.companyName), margin, infoStartY);
+    doc.text(reshapeArabic(t.companySubtitle), margin, infoStartY + 5);
     
     // Account Holder section
     doc.setFontSize(11);
     doc.setFont(fontFamily, 'bold');
-    doc.text(t.accountHolder, margin, infoStartY + 18);
+    doc.text(reshapeArabic(t.accountHolder), margin, infoStartY + 18);
     
     doc.setFont(fontFamily, 'normal');
     doc.setFontSize(10);
     let holderY = infoStartY + 25;
     if (customerName) {
       doc.setFont(fontFamily, 'bold');
-      doc.text(customerName, margin, holderY);
+      doc.text(reshapeArabic(customerName), margin, holderY);
       doc.setFont(fontFamily, 'normal');
       holderY += 6;
     }
@@ -392,20 +408,20 @@ export async function generateAccountStatementPDF(data: StatementData): Promise<
       doc.text(customerEmail, margin, holderY);
       holderY += 6;
     }
-    doc.text(`${t.walletId} ${wallet._id}`, margin, holderY);
+    doc.text(reshapeArabic(`${t.walletId} ${wallet._id}`), margin, holderY);
     
     // Right column - Statement details
     doc.setFont(fontFamily, 'bold');
     doc.setFontSize(10);
     
     // Statement Number
-    doc.text(t.statementNo, 130, infoStartY);
+    doc.text(reshapeArabic(t.statementNo), 130, infoStartY);
     doc.setFont(fontFamily, 'normal');
     doc.text(`STM-${formatDateFns(dateFrom, 'yyyyMMdd')}`, 196, infoStartY, { align: 'right' });
     
     // Period
     doc.setFont(fontFamily, 'bold');
-    doc.text(t.period, 130, infoStartY + 6);
+    doc.text(reshapeArabic(t.period), 130, infoStartY + 6);
     doc.setFont(fontFamily, 'normal');
     doc.text(
       `${formatDateFns(dateFrom, 'dd/MM/yyyy')} - ${formatDateFns(dateTo, 'dd/MM/yyyy')}`,
@@ -416,13 +432,13 @@ export async function generateAccountStatementPDF(data: StatementData): Promise<
     
     // Generated Date
     doc.setFont(fontFamily, 'bold');
-    doc.text(t.generated, 130, infoStartY + 12);
+    doc.text(reshapeArabic(t.generated), 130, infoStartY + 12);
     doc.setFont(fontFamily, 'normal');
     doc.text(formatDateFns(new Date(), 'dd/MM/yyyy HH:mm'), 196, infoStartY + 12, { align: 'right' });
     
     // Currency
     doc.setFont(fontFamily, 'bold');
-    doc.text(t.currency, 130, infoStartY + 18);
+    doc.text(reshapeArabic(t.currency), 130, infoStartY + 18);
     doc.setFont(fontFamily, 'normal');
     doc.text(wallet.currency, 196, infoStartY + 18, { align: 'right' });
   }
@@ -435,12 +451,12 @@ export async function generateAccountStatementPDF(data: StatementData): Promise<
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
   
-  // Prepare table headers based on locale
+  // Prepare table headers based on locale (reshape Arabic headers)
   const headers = isRTL
-    ? [[t.balance, t.credit, t.debit, t.description, t.type, t.reference, t.date]]
+    ? [[reshapeArabic(t.balance), reshapeArabic(t.credit), reshapeArabic(t.debit), reshapeArabic(t.description), reshapeArabic(t.type), reshapeArabic(t.reference), reshapeArabic(t.date)]]
     : [[t.date, t.reference, t.type, t.description, t.debit, t.credit, t.balance]];
   
-  // Prepare table data
+  // Prepare table data (reshape Arabic text in descriptions and types)
   const tableData = sortedTransactions.map(tx => {
     const isCredit = ['deposit', 'refund'].includes(tx.type.toLowerCase());
     const debit = isCredit ? '' : formatLYD(tx.amount);
@@ -449,8 +465,8 @@ export async function generateAccountStatementPDF(data: StatementData): Promise<
     const row = [
       formatDateFns(new Date(tx.createdAt), 'dd/MM/yyyy'),
       tx.transactionNumber,
-      formatType(tx.type, locale),
-      tx.description || '-',
+      reshapeArabic(formatType(tx.type, locale)),
+      reshapeArabic(tx.description || '-'),
       debit,
       credit,
       formatLYD(tx.balanceAfter),
@@ -461,7 +477,7 @@ export async function generateAccountStatementPDF(data: StatementData): Promise<
   
   // Add empty state message if no transactions
   if (tableData.length === 0) {
-    const emptyRow = ['-', '-', '-', t.noTransactions, '-', '-', '-'];
+    const emptyRow = ['-', '-', '-', reshapeArabic(t.noTransactions), '-', '-', '-'];
     tableData.push(isRTL ? emptyRow.reverse() : emptyRow);
   }
   
@@ -527,19 +543,19 @@ export async function generateAccountStatementPDF(data: StatementData): Promise<
     const valueX = margin + 40;
     
     // Opening Balance
-    doc.text(t.openingBalance, totalsX, yPos, { align: 'right' });
+    doc.text(reshapeArabic(t.openingBalance), totalsX, yPos, { align: 'right' });
     doc.text(formatLYD(summary.openingBalance), valueX, yPos, { align: 'right' });
     yPos += 6;
     
     // Total Debits
-    doc.text(t.totalDebits, totalsX, yPos, { align: 'right' });
+    doc.text(reshapeArabic(t.totalDebits), totalsX, yPos, { align: 'right' });
     doc.setTextColor(colors.withdrawRed[0], colors.withdrawRed[1], colors.withdrawRed[2]);
     doc.text(formatLYD(summary.totalDebits), valueX, yPos, { align: 'right' });
     yPos += 6;
     
     // Total Credits
     doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
-    doc.text(t.totalCredits, totalsX, yPos, { align: 'right' });
+    doc.text(reshapeArabic(t.totalCredits), totalsX, yPos, { align: 'right' });
     doc.setTextColor(colors.depositGreen[0], colors.depositGreen[1], colors.depositGreen[2]);
     doc.text(formatLYD(summary.totalCredits), valueX, yPos, { align: 'right' });
     yPos += 8;
@@ -548,26 +564,26 @@ export async function generateAccountStatementPDF(data: StatementData): Promise<
     doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
     doc.setFont(fontFamily, 'bold');
     doc.setFontSize(12);
-    doc.text(t.closingBalance, totalsX, yPos, { align: 'right' });
+    doc.text(reshapeArabic(t.closingBalance), totalsX, yPos, { align: 'right' });
     doc.text(formatLYD(summary.closingBalance), valueX, yPos, { align: 'right' });
   } else {
     const totalsX = 130;
     const rightColX = 196;
     
     // Opening Balance
-    doc.text(t.openingBalance, totalsX, yPos);
+    doc.text(reshapeArabic(t.openingBalance), totalsX, yPos);
     doc.text(formatLYD(summary.openingBalance), rightColX, yPos, { align: 'right' });
     yPos += 6;
     
     // Total Debits
-    doc.text(t.totalDebits, totalsX, yPos);
+    doc.text(reshapeArabic(t.totalDebits), totalsX, yPos);
     doc.setTextColor(colors.withdrawRed[0], colors.withdrawRed[1], colors.withdrawRed[2]);
     doc.text(formatLYD(summary.totalDebits), rightColX, yPos, { align: 'right' });
     yPos += 6;
     
     // Total Credits
     doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
-    doc.text(t.totalCredits, totalsX, yPos);
+    doc.text(reshapeArabic(t.totalCredits), totalsX, yPos);
     doc.setTextColor(colors.depositGreen[0], colors.depositGreen[1], colors.depositGreen[2]);
     doc.text(formatLYD(summary.totalCredits), rightColX, yPos, { align: 'right' });
     yPos += 8;
@@ -576,7 +592,7 @@ export async function generateAccountStatementPDF(data: StatementData): Promise<
     doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
     doc.setFont(fontFamily, 'bold');
     doc.setFontSize(12);
-    doc.text(t.closingBalance, totalsX, yPos);
+    doc.text(reshapeArabic(t.closingBalance), totalsX, yPos);
     doc.text(formatLYD(summary.closingBalance), rightColX, yPos, { align: 'right' });
   }
   
