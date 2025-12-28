@@ -404,19 +404,23 @@ export default function PrintInvoiceA4(props: Props) {
                 <div
                   style={{
                     display: "flex",
-                    justifyContent: "space-between",
+                    gap: 6,
                     alignItems: "baseline",
-                    gap: 16,
                   }}
                 >
-                  <div style={{ display: "flex", gap: 6, alignItems: "baseline" }}>
-                    <span style={{ fontSize: 12, fontWeight: 700 }}>التاريخ</span>
-                    <span style={{ fontSize: 12, fontWeight: 600, direction: "ltr" }}>{formatDate(date)}</span>
-                  </div>
-                  <div style={{ display: "flex", gap: 6, alignItems: "baseline" }}>
-                    <span style={{ fontSize: 12, fontWeight: 700 }}>الاسم</span>
-                    <span style={{ fontSize: 12, fontWeight: 600 }}>{userFullName}</span>
-                  </div>
+                  <span style={{ fontSize: 12, fontWeight: 700 }}>التاريخ</span>
+                  <span style={{ fontSize: 12, fontWeight: 600, direction: "ltr" }}>{formatDate(date)}</span>
+                </div>
+
+                <div
+                  style={{
+                    display: "flex",
+                    gap: 6,
+                    alignItems: "baseline",
+                  }}
+                >
+                  <span style={{ fontSize: 12, fontWeight: 700 }}>الاسم</span>
+                  <span style={{ fontSize: 12, fontWeight: 600 }}>{userFullName}</span>
                 </div>
               </div>
             </div>
