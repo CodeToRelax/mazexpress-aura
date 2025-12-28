@@ -40,11 +40,10 @@ export default function PrintInvoiceA4(props: Props) {
   // Angular: date | formatDate
   const formatDate = (d: Props["date"]) => {
     const dt = d instanceof Date ? d : new Date(d);
-    return new Intl.DateTimeFormat("ar-LY", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    }).format(dt);
+    const year = dt.getFullYear();
+    const month = String(dt.getMonth() + 1).padStart(2, '0');
+    const day = String(dt.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   };
 
   // Angular: totalPrice | currency : ' '
@@ -407,23 +406,17 @@ export default function PrintInvoiceA4(props: Props) {
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "baseline",
-                    gap: 12,
+                    gap: 16,
                   }}
                 >
-                  <span style={{ fontSize: 12, fontWeight: 700 }}>التاريخ</span>
-                  <span style={{ fontSize: 12, fontWeight: 600, direction: "ltr" }}>{formatDate(date)}</span>
-                </div>
-
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "baseline",
-                    gap: 12,
-                  }}
-                >
-                  <span style={{ fontSize: 12, fontWeight: 700 }}>الاسم</span>
-                  <span style={{ fontSize: 12, fontWeight: 600 }}>{userFullName}</span>
+                  <div style={{ display: "flex", gap: 6, alignItems: "baseline" }}>
+                    <span style={{ fontSize: 12, fontWeight: 700 }}>التاريخ</span>
+                    <span style={{ fontSize: 12, fontWeight: 600, direction: "ltr" }}>{formatDate(date)}</span>
+                  </div>
+                  <div style={{ display: "flex", gap: 6, alignItems: "baseline" }}>
+                    <span style={{ fontSize: 12, fontWeight: 700 }}>الاسم</span>
+                    <span style={{ fontSize: 12, fontWeight: 600 }}>{userFullName}</span>
+                  </div>
                 </div>
               </div>
             </div>
