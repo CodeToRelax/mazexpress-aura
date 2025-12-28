@@ -136,7 +136,7 @@ function getLabel10x10CSS(): string {
       display: flex;
       justify-content: center;
       align-items: baseline;
-      font-size: 11pt;
+      font-size: 14pt;
       font-weight: 700;
     }
 
@@ -167,7 +167,7 @@ function getLabel10x10CSS(): string {
 
     .tracking {
       margin-top: 2mm;
-      font-size: 12pt;
+      font-size: 11pt;
       font-weight: 700;
       font-family: 'Courier New', monospace;
       letter-spacing: 0.5px;
