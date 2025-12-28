@@ -379,8 +379,6 @@ export default function PrintInvoiceA4(props: Props) {
                   lineHeight: 1.35,
                 }}
               >
-                <span style={{ fontSize: 14, fontWeight: 800 }}>MAZEXPRESS</span>
-
                 <span style={{ fontSize: 12, direction: "ltr" }}>0919497423</span>
 
                 <span style={{ fontSize: 12, direction: "ltr" }}>info@mazexpress.com.ly</span>
