@@ -41,14 +41,8 @@ function generateLabel10x10HTML(shipment: IShipment): string {
       </div>
       
       <div class="info-section">
-        <div class="info-row">
-          <span class="info-label">WEIGHT:</span>
-          <span class="info-value">${weight}</span>
-        </div>
-        <div class="info-row">
-          <span class="info-label">DESTINATION:</span>
-          <span class="info-value">${destination.toUpperCase()}</span>
-        </div>
+        <div class="info-row">${weight}</div>
+        <div class="info-row">${destination.toUpperCase()}</div>
       </div>
       
       <div class="barcode-section">
@@ -108,7 +102,7 @@ function getLabel10x10CSS(): string {
     }
 
     .logo {
-      height: 15mm;
+      height: 20mm;
       width: auto;
       object-fit: contain;
     }
@@ -123,7 +117,7 @@ function getLabel10x10CSS(): string {
     }
 
     .csn {
-      font-size: 32pt;
+      font-size: 26pt;
       font-weight: 700;
       letter-spacing: 1px;
       line-height: 1.1;
@@ -142,16 +136,7 @@ function getLabel10x10CSS(): string {
       display: flex;
       justify-content: center;
       align-items: baseline;
-      gap: 2mm;
-      font-size: 14pt;
-    }
-
-    .info-label {
-      font-weight: 600;
-      color: #333;
-    }
-
-    .info-value {
+      font-size: 11pt;
       font-weight: 700;
     }
 
