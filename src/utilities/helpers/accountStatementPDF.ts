@@ -133,6 +133,30 @@ async function loadImageAsBase64(src: string): Promise<string> {
 }
 
 /**
+ * Load image with dimensions for proper aspect ratio calculation
+ */
+async function loadImageWithDimensions(src: string): Promise<{ base64: string; width: number; height: number } | null> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = 'Anonymous';
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx?.drawImage(img, 0, 0);
+      resolve({
+        base64: canvas.toDataURL('image/png'),
+        width: img.width,
+        height: img.height
+      });
+    };
+    img.onerror = () => resolve(null);
+    img.src = src;
+  });
+}
+
+/**
  * Calculate statement summary
  */
 function calculateSummary(transactions: Transaction[], openingBalance: number) {
@@ -207,11 +231,11 @@ export async function generateAccountStatementPDF(data: StatementData): Promise<
 
   // Load logos
   let logosTextBase64: string | null = null;
-  let logo2Base64: string | null = null;
+  let logo2Data: { base64: string; width: number; height: number } | null = null;
   try {
-    [logosTextBase64, logo2Base64] = await Promise.all([
+    [logosTextBase64, logo2Data] = await Promise.all([
       loadImageAsBase64(LogosText),
-      loadImageAsBase64(Logo2),
+      loadImageWithDimensions(Logo2),
     ]);
   } catch (e) {
     console.warn('Could not load logos:', e);
@@ -260,9 +284,11 @@ export async function generateAccountStatementPDF(data: StatementData): Promise<
     doc.setTextColor(colors.black[0], colors.black[1], colors.black[2]);
     doc.text(t.title, pageWidth - margin, 25, { align: 'right' });
     
-    // Left: Company branding with logo
-    if (logo2Base64) {
-      doc.addImage(logo2Base64, 'PNG', margin, 12, 40, 14);
+    // Left: Company branding with logo (width-based, auto height)
+    if (logo2Data) {
+      const logoWidth = 35;
+      const logoHeight = logoWidth * (logo2Data.height / logo2Data.width);
+      doc.addImage(logo2Data.base64, 'PNG', margin, 12, logoWidth, logoHeight);
     }
   } else {
     // LTR Layout
@@ -272,9 +298,11 @@ export async function generateAccountStatementPDF(data: StatementData): Promise<
     doc.setTextColor(colors.black[0], colors.black[1], colors.black[2]);
     doc.text(t.title, margin, 25);
     
-    // Right: Company branding with logo
-    if (logo2Base64) {
-      doc.addImage(logo2Base64, 'PNG', pageWidth - margin - 40, 12, 40, 14);
+    // Right: Company branding with logo (width-based, auto height)
+    if (logo2Data) {
+      const logoWidth = 35;
+      const logoHeight = logoWidth * (logo2Data.height / logo2Data.width);
+      doc.addImage(logo2Data.base64, 'PNG', pageWidth - margin - logoWidth, 12, logoWidth, logoHeight);
     }
   }
   
