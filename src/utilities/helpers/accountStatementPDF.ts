@@ -3,8 +3,7 @@ import autoTable from 'jspdf-autotable';
 import { Transaction, Wallet } from '@/types/wallet';
 import { formatLYD } from './currencyHelpers';
 import { format as formatDateFns } from 'date-fns';
-import LogosText from '@/assets/Logos-text.png';
-import Logo2 from '@/assets/logo-2.png';
+import LogoText from '@/assets/logo-text.png';
 import CairoFontUrl from '@/assets/fonts/Cairo-Regular.ttf';
 import ArabicReshaper from 'arabic-reshaper';
 
@@ -245,16 +244,12 @@ export async function generateAccountStatementPDF(data: StatementData): Promise<
     console.error('Could not load Cairo font:', e);
   }
 
-  // Load logos
-  let logosTextData: { base64: string; width: number; height: number } | null = null;
-  let logo2Data: { base64: string; width: number; height: number } | null = null;
+  // Load logo
+  let logoData: { base64: string; width: number; height: number } | null = null;
   try {
-    [logosTextData, logo2Data] = await Promise.all([
-      loadImageWithDimensions(LogosText),
-      loadImageWithDimensions(Logo2),
-    ]);
+    logoData = await loadImageWithDimensions(LogoText);
   } catch (e) {
-    console.warn('Could not load logos:', e);
+    console.warn('Could not load logo:', e);
   }
   
   // Calculate opening balance (balance before first transaction or current balance if no transactions)
@@ -270,14 +265,14 @@ export async function generateAccountStatementPDF(data: StatementData): Promise<
   doc.rect(0, pageHeight - 5, pageWidth, 5, 'F'); // Bottom border
 
   // ===== WATERMARK (Center background) =====
-  if (logosTextData) {
+  if (logoData) {
     doc.saveGraphicsState();
     // @ts-ignore - setGState exists in jsPDF
     doc.setGState(new doc.GState({ opacity: 0.1 }));
     const watermarkWidth = 120;
-    const watermarkHeight = watermarkWidth * (logosTextData.height / logosTextData.width);
+    const watermarkHeight = watermarkWidth * (logoData.height / logoData.width);
     doc.addImage(
-      logosTextData.base64,
+      logoData.base64,
       'PNG',
       (pageWidth - watermarkWidth) / 2,
       (pageHeight - watermarkHeight) / 2,
@@ -301,10 +296,10 @@ export async function generateAccountStatementPDF(data: StatementData): Promise<
     doc.text(reshapeArabic(t.title), pageWidth - margin, 25, { align: 'right' });
     
     // Left: Company branding with logo (width-based, auto height)
-    if (logo2Data) {
+    if (logoData) {
       const logoWidth = 35;
-      const logoHeight = logoWidth * (logo2Data.height / logo2Data.width);
-      doc.addImage(logo2Data.base64, 'PNG', margin, 12, logoWidth, logoHeight);
+      const logoHeight = logoWidth * (logoData.height / logoData.width);
+      doc.addImage(logoData.base64, 'PNG', margin, 12, logoWidth, logoHeight);
     }
   } else {
     // LTR Layout
@@ -315,10 +310,10 @@ export async function generateAccountStatementPDF(data: StatementData): Promise<
     doc.text(reshapeArabic(t.title), margin, 25);
     
     // Right: Company branding with logo (width-based, auto height)
-    if (logo2Data) {
+    if (logoData) {
       const logoWidth = 35;
-      const logoHeight = logoWidth * (logo2Data.height / logo2Data.width);
-      doc.addImage(logo2Data.base64, 'PNG', pageWidth - margin - logoWidth, 12, logoWidth, logoHeight);
+      const logoHeight = logoWidth * (logoData.height / logoData.width);
+      doc.addImage(logoData.base64, 'PNG', pageWidth - margin - logoWidth, 12, logoWidth, logoHeight);
     }
   }
   

@@ -344,7 +344,7 @@ export default function PrintInvoiceA4(props: Props) {
   const PageOne = (
     <div className="outer-wrapper">
       <section className="wrapper">
-        <img className="bg" width="300" src="/assets/images/logo/logo.png" alt="" />
+        <img className="bg" width="300" src="/assets/images/logo/logo-text.png" alt="" />
         <div className="inner-wrapper">
           <div className="top">
             {/* // */}
@@ -426,7 +426,7 @@ export default function PrintInvoiceA4(props: Props) {
             </div>
             {/* // */}
             <div className="logo-section">
-              <img width="160" src="/assets/images/logo/Logos-text.png" alt="MAZ Express" />
+              <img width="160" src="/assets/images/logo/logo-text.png" alt="MAZ Express" />
             </div>
           </div>
 
@@ -508,7 +508,7 @@ export default function PrintInvoiceA4(props: Props) {
     shipments.length > 12 ? (
       <div className="outer-wrapper">
         <section className="wrapper">
-          <img className="bg" width="300" src="/assets/images/logo/logo.png" alt="" />
+          <img className="bg" width="300" src="/assets/images/logo/logo-text.png" alt="" />
           <div className="inner-wrapper">
             <div className="items">
               <table>
