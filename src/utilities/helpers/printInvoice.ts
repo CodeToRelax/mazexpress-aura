@@ -57,28 +57,34 @@ function getUserFullName(invoice: Invoice): string {
 }
 
 /**
- * Get shipping info from invoice items - fetches full shipment if originCountry missing
+ * Get shipping info from invoice items - prioritizes international shipments (air/sea)
  */
 async function getShippingInfo(items: InvoiceItem[]): Promise<{ 
   originCountry: string | null; 
   shippingMethod: string | null; 
 }> {
-  const shipmentItem = items.find(item => item.kind === 'SHIPMENT' && item.shipmentId);
+  // Find the first international shipment (air or sea) - these have origin countries
+  const internationalItem = items.find(item => {
+    if (item.kind !== 'SHIPMENT' || !item.shipmentId) return false;
+    const method = (item.shipmentId as any).shippingMethod;
+    return method === 'air' || method === 'sea';
+  });
+  
+  // Fallback to any shipment if no international found
+  const shipmentItem = internationalItem || items.find(item => item.kind === 'SHIPMENT' && item.shipmentId);
+  
   if (!shipmentItem?.shipmentId) {
     return { originCountry: null, shippingMethod: null };
   }
   
   const shipmentData = shipmentItem.shipmentId as any;
   const shipmentId = typeof shipmentData === 'string' ? shipmentData : shipmentData._id;
-  
-  // Get shippingMethod from the embedded data (this is usually available)
   const shippingMethod = typeof shipmentData === 'object' ? shipmentData.shippingMethod : null;
   
-  // Try to get originCountry from embedded data first
   let originCountry = typeof shipmentData === 'object' ? shipmentData.originCountry : null;
   
-  // If originCountry is not in embedded data, fetch the full shipment
-  if (!originCountry && shipmentId) {
+  // Only fetch full shipment for international shipments (air/sea) if originCountry missing
+  if (!originCountry && shipmentId && (shippingMethod === 'air' || shippingMethod === 'sea')) {
     try {
       console.log('[printInvoice] originCountry missing, fetching shipment:', shipmentId);
       const response = await shipmentsApi.getShipmentById(shipmentId);
@@ -130,6 +136,9 @@ export async function printArabicInvoice(
         shippingCostPerKilo = countryConfig.seaShippingRate || 0;
       }
       console.log('[printInvoice] Shipping cost per kilo:', shippingCostPerKilo);
+    } else if (shippingMethod === 'land') {
+      // Land shipments are domestic - they use flat route pricing, not per-kilo
+      console.log('[printInvoice] Land shipment - uses flat route pricing');
     }
   } catch (error) {
     console.error('[printInvoice] Failed to fetch config:', error);
