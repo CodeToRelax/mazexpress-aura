@@ -33,6 +33,7 @@ interface TransactionsTableProps {
   transactions: Transaction[];
   onEdit?: (transaction: Transaction) => void;
   onRefund?: (transaction: Transaction) => void;
+  onDelete?: (transaction: Transaction) => void;
   isAdmin?: boolean;
   visibleColumns: Set<string>;
   sortBy?: string;
@@ -44,6 +45,7 @@ export function TransactionsTable({
   transactions, 
   onEdit, 
   onRefund,
+  onDelete,
   isAdmin = false,
   visibleColumns,
   sortBy,
@@ -212,7 +214,7 @@ export function TransactionsTable({
                     {formatLYD(transaction.balanceAfter)}
                   </TableCell>
                 )}
-                {isAdmin && (onEdit || onRefund) && (
+                {isAdmin && (onEdit || onRefund || onDelete) && (
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -231,6 +233,15 @@ export function TransactionsTable({
                           <DropdownMenuItem onClick={() => onRefund(transaction)}>
                             <RefreshCcw className="h-4 w-4 mr-2" />
                             Refund
+                          </DropdownMenuItem>
+                        )}
+                        {onDelete && (
+                          <DropdownMenuItem 
+                            onClick={() => onDelete(transaction)}
+                            className="text-destructive focus:text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            {t('common.delete')}
                           </DropdownMenuItem>
                         )}
                       </DropdownMenuContent>

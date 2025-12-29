@@ -367,7 +367,9 @@ export default function Transactions() {
             sortBy={sortBy}
             sortOrder={sortOrder}
             onSort={handleSort}
-            isAdmin={false}
+            isAdmin={true}
+            onEdit={handleEditTransaction}
+            onDelete={handleDeleteTransaction}
           />
         </motion.div>
 
