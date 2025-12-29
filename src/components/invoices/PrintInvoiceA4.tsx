@@ -352,10 +352,12 @@ export default function PrintInvoiceA4(props: Props) {
               style={{
                 direction: "rtl",
                 textAlign: "right",
-                width: 320,
-                padding: "16px 18px",
-                border: "1px solid #111",
-                borderRadius: 12,
+                width: 340,
+                padding: "20px 24px",
+                background: "linear-gradient(135deg, rgba(54, 125, 163, 0.08) 0%, rgba(54, 125, 163, 0.03) 100%)",
+                borderRadius: 16,
+                borderLeft: "4px solid var(--blue-color)",
+                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.04)",
                 display: "flex",
                 flexDirection: "column",
                 gap: 12,
@@ -364,9 +366,10 @@ export default function PrintInvoiceA4(props: Props) {
               <h2
                 style={{
                   margin: 0,
-                  fontSize: 20,
+                  fontSize: 24,
                   fontWeight: 800,
-                  letterSpacing: 0.3,
+                  letterSpacing: 0.5,
+                  color: "#1a1a1a",
                 }}
               >
                 فاتورة رقم: {String(invoiceNumber).slice(-6)}
@@ -390,7 +393,7 @@ export default function PrintInvoiceA4(props: Props) {
               </div>
 
               {/* Divider */}
-              <div style={{ borderTop: "1px solid #111", marginTop: 6 }} />
+              <div style={{ borderTop: "1px solid rgba(54, 125, 163, 0.2)", marginTop: 8, marginBottom: 4 }} />
 
               {/* Invoice meta */}
               <div
@@ -481,9 +484,6 @@ export default function PrintInvoiceA4(props: Props) {
             <div className="total">
               <div>
                 <strong> إجمالي السعر {formatNumberLikeCurrencyPipe(totalPrice)} دينار </strong>
-                {totalPriceInDollars && totalPriceInDollars > 0 && (
-                  <strong style={{ display: 'block', marginTop: 4 }}> المبلغ بالدولار: ${formatNumberLikeCurrencyPipe(totalPriceInDollars)} </strong>
-                )}
               </div>
 
               <div>
@@ -559,9 +559,6 @@ export default function PrintInvoiceA4(props: Props) {
             <div className="total">
               <div>
                 <strong> إجمالي السعر {formatNumberLikeCurrencyPipe(totalPrice)} دينار </strong>
-                {totalPriceInDollars && totalPriceInDollars > 0 && (
-                  <strong style={{ display: 'block', marginTop: 4 }}> المبلغ بالدولار: ${formatNumberLikeCurrencyPipe(totalPriceInDollars)} </strong>
-                )}
               </div>
 
               <div>
