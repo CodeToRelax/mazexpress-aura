@@ -290,11 +290,15 @@ export default function PrintAccountStatementA4(props: PrintAccountStatementProp
 
 .statement-details {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 
 .detail-row {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 8px;
   margin-bottom: 4px;
   font-size: 11px;
 }
