@@ -30,7 +30,17 @@ export interface Transaction {
   description: string;
   status: 'pending' | 'completed' | 'failed' | 'cancelled';
   reference?: string;
+  invoiceId?: string;
   createdAt: string;
+}
+
+export interface DeleteTransactionResponse {
+  transactionId: string;
+  balanceReversed: boolean;
+  balanceChange: number;
+  newWalletBalance: number;
+  invoiceUpdated: boolean;
+  paymentAllocationDeleted: boolean;
 }
 
 export interface TransactionFilters {
