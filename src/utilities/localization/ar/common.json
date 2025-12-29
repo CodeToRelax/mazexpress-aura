@@ -1151,6 +1151,7 @@
   "error": "خطأ",
     "success": "نجاح",
     "delete": "حذف",
+    "edit": "تعديل",
     "save": "حفظ",
     "processing": "جاري المعالجة...",
     "optional": "اختياري",

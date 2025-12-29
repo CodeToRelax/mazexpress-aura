@@ -1342,6 +1342,7 @@
   "error": "Error",
     "success": "Success",
     "delete": "Delete",
+    "edit": "Edit",
     "save": "Save",
     "processing": "Processing...",
     "optional": "Optional",
