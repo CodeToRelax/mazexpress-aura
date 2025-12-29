@@ -301,7 +301,7 @@ export default function PrintAccountStatementA4(props: PrintAccountStatementProp
 .detail-row {
   display: flex;
   justify-content: flex-start;
-  gap: 8px;
+  gap: 20px;
   margin-bottom: 4px;
   font-size: 11px;
 }
@@ -309,6 +309,8 @@ export default function PrintAccountStatementA4(props: PrintAccountStatementProp
 .detail-label {
   font-weight: bold;
   color: var(--text-dark);
+  min-width: 100px;
+  text-align: ${isRTL ? 'right' : 'left'};
 }
 
 .detail-value {
