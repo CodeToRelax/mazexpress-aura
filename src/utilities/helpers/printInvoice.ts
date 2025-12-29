@@ -3,6 +3,7 @@ import ReactDOMServer from 'react-dom/server';
 import React from 'react';
 import PrintInvoiceA4 from '@/components/invoices/PrintInvoiceA4';
 import { getSystemConfig } from '@/utilities/api/config.api';
+import { shipmentsApi } from '@/utilities/api/shipments.api';
 
 interface ShipmentData {
   esn?: string;
@@ -56,20 +57,41 @@ function getUserFullName(invoice: Invoice): string {
 }
 
 /**
- * Get shipping info from invoice items
+ * Get shipping info from invoice items - fetches full shipment if originCountry missing
  */
-function getShippingInfo(items: InvoiceItem[]): { 
+async function getShippingInfo(items: InvoiceItem[]): Promise<{ 
   originCountry: string | null; 
   shippingMethod: string | null; 
-} {
+}> {
   const shipmentItem = items.find(item => item.kind === 'SHIPMENT' && item.shipmentId);
   if (!shipmentItem?.shipmentId) {
     return { originCountry: null, shippingMethod: null };
   }
   
+  const shipmentData = shipmentItem.shipmentId as any;
+  const shipmentId = typeof shipmentData === 'string' ? shipmentData : shipmentData._id;
+  
+  // Get shippingMethod from the embedded data (this is usually available)
+  const shippingMethod = typeof shipmentData === 'object' ? shipmentData.shippingMethod : null;
+  
+  // Try to get originCountry from embedded data first
+  let originCountry = typeof shipmentData === 'object' ? shipmentData.originCountry : null;
+  
+  // If originCountry is not in embedded data, fetch the full shipment
+  if (!originCountry && shipmentId) {
+    try {
+      console.log('[printInvoice] originCountry missing, fetching shipment:', shipmentId);
+      const response = await shipmentsApi.getShipmentById(shipmentId);
+      originCountry = response.data?.originCountry || null;
+      console.log('[printInvoice] Fetched originCountry:', originCountry);
+    } catch (error) {
+      console.error('[printInvoice] Failed to fetch shipment for origin country:', error);
+    }
+  }
+  
   return {
-    originCountry: (shipmentItem.shipmentId as any).originCountry || null,
-    shippingMethod: (shipmentItem.shipmentId as any).shippingMethod || null,
+    originCountry: originCountry || null,
+    shippingMethod: shippingMethod || null,
   };
 }
 
@@ -95,7 +117,10 @@ export async function printArabicInvoice(
     exchangeRate = config.lydExchangeRate || 0;
     
     // Get shipping rate based on origin country and shipping method
-    const { originCountry, shippingMethod } = getShippingInfo(invoice.items || []);
+    const { originCountry, shippingMethod } = await getShippingInfo(invoice.items || []);
+    
+    console.log('[printInvoice] Shipping info:', { originCountry, shippingMethod });
+    console.log('[printInvoice] Config countries:', Object.keys(config.countries || {}));
     
     if (originCountry && shippingMethod && config.countries?.[originCountry]) {
       const countryConfig = config.countries[originCountry];
@@ -104,9 +129,10 @@ export async function printArabicInvoice(
       } else if (shippingMethod === 'sea') {
         shippingCostPerKilo = countryConfig.seaShippingRate || 0;
       }
+      console.log('[printInvoice] Shipping cost per kilo:', shippingCostPerKilo);
     }
   } catch (error) {
-    console.error('Failed to fetch exchange rate:', error);
+    console.error('[printInvoice] Failed to fetch config:', error);
   }
   
   // Calculate totals - use calculated shipping rate or fallback to options
