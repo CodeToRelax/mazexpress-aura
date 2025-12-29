@@ -56,6 +56,24 @@ function getUserFullName(invoice: Invoice): string {
 }
 
 /**
+ * Get shipping info from invoice items
+ */
+function getShippingInfo(items: InvoiceItem[]): { 
+  originCountry: string | null; 
+  shippingMethod: string | null; 
+} {
+  const shipmentItem = items.find(item => item.kind === 'SHIPMENT' && item.shipmentId);
+  if (!shipmentItem?.shipmentId) {
+    return { originCountry: null, shippingMethod: null };
+  }
+  
+  return {
+    originCountry: (shipmentItem.shipmentId as any).originCountry || null,
+    shippingMethod: (shipmentItem.shipmentId as any).shippingMethod || null,
+  };
+}
+
+/**
  * Print Arabic invoice using browser print dialog
  * Opens a new window with the invoice and triggers print
  */
@@ -68,17 +86,31 @@ export async function printArabicInvoice(
   const totalWeight = calculateTotalWeight(shipments);
   const userFullName = getUserFullName(invoice);
   
-  // Fetch current exchange rate from system config
+  // Fetch current exchange rate and shipping rates from system config
   let exchangeRate = 0;
+  let shippingCostPerKilo = 0;
+
   try {
     const config = await getSystemConfig();
     exchangeRate = config.lydExchangeRate || 0;
+    
+    // Get shipping rate based on origin country and shipping method
+    const { originCountry, shippingMethod } = getShippingInfo(invoice.items || []);
+    
+    if (originCountry && shippingMethod && config.countries?.[originCountry]) {
+      const countryConfig = config.countries[originCountry];
+      if (shippingMethod === 'air') {
+        shippingCostPerKilo = countryConfig.airShippingRate || 0;
+      } else if (shippingMethod === 'sea') {
+        shippingCostPerKilo = countryConfig.seaShippingRate || 0;
+      }
+    }
   } catch (error) {
     console.error('Failed to fetch exchange rate:', error);
   }
   
-  // Calculate totals
-  const shippingCost = options?.shippingCost || 0;
+  // Calculate totals - use calculated shipping rate or fallback to options
+  const shippingCost = shippingCostPerKilo || options?.shippingCost || 0;
   const extraCosts = shipments.reduce((sum, s) => sum + (Number(s.extraCosts) || 0), 0);
   const totalPrice = invoice.totals?.gross || 0;
   
