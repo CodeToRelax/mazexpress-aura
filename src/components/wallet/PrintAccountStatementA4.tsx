@@ -224,6 +224,7 @@ export default function PrintAccountStatementA4(props: PrintAccountStatementProp
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  margin-top: 15px;
   margin-bottom: 20px;
 }
 
@@ -240,7 +241,7 @@ export default function PrintAccountStatementA4(props: PrintAccountStatementProp
 }
 
 .logo-section img {
-  width: 120px;
+  width: 150px;
   height: auto;
 }
 
