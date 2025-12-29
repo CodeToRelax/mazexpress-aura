@@ -354,23 +354,28 @@ export default function PrintAccountStatementA4(props: PrintAccountStatementProp
 
 /* Summary Section */
 .summary-section {
-  margin-top: auto;
+  margin-top: 20px;
   padding-top: 15px;
 }
 
 .summary-row {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
+  gap: 40px;
   margin-bottom: 6px;
   font-size: 11px;
 }
 
 .summary-label {
   color: var(--text-dark);
+  min-width: 120px;
+  text-align: ${isRTL ? 'right' : 'left'};
 }
 
 .summary-value {
   color: var(--text-dark);
+  min-width: 80px;
+  text-align: ${isRTL ? 'left' : 'right'};
 }
 
 .summary-value.debit {
@@ -394,7 +399,7 @@ export default function PrintAccountStatementA4(props: PrintAccountStatementProp
       <div className="outer-wrapper">
         <section className="wrapper">
           {/* Watermark */}
-          <img className="bg" width="300" src="/assets/images/logo/logo.png" alt="" />
+          <img className="bg" width="300" src="/assets/images/logo/logo-text.png" alt="" />
           
           {/* Header */}
           <div className="header-section">
@@ -404,7 +409,7 @@ export default function PrintAccountStatementA4(props: PrintAccountStatementProp
                   <span className="title">{t.title}</span>
                 </div>
                 <div className="logo-section">
-                  <img src="/assets/images/logo/logo.png" alt="MazExpress" />
+                  <img src="/assets/images/logo/logo-text.png" alt="MazExpress" />
                 </div>
               </>
             ) : (
@@ -413,7 +418,7 @@ export default function PrintAccountStatementA4(props: PrintAccountStatementProp
                   <span className="title">{t.title}</span>
                 </div>
                 <div className="logo-section">
-                  <img src="/assets/images/logo/logo.png" alt="MazExpress" />
+                  <img src="/assets/images/logo/logo-text.png" alt="MazExpress" />
                 </div>
               </>
             )}
