@@ -35,6 +35,7 @@ import { CreateTransactionDialog } from './CreateTransactionDialog';
 import { CreateUserWalletDialog } from './CreateUserWalletDialog';
 import { EditTransactionDialog } from './EditTransactionDialog';
 import { RefundTransactionDialog } from './RefundTransactionDialog';
+import { DeleteTransactionDialog } from './DeleteTransactionDialog';
 import { EditUserDialog } from './EditUserDialog';
 import { usersApi } from '@/utilities/api/users.api';
 import { getWalletByUserId, getUserTransactions } from '@/utilities/api/wallet.api';
@@ -72,6 +73,7 @@ export default function UserDetail() {
   const [isCreateTransactionOpen, setIsCreateTransactionOpen] = useState(false);
   const [isEditTransactionOpen, setIsEditTransactionOpen] = useState(false);
   const [isRefundTransactionOpen, setIsRefundTransactionOpen] = useState(false);
+  const [isDeleteTransactionOpen, setIsDeleteTransactionOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [isEditUserOpen, setIsEditUserOpen] = useState(false);
 const [isCreateWalletOpen, setIsCreateWalletOpen] = useState(false);
@@ -786,6 +788,10 @@ const [isCreateWalletOpen, setIsCreateWalletOpen] = useState(false);
                   transactions={transactions}
                   onEdit={handleEditTransaction}
                   onRefund={handleRefundTransaction}
+                  onDelete={(transaction) => {
+                    setSelectedTransaction(transaction);
+                    setIsDeleteTransactionOpen(true);
+                  }}
                   isAdmin={true}
                   visibleColumns={visibleColumns}
                   sortBy={sortBy}
@@ -862,6 +868,20 @@ const [isCreateWalletOpen, setIsCreateWalletOpen] = useState(false);
         onSuccess={() => {
           handleTransactionSuccess();
           setIsRefundTransactionOpen(false);
+          setSelectedTransaction(null);
+        }}
+      />
+
+      <DeleteTransactionDialog
+        open={isDeleteTransactionOpen}
+        onClose={() => {
+          setIsDeleteTransactionOpen(false);
+          setSelectedTransaction(null);
+        }}
+        transaction={selectedTransaction}
+        onSuccess={() => {
+          handleTransactionSuccess();
+          setIsDeleteTransactionOpen(false);
           setSelectedTransaction(null);
         }}
       />
