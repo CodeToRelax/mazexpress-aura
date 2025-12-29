@@ -224,7 +224,7 @@ export default function PrintAccountStatementA4(props: PrintAccountStatementProp
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-top: 15px;
+  margin-top: 25px;
   margin-bottom: 20px;
 }
 
@@ -251,6 +251,7 @@ export default function PrintAccountStatementA4(props: PrintAccountStatementProp
   justify-content: space-between;
   margin-bottom: 20px;
   gap: 20px;
+  min-height: 120px;
 }
 
 .company-info {
@@ -293,7 +294,8 @@ export default function PrintAccountStatementA4(props: PrintAccountStatementProp
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: flex-end;
+  align-items: flex-start;
 }
 
 .detail-row {
