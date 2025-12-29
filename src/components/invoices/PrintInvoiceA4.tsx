@@ -364,7 +364,6 @@ export default function PrintInvoiceA4(props: Props) {
               }}>
                 فاتورة رقم: {String(invoiceNumber).slice(-6)}
               </span>
-              <span style={{ fontSize: 11, color: "#666" }}>شركة ماز اكسبرس للشحن والتوصيل</span>
             </div>
             
             {/* Logo Section (left side in RTL) */}
@@ -373,20 +372,21 @@ export default function PrintInvoiceA4(props: Props) {
             </div>
           </div>
 
-          {/* Info Section - matching account statement style */}
+          {/* Info Section - matching account statement exactly */}
           <div style={{
             display: "flex",
             justifyContent: "space-between",
-            marginBottom: 16,
+            marginBottom: 20,
             gap: 20,
+            minHeight: 120,
             direction: "rtl",
-            borderTop: "1px solid #e5e5e5",
-            paddingTop: 16,
           }}>
-            {/* Customer Info (right side in RTL) */}
+            {/* Company & Customer Info (right side in RTL) */}
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: "#1a1a1a", marginBottom: 6 }}>بيانات العميل</div>
-              <div style={{ fontSize: 12, fontWeight: 600, color: "#1a1a1a" }}>{userFullName}</div>
+              <div style={{ fontSize: 11, color: "#1a1a1a", marginBottom: 2 }}>شركة ماز اكسبرس للشحن والتوصيل</div>
+              <div style={{ fontSize: 10, color: "#666", marginBottom: 12 }}>MazExpress Shipping & Delivery</div>
+              <div style={{ fontSize: 13, fontWeight: "bold", color: "#1a1a1a", marginBottom: 8 }}>بيانات العميل</div>
+              <div style={{ fontSize: 12, fontWeight: "bold", color: "#1a1a1a", marginBottom: 4 }}>{userFullName}</div>
             </div>
             
             {/* Invoice Details (left side in RTL) */}
@@ -394,19 +394,19 @@ export default function PrintInvoiceA4(props: Props) {
               flex: 1,
               display: "flex",
               flexDirection: "column",
+              justifyContent: "flex-end",
               alignItems: "flex-start",
-              gap: 4,
             }}>
-              <div style={{ display: "flex", gap: 8, fontSize: 11 }}>
-                <span style={{ fontWeight: 700 }}>التاريخ:</span>
+              <div style={{ display: "flex", gap: 20, marginBottom: 4, fontSize: 11 }}>
+                <span style={{ fontWeight: "bold", minWidth: 100, textAlign: "right" }}>التاريخ:</span>
                 <span style={{ direction: "ltr" }}>{formatDate(date)}</span>
               </div>
-              <div style={{ display: "flex", gap: 8, fontSize: 11 }}>
-                <span style={{ fontWeight: 700 }}>الهاتف:</span>
+              <div style={{ display: "flex", gap: 20, marginBottom: 4, fontSize: 11 }}>
+                <span style={{ fontWeight: "bold", minWidth: 100, textAlign: "right" }}>الهاتف:</span>
                 <span style={{ direction: "ltr" }}>0919497423</span>
               </div>
-              <div style={{ display: "flex", gap: 8, fontSize: 11 }}>
-                <span style={{ fontWeight: 700 }}>البريد:</span>
+              <div style={{ display: "flex", gap: 20, marginBottom: 4, fontSize: 11 }}>
+                <span style={{ fontWeight: "bold", minWidth: 100, textAlign: "right" }}>البريد:</span>
                 <span style={{ direction: "ltr" }}>info@mazexpress.com.ly</span>
               </div>
             </div>
