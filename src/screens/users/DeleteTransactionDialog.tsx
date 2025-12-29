@@ -45,16 +45,22 @@ export function DeleteTransactionDialog({
     try {
       const result = await deleteTransaction(transaction._id, isCompleted);
       
+      // Safely handle the response with null checks
+      const balanceReversed = result?.balanceReversed ?? false;
+      const balanceChange = result?.balanceChange ?? transaction.amount;
+      const newBalance = result?.newWalletBalance ?? 0;
+      
       // Show success with balance change info
-      const balanceMsg = result.balanceReversed 
-        ? ` ${t('wallet.transaction.balanceAdjusted')} ${formatLYD(result.balanceChange)}`
+      const balanceMsg = balanceReversed 
+        ? ` ${t('wallet.transaction.balanceAdjusted')} ${formatLYD(balanceChange)}`
         : '';
       
       toast({
         title: t('wallet.transaction.deleteSuccess'),
-        description: `${t('wallet.transaction.newBalance')}: ${formatLYD(result.newWalletBalance)}${balanceMsg}`,
+        description: `${t('wallet.transaction.newBalance')}: ${formatLYD(newBalance)}${balanceMsg}`,
       });
       onSuccess();
+      onClose();
     } catch (error: any) {
       // Handle specific error codes
       const errorMessage = error.message || '';
