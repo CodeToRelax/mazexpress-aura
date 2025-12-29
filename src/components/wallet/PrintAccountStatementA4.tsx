@@ -292,7 +292,7 @@ export default function PrintAccountStatementA4(props: PrintAccountStatementProp
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: flex-start;
 }
 
 .detail-row {
