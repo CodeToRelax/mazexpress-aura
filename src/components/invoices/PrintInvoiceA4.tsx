@@ -346,90 +346,69 @@ export default function PrintInvoiceA4(props: Props) {
       <section className="wrapper">
         <img className="bg" width="300" src="/assets/images/logo/logo-text.png" alt="" />
         <div className="inner-wrapper">
-          <div className="top">
-            {/* // */}
-            <div
-              style={{
-                direction: "rtl",
-                textAlign: "right",
-                width: 340,
-                padding: "20px 24px",
-                background: "linear-gradient(135deg, rgba(54, 125, 163, 0.08) 0%, rgba(54, 125, 163, 0.03) 100%)",
-                borderRadius: 16,
-                borderLeft: "4px solid var(--blue-color)",
-                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.04)",
-                display: "flex",
-                flexDirection: "column",
-                gap: 12,
-              }}
-            >
-              <h2
-                style={{
-                  margin: 0,
-                  fontSize: 24,
-                  fontWeight: 800,
-                  letterSpacing: 0.5,
-                  color: "#1a1a1a",
-                }}
-              >
+          {/* Header Section - matching account statement style */}
+          <div style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            marginBottom: 20,
+            direction: "rtl",
+          }}>
+            {/* Title Section (right side in RTL) */}
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <span style={{
+                fontSize: 22,
+                fontWeight: 800,
+                color: "#1a1a1a",
+                marginBottom: 6,
+              }}>
                 فاتورة رقم: {String(invoiceNumber).slice(-6)}
-              </h2>
-
-              {/* Company info */}
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 3,
-                  lineHeight: 1.35,
-                }}
-              >
-                <span style={{ fontSize: 12, direction: "ltr" }}>0919497423</span>
-
-                <span style={{ fontSize: 12, direction: "ltr" }}>info@mazexpress.com.ly</span>
-
-                <span style={{ fontSize: 12 }}>الفويهات، ارض بن علي، شارع الاندلس</span>
-                <span style={{ fontSize: 12 }}>بنغازي, ليبيا</span>
-              </div>
-
-              {/* Divider */}
-              <div style={{ borderTop: "1px solid rgba(54, 125, 163, 0.2)", marginTop: 8, marginBottom: 4 }} />
-
-              {/* Invoice meta */}
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 8,
-                  marginTop: 4,
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    gap: 6,
-                    alignItems: "baseline",
-                  }}
-                >
-                  <span style={{ fontSize: 12, fontWeight: 700 }}>التاريخ: </span>
-                  <span style={{ fontSize: 12, fontWeight: 600, direction: "ltr" }}>{formatDate(date)}</span>
-                </div>
-
-                <div
-                  style={{
-                    display: "flex",
-                    gap: 6,
-                    alignItems: "baseline",
-                  }}
-                >
-                  <span style={{ fontSize: 12, fontWeight: 700 }}>الاسم: </span>
-                  <span style={{ fontSize: 12, fontWeight: 600 }}>{userFullName}</span>
-                </div>
-              </div>
+              </span>
+              <span style={{ fontSize: 11, color: "#666" }}>شركة ماز اكسبرس للشحن والتوصيل</span>
             </div>
-            {/* // */}
-            <div className="logo-section">
-              <img width="160" src="/assets/images/logo/logo-text.png" alt="MAZ Express" />
+            
+            {/* Logo Section (left side in RTL) */}
+            <div>
+              <img src="/assets/images/logo/logo-text.png" alt="MazExpress" style={{ width: 140, height: "auto" }} />
+            </div>
+          </div>
+
+          {/* Info Section - matching account statement style */}
+          <div style={{
+            display: "flex",
+            justifyContent: "space-between",
+            marginBottom: 16,
+            gap: 20,
+            direction: "rtl",
+            borderTop: "1px solid #e5e5e5",
+            paddingTop: 16,
+          }}>
+            {/* Customer Info (right side in RTL) */}
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: "#1a1a1a", marginBottom: 6 }}>بيانات العميل</div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: "#1a1a1a" }}>{userFullName}</div>
+            </div>
+            
+            {/* Invoice Details (left side in RTL) */}
+            <div style={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              gap: 4,
+            }}>
+              <div style={{ display: "flex", gap: 8, fontSize: 11 }}>
+                <span style={{ fontWeight: 700 }}>التاريخ:</span>
+                <span style={{ direction: "ltr" }}>{formatDate(date)}</span>
+              </div>
+              <div style={{ display: "flex", gap: 8, fontSize: 11 }}>
+                <span style={{ fontWeight: 700 }}>الهاتف:</span>
+                <span style={{ direction: "ltr" }}>0919497423</span>
+              </div>
+              <div style={{ display: "flex", gap: 8, fontSize: 11 }}>
+                <span style={{ fontWeight: 700 }}>البريد:</span>
+                <span style={{ direction: "ltr" }}>info@mazexpress.com.ly</span>
+              </div>
             </div>
           </div>
 
