@@ -822,7 +822,21 @@
       "status.pending": "قيد الانتظار",
       "status.completed": "مكتمل",
       "status.failed": "فشل",
-      "status.cancelled": "ملغي"
+      "status.cancelled": "ملغي",
+      "delete": "حذف المعاملة",
+      "deleteConfirmTitle": "حذف المعاملة؟",
+      "deleteConfirmMessage": "لا يمكن التراجع عن هذا الإجراء وقد يؤثر على السجلات المالية.",
+      "cascadeEffects": "سيؤدي هذا إلى:",
+      "reverseBalance": "عكس رصيد المحفظة بمبلغ",
+      "updateInvoice": "تحديث إجمالي الفاتورة المرتبطة وحالتها",
+      "removePayment": "إزالة سجل الدفع من الفاتورة",
+      "completedWarning": "هذه معاملة مكتملة. مطلوب حذف قسري.",
+      "forceDelete": "حذف قسري",
+      "forceRequired": "هذه معاملة مكتملة. استخدم الحذف القسري للمتابعة.",
+      "negativeBalanceError": "لا يمكن الحذف: سيؤدي إلى رصيد سالب في المحفظة",
+      "deleteSuccess": "تم حذف المعاملة بنجاح",
+      "balanceAdjusted": "تم تعديل رصيد المحفظة بمبلغ",
+      "newBalance": "الرصيد الجديد"
     },
     "form": {
       "depositTitle": "إيداع أموال",

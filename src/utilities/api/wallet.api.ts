@@ -11,6 +11,7 @@ import {
   WalletBalance,
   TransferResponse,
   TransactionPaginationResponse,
+  DeleteTransactionResponse,
 } from '@/types/wallet';
 import { getFirebaseAuth } from '@/utilities/firebase/firebase';
 
@@ -282,12 +283,14 @@ export async function updateTransaction(
 
 export async function deleteTransaction(
   transactionId: string,
+  force?: boolean,
   locale?: string
-): Promise<{ success: boolean; message: string }> {
+): Promise<DeleteTransactionResponse> {
   const headers = await getAuthHeaders(locale);
-  const response = await fetch(`${API_BASE_URL}/api/wallet/admin/transaction/${transactionId}`, {
+  const url = `${API_BASE_URL}/api/wallet/admin/transaction/${transactionId}${force ? '?force=true' : ''}`;
+  const response = await fetch(url, {
     method: 'DELETE',
     headers,
   });
-  return handleResponse<{ success: boolean; message: string }>(response);
+  return handleResponse<DeleteTransactionResponse>(response);
 }

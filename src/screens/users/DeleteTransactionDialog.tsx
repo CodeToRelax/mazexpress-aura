@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Loader2, AlertTriangle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { Loader2, AlertTriangle, ArrowLeftRight, FileText, CreditCard, Undo2 } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogContent,
@@ -10,6 +11,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import type { Transaction } from '@/types/wallet';
 import { deleteTransaction } from '@/utilities/api/wallet.api';
 import { toast } from '@/hooks/use-toast';
@@ -29,25 +31,54 @@ export function DeleteTransactionDialog({
   transaction,
   onSuccess,
 }: DeleteTransactionDialogProps) {
+  const { t } = useTranslation();
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const isCompleted = transaction?.status === 'completed';
+  const hasInvoice = !!transaction?.invoiceId;
+  const isDeduction = transaction?.type === 'deduction';
 
   const handleDelete = async () => {
     if (!transaction) return;
 
     setIsDeleting(true);
     try {
-      await deleteTransaction(transaction._id);
+      const result = await deleteTransaction(transaction._id, isCompleted);
+      
+      // Show success with balance change info
+      const balanceMsg = result.balanceReversed 
+        ? ` ${t('wallet.transaction.balanceAdjusted')} ${formatLYD(result.balanceChange)}`
+        : '';
+      
       toast({
-        title: 'Success',
-        description: 'Transaction deleted successfully',
+        title: t('wallet.transaction.deleteSuccess'),
+        description: `${t('wallet.transaction.newBalance')}: ${formatLYD(result.newWalletBalance)}${balanceMsg}`,
       });
       onSuccess();
     } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: error.message || 'Failed to delete transaction',
-        variant: 'destructive',
-      });
+      // Handle specific error codes
+      const errorMessage = error.message || '';
+      
+      if (errorMessage.includes('TRANSACTION_DELETE_NEGATIVE_BALANCE') || 
+          errorMessage.includes('negative wallet balance')) {
+        toast({
+          title: t('errors.auth.unknown'),
+          description: t('wallet.transaction.negativeBalanceError'),
+          variant: 'destructive',
+        });
+      } else if (errorMessage.includes('TRANSACTION_DELETE_REQUIRES_FORCE')) {
+        toast({
+          title: t('errors.auth.unknown'),
+          description: t('wallet.transaction.forceRequired'),
+          variant: 'destructive',
+        });
+      } else {
+        toast({
+          title: t('errors.auth.unknown'),
+          description: errorMessage || t('wallet.messages.error'),
+          variant: 'destructive',
+        });
+      }
     } finally {
       setIsDeleting(false);
     }
@@ -57,61 +88,112 @@ export function DeleteTransactionDialog({
 
   const getTypeVariant = (type: string) => {
     const variants: Record<string, 'default' | 'secondary' | 'destructive'> = {
-      DEPOSIT: 'default',
-      WITHDRAWAL: 'secondary',
-      DEDUCTION: 'destructive',
-      REFUND: 'default',
+      deposit: 'default',
+      withdrawal: 'secondary',
+      deduction: 'destructive',
+      refund: 'default',
+      transfer: 'secondary',
     };
-    return variants[type] || 'default';
+    return variants[type.toLowerCase()] || 'default';
+  };
+
+  const getStatusVariant = (status: string) => {
+    const variants: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
+      completed: 'default',
+      pending: 'secondary',
+      failed: 'destructive',
+      cancelled: 'outline',
+    };
+    return variants[status] || 'default';
   };
 
   return (
     <AlertDialog open={open} onOpenChange={onClose}>
-      <AlertDialogContent>
+      <AlertDialogContent className="max-w-md">
         <AlertDialogHeader>
           <div className="flex items-center gap-2">
             <AlertTriangle className="h-5 w-5 text-destructive" />
-            <AlertDialogTitle>Delete Transaction</AlertDialogTitle>
+            <AlertDialogTitle>{t('wallet.transaction.deleteConfirmTitle')}</AlertDialogTitle>
           </div>
           <AlertDialogDescription>
-            Are you sure you want to delete this transaction? This action cannot be undone and may affect financial records.
+            {t('wallet.transaction.deleteConfirmMessage')}
           </AlertDialogDescription>
         </AlertDialogHeader>
 
+        {/* Completed transaction warning */}
+        {isCompleted && (
+          <Alert variant="destructive" className="border-destructive/50 bg-destructive/10">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription>
+              {t('wallet.transaction.completedWarning')}
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {/* Transaction details */}
         <div className="space-y-3 py-4 border-y">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Transaction Number</span>
+            <span className="text-sm text-muted-foreground">{t('wallet.table.columns.transactionNumber')}</span>
             <span className="font-mono text-sm">{transaction.transactionNumber}</span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Type</span>
-            <Badge variant={getTypeVariant(transaction.type)}>{transaction.type}</Badge>
+            <span className="text-sm text-muted-foreground">{t('wallet.table.columns.type')}</span>
+            <Badge variant={getTypeVariant(transaction.type)}>
+              {t(`wallet.transaction.type.${transaction.type}`)}
+            </Badge>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Amount</span>
-            <span className="font-semibold">
-              {formatLYD(transaction.amount)}
-            </span>
+            <span className="text-sm text-muted-foreground">{t('wallet.table.columns.status')}</span>
+            <Badge variant={getStatusVariant(transaction.status)}>
+              {t(`wallet.transaction.status.${transaction.status}`)}
+            </Badge>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Date</span>
+            <span className="text-sm text-muted-foreground">{t('wallet.table.columns.amount')}</span>
+            <span className="font-semibold">{formatLYD(transaction.amount)}</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground">{t('wallet.table.columns.date')}</span>
             <span className="text-sm">
               {format(new Date(transaction.createdAt), 'MMM dd, yyyy HH:mm')}
             </span>
           </div>
-          <div className="space-y-1">
-            <span className="text-sm text-muted-foreground">Description</span>
-            <p className="text-sm">{transaction.description}</p>
+        </div>
+
+        {/* Cascade effects section */}
+        <div className="space-y-2">
+          <p className="text-sm font-medium">{t('wallet.transaction.cascadeEffects')}</p>
+          <div className="space-y-2 text-sm">
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Undo2 className="h-4 w-4 text-orange-500" />
+              <span>
+                {t('wallet.transaction.reverseBalance')} <strong>{formatLYD(transaction.amount)}</strong>
+              </span>
+            </div>
+            
+            {hasInvoice && (
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <FileText className="h-4 w-4 text-blue-500" />
+                <span>{t('wallet.transaction.updateInvoice')}</span>
+              </div>
+            )}
+            
+            {isDeduction && (
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <CreditCard className="h-4 w-4 text-purple-500" />
+                <span>{t('wallet.transaction.removePayment')}</span>
+              </div>
+            )}
           </div>
         </div>
 
         <AlertDialogFooter>
           <Button variant="outline" onClick={onClose} disabled={isDeleting}>
-            Cancel
+            {t('actions.cancel')}
           </Button>
           <Button variant="destructive" onClick={handleDelete} disabled={isDeleting}>
             {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Delete Transaction
+            {isCompleted ? t('wallet.transaction.forceDelete') : t('wallet.transaction.delete')}
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
