@@ -16,6 +16,7 @@ import { InvoicesColumnVisibilityToggle } from './InvoicesColumnVisibilityToggle
 import { GenerateInvoiceDialog } from './GenerateInvoiceDialog';
 import { PaymentDialog } from './PaymentDialog';
 import { CancelInvoiceDialog } from './CancelInvoiceDialog';
+import { DeleteInvoiceDialog } from './DeleteInvoiceDialog';
 import { exportInvoicesToCSV } from '@/utilities/helpers/invoiceExport';
 import { useACL } from '@/hooks/useACL';
 
@@ -80,6 +81,7 @@ export default function Invoices() {
   const [showGenerateDialog, setShowGenerateDialog] = useState(false);
   const [invoiceToMakePayment, setInvoiceToMakePayment] = useState<Invoice | null>(null);
   const [invoiceToVoid, setInvoiceToVoid] = useState<Invoice | null>(null);
+  const [invoiceToDelete, setInvoiceToDelete] = useState<Invoice | null>(null);
 
   // Calculate stats from invoices (excluding REFUNDED and VOID)
   const activeInvoices = invoices.filter(i => !['REFUNDED', 'VOID'].includes(i.status));
@@ -206,6 +208,10 @@ export default function Invoices() {
 
   const handleVoid = (invoice: Invoice) => {
     setInvoiceToVoid(invoice);
+  };
+
+  const handleDelete = (invoice: Invoice) => {
+    setInvoiceToDelete(invoice);
   };
 
   const handleExportCSV = async () => {
@@ -338,6 +344,7 @@ export default function Invoices() {
               onRowClick={handleRowClick}
               onMakePayment={handleMakePayment}
               onVoid={handleVoid}
+              onDelete={handleDelete}
               isAdmin={hasFlag('canManageInvoices')}
             />
           )}
@@ -379,6 +386,15 @@ export default function Invoices() {
           invoice={invoiceToVoid}
           open={!!invoiceToVoid}
           onOpenChange={(open) => !open && setInvoiceToVoid(null)}
+          onSuccess={handleSuccess}
+        />
+      )}
+
+      {invoiceToDelete && (
+        <DeleteInvoiceDialog
+          invoice={invoiceToDelete}
+          open={!!invoiceToDelete}
+          onOpenChange={(open) => !open && setInvoiceToDelete(null)}
           onSuccess={handleSuccess}
         />
       )}

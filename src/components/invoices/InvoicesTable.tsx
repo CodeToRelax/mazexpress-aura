@@ -402,7 +402,7 @@ export function InvoicesTable({
                           </DropdownMenuItem>
                         )}
                         
-                        {onDelete && invoice.status !== 'PAID' && (
+                        {onDelete && (
                           <>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem 
