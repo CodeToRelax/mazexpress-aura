@@ -351,6 +351,7 @@ export default function PrintInvoiceA4(props: Props) {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "flex-start",
+            marginTop: 20,
             marginBottom: 20,
             direction: "rtl",
           }}>
