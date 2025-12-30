@@ -113,6 +113,26 @@ export function ShipmentsFilters({
           className="pl-9"
         />
       </div>
+
+      {/* Visible Status Filter */}
+      <Select
+        value={filters.status || 'all'}
+        onValueChange={(value) => 
+          handleFilterChange('status', value === 'all' ? undefined : value)
+        }
+      >
+        <SelectTrigger className="w-[160px] shrink-0">
+          <SelectValue placeholder={t('shipments.filters.status')} />
+        </SelectTrigger>
+        <SelectContent className="bg-background z-50">
+          <SelectItem value="all">{t('shipments.filters.allStatuses')}</SelectItem>
+          {statuses.map(status => (
+            <SelectItem key={status} value={status}>
+              {t(`shipments.table.status.${status.replace(/ /g, '_')}`)}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
       
       <Sheet>
         <SheetTrigger asChild>
