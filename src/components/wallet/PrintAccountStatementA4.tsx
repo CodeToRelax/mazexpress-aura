@@ -16,94 +16,94 @@ interface PrintAccountStatementProps {
 // Translations
 const translations = {
   en: {
-    title: 'ACCOUNT STATEMENT',
-    accountHolder: 'ACCOUNT HOLDER',
-    statementNo: 'Statement No:',
-    period: 'Period:',
-    generated: 'Generated:',
-    currency: 'Currency:',
-    walletId: 'Wallet ID:',
-    date: 'DATE',
-    reference: 'REFERENCE',
-    type: 'TYPE',
-    description: 'DESCRIPTION',
-    debit: 'DEBIT',
-    credit: 'CREDIT',
-    balance: 'BALANCE',
-    openingBalance: 'Opening Balance:',
-    totalDebits: 'Total Debits:',
-    totalCredits: 'Total Credits:',
-    closingBalance: 'Closing Balance:',
-    noTransactions: 'No transactions in this period',
-    companyName: 'MazExpress',
-    companySubtitle: 'Shipping & Logistics',
+    title: "ACCOUNT STATEMENT",
+    accountHolder: "ACCOUNT HOLDER",
+    statementNo: "Statement No:",
+    period: "Period:",
+    generated: "Generated:",
+    currency: "Currency:",
+    walletId: "Wallet ID:",
+    date: "DATE",
+    reference: "REFERENCE",
+    type: "TYPE",
+    description: "DESCRIPTION",
+    debit: "DEBIT",
+    credit: "CREDIT",
+    balance: "BALANCE",
+    openingBalance: "Opening Balance:",
+    totalDebits: "Total Debits:",
+    totalCredits: "Total Credits:",
+    closingBalance: "Closing Balance:",
+    noTransactions: "No transactions in this period",
+    companyName: "MazExpress",
+    companySubtitle: "Shipping & Logistics",
   },
   ar: {
-    title: 'كشف الحساب',
-    accountHolder: 'بيانات الحساب',
-    statementNo: 'رقم الكشف:',
-    period: 'الفترة:',
-    generated: 'تاريخ الإنشاء:',
-    currency: 'العملة:',
-    walletId: 'رقم المحفظة:',
-    date: 'التاريخ',
-    reference: 'المرجع',
-    type: 'النوع',
-    description: 'الوصف',
-    debit: 'مدين',
-    credit: 'دائن',
-    balance: 'الرصيد',
-    openingBalance: 'الرصيد الافتتاحي:',
-    totalDebits: 'إجمالي المدين:',
-    totalCredits: 'إجمالي الدائن:',
-    closingBalance: 'الرصيد الختامي:',
-    noTransactions: 'لا توجد معاملات في هذه الفترة',
-    companyName: 'ماز إكسبريس',
-    companySubtitle: 'للشحن والتوصيل',
+    title: "كشف الحساب",
+    accountHolder: "بيانات الحساب",
+    statementNo: "رقم الكشف:",
+    period: "الفترة:",
+    generated: "تاريخ الإنشاء:",
+    currency: "العملة:",
+    walletId: "رقم المحفظة:",
+    date: "التاريخ",
+    reference: "المرجع",
+    type: "النوع",
+    description: "الوصف",
+    debit: "مدين",
+    credit: "دائن",
+    balance: "الرصيد",
+    openingBalance: "الرصيد الافتتاحي:",
+    totalDebits: "إجمالي المدين:",
+    totalCredits: "إجمالي الدائن:",
+    closingBalance: "الرصيد الختامي:",
+    noTransactions: "لا توجد معاملات في هذه الفترة",
+    companyName: "ماز إكسبريس",
+    companySubtitle: "للشحن والتوصيل",
   },
 };
 
 // Transaction type translations
 const typeTranslations = {
   en: {
-    deposit: 'Deposit',
-    withdrawal: 'Withdrawal',
-    deduction: 'Deduction',
-    refund: 'Refund',
+    deposit: "Deposit",
+    withdrawal: "Withdrawal",
+    deduction: "Deduction",
+    refund: "Refund",
   },
   ar: {
-    deposit: 'إيداع',
-    withdrawal: 'سحب',
-    deduction: 'خصم',
-    refund: 'استرداد',
+    deposit: "إيداع",
+    withdrawal: "سحب",
+    deduction: "خصم",
+    refund: "استرداد",
   },
 };
 
 function formatType(type: string, locale: string): string {
-  const normalizedLocale: 'en' | 'ar' = locale?.startsWith('ar') ? 'ar' : 'en';
+  const normalizedLocale: "en" | "ar" = locale?.startsWith("ar") ? "ar" : "en";
   const key = type.toLowerCase() as keyof typeof typeTranslations.en;
   return typeTranslations[normalizedLocale][key] || type.charAt(0).toUpperCase() + type.slice(1).toLowerCase();
 }
 
 function calculateSummary(transactions: Transaction[], openingBalance: number) {
   const deposits = transactions
-    .filter(t => t.type.toLowerCase() === 'deposit' && t.status.toLowerCase() === 'completed')
+    .filter((t) => t.type.toLowerCase() === "deposit" && t.status.toLowerCase() === "completed")
     .reduce((sum, t) => sum + t.amount, 0);
-  
+
   const withdrawals = transactions
-    .filter(t => t.type.toLowerCase() === 'withdrawal' && t.status.toLowerCase() === 'completed')
+    .filter((t) => t.type.toLowerCase() === "withdrawal" && t.status.toLowerCase() === "completed")
     .reduce((sum, t) => sum + t.amount, 0);
-  
+
   const deductions = transactions
-    .filter(t => t.type.toLowerCase() === 'deduction' && t.status.toLowerCase() === 'completed')
+    .filter((t) => t.type.toLowerCase() === "deduction" && t.status.toLowerCase() === "completed")
     .reduce((sum, t) => sum + t.amount, 0);
-  
+
   const refunds = transactions
-    .filter(t => t.type.toLowerCase() === 'refund' && t.status.toLowerCase() === 'completed')
+    .filter((t) => t.type.toLowerCase() === "refund" && t.status.toLowerCase() === "completed")
     .reduce((sum, t) => sum + t.amount, 0);
-  
+
   const closingBalance = openingBalance + deposits + refunds - withdrawals - deductions;
-  
+
   return {
     openingBalance,
     deposits,
@@ -117,24 +117,22 @@ function calculateSummary(transactions: Transaction[], openingBalance: number) {
 }
 
 export default function PrintAccountStatementA4(props: PrintAccountStatementProps) {
-  const { wallet, transactions, dateFrom, dateTo, customerName, customerEmail, locale = 'ar' } = props;
-  
-  const normalizedLocale: 'en' | 'ar' = locale?.startsWith('ar') ? 'ar' : 'en';
+  const { wallet, transactions, dateFrom, dateTo, customerName, customerEmail, locale = "ar" } = props;
+
+  const normalizedLocale: "en" | "ar" = locale?.startsWith("ar") ? "ar" : "en";
   const t = translations[normalizedLocale];
-  const isRTL = normalizedLocale === 'ar';
-  
+  const isRTL = normalizedLocale === "ar";
+
   // Calculate opening balance
-  const openingBalance = transactions.length > 0 
-    ? transactions[transactions.length - 1].balanceBefore 
-    : wallet.balance;
-  
+  const openingBalance = transactions.length > 0 ? transactions[transactions.length - 1].balanceBefore : wallet.balance;
+
   const summary = calculateSummary(transactions, openingBalance);
-  
+
   // Sort transactions by date (newest first)
   const sortedTransactions = [...transactions].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
-  
+
   const css = `
 /* -------------------- FONT: Cairo -------------------- */
 @font-face {
@@ -205,7 +203,7 @@ export default function PrintAccountStatementA4(props: PrintAccountStatementProp
   padding: 15px 20px;
   display: flex;
   flex-direction: column;
-  direction: ${isRTL ? 'rtl' : 'ltr'};
+  direction: ${isRTL ? "rtl" : "ltr"};
   background-color: white;
   overflow: hidden;
 }
@@ -310,7 +308,7 @@ export default function PrintAccountStatementA4(props: PrintAccountStatementProp
   font-weight: bold;
   color: var(--text-dark);
   min-width: 100px;
-  text-align: ${isRTL ? 'right' : 'left'};
+  text-align: ${isRTL ? "right" : "left"};
 }
 
 .detail-value {
@@ -329,7 +327,7 @@ export default function PrintAccountStatementA4(props: PrintAccountStatementProp
   background-color: var(--blue-color);
   color: white;
   padding: 8px 6px;
-  text-align: ${isRTL ? 'right' : 'left'};
+  text-align: ${isRTL ? "right" : "left"};
   font-size: 9px;
   font-weight: bold;
 }
@@ -337,7 +335,7 @@ export default function PrintAccountStatementA4(props: PrintAccountStatementProp
 .transactions-table td {
   padding: 6px;
   border-bottom: 1px solid var(--border-color);
-  text-align: ${isRTL ? 'right' : 'left'};
+  text-align: ${isRTL ? "right" : "left"};
   color: var(--text-dark);
 }
 
@@ -367,7 +365,7 @@ export default function PrintAccountStatementA4(props: PrintAccountStatementProp
   padding-top: 15px;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
 }
 
 .summary-row {
@@ -380,13 +378,13 @@ export default function PrintAccountStatementA4(props: PrintAccountStatementProp
 .summary-label {
   color: var(--text-dark);
   min-width: 120px;
-  text-align: ${isRTL ? 'right' : 'left'};
+  text-align: ${isRTL ? "right" : "left"};
 }
 
 .summary-value {
   color: var(--text-dark);
   min-width: 80px;
-  text-align: ${isRTL ? 'left' : 'right'};
+  text-align: ${isRTL ? "left" : "right"};
 }
 
 .summary-value.debit {
@@ -411,7 +409,7 @@ export default function PrintAccountStatementA4(props: PrintAccountStatementProp
         <section className="wrapper">
           {/* Watermark */}
           <img className="bg" width="300" src="/assets/images/logo/logo-text.png" alt="" />
-          
+
           {/* Header */}
           <div className="header-section">
             {isRTL ? (
@@ -434,7 +432,7 @@ export default function PrintAccountStatementA4(props: PrintAccountStatementProp
               </>
             )}
           </div>
-          
+
           {/* Info Section */}
           <div className="info-section">
             <div className="company-info">
@@ -443,21 +441,25 @@ export default function PrintAccountStatementA4(props: PrintAccountStatementProp
               <div className="account-holder-title">{t.accountHolder}</div>
               {customerName && <div className="customer-name">{customerName}</div>}
               {customerEmail && <div className="customer-email">{customerEmail}</div>}
-              <div className="wallet-id">{t.walletId} {wallet._id}</div>
+              <div className="wallet-id">
+                {t.walletId} {wallet._id}
+              </div>
             </div>
-            
+
             <div className="statement-details">
               <div className="detail-row">
                 <span className="detail-label">{t.statementNo}</span>
-                <span className="detail-value">STM-{format(dateFrom, 'yyyyMMdd')}</span>
+                <span className="detail-value">STM-{format(dateFrom, "yyyyMMdd")}</span>
               </div>
               <div className="detail-row">
                 <span className="detail-label">{t.period}</span>
-                <span className="detail-value">{format(dateFrom, 'dd/MM/yyyy')} - {format(dateTo, 'dd/MM/yyyy')}</span>
+                <span className="detail-value">
+                  {format(dateFrom, "dd/MM/yyyy")} - {format(dateTo, "dd/MM/yyyy")}
+                </span>
               </div>
               <div className="detail-row">
                 <span className="detail-label">{t.generated}</span>
-                <span className="detail-value">{format(new Date(), 'dd/MM/yyyy HH:mm')}</span>
+                <span className="detail-value">{format(new Date(), "dd/MM/yyyy HH:mm")}</span>
               </div>
               <div className="detail-row">
                 <span className="detail-label">{t.currency}</span>
@@ -465,7 +467,7 @@ export default function PrintAccountStatementA4(props: PrintAccountStatementProp
               </div>
             </div>
           </div>
-          
+
           {/* Transactions Table */}
           <table className="transactions-table">
             <thead>
@@ -496,14 +498,16 @@ export default function PrintAccountStatementA4(props: PrintAccountStatementProp
             <tbody>
               {sortedTransactions.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="no-transactions">{t.noTransactions}</td>
+                  <td colSpan={7} className="no-transactions">
+                    {t.noTransactions}
+                  </td>
                 </tr>
               ) : (
                 sortedTransactions.map((tx, index) => {
-                  const isCredit = ['deposit', 'refund'].includes(tx.type.toLowerCase());
-                  const debit = isCredit ? '' : formatLYD(tx.amount);
-                  const credit = isCredit ? formatLYD(tx.amount) : '';
-                  
+                  const isCredit = ["deposit", "refund"].includes(tx.type.toLowerCase());
+                  const debit = isCredit ? "" : formatLYD(tx.amount);
+                  const credit = isCredit ? formatLYD(tx.amount) : "";
+
                   return (
                     <tr key={tx._id || index}>
                       {isRTL ? (
@@ -511,17 +515,17 @@ export default function PrintAccountStatementA4(props: PrintAccountStatementProp
                           <td className="balance">{formatLYD(tx.balanceAfter)}</td>
                           <td className="credit">{credit}</td>
                           <td className="debit">{debit}</td>
-                          <td>{tx.description || '-'}</td>
+                          <td>{tx.description || "-"}</td>
                           <td>{formatType(tx.type, locale)}</td>
                           <td>{tx.transactionNumber}</td>
-                          <td>{format(new Date(tx.createdAt), 'dd/MM/yyyy')}</td>
+                          <td>{format(new Date(tx.createdAt), "dd/MM/yyyy")}</td>
                         </>
                       ) : (
                         <>
-                          <td>{format(new Date(tx.createdAt), 'dd/MM/yyyy')}</td>
+                          <td>{format(new Date(tx.createdAt), "dd/MM/yyyy")}</td>
                           <td>{tx.transactionNumber}</td>
                           <td>{formatType(tx.type, locale)}</td>
-                          <td>{tx.description || '-'}</td>
+                          <td>{tx.description || "-"}</td>
                           <td className="debit">{debit}</td>
                           <td className="credit">{credit}</td>
                           <td className="balance">{formatLYD(tx.balanceAfter)}</td>
@@ -533,7 +537,7 @@ export default function PrintAccountStatementA4(props: PrintAccountStatementProp
               )}
             </tbody>
           </table>
-          
+
           {/* Summary Section */}
           <div className="summary-section">
             <div className="summary-row">
