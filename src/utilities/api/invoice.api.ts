@@ -213,12 +213,33 @@ export async function updateInvoiceStatus(
   return handleResponse<Invoice>(response);
 }
 
+export interface DeleteInvoiceResult {
+  invoiceId: string;
+  invoiceNumber: string;
+  cascade: {
+    transactionsDeleted: number;
+    allocationsDeleted: number;
+    itemsDeleted: number;
+    shipmentsFreed: string[];
+    totalBalanceReversed: number;
+  };
+}
+
 export async function deleteInvoice(
   invoiceId: string,
+  options?: { force?: boolean },
   locale?: string
-): Promise<void> {
+): Promise<DeleteInvoiceResult> {
   const headers = await getAuthHeaders(locale);
-  const response = await fetch(`${API_BASE_URL}/api/invoice/${invoiceId}`, {
+  
+  const params = new URLSearchParams();
+  if (options?.force) {
+    params.append('force', 'true');
+  }
+  const queryString = params.toString();
+  const url = `${API_BASE_URL}/api/invoice/${invoiceId}${queryString ? `?${queryString}` : ''}`;
+  
+  const response = await fetch(url, {
     method: 'DELETE',
     headers,
   });
@@ -226,9 +247,13 @@ export async function deleteInvoice(
   if (!response.ok) {
     const error = await response.json().catch(() => ({
       message: 'Failed to delete invoice',
+      code: 'UNKNOWN_ERROR',
     }));
     throw new Error(error.message);
   }
+  
+  const data = await response.json();
+  return data.data;
 }
 
 export async function cancelInvoice(

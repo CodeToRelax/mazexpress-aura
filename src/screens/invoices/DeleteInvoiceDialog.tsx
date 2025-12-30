@@ -35,12 +35,20 @@ export function DeleteInvoiceDialog({
   const queryClient = useQueryClient();
   const [confirmText, setConfirmText] = useState('');
 
+  const isPaidInvoice = invoice.status === 'PAID';
+
   const deleteMutation = useMutation({
-    mutationFn: () => deleteInvoice(invoice._id),
-    onSuccess: () => {
+    mutationFn: () => deleteInvoice(invoice._id, { force: isPaidInvoice }),
+    onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: ['invoices'] });
+      queryClient.invalidateQueries({ queryKey: ['invoice', invoice._id] });
       toast({
         title: t('invoice.messages.deleteSuccess'),
+        description: isPaidInvoice && result?.cascade?.totalBalanceReversed
+          ? t('invoice.delete.forceDeleteSuccess', { 
+              reversed: formatLYD(result.cascade.totalBalanceReversed) 
+            })
+          : undefined,
         variant: 'default',
       });
       onSuccess?.();
@@ -62,8 +70,7 @@ export function DeleteInvoiceDialog({
     }
   };
 
-  const isPaidInvoice = invoice.status === 'PAID';
-  const canDelete = confirmText.toLowerCase() === 'delete' && !isPaidInvoice;
+  const canDelete = confirmText.toLowerCase() === 'delete';
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -99,31 +106,34 @@ export function DeleteInvoiceDialog({
             </div>
           </div>
 
-          {/* Warning for paid invoices */}
+          {/* Warning for paid invoices - show cascade effects */}
           {isPaidInvoice && (
-            <div className="bg-destructive/10 border border-destructive/20 p-4 rounded-lg">
-              <p className="text-sm text-destructive font-medium">
-                {t('invoice.delete.paidWarning')}
+            <div className="bg-amber-500/10 border border-amber-500/20 p-4 rounded-lg space-y-2">
+              <p className="text-sm text-amber-600 dark:text-amber-500 font-medium">
+                {t('invoice.delete.paidWarningForce')}
               </p>
+              <ul className="text-xs text-amber-600/80 dark:text-amber-500/80 list-disc list-inside space-y-1">
+                <li>{t('invoice.delete.cascadeTransactions')}</li>
+                <li>{t('invoice.delete.cascadeBalance')}</li>
+                <li>{t('invoice.delete.cascadeShipments')}</li>
+              </ul>
             </div>
           )}
 
-          {/* Confirmation input */}
-          {!isPaidInvoice && (
-            <div className="space-y-2">
-              <Label htmlFor="confirm">{t('invoice.delete.confirmLabel')}</Label>
-              <Input
-                id="confirm"
-                value={confirmText}
-                onChange={(e) => setConfirmText(e.target.value)}
-                placeholder={t('invoice.delete.confirmPlaceholder')}
-                autoComplete="off"
-              />
-              <p className="text-xs text-muted-foreground">
-                {t('invoice.delete.confirmHelp')}
-              </p>
-            </div>
-          )}
+          {/* Confirmation input - shown for all invoices */}
+          <div className="space-y-2">
+            <Label htmlFor="confirm">{t('invoice.delete.confirmLabel')}</Label>
+            <Input
+              id="confirm"
+              value={confirmText}
+              onChange={(e) => setConfirmText(e.target.value)}
+              placeholder={t('invoice.delete.confirmPlaceholder')}
+              autoComplete="off"
+            />
+            <p className="text-xs text-muted-foreground">
+              {t('invoice.delete.confirmHelp')}
+            </p>
+          </div>
         </div>
 
         <AlertDialogFooter>

@@ -1302,7 +1302,12 @@
       "confirmHelp": "Type DELETE in capital letters to confirm deletion",
       "confirm": "Delete Invoice",
       "deleting": "Deleting...",
-      "paidWarning": "Cannot delete paid invoices. Please contact support if you need to remove this invoice."
+      "paidWarning": "Cannot delete paid invoices. Please contact support if you need to remove this invoice.",
+      "paidWarningForce": "Warning: This is a PAID invoice. Deleting it will:",
+      "cascadeTransactions": "Delete all associated wallet transactions",
+      "cascadeBalance": "Reverse balance changes on the customer's wallet",
+      "cascadeShipments": "Release all shipments back to unbilled status",
+      "forceDeleteSuccess": "Invoice deleted. {{reversed}} reversed to customer wallet."
     },
     "messages": {
       "updateStatusDescription": "Update the status of invoice {{invoiceNumber}}",
