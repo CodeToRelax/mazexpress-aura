@@ -72,13 +72,13 @@ export function ShipmentsFilters({
 
   // Filter statuses based on ACL
   const allStatuses = [
-    'in_transit',
-    'ready_for_pick_up',
+    'in transit',
+    'ready for pick up',
     'delivered',
     'cancelled',
     'returned',
-    'received_at_warehouse',
-    'shipped_to_destination'
+    'received at warehouse',
+    'shipped to destination'
   ];
   
   const statuses = isSuperAdmin 
