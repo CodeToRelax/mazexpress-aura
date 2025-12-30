@@ -365,11 +365,13 @@ export default function PrintAccountStatementA4(props: PrintAccountStatementProp
 .summary-section {
   margin-top: 20px;
   padding-top: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
 }
 
 .summary-row {
   display: flex;
-  justify-content: flex-end;
   gap: 40px;
   margin-bottom: 6px;
   font-size: 11px;
