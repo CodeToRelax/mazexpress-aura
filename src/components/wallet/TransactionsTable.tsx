@@ -235,23 +235,15 @@ export function TransactionsTable({
                             Refund
                           </DropdownMenuItem>
                         )}
-                        {onDelete && (() => {
-                          // Hide delete for invoice-related transactions
-                          const description = transaction.description?.toLowerCase() || '';
-                          const invoiceKeywords = ['payment for invoice', 'invoice payment', 'فاتورة', 'دفع فاتورة'];
-                          const isInvoiceRelated = invoiceKeywords.some(keyword => description.includes(keyword));
-                          if (isInvoiceRelated) return null;
-                          
-                          return (
-                            <DropdownMenuItem 
-                              onClick={() => onDelete(transaction)}
-                              className="text-destructive focus:text-destructive"
-                            >
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              {t('common.delete')}
-                            </DropdownMenuItem>
-                          );
-                        })()}
+                        {onDelete && (
+                          <DropdownMenuItem 
+                            onClick={() => onDelete(transaction)}
+                            className="text-destructive focus:text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            {t('common.delete')}
+                          </DropdownMenuItem>
+                        )}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
