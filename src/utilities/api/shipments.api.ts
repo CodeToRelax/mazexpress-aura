@@ -68,7 +68,12 @@ class ShipmentsApi {
     Object.entries(filters).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== '') {
         const backendKey = paramMapping[key] || key;
-        queryParams.append(backendKey, String(value));
+        // Normalize shipping method to lowercase for consistent API matching
+        if (key === 'method' || key === 'shippingMethod') {
+          queryParams.append(backendKey, String(value).toLowerCase());
+        } else {
+          queryParams.append(backendKey, String(value));
+        }
       }
     });
 

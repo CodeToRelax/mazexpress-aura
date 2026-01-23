@@ -67,10 +67,10 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess, defaultDom
       shippingMethod: undefined,
       isDomestic: defaultDomestic,
       size: {
-        weight: 1,
-        height: 1,
-        width: 1,
-        length: 1,
+        weight: undefined,
+        height: undefined,
+        width: undefined,
+        length: undefined,
       },
       extraCosts: 0,
       note: '',
@@ -98,10 +98,10 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess, defaultDom
         shippingMethod: undefined,
         isDomestic: defaultDomestic,
         size: {
-          weight: 1,
-          height: 1,
-          width: 1,
-          length: 1,
+          weight: undefined,
+          height: undefined,
+          width: undefined,
+          length: undefined,
         },
         extraCosts: 0,
         note: '',
@@ -245,7 +245,7 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess, defaultDom
                     name="originCountry"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('shipments.fields.originCountry')}</FormLabel>
+                        <FormLabel>{t('shipments.fields.originCountry')} <span className="text-destructive">*</span></FormLabel>
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger>
