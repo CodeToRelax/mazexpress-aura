@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -15,6 +15,7 @@ import { ShipmentsTable } from './ShipmentsTable';
 import { ShipmentsFilters } from './ShipmentsFilters';
 import { ShipmentsPagination } from './ShipmentsPagination';
 import { ShipmentsStatsBar } from './ShipmentsStatsBar';
+import { ShipmentsSummaryBar } from './ShipmentsSummaryBar';
 import { ColumnVisibilityToggle } from './ColumnVisibilityToggle';
 import { CreateShipmentDialog } from './CreateShipmentDialog';
 import { EditShipmentDialog } from './EditShipmentDialog';
@@ -423,6 +424,17 @@ export default function Shipments() {
     }
   }, [filters.method, filters.shippingMethod]);
 
+  // Calculate totals from currently loaded shipments
+  const calculatedTotals = useMemo(() => {
+    const totalWeight = shipments.reduce((sum, s) => sum + (s.size?.weight || 0), 0);
+    const totalCBM = shipments.reduce((sum, s) => {
+      const { height = 0, width = 0, length = 0 } = s.size || {};
+      // Convert from cm³ to m³ (dimensions assumed in cm)
+      return sum + (height * width * length / 1000000);
+    }, 0);
+    return { totalWeight, totalCBM };
+  }, [shipments]);
+
   const showLoadingSkeleton = isLoading || isFetching;
 
   return (
@@ -491,6 +503,20 @@ export default function Shipments() {
             <ACLGuard flag="canViewShipmentStats">
               <ShipmentsStatsBar stats={shipmentStats} onStatClick={handleStatClick} />
             </ACLGuard>
+          </motion.div>
+
+          {/* Summary Bar - Dynamic totals based on current page */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.18 }}
+            className="mb-6"
+          >
+            <ShipmentsSummaryBar 
+              totalShipments={pagination.totalDocs}
+              totalWeight={calculatedTotals.totalWeight}
+              totalCBM={calculatedTotals.totalCBM}
+            />
           </motion.div>
         </motion.div>
 

@@ -12,6 +12,7 @@ import {
   ChevronDown,
   Printer
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import type { IShipment } from '@/types/shipment';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -130,10 +131,14 @@ export function ShipmentsTable({
           {shipments.map((shipment) => (
             <TableRow 
               key={shipment._id}
-              className="cursor-pointer hover:bg-accent/20 transition-colors duration-150"
-              onClick={() => navigate(`/shipments/${shipment._id}`)}
+              className={cn(
+                "cursor-pointer hover:bg-accent/20 transition-colors duration-150",
+                selectedShipments.has(shipment._id) && "bg-accent/30"
+              )}
+              onClick={() => onSelectShipment(shipment._id)}
+              onDoubleClick={() => navigate(`/shipments/${shipment._id}`)}
             >
-              <TableCell onClick={(e) => e.stopPropagation()}>
+              <TableCell>
                 <Checkbox
                   checked={selectedShipments.has(shipment._id)}
                   onCheckedChange={() => onSelectShipment(shipment._id)}
