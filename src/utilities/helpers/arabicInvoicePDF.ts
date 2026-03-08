@@ -166,7 +166,15 @@ export async function generateArabicShipmentInvoicePDF(
   const totalPages = Math.max(1, Math.ceil(shipments.length / itemsPerPage));
 
   // Calculate totals
-  const totalWeight = shipments.reduce((sum, s) => sum + s.weight, 0);
+  // Detect shipping method to determine weight calculation
+  const invoiceMethod = detectShippingMethod(invoice.items);
+  const totalWeight = shipments.reduce((sum, s) => {
+    if (invoiceMethod === 'air') {
+      const volumetricWeight = (s.length * s.width * s.height) / 5000;
+      return sum + Math.max(s.weight, volumetricWeight);
+    }
+    return sum + s.weight;
+  }, 0);
   const totalExtraCosts = shipments.reduce((sum, s) => sum + s.extraCosts, 0);
   const shippingCost = options?.shippingCost || 0;
 
