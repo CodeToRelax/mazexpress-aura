@@ -357,6 +357,13 @@ export async function generateArabicShipmentInvoicePDF(
       const finalY = (doc as any).lastAutoTable?.finalY || tableStartY + 50;
       let yPos = finalY + 12;
 
+      // Check if summary will overflow the page — if so, add a new page
+      const requiredSpace = 80; // ~80mm needed for summary table + total + disclaimer
+      if (yPos + requiredSpace > pageHeight - 10) {
+        doc.addPage();
+        yPos = 20;
+      }
+
       // Summary table headers (RTL order) - detect shipping method for correct label
       const invoiceShippingMethod = detectShippingMethod(invoice.items);
       const priceLabel = invoiceShippingMethod === 'sea' 
@@ -419,6 +426,12 @@ export async function generateArabicShipmentInvoicePDF(
       const summaryFinalY = (doc as any).lastAutoTable?.finalY || yPos + 25;
       yPos = summaryFinalY + 15;
 
+      // Check overflow again for total + disclaimer
+      if (yPos + 30 > pageHeight - 10) {
+        doc.addPage();
+        yPos = 20;
+      }
+
       doc.setFont('Cairo', 'bold');
       doc.setFontSize(14);
       doc.setTextColor(colors.textDark[0], colors.textDark[1], colors.textDark[2]);
@@ -433,6 +446,10 @@ export async function generateArabicShipmentInvoicePDF(
       doc.setTextColor(colors.textMuted[0], colors.textMuted[1], colors.textMuted[2]);
 
       disclaimerLines.forEach((line) => {
+        if (yPos + 5 > pageHeight - 10) {
+          doc.addPage();
+          yPos = 20;
+        }
         doc.text(line, pageWidth - margin, yPos, { align: 'right' });
         yPos += 5;
       });
