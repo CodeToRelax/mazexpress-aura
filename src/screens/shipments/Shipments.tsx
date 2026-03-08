@@ -97,6 +97,7 @@ export default function Shipments() {
   const [showBulkUpdateDialog, setShowBulkUpdateDialog] = useState(false);
   const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false);
   const [showBarcodeScanDialog, setShowBarcodeScanDialog] = useState(false);
+  const [showExportDialog, setShowExportDialog] = useState(false);
   
   // Shipping method tab state
   const [activeMethodTab, setActiveMethodTab] = useState<string>('all');
