@@ -672,6 +672,13 @@ export default function Shipments() {
           onOpenChange={setShowBarcodeScanDialog}
           onSuccess={handleBulkSuccess}
         />
+
+        <ExportShipmentsDialog
+          open={showExportDialog}
+          onOpenChange={setShowExportDialog}
+          filters={filters}
+          totalCount={pagination.totalDocs}
+        />
       </div>
     </ACLGuard>
   );
