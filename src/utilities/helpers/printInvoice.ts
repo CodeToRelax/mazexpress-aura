@@ -124,6 +124,7 @@ export async function printArabicInvoice(
     
     // Get shipping rate based on origin country and shipping method
     const { originCountry, shippingMethod } = await getShippingInfo(invoice.items || []);
+    const detectedShippingMethod = shippingMethod;
     
     console.log('[printInvoice] Shipping info:', { originCountry, shippingMethod });
     console.log('[printInvoice] Config countries:', Object.keys(config.countries || {}));
