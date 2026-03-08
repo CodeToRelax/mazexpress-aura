@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Package, Plus, RotateCw, Plane, Ship, Truck, Printer, Barcode } from 'lucide-react';
+import { Package, Plus, RotateCw, Plane, Ship, Truck, Printer, Barcode, Download } from 'lucide-react';
 import type { IShipment, ShipmentFilters } from '@/types/shipment';
 import { shipmentsApi } from '@/utilities/api/shipments.api';
 import { Button } from '@/components/ui/button';
@@ -24,6 +24,7 @@ import { BulkUpdateDialog } from './BulkUpdateDialog';
 import { BulkDeleteDialog } from './BulkDeleteDialog';
 import { BarcodeScanDialog } from './BarcodeScanDialog';
 import { generateBulkLabels10x10 } from '@/components/shipments/PrintLabel10x10';
+import { ExportShipmentsDialog } from './ExportShipmentsDialog';
 
 // localStorage keys
 const STORAGE_KEYS = {
@@ -96,6 +97,7 @@ export default function Shipments() {
   const [showBulkUpdateDialog, setShowBulkUpdateDialog] = useState(false);
   const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false);
   const [showBarcodeScanDialog, setShowBarcodeScanDialog] = useState(false);
+  const [showExportDialog, setShowExportDialog] = useState(false);
   
   // Shipping method tab state
   const [activeMethodTab, setActiveMethodTab] = useState<string>('all');
@@ -485,6 +487,10 @@ export default function Shipments() {
                 </Button>
               </ACLGuard>
               <ACLGuard flag="canCreateShipments">
+                <Button variant="outline" className="gap-2" onClick={() => setShowExportDialog(true)}>
+                  <Download className="h-4 w-4" />
+                  {t('shipments.actions.export', 'Export')}
+                </Button>
                 <Button className="gap-2" onClick={handleCreateShipment}>
                   <Plus className="h-4 w-4" />
                   {t('shipments.actions.create')}
@@ -665,6 +671,13 @@ export default function Shipments() {
           open={showBarcodeScanDialog}
           onOpenChange={setShowBarcodeScanDialog}
           onSuccess={handleBulkSuccess}
+        />
+
+        <ExportShipmentsDialog
+          open={showExportDialog}
+          onOpenChange={setShowExportDialog}
+          filters={filters}
+          totalCount={pagination.totalDocs}
         />
       </div>
     </ACLGuard>
