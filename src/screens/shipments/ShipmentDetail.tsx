@@ -1,16 +1,19 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
-import { ArrowLeft, Package, MapPin, Truck, Calendar, Weight, Ruler, DollarSign, FileText, Loader2, Edit, Trash2, Printer, Home } from 'lucide-react';
+import { ArrowLeft, Package, MapPin, Truck, Calendar, Weight, Ruler, DollarSign, FileText, Loader2, Edit, Trash2, Printer, Home, Receipt } from 'lucide-react';
 import type { IShipment } from '@/types/shipment';
+import type { Invoice } from '@/types/invoice';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { StatusBadge } from '@/components/shipments/StatusBadge';
 import { TierBadge } from '@/components/shipments/TierBadge';
+import { InvoiceStatusBadge } from '@/components/invoices/InvoiceStatusBadge';
 import { EditShipmentDialog } from './EditShipmentDialog';
 import { DeleteShipmentDialog } from './DeleteShipmentDialog';
 import { shipmentsApi } from '@/utilities/api/shipments.api';
+import { getAllInvoices } from '@/utilities/api/invoice.api';
 import { toast } from '@/hooks/use-toast';
 import { useACL } from '@/hooks/useACL';
 import { ACLGuard } from '@/components/guards/ACLGuard';
@@ -26,6 +29,7 @@ export default function ShipmentDetail() {
   const canDeleteShipments = hasFlag('canDeleteShipments');
   
   const [shipment, setShipment] = useState<IShipment | null>(null);
+  const [relatedInvoices, setRelatedInvoices] = useState<Invoice[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -52,6 +56,26 @@ export default function ShipmentDetail() {
   useEffect(() => {
     fetchShipment();
   }, [id]);
+
+  // Fetch related invoices by searching for the shipment ESN
+  useEffect(() => {
+    if (!shipment?.esn) return;
+    getAllInvoices({ search: shipment.esn, limit: 10 })
+      .then(res => {
+        // Filter to invoices that actually contain this shipment in their items
+        const matching = res.docs.filter(inv =>
+          inv.items?.some(item => {
+            const sid = item.shipmentId;
+            if (!sid) return false;
+            // shipmentId can be a populated object or a string
+            if (typeof sid === 'string') return sid === shipment._id;
+            return sid._id === shipment._id || sid.esn === shipment.esn;
+          })
+        );
+        setRelatedInvoices(matching.length > 0 ? matching : res.docs);
+      })
+      .catch(() => { /* silently ignore */ });
+  }, [shipment?.esn, shipment?._id]);
 
   const handleEditSuccess = () => {
     setIsEditDialogOpen(false);
@@ -364,6 +388,52 @@ export default function ShipmentDetail() {
                 <p className="font-medium">{shipment.domesticShipmentDetails.note}</p>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Related Invoices */}
+      {relatedInvoices.length > 0 && (
+        <div className="glass-card p-6 rounded-2xl space-y-4">
+          <h3 className="text-lg font-semibold flex items-center gap-2">
+            <Receipt className="h-5 w-5 text-primary" />
+            {t('shipments.detail.relatedInvoices', 'Related Invoices')}
+          </h3>
+          <Separator />
+          <div className="space-y-3">
+            {relatedInvoices.map(invoice => {
+              const user = typeof invoice.userId === 'object' ? invoice.userId : null;
+              return (
+                <Link
+                  key={invoice._id}
+                  to={`/invoices/${invoice._id}`}
+                  className="flex items-center justify-between p-4 rounded-xl border hover:bg-accent/50 transition-colors"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <Receipt className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="font-semibold font-mono">{invoice.invoiceNumber}</p>
+                      {user && (
+                        <p className="text-sm text-muted-foreground">
+                          {user.firstName} {user.lastName}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <div className="text-right">
+                      <p className="font-semibold">{invoice.totals?.gross?.toFixed(2)} {invoice.currency || 'LYD'}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {format(new Date(invoice.createdAt), 'dd/MM/yyyy')}
+                      </p>
+                    </div>
+                    <InvoiceStatusBadge status={invoice.status} />
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </div>
       )}
