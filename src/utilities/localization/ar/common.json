@@ -492,10 +492,12 @@
       "vsPreviousPeriod": "مقابل {{count}} الفترة السابقة"
     },
     "status": {
+      "pending": "قيد الانتظار",
       "inTransit": "قيد النقل",
-      "delivered": "تم التسليم",
       "atWarehouse": "في المستودع",
-      "readyPickup": "جاهز للاستلام"
+      "shippedToDest": "شُحن للوجهة",
+      "readyPickup": "جاهز للاستلام",
+      "delivered": "تم التسليم"
     },
     "charts": {
       "shipmentsComparison": "مقارنة الشحنات الجوية والبحرية",

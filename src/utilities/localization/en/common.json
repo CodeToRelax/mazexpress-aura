@@ -549,10 +549,12 @@
       "vsPreviousPeriod": "vs {{count}} previous period"
     },
     "status": {
+      "pending": "Pending",
       "inTransit": "In Transit",
-      "delivered": "Delivered",
       "atWarehouse": "At Warehouse",
-      "readyPickup": "Ready for Pickup"
+      "shippedToDest": "Shipped to Dest.",
+      "readyPickup": "Ready for Pickup",
+      "delivered": "Delivered"
     },
     "charts": {
       "shipmentsComparison": "Air vs Sea Shipments",
