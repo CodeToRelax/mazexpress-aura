@@ -452,8 +452,8 @@ export default function PrintInvoiceA4(props: Props) {
           </div>
         </div>
 
-        {/* EXACT Angular behavior: summary appears on page 1 only if shipments.length < 13 */}
-        {shipments.length < 13 && (
+        {/* Summary appears on page 1 only if all items fit on one page */}
+        {shipments.length <= ITEMS_PER_FIRST_PAGE && (
           <div className="items">
             <table>
               <thead>
