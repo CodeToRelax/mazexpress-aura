@@ -542,7 +542,7 @@ export default function Wallets() {
   };
 
   const handleSort = (column: string) => {
-    const columnMap: Record<string, string> = {
+    const columnMap: Record<string, UserFilters['sortBy']> = {
       owner: 'firstName',
       email: 'email',
       created: 'createdAt',
@@ -556,14 +556,14 @@ export default function Wallets() {
       if (prev.sortBy === sortKey) {
         return {
           ...prev,
-          sortOrder: prev.sortOrder === 'asc' ? 'desc' : 'asc',
+          sortOrder: prev.sortOrder === 'asc' ? 'desc' : 'asc' as const,
           page: 1,
         };
       }
       return {
         ...prev,
         sortBy: sortKey,
-        sortOrder: 'asc',
+        sortOrder: 'asc' as const,
         page: 1,
       };
     });
