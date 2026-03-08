@@ -42,6 +42,7 @@ interface ShipmentData {
   width: number;
   height: number;
   extraCosts: number;
+  shippingMethod?: string;
 }
 
 /**
