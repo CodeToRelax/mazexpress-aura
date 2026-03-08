@@ -36,8 +36,21 @@ type Props = {
 export default function PrintInvoiceA4(props: Props) {
   const { invoiceNumber, date, userFullName, shipments, totalWeight, shippingCost, extraCosts, totalPrice, exchangeRate, totalPriceInDollars } = props;
 
-  const op = useMemo(() => shipments.slice(0, 12), [shipments]);
-  const moreOp = useMemo(() => shipments.slice(12), [shipments]);
+  const ITEMS_PER_FIRST_PAGE = 12;
+  const ITEMS_PER_OVERFLOW_PAGE = 20;
+
+  const op = useMemo(() => shipments.slice(0, ITEMS_PER_FIRST_PAGE), [shipments]);
+  
+  // Chunk overflow items into pages of ITEMS_PER_OVERFLOW_PAGE
+  const overflowPages = useMemo(() => {
+    const overflow = shipments.slice(ITEMS_PER_FIRST_PAGE);
+    if (overflow.length === 0) return [];
+    const pages: typeof shipments[] = [];
+    for (let i = 0; i < overflow.length; i += ITEMS_PER_OVERFLOW_PAGE) {
+      pages.push(overflow.slice(i, i + ITEMS_PER_OVERFLOW_PAGE));
+    }
+    return pages;
+  }, [shipments]);
 
   // Angular: date | formatDate
   const formatDate = (d: Props["date"]) => {

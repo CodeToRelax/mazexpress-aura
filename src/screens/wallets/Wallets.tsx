@@ -534,12 +534,32 @@ export default function Wallets() {
     setVisibleColumns(new Set(['email', 'balance', 'currency', 'status', 'created']));
   };
 
+  // Client-side balance sort state
+  const [balanceSortOrder, setBalanceSortOrder] = useState<'asc' | 'desc' | null>(null);
+
   const handleSort = (column: string) => {
-    // Map UI column names to API sortBy values
+    if (column === 'balance') {
+      // Client-side balance sorting
+      setBalanceSortOrder(prev => {
+        const next = prev === 'asc' ? 'desc' : 'asc';
+        // Sort wallets in place
+        setWallets(currentWallets => {
+          const sorted = [...currentWallets].sort((a, b) =>
+            next === 'asc' ? a.balance - b.balance : b.balance - a.balance
+          );
+          return sorted;
+        });
+        return next;
+      });
+      return;
+    }
+
+    // Reset balance sort when sorting by other columns
+    setBalanceSortOrder(null);
+
     const columnMap: Record<string, 'createdAt' | 'updatedAt' | 'firstName' | 'lastName' | 'email'> = {
       owner: 'firstName',
       email: 'email',
-      balance: 'createdAt', // No direct balance sort, use createdAt
       created: 'createdAt',
     };
 
