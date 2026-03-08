@@ -416,7 +416,11 @@ export default function ShipmentDetail() {
                     <div className="text-right">
                       <p className="font-semibold">{invoice.totals?.gross?.toFixed(2)} {invoice.currency || 'LYD'}</p>
                       <p className="text-xs text-muted-foreground">
-                        {format(new Date(invoice.createdAt), 'dd/MM/yyyy')}
+                        {invoice.createdAt && !isNaN(new Date(invoice.createdAt).getTime())
+                          ? format(new Date(invoice.createdAt), 'dd/MM/yyyy')
+                          : invoice.issueDate && !isNaN(new Date(invoice.issueDate).getTime())
+                            ? format(new Date(invoice.issueDate), 'dd/MM/yyyy')
+                            : '—'}
                       </p>
                     </div>
                     <InvoiceStatusBadge status={invoice.status} />
