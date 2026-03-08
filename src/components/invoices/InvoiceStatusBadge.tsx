@@ -65,7 +65,11 @@ export function InvoiceStatusBadge({ status, className, showIcon = true }: Invoi
     },
   };
 
-  const config = statusConfig[status];
+  const config = statusConfig[status] || { 
+    label: status || 'Unknown', 
+    color: 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400 border-gray-200 dark:border-gray-800',
+    icon: AlertCircle 
+  };
   const Icon = config.icon;
 
   return (
