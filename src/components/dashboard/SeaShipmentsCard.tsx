@@ -35,20 +35,28 @@ export function SeaShipmentsCard() {
         <div className="mt-4 pt-4 border-t border-border/50">
           <div className="grid grid-cols-2 gap-2 text-xs">
             <div className="flex justify-between">
-              <span className="text-muted-foreground">{t('dashboard.status.inTransit')}</span>
-              <span className="font-medium">{(data.cbmBreakdown?.['in transit'] ?? 0).toFixed(2)} CBM</span>
+              <span className="text-muted-foreground">{t('dashboard.status.pending')}</span>
+              <span className="font-medium">{(data.cbmBreakdown?.pending ?? 0).toFixed(2)} CBM</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">{t('dashboard.status.delivered')}</span>
-              <span className="font-medium">{(data.cbmBreakdown?.delivered ?? 0).toFixed(2)} CBM</span>
+              <span className="text-muted-foreground">{t('dashboard.status.inTransit')}</span>
+              <span className="font-medium">{(data.cbmBreakdown?.['in transit'] ?? 0).toFixed(2)} CBM</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">{t('dashboard.status.atWarehouse')}</span>
               <span className="font-medium">{(data.cbmBreakdown?.['received at warehouse'] ?? 0).toFixed(2)} CBM</span>
             </div>
             <div className="flex justify-between">
+              <span className="text-muted-foreground">{t('dashboard.status.shippedToDest')}</span>
+              <span className="font-medium">{(data.cbmBreakdown?.['shipped to destination'] ?? 0).toFixed(2)} CBM</span>
+            </div>
+            <div className="flex justify-between">
               <span className="text-muted-foreground">{t('dashboard.status.readyPickup')}</span>
               <span className="font-medium">{(data.cbmBreakdown?.['ready for pick up'] ?? 0).toFixed(2)} CBM</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">{t('dashboard.status.delivered')}</span>
+              <span className="font-medium">{(data.cbmBreakdown?.delivered ?? 0).toFixed(2)} CBM</span>
             </div>
           </div>
         </div>
