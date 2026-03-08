@@ -356,9 +356,13 @@ export async function generateArabicShipmentInvoicePDF(
       const finalY = (doc as any).lastAutoTable?.finalY || tableStartY + 50;
       let yPos = finalY + 12;
 
-      // Summary table headers (RTL order)
+      // Summary table headers (RTL order) - detect shipping method for correct label
+      const invoiceShippingMethod = detectShippingMethod(invoice.items);
+      const priceLabel = invoiceShippingMethod === 'sea' 
+        ? 'سعر الـ CBM بالدينار' 
+        : 'سعر الكيلو بالدينار';
       const summaryHeaders = [
-        ['عدد الطرود', 'إجمالي الوزن KG', 'سعر الكيلو بالدولار', 'تكاليف إضافية'],
+        ['عدد الطرود', 'إجمالي الوزن KG', priceLabel, 'تكاليف إضافية'],
       ];
 
       const summaryData = [
