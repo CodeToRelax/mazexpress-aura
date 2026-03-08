@@ -92,8 +92,22 @@ function extractShipmentData(items: InvoiceItem[]): ShipmentData[] {
         width: shipment?.size?.width || 0,
         height: shipment?.size?.height || 0,
         extraCosts: shipment?.extraCosts || 0,
+        shippingMethod: shipment?.shippingMethod || '',
       };
     });
+}
+
+/**
+ * Detect dominant shipping method from shipments
+ */
+function detectShippingMethod(items: InvoiceItem[]): string {
+  const methods = items
+    .filter(item => item.kind === 'SHIPMENT' && item.shipmentId && typeof item.shipmentId === 'object')
+    .map(item => (item.shipmentId?.shippingMethod || '').toLowerCase());
+  if (methods.length === 0) return 'air';
+  // If any shipment is sea, treat as sea invoice
+  if (methods.some(m => m === 'sea')) return 'sea';
+  return methods[0] || 'air';
 }
 
 /**
