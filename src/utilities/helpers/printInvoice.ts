@@ -165,6 +165,7 @@ export async function printArabicInvoice(
     totalPrice,
     exchangeRate,
     totalPriceInDollars,
+    shippingMethod: detectedShippingMethod || undefined,
   });
 
   // Render to HTML string
