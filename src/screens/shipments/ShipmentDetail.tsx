@@ -29,6 +29,7 @@ export default function ShipmentDetail() {
   const canDeleteShipments = hasFlag('canDeleteShipments');
   
   const [shipment, setShipment] = useState<IShipment | null>(null);
+  const [relatedInvoices, setRelatedInvoices] = useState<Invoice[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
