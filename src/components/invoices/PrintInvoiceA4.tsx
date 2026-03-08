@@ -35,7 +35,11 @@ type Props = {
  * - Your existing print function can print the container that includes this component.
  */
 export default function PrintInvoiceA4(props: Props) {
-  const { invoiceNumber, date, userFullName, shipments, totalWeight, shippingCost, extraCosts, totalPrice, exchangeRate, totalPriceInDollars } = props;
+  const { invoiceNumber, date, userFullName, shipments, totalWeight, shippingCost, extraCosts, totalPrice, exchangeRate, totalPriceInDollars, shippingMethod } = props;
+
+  const isSea = shippingMethod?.toLowerCase() === 'sea';
+  const costColumnLabel = isSea ? 'سعر الـ CBM بالدينار' : 'سعر الكيلو بالدولار';
+  const currencyLabel = isSea ? 'دينار' : 'دينار';
 
   const ITEMS_PER_FIRST_PAGE = 12;
   const ITEMS_PER_OVERFLOW_PAGE = 20;
