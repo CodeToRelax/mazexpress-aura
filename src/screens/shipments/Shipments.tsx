@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Package, Plus, RotateCw, Plane, Ship, Truck, Printer, Barcode } from 'lucide-react';
+import { Package, Plus, RotateCw, Plane, Ship, Truck, Printer, Barcode, Download } from 'lucide-react';
 import type { IShipment, ShipmentFilters } from '@/types/shipment';
 import { shipmentsApi } from '@/utilities/api/shipments.api';
 import { Button } from '@/components/ui/button';
