@@ -496,10 +496,13 @@ export default function PrintInvoiceA4(props: Props) {
     </div>
   );
 
-  // EXACT Angular behavior: page 2 exists only if shipments.length > 12
-  const PageTwo =
-    shipments.length > 12 ? (
-      <div className="outer-wrapper">
+  // Multi-page overflow: each chunk gets its own page
+  const OverflowPages = overflowPages.map((pageItems, pageIdx) => {
+    const isLastPage = pageIdx === overflowPages.length - 1;
+    const startIndex = ITEMS_PER_FIRST_PAGE + pageIdx * ITEMS_PER_OVERFLOW_PAGE;
+
+    return (
+      <div className="outer-wrapper" key={`overflow-${pageIdx}`}>
         <section className="wrapper">
           <img className="bg" width="300" src="/assets/images/logo/logo-text.png" alt="" />
           <div className="inner-wrapper">
@@ -515,9 +518,9 @@ export default function PrintInvoiceA4(props: Props) {
                   </tr>
                 </thead>
                 <tbody>
-                  {moreOp.map((shipment, index) => (
+                  {pageItems.map((shipment, index) => (
                     <tr key={index} className={index % 2 === 1 ? "grey" : ""}>
-                      <td>{index + 1 + op.length}</td>
+                      <td>{startIndex + index + 1}</td>
                       <td>{shipment.size.weight}</td>
                       <td>{shipment.esn || "-"}</td>
                       <td>{shipment.size.length * shipment.size.width * shipment.size.height}</td>
@@ -529,46 +532,50 @@ export default function PrintInvoiceA4(props: Props) {
             </div>
           </div>
 
-          <div className="items">
-            <table>
-              <thead>
-                <tr>
-                  <th style={{ borderTopRightRadius: 32 }}>عدد الطرود</th>
-                  <th>إجمالي الوزن KG</th>
-                  <th>سعر الكيلو بالدولار</th>
-                  <th style={{ borderTopLeftRadius: 32 }}>تكاليف إضافية</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>{shipments.length}</td>
-                  <td>{totalWeight.toFixed(2)} KG</td>
-                  <td>{shippingCost}</td>
-                  <td>{extraCosts}</td>
-                </tr>
-              </tbody>
-            </table>
+          {/* Summary only on the last overflow page */}
+          {isLastPage && (
+            <div className="items">
+              <table>
+                <thead>
+                  <tr>
+                    <th style={{ borderTopRightRadius: 32 }}>عدد الطرود</th>
+                    <th>إجمالي الوزن KG</th>
+                    <th>سعر الكيلو بالدولار</th>
+                    <th style={{ borderTopLeftRadius: 32 }}>تكاليف إضافية</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{shipments.length}</td>
+                    <td>{totalWeight.toFixed(2)} KG</td>
+                    <td>{shippingCost}</td>
+                    <td>{extraCosts}</td>
+                  </tr>
+                </tbody>
+              </table>
 
-            <div className="total">
-              <div>
-                <strong> إجمالي السعر {formatNumberLikeCurrencyPipe(totalPrice)} دينار </strong>
-              </div>
+              <div className="total">
+                <div>
+                  <strong> إجمالي السعر {formatNumberLikeCurrencyPipe(totalPrice)} دينار </strong>
+                </div>
 
-              <div>
-                <small>يرجى مراعاة ان اقل وزن يمكن احتسابه هو 3 كيلو غرام.</small>
-                <small>
-                  نؤكد أيًضا أننا نحتسب تكلفة الشحن بناًء على كل من الوزن الفعلي والوزن الحجمي،
-                  <br />و يتم احتساب الأعلى منهما.
-                </small>
-                <small>يرجى مراعاة ان شركة ماز اكسبريس غير مسؤولة عن البضائع القابلة للكسر.</small>
-                <small>نوصي بفحص الشحنة عند الاستلام.</small>
-                <small>نتطلع إلى خدمتكم مرة أخرى في المستقبل</small>
+                <div>
+                  <small>يرجى مراعاة ان اقل وزن يمكن احتسابه هو 3 كيلو غرام.</small>
+                  <small>
+                    نؤكد أيًضا أننا نحتسب تكلفة الشحن بناًء على كل من الوزن الفعلي والوزن الحجمي،
+                    <br />و يتم احتساب الأعلى منهما.
+                  </small>
+                  <small>يرجى مراعاة ان شركة ماز اكسبريس غير مسؤولة عن البضائع القابلة للكسر.</small>
+                  <small>نوصي بفحص الشحنة عند الاستلام.</small>
+                  <small>نتطلع إلى خدمتكم مرة أخرى في المستقبل</small>
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </section>
       </div>
-    ) : null;
+    );
+  });
 
   return (
     <>
