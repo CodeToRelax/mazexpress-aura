@@ -42,6 +42,7 @@ interface ShipmentData {
   width: number;
   height: number;
   extraCosts: number;
+  shippingMethod?: string;
 }
 
 /**
@@ -92,8 +93,22 @@ function extractShipmentData(items: InvoiceItem[]): ShipmentData[] {
         width: shipment?.size?.width || 0,
         height: shipment?.size?.height || 0,
         extraCosts: shipment?.extraCosts || 0,
+        shippingMethod: shipment?.shippingMethod || '',
       };
     });
+}
+
+/**
+ * Detect dominant shipping method from shipments
+ */
+function detectShippingMethod(items: InvoiceItem[]): string {
+  const methods = items
+    .filter(item => item.kind === 'SHIPMENT' && item.shipmentId && typeof item.shipmentId === 'object')
+    .map(item => (item.shipmentId?.shippingMethod || '').toLowerCase());
+  if (methods.length === 0) return 'air';
+  // If any shipment is sea, treat as sea invoice
+  if (methods.some(m => m === 'sea')) return 'sea';
+  return methods[0] || 'air';
 }
 
 /**
@@ -342,9 +357,13 @@ export async function generateArabicShipmentInvoicePDF(
       const finalY = (doc as any).lastAutoTable?.finalY || tableStartY + 50;
       let yPos = finalY + 12;
 
-      // Summary table headers (RTL order)
+      // Summary table headers (RTL order) - detect shipping method for correct label
+      const invoiceShippingMethod = detectShippingMethod(invoice.items);
+      const priceLabel = invoiceShippingMethod === 'sea' 
+        ? 'سعر الـ CBM بالدينار' 
+        : 'سعر الكيلو بالدينار';
       const summaryHeaders = [
-        ['عدد الطرود', 'إجمالي الوزن KG', 'سعر الكيلو بالدولار', 'تكاليف إضافية'],
+        ['عدد الطرود', 'إجمالي الوزن KG', priceLabel, 'تكاليف إضافية'],
       ];
 
       const summaryData = [
