@@ -13,7 +13,7 @@ import { InvoiceStatusBadge } from '@/components/invoices/InvoiceStatusBadge';
 import { EditShipmentDialog } from './EditShipmentDialog';
 import { DeleteShipmentDialog } from './DeleteShipmentDialog';
 import { shipmentsApi } from '@/utilities/api/shipments.api';
-import { getAllInvoices } from '@/utilities/api/invoice.api';
+import { getInvoiceByShipmentId } from '@/utilities/api/invoice.api';
 import { toast } from '@/hooks/use-toast';
 import { useACL } from '@/hooks/useACL';
 import { ACLGuard } from '@/components/guards/ACLGuard';
@@ -57,25 +57,15 @@ export default function ShipmentDetail() {
     fetchShipment();
   }, [id]);
 
-  // Fetch related invoices by searching for the shipment ESN
+  // Fetch related invoice by shipment ID
   useEffect(() => {
-    if (!shipment?.esn) return;
-    getAllInvoices({ search: shipment.esn, limit: 10 })
-      .then(res => {
-        // Filter to invoices that actually contain this shipment in their items
-        const matching = res.docs.filter(inv =>
-          inv.items?.some(item => {
-            const sid = item.shipmentId;
-            if (!sid) return false;
-            // shipmentId can be a populated object or a string
-            if (typeof sid === 'string') return sid === shipment._id;
-            return sid._id === shipment._id || sid.esn === shipment.esn;
-          })
-        );
-        setRelatedInvoices(matching.length > 0 ? matching : res.docs);
+    if (!shipment?._id) return;
+    getInvoiceByShipmentId(shipment._id)
+      .then(invoice => {
+        setRelatedInvoices(invoice ? [invoice] : []);
       })
       .catch(() => { /* silently ignore */ });
-  }, [shipment?.esn, shipment?._id]);
+  }, [shipment?._id]);
 
   const handleEditSuccess = () => {
     setIsEditDialogOpen(false);
