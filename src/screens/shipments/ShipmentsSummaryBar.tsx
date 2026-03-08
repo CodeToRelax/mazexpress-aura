@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { Package, Scale, Box } from 'lucide-react';
+import { Scale, Box } from 'lucide-react';
 
 interface ShipmentsSummaryBarProps {
   totalWeight: number;
