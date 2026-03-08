@@ -3,22 +3,14 @@ import { motion } from 'framer-motion';
 import { Package, Scale, Box } from 'lucide-react';
 
 interface ShipmentsSummaryBarProps {
-  totalShipments: number;
   totalWeight: number;
   totalCBM: number;
 }
 
-export function ShipmentsSummaryBar({ totalShipments = 0, totalWeight = 0, totalCBM = 0 }: ShipmentsSummaryBarProps) {
+export function ShipmentsSummaryBar({ totalWeight = 0, totalCBM = 0 }: ShipmentsSummaryBarProps) {
   const { t } = useTranslation();
 
   const summaryCards = [
-    {
-      icon: Package,
-      label: t('shipments.summary.totalShipments', { defaultValue: 'Total Shipments' }),
-      value: (totalShipments ?? 0).toLocaleString(),
-      color: 'text-primary',
-      bgColor: 'bg-primary/10',
-    },
     {
       icon: Scale,
       label: t('shipments.summary.totalWeight', { defaultValue: 'Total Weight' }),
