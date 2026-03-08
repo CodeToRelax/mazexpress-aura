@@ -273,5 +273,14 @@ export async function getInvoiceByShipmentId(
     headers,
   });
   if (response.status === 404) return null;
-  return handleResponse<Invoice>(response);
+  const result = await handleResponse<{ docs: Invoice[] }>(response);
+  // API returns { docs: [...] } array wrapper
+  if (Array.isArray(result?.docs) && result.docs.length > 0) {
+    return result.docs[0];
+  }
+  if (Array.isArray(result)) {
+    return (result as Invoice[])[0] || null;
+  }
+  // If it's a single invoice object directly
+  return (result as unknown as Invoice) ?? null;
 }
