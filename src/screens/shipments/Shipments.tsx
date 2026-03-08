@@ -519,7 +519,6 @@ export default function Shipments() {
             className="mb-6"
           >
             <ShipmentsSummaryBar 
-              totalShipments={pagination.totalDocs}
               totalWeight={calculatedTotals.totalWeight}
               totalCBM={calculatedTotals.totalCBM}
             />
