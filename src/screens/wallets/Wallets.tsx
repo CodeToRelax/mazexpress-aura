@@ -196,6 +196,13 @@ export default function Wallets() {
       } else if (filters.balanceFilter === 'zero') {
         filteredWallets = allWalletViews.filter(w => w.balance === 0);
       }
+
+      // Apply client-side balance sorting before pagination
+      if (filters.sortBy === 'balance') {
+        filteredWallets = [...filteredWallets].sort((a, b) =>
+          filters.sortOrder === 'asc' ? a.balance - b.balance : b.balance - a.balance
+        );
+      }
       
       // Apply client-side pagination based on actual wallet count
       const limit = filters.limit || 10;
