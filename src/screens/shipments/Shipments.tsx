@@ -24,6 +24,7 @@ import { BulkUpdateDialog } from './BulkUpdateDialog';
 import { BulkDeleteDialog } from './BulkDeleteDialog';
 import { BarcodeScanDialog } from './BarcodeScanDialog';
 import { generateBulkLabels10x10 } from '@/components/shipments/PrintLabel10x10';
+import { ExportShipmentsDialog } from './ExportShipmentsDialog';
 
 // localStorage keys
 const STORAGE_KEYS = {
