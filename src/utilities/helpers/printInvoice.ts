@@ -117,6 +117,7 @@ export async function printArabicInvoice(
   // Fetch current exchange rate and shipping rates from system config
   let exchangeRate = 0;
   let shippingCostPerKilo = 0;
+  let detectedShippingMethod: string | null = null;
 
   try {
     const config = await getSystemConfig();
@@ -124,7 +125,7 @@ export async function printArabicInvoice(
     
     // Get shipping rate based on origin country and shipping method
     const { originCountry, shippingMethod } = await getShippingInfo(invoice.items || []);
-    const detectedShippingMethod = shippingMethod;
+    detectedShippingMethod = shippingMethod;
     
     console.log('[printInvoice] Shipping info:', { originCountry, shippingMethod });
     console.log('[printInvoice] Config countries:', Object.keys(config.countries || {}));
@@ -138,7 +139,6 @@ export async function printArabicInvoice(
       }
       console.log('[printInvoice] Shipping cost per kilo:', shippingCostPerKilo);
     } else if (shippingMethod === 'land') {
-      // Land shipments are domestic - they use flat route pricing, not per-kilo
       console.log('[printInvoice] Land shipment - uses flat route pricing');
     }
   } catch (error) {
