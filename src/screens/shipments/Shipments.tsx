@@ -678,6 +678,7 @@ export default function Shipments() {
           onOpenChange={setShowExportDialog}
           filters={filters}
           totalCount={pagination.totalDocs}
+          selectedShipments={shipments.filter(s => selectedShipments.has(s._id))}
         />
       </div>
     </ACLGuard>

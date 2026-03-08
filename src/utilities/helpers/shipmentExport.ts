@@ -92,8 +92,9 @@ async function fetchAllShipments(filters: ShipmentFilters): Promise<IShipment[]>
   return allShipments;
 }
 
-export async function exportShipmentsToCSV(filters: ShipmentFilters): Promise<number> {
-  const allShipments = await fetchAllShipments(filters);
+export async function exportShipmentsToCSV(filters: ShipmentFilters, preloadedShipments?: IShipment[]): Promise<number> {
+  const allShipments = preloadedShipments ?? await fetchAllShipments(filters);
+  if (allShipments.length === 0) throw new Error('No shipments found to export');
   const csvContent = shipmentsToCSV(allShipments);
   const method = filters.method || filters.shippingMethod || 'all';
   const timestamp = format(new Date(), 'yyyy-MM-dd-HHmmss');
@@ -102,8 +103,9 @@ export async function exportShipmentsToCSV(filters: ShipmentFilters): Promise<nu
   return allShipments.length;
 }
 
-export async function exportShipmentsToPDF(filters: ShipmentFilters): Promise<number> {
-  const allShipments = await fetchAllShipments(filters);
+export async function exportShipmentsToPDF(filters: ShipmentFilters, preloadedShipments?: IShipment[]): Promise<number> {
+  const allShipments = preloadedShipments ?? await fetchAllShipments(filters);
+  if (allShipments.length === 0) throw new Error('No shipments found to export');
 
   const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
 
