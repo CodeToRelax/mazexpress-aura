@@ -36,19 +36,19 @@ export function SeaShipmentsCard() {
           <div className="grid grid-cols-2 gap-2 text-xs">
             <div className="flex justify-between">
               <span className="text-muted-foreground">{t('dashboard.status.inTransit')}</span>
-              <span className="font-medium">{data.statusBreakdown['in transit'] ?? 0}</span>
+              <span className="font-medium">{(data.cbmBreakdown?.['in transit'] ?? 0).toFixed(2)} CBM</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">{t('dashboard.status.delivered')}</span>
-              <span className="font-medium">{data.statusBreakdown.delivered ?? 0}</span>
+              <span className="font-medium">{(data.cbmBreakdown?.delivered ?? 0).toFixed(2)} CBM</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">{t('dashboard.status.atWarehouse')}</span>
-              <span className="font-medium">{data.statusBreakdown['received at warehouse'] ?? 0}</span>
+              <span className="font-medium">{(data.cbmBreakdown?.['received at warehouse'] ?? 0).toFixed(2)} CBM</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">{t('dashboard.status.readyPickup')}</span>
-              <span className="font-medium">{data.statusBreakdown['ready for pick up'] ?? 0}</span>
+              <span className="font-medium">{(data.cbmBreakdown?.['ready for pick up'] ?? 0).toFixed(2)} CBM</span>
             </div>
           </div>
         </div>

@@ -33,6 +33,7 @@ export interface SeaShipmentsAnalytics {
   totalShipments: number;
   totalCBM: number;
   statusBreakdown: ShipmentStatusBreakdown;
+  cbmBreakdown: ShipmentStatusBreakdown;
   chartData: ShipmentChartDataPoint[];
 }
 
