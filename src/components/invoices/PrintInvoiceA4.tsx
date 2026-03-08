@@ -22,6 +22,7 @@ type Props = {
   totalPrice: number;
   exchangeRate?: number;
   totalPriceInDollars?: number;
+  shippingMethod?: string;
 };
 
 /**
