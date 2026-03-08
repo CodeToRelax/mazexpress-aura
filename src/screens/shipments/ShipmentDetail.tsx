@@ -13,7 +13,7 @@ import { InvoiceStatusBadge } from '@/components/invoices/InvoiceStatusBadge';
 import { EditShipmentDialog } from './EditShipmentDialog';
 import { DeleteShipmentDialog } from './DeleteShipmentDialog';
 import { shipmentsApi } from '@/utilities/api/shipments.api';
-import { getAllInvoices } from '@/utilities/api/invoice.api';
+import { getInvoiceByShipmentId } from '@/utilities/api/invoice.api';
 import { toast } from '@/hooks/use-toast';
 import { useACL } from '@/hooks/useACL';
 import { ACLGuard } from '@/components/guards/ACLGuard';

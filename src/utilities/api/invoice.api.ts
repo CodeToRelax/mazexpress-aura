@@ -262,3 +262,16 @@ export async function cancelInvoice(
 ): Promise<Invoice> {
   return updateInvoiceStatus(invoiceId, { status: 'VOID' }, locale);
 }
+
+export async function getInvoiceByShipmentId(
+  shipmentId: string,
+  locale?: string
+): Promise<Invoice | null> {
+  const headers = await getAuthHeaders(locale);
+  const response = await fetch(`${API_BASE_URL}/api/invoice/by-shipment/${shipmentId}`, {
+    method: 'GET',
+    headers,
+  });
+  if (response.status === 404) return null;
+  return handleResponse<Invoice>(response);
+}
