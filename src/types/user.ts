@@ -56,7 +56,7 @@ export interface UsersListResponse {
 export interface UserFilters {
   page?: number;
   limit?: number;
-  sortBy?: 'createdAt' | 'updatedAt' | 'firstName' | 'lastName' | 'email' | 'userType';
+  sortBy?: 'createdAt' | 'updatedAt' | 'firstName' | 'lastName' | 'email' | 'userType' | 'balance';
   sortOrder?: 'asc' | 'desc';
   search?: string;
   userType?: UserType;

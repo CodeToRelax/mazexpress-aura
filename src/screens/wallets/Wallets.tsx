@@ -196,6 +196,13 @@ export default function Wallets() {
       } else if (filters.balanceFilter === 'zero') {
         filteredWallets = allWalletViews.filter(w => w.balance === 0);
       }
+
+      // Apply client-side balance sorting before pagination
+      if (filters.sortBy === 'balance') {
+        filteredWallets = [...filteredWallets].sort((a, b) =>
+          filters.sortOrder === 'asc' ? a.balance - b.balance : b.balance - a.balance
+        );
+      }
       
       // Apply client-side pagination based on actual wallet count
       const limit = filters.limit || 10;
@@ -534,49 +541,30 @@ export default function Wallets() {
     setVisibleColumns(new Set(['email', 'balance', 'currency', 'status', 'created']));
   };
 
-  // Client-side balance sort state
-  const [balanceSortOrder, setBalanceSortOrder] = useState<'asc' | 'desc' | null>(null);
-
   const handleSort = (column: string) => {
-    if (column === 'balance') {
-      // Client-side balance sorting
-      setBalanceSortOrder(prev => {
-        const next = prev === 'asc' ? 'desc' : 'asc';
-        // Sort wallets in place
-        setWallets(currentWallets => {
-          const sorted = [...currentWallets].sort((a, b) =>
-            next === 'asc' ? a.balance - b.balance : b.balance - a.balance
-          );
-          return sorted;
-        });
-        return next;
-      });
-      return;
-    }
-
-    // Reset balance sort when sorting by other columns
-    setBalanceSortOrder(null);
-
-    const columnMap: Record<string, 'createdAt' | 'updatedAt' | 'firstName' | 'lastName' | 'email'> = {
+    const columnMap: Record<string, UserFilters['sortBy']> = {
       owner: 'firstName',
       email: 'email',
       created: 'createdAt',
+      balance: 'balance',
     };
 
-    const apiColumn = columnMap[column];
-    if (!apiColumn) return;
+    const sortKey = columnMap[column];
+    if (!sortKey) return;
 
     setFilters(prev => {
-      if (prev.sortBy === apiColumn) {
+      if (prev.sortBy === sortKey) {
         return {
           ...prev,
-          sortOrder: prev.sortOrder === 'asc' ? 'desc' : 'asc',
+          sortOrder: prev.sortOrder === 'asc' ? 'desc' : 'asc' as const,
+          page: 1,
         };
       }
       return {
         ...prev,
-        sortBy: apiColumn,
-        sortOrder: 'asc',
+        sortBy: sortKey,
+        sortOrder: 'asc' as const,
+        page: 1,
       };
     });
   };

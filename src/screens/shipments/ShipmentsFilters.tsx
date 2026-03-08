@@ -81,7 +81,7 @@ export function ShipmentsFilters({
     'shipped to destination'
   ];
   
-  const statuses = isSuperAdmin 
+  const statuses = (isSuperAdmin || accessibleStatuses.length === 0)
     ? allStatuses 
     : allStatuses.filter(status => accessibleStatuses.includes(status));
 

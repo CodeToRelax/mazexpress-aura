@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Download, FileText, Package } from 'lucide-react';
+import { Download, FileText, FileSpreadsheet, Package } from 'lucide-react';
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog';
@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import type { ShipmentFilters } from '@/types/shipment';
-import { exportShipmentsToCSV } from '@/utilities/helpers/shipmentExport';
+import { exportShipmentsToCSV, exportShipmentsToPDF } from '@/utilities/helpers/shipmentExport';
 import { toast } from '@/hooks/use-toast';
 
 interface ExportShipmentsDialogProps {
@@ -21,11 +21,15 @@ interface ExportShipmentsDialogProps {
 export function ExportShipmentsDialog({ open, onOpenChange, filters, totalCount }: ExportShipmentsDialogProps) {
   const { t } = useTranslation();
   const [isExporting, setIsExporting] = useState(false);
+  const [exportType, setExportType] = useState<'csv' | 'pdf' | null>(null);
 
-  const handleExport = async () => {
+  const handleExport = async (type: 'csv' | 'pdf') => {
     try {
       setIsExporting(true);
-      const count = await exportShipmentsToCSV(filters);
+      setExportType(type);
+      const count = type === 'csv'
+        ? await exportShipmentsToCSV(filters)
+        : await exportShipmentsToPDF(filters);
       toast({ title: t('shipments.export.success', { count }) });
       onOpenChange(false);
     } catch (error) {
@@ -36,6 +40,7 @@ export function ExportShipmentsDialog({ open, onOpenChange, filters, totalCount 
       });
     } finally {
       setIsExporting(false);
+      setExportType(null);
     }
   };
 
@@ -53,7 +58,7 @@ export function ExportShipmentsDialog({ open, onOpenChange, filters, totalCount 
             </div>
             <DialogTitle className="text-xl">{t('shipments.export.title', 'Export Shipments')}</DialogTitle>
           </div>
-          <DialogDescription>{t('shipments.export.description', 'Download shipment data as CSV file')}</DialogDescription>
+          <DialogDescription>{t('shipments.export.description', 'Download shipment data as CSV or PDF file')}</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
@@ -86,15 +91,22 @@ export function ExportShipmentsDialog({ open, onOpenChange, filters, totalCount 
           )}
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="flex-col sm:flex-row gap-2">
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isExporting}>
             {t('actions.cancel', 'Cancel')}
           </Button>
-          <Button onClick={handleExport} disabled={isExporting || totalCount === 0} className="gap-2">
-            {isExporting ? (
+          <Button onClick={() => handleExport('pdf')} disabled={isExporting || totalCount === 0} variant="outline" className="gap-2">
+            {isExporting && exportType === 'pdf' ? (
+              <><div className="h-4 w-4 border-2 border-foreground border-t-transparent rounded-full animate-spin" />{t('shipments.export.exporting', 'Exporting...')}</>
+            ) : (
+              <><FileText className="h-4 w-4" />{t('shipments.export.exportPDF', 'Export PDF')}</>
+            )}
+          </Button>
+          <Button onClick={() => handleExport('csv')} disabled={isExporting || totalCount === 0} className="gap-2">
+            {isExporting && exportType === 'csv' ? (
               <><div className="h-4 w-4 border-2 border-background border-t-transparent rounded-full animate-spin" />{t('shipments.export.exporting', 'Exporting...')}</>
             ) : (
-              <><Download className="h-4 w-4" />{t('shipments.export.confirm', 'Export CSV')}</>
+              <><FileSpreadsheet className="h-4 w-4" />{t('shipments.export.confirm', 'Export CSV')}</>
             )}
           </Button>
         </DialogFooter>
