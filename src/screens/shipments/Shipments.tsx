@@ -487,6 +487,10 @@ export default function Shipments() {
                 </Button>
               </ACLGuard>
               <ACLGuard flag="canCreateShipments">
+                <Button variant="outline" className="gap-2" onClick={() => setShowExportDialog(true)}>
+                  <Download className="h-4 w-4" />
+                  {t('shipments.actions.export', 'Export')}
+                </Button>
                 <Button className="gap-2" onClick={handleCreateShipment}>
                   <Plus className="h-4 w-4" />
                   {t('shipments.actions.create')}
