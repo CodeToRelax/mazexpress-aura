@@ -392,6 +392,52 @@ export default function ShipmentDetail() {
         </div>
       )}
 
+      {/* Related Invoices */}
+      {relatedInvoices.length > 0 && (
+        <div className="glass-card p-6 rounded-2xl space-y-4">
+          <h3 className="text-lg font-semibold flex items-center gap-2">
+            <Receipt className="h-5 w-5 text-primary" />
+            {t('shipments.detail.relatedInvoices', 'Related Invoices')}
+          </h3>
+          <Separator />
+          <div className="space-y-3">
+            {relatedInvoices.map(invoice => {
+              const user = typeof invoice.userId === 'object' ? invoice.userId : null;
+              return (
+                <Link
+                  key={invoice._id}
+                  to={`/invoices/${invoice._id}`}
+                  className="flex items-center justify-between p-4 rounded-xl border hover:bg-accent/50 transition-colors"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <Receipt className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="font-semibold font-mono">{invoice.invoiceNumber}</p>
+                      {user && (
+                        <p className="text-sm text-muted-foreground">
+                          {user.firstName} {user.lastName}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <div className="text-right">
+                      <p className="font-semibold">{invoice.totals?.gross?.toFixed(2)} {invoice.currency || 'LYD'}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {format(new Date(invoice.createdAt), 'dd/MM/yyyy')}
+                      </p>
+                    </div>
+                    <InvoiceStatusBadge status={invoice.status} />
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Dialogs */}
       {shipment && (
         <>
