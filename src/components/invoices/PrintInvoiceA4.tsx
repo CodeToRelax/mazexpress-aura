@@ -545,7 +545,7 @@ export default function PrintInvoiceA4(props: Props) {
                   <tr>
                     <th style={{ borderTopRightRadius: 32 }}>عدد الطرود</th>
                     <th>إجمالي الوزن KG</th>
-                    <th>سعر الكيلو بالدولار</th>
+                    <th>{costColumnLabel}</th>
                     <th style={{ borderTopLeftRadius: 32 }}>تكاليف إضافية</th>
                   </tr>
                 </thead>
