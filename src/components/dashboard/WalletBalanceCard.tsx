@@ -94,7 +94,7 @@ export function WalletBalanceCard() {
                   {t('dashboard.cards.positive')} ({positiveCount})
                 </p>
                 <p className="font-semibold text-success truncate">
-                  {formatCurrency(data.totalPositiveBalance, 'USD')}
+                  {formatCurrency(positiveSum, 'USD')}
                 </p>
               </div>
             </div>
@@ -105,7 +105,7 @@ export function WalletBalanceCard() {
                   {t('dashboard.cards.negative')} ({negativeCount})
                 </p>
                 <p className="font-semibold text-destructive truncate">
-                  {formatCurrency(Math.abs(data.totalNegativeBalance), 'USD')}
+                  {formatCurrency(Math.abs(negativeSum), 'USD')}
                 </p>
               </div>
             </div>

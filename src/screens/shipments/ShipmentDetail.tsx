@@ -269,6 +269,46 @@ export default function ShipmentDetail() {
         </div>
       )}
 
+      {/* Pricing Breakdown (server-computed chargeable quantity) */}
+      {shipment.pricingBreakdown && (
+        <div className="glass-card p-6 rounded-2xl space-y-4">
+          <h3 className="text-lg font-semibold flex items-center gap-2">
+            <DollarSign className="h-5 w-5 text-primary" />
+            {t('shipments.detail.pricingBreakdown', { defaultValue: 'Chargeable Quantity' })}
+          </h3>
+          <Separator />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+              <p className="text-sm text-muted-foreground">
+                {t('shipments.detail.chargeable', { defaultValue: 'Chargeable' })}
+              </p>
+              <p className="font-semibold text-lg">
+                {shipment.pricingBreakdown.chargeableQuantity}{' '}
+                <span className="text-sm text-muted-foreground">
+                  {shipment.pricingBreakdown.chargeableUnit}
+                </span>
+              </p>
+            </div>
+            {typeof shipment.pricingBreakdown.cbmM3 === 'number' && (
+              <div>
+                <p className="text-sm text-muted-foreground">CBM (m³)</p>
+                <p className="font-medium">{shipment.pricingBreakdown.cbmM3.toFixed(4)}</p>
+              </div>
+            )}
+            {typeof shipment.pricingBreakdown.airVolumetricWeightKg === 'number' && (
+              <div>
+                <p className="text-sm text-muted-foreground">
+                  {t('shipments.detail.volumetricWeight', { defaultValue: 'Volumetric weight' })}
+                </p>
+                <p className="font-medium">
+                  {shipment.pricingBreakdown.airVolumetricWeightKg.toFixed(2)} kg
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Note */}
       {shipment.note && (
         <div className="glass-card p-6 rounded-2xl space-y-4">

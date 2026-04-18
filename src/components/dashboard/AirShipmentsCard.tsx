@@ -53,11 +53,11 @@ export function AirShipmentsCard() {
       {data && (
         <div className="mt-4 pt-4 border-t border-border/50 space-y-3">
           {(typeof activeKg === 'number' || typeof activeShipments === 'number') && (
-            <div className="flex items-center justify-between rounded-lg bg-sky-500/10 px-3 py-2 text-xs">
+            <div className="flex items-center justify-between rounded-lg bg-primary/10 px-3 py-2 text-xs">
               <span className="text-muted-foreground">
                 {t('dashboard.cards.activePipeline', { defaultValue: 'Active pipeline' })}
               </span>
-              <span className="font-semibold text-sky-600 dark:text-sky-400">
+              <span className="font-semibold text-primary">
                 {typeof activeKg === 'number' ? `${activeKg.toLocaleString()} kg` : ''}
                 {typeof activeKg === 'number' && typeof activeShipments === 'number' ? ' · ' : ''}
                 {typeof activeShipments === 'number' ? `${activeShipments.toLocaleString()} shp` : ''}
