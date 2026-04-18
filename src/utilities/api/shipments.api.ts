@@ -147,6 +147,11 @@ class ShipmentsApi {
       hasNextPage:
         rawPagination.hasNextPage ?? currentPage < Math.max(totalPages, 1),
       hasPrevPage: rawPagination.hasPrevPage ?? currentPage > 1,
+      nextPage:
+        rawPagination.nextPage ??
+        (currentPage < Math.max(totalPages, 1) ? currentPage + 1 : null),
+      prevPage:
+        rawPagination.prevPage ?? (currentPage > 1 ? currentPage - 1 : null),
     };
 
     // Normalize shipment data
