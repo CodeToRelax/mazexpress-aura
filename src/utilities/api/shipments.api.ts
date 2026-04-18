@@ -81,9 +81,11 @@ class ShipmentsApi {
       `/api/shipments?${queryParams.toString()}`
     );
 
-    // If primary search returned 0 results and the search value looks like an
-    // ISN (e.g. "TRI-I928"), retry once with `isn` instead of `searchParam`.
-    // Wrapped in try/catch so backend validation errors don't break the page.
+    // If the primary search returned 0 results and the value looks like a
+    // shipping number (e.g. "TRI-I928", "TRI-01K2"), retry against the
+    // dedicated single-field filters: isn, then csn, then esn. The backend
+    // validates each format strictly and 422s on mismatches, so each retry is
+    // wrapped in try/catch so we don't break the page on failed retries.
     const searchVal = (filters as any).search;
     let finalResponse = response;
     if (
@@ -92,34 +94,52 @@ class ShipmentsApi {
       (response.data?.shipments?.length ?? 0) === 0
     ) {
       const trimmed = searchVal.trim();
-      if (/^[A-Z]+-[A-Z0-9]+$/i.test(trimmed)) {
-        try {
-          const isnParams = new URLSearchParams();
-          // Carry over non-search filters
-          Object.entries(filters).forEach(([key, value]) => {
-            if (
-              key !== 'search' &&
-              value !== undefined &&
-              value !== null &&
-              value !== ''
-            ) {
-              const backendKey = paramMapping[key] || key;
-              if (key === 'method' || key === 'shippingMethod') {
-                isnParams.append(backendKey, String(value).toLowerCase());
-              } else {
-                isnParams.append(backendKey, String(value));
-              }
+      const looksLikePrefixCode = /^[A-Z]+-[A-Z0-9]+$/i.test(trimmed);
+      const looksLikeNumeric = /^\d{6,}$/.test(trimmed);
+
+      const buildParams = (fieldKey: string, value: string) => {
+        const p = new URLSearchParams();
+        Object.entries(filters).forEach(([key, v]) => {
+          if (
+            key !== 'search' &&
+            v !== undefined &&
+            v !== null &&
+            v !== ''
+          ) {
+            const backendKey = paramMapping[key] || key;
+            if (key === 'method' || key === 'shippingMethod') {
+              p.append(backendKey, String(v).toLowerCase());
+            } else {
+              p.append(backendKey, String(v));
             }
-          });
-          isnParams.append('isn', trimmed);
-          const isnResponse = await this.request<ShipmentsListResponse>(
-            `/api/shipments?${isnParams.toString()}`
-          );
-          if ((isnResponse.data?.shipments?.length ?? 0) > 0) {
-            finalResponse = isnResponse;
           }
-        } catch {
-          // ignore validation/format errors from `isn` retry
+        });
+        p.append(fieldKey, value);
+        return p;
+      };
+
+      // Field candidates by shape: prefix-codes are usually CSN/ISN, pure
+      // numeric strings are usually ESN.
+      const candidates: string[] = [];
+      if (looksLikePrefixCode) candidates.push('csn', 'isn');
+      if (looksLikeNumeric) candidates.push('esn');
+
+      for (const field of candidates) {
+        try {
+          const retryResponse = await this.request<ShipmentsListResponse>(
+            `/api/shipments?${buildParams(field, trimmed).toString()}`
+          );
+          if ((retryResponse.data?.shipments?.length ?? 0) > 0) {
+            finalResponse = retryResponse;
+            break;
+          }
+        } catch (err) {
+          // Swallow validation errors (e.g. 422 from strict isn/esn format
+          // checks) and continue to next candidate.
+          if (import.meta.env.DEV) {
+            // eslint-disable-next-line no-console
+            console.debug(`[shipments] retry ${field}=${trimmed} failed:`, err);
+          }
         }
       }
     }
