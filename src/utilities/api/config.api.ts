@@ -390,10 +390,64 @@ export async function deleteOriginCity(originCity: string): Promise<void> {
   }
 }
 
-export type { 
-  DomesticRoutesResponse, 
-  OriginCityRoutesResponse, 
-  RoutePrice, 
-  CountryShippingConfig, 
-  SystemConfig 
+// Air International Pricing Tiers (admin)
+
+export type AirInternationalCountryKey = 'turkey' | 'china' | 'uae';
+
+export interface AirInternationalRateBracket {
+  minKg: number;
+  maxKg?: number;
+  ratePerKgUsd: number;
+}
+
+export type AirInternationalRates = Partial<
+  Record<AirInternationalCountryKey, AirInternationalRateBracket[]>
+>;
+
+export async function getAirInternationalRates(): Promise<AirInternationalRates> {
+  const token = await getAuthToken();
+  if (!token) throw new Error('Authentication required');
+
+  const response = await fetch(`${API_BASE_URL}/api/config/air-international`, {
+    headers: { 'Authorization': `Bearer ${token}` },
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch air international rates');
+  }
+
+  const result = await response.json();
+  return result.data ?? result;
+}
+
+export async function updateAirInternationalRates(
+  body: AirInternationalRates
+): Promise<AirInternationalRates> {
+  const token = await getAuthToken();
+  if (!token) throw new Error('Authentication required');
+
+  const response = await fetch(`${API_BASE_URL}/api/config/air-international`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.error?.message || 'Failed to update air international rates');
+  }
+
+  const result = await response.json();
+  return result.data ?? result;
+}
+
+export type {
+  DomesticRoutesResponse,
+  OriginCityRoutesResponse,
+  RoutePrice,
+  CountryShippingConfig,
+  SystemConfig,
 };
