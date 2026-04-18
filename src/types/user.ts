@@ -19,6 +19,8 @@ export interface User {
   firstName: string;
   lastName: string;
   birthdate: string;
+  /** API-provided alias of `birthdate` (same value). Prefer `birthdate` for writes. */
+  dateOfBirth?: string;
   address: UserAddress;
   gender: Gender;
   email: string;

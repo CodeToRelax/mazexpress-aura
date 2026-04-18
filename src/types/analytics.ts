@@ -24,6 +24,10 @@ export interface ShipmentChartDataPoint {
 export interface AirShipmentsAnalytics {
   totalShipments: number;
   totalKG: number;
+  /** Active pipeline (excludes delivered) — new field. */
+  totalShipmentsExcludingDelivered?: number;
+  /** Active pipeline KG (excludes delivered) — new field. */
+  totalKGExcludingDelivered?: number;
   statusBreakdown: ShipmentStatusBreakdown;
   chartData: ShipmentChartDataPoint[];
 }
@@ -52,6 +56,21 @@ export interface CustomerGrowthAnalytics {
 }
 
 // Wallet Balance Summary
+
+export type WalletDonutSegmentKey = 'positive' | 'negative' | 'zero';
+
+export interface WalletBalanceDonutSegment {
+  key: WalletDonutSegmentKey;
+  walletCount: number;
+  percentOfWallets: number;
+  sumBalance: number;
+  distribution?: unknown;
+}
+
+export interface WalletBalanceDonut {
+  segments: WalletBalanceDonutSegment[];
+}
+
 export interface WalletBalanceSummary {
   totalWallets: number;
   positiveBalanceCount: number;
@@ -60,6 +79,8 @@ export interface WalletBalanceSummary {
   totalPositiveBalance: number;
   totalNegativeBalance: number;
   netBalance: number;
+  /** New: pre-computed donut segments. Prefer this when present. */
+  balanceDonut?: WalletBalanceDonut;
 }
 
 // Invoice Summary

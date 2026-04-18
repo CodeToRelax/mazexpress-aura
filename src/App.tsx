@@ -25,6 +25,7 @@ import Invoices from "@/screens/invoices/Invoices";
 import InvoiceDetail from "@/screens/invoices/InvoiceDetail";
 import TrackShipment from "@/pages/TrackShipment";
 import PriceCalculator from "@/pages/PriceCalculator";
+import PoliciesPage from "@/pages/Policies";
 import MyProfile from "@/screens/profile/MyProfile";
 import NotFound from "./pages/NotFound";
 
@@ -51,6 +52,7 @@ const App = () => {
             <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
             <Route path="/track" element={<TrackShipment />} />
             <Route path="/calculate-price" element={<PriceCalculator />} />
+            <Route path="/policies" element={<PoliciesPage />} />
             
             {/* Protected Routes */}
             <Route element={<PrivateRoute><AppLayout /></PrivateRoute>}>
