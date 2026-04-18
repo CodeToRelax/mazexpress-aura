@@ -35,29 +35,43 @@ export function ShipmentsPagination({
   const startIndex = totalItems > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0;
   const endIndex = Math.min(currentPage * itemsPerPage, totalItems);
 
+  // Compute totalPages from items if backend reports < 1
+  const computedTotalPages = Math.max(
+    totalPages || 0,
+    itemsPerPage > 0 ? Math.ceil(totalItems / itemsPerPage) : 0,
+    1
+  );
+
+  const canGoPrev = currentPage > 1;
+  const canGoNext = currentPage < computedTotalPages;
+
   const getPageNumbers = () => {
     const pages: (number | string)[] = [];
     const maxVisible = 5;
 
-    if (totalPages <= maxVisible) {
-      for (let i = 1; i <= totalPages; i++) {
+    if (computedTotalPages <= 1) {
+      return [1];
+    }
+
+    if (computedTotalPages <= maxVisible) {
+      for (let i = 1; i <= computedTotalPages; i++) {
         pages.push(i);
       }
     } else {
       if (currentPage <= 3) {
         for (let i = 1; i <= 4; i++) pages.push(i);
         pages.push('...');
-        pages.push(totalPages);
-      } else if (currentPage >= totalPages - 2) {
+        pages.push(computedTotalPages);
+      } else if (currentPage >= computedTotalPages - 2) {
         pages.push(1);
         pages.push('...');
-        for (let i = totalPages - 3; i <= totalPages; i++) pages.push(i);
+        for (let i = computedTotalPages - 3; i <= computedTotalPages; i++) pages.push(i);
       } else {
         pages.push(1);
         pages.push('...');
         for (let i = currentPage - 1; i <= currentPage + 1; i++) pages.push(i);
         pages.push('...');
-        pages.push(totalPages);
+        pages.push(computedTotalPages);
       }
     }
 
@@ -100,7 +114,7 @@ export function ShipmentsPagination({
           variant="outline"
           size="icon"
           onClick={() => onPageChange(currentPage - 1)}
-          disabled={!hasPrevPage || currentPage === 1}
+          disabled={!canGoPrev}
           className="cursor-pointer"
         >
           <ChevronLeft className="h-4 w-4" />
@@ -128,7 +142,7 @@ export function ShipmentsPagination({
           variant="outline"
           size="icon"
           onClick={() => onPageChange(currentPage + 1)}
-          disabled={!hasNextPage || currentPage === totalPages}
+          disabled={!canGoNext}
           className="cursor-pointer"
         >
           <ChevronRight className="h-4 w-4" />

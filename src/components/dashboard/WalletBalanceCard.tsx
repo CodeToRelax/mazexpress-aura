@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { Wallet, TrendingUp, TrendingDown } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { analyticsApi } from '@/utilities/api/analytics.api';
 import { StatCard } from './StatCard';
 import { formatCurrency } from '@/utilities/helpers/currencyHelpers';
@@ -14,9 +14,14 @@ export function WalletBalanceCard() {
     queryFn: () => analyticsApi.getWalletSummary(),
   });
 
-  const total = (data?.positiveBalanceCount ?? 0) + (data?.negativeBalanceCount ?? 0) + (data?.zeroBalanceCount ?? 0);
-  const positivePercent = total > 0 ? ((data?.positiveBalanceCount ?? 0) / total) * 100 : 0;
-  const negativePercent = total > 0 ? ((data?.negativeBalanceCount ?? 0) / total) * 100 : 0;
+  const positiveCount = data?.positiveBalanceCount ?? 0;
+  const negativeCount = data?.negativeBalanceCount ?? 0;
+  const total = positiveCount + negativeCount;
+
+  const chartData = [
+    { name: t('dashboard.cards.positive', { defaultValue: 'Positive' }), value: positiveCount, fill: 'hsl(var(--success))' },
+    { name: t('dashboard.cards.negative', { defaultValue: 'Negative' }), value: negativeCount, fill: 'hsl(var(--destructive))' },
+  ];
 
   return (
     <StatCard
@@ -28,36 +33,73 @@ export function WalletBalanceCard() {
       loading={isLoading}
     >
       {data && (
-        <div className="mt-4 pt-4 border-t border-border/50 space-y-3">
-          {/* Balance bar */}
-          <div className="h-2 rounded-full bg-muted overflow-hidden flex">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${positivePercent}%` }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="bg-success h-full"
-            />
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${negativePercent}%` }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="bg-destructive h-full"
-            />
+        <div className="mt-4 pt-4 border-t border-border/50 space-y-4">
+          <div className="relative h-[160px]">
+            {total > 0 ? (
+              <>
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={chartData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={48}
+                      outerRadius={70}
+                      paddingAngle={2}
+                      dataKey="value"
+                      stroke="hsl(var(--background))"
+                      strokeWidth={2}
+                    >
+                      {chartData.map((entry, idx) => (
+                        <Cell key={idx} fill={entry.fill} />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: 'hsl(var(--card))',
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '0.5rem',
+                        fontSize: '0.75rem',
+                      }}
+                      formatter={(value: number, name: string) => [`${value} wallets`, name]}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                  <p className="text-2xl font-bold leading-none">{total}</p>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wide mt-1">
+                    {t('dashboard.cards.tracked', { defaultValue: 'Tracked' })}
+                  </p>
+                </div>
+              </>
+            ) : (
+              <div className="h-full flex items-center justify-center text-xs text-muted-foreground">
+                {t('dashboard.cards.noWalletData', { defaultValue: 'No wallet data' })}
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-3 text-xs">
-            <div className="flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-success" />
-              <div>
-                <p className="text-muted-foreground">{t('dashboard.cards.positive')}</p>
-                <p className="font-medium text-success">{formatCurrency(data.totalPositiveBalance, 'USD')}</p>
+            <div className="flex items-start gap-2">
+              <TrendingUp className="h-4 w-4 text-success mt-0.5 shrink-0" />
+              <div className="min-w-0">
+                <p className="text-muted-foreground">
+                  {t('dashboard.cards.positive')} ({positiveCount})
+                </p>
+                <p className="font-semibold text-success truncate">
+                  {formatCurrency(data.totalPositiveBalance, 'USD')}
+                </p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <TrendingDown className="h-4 w-4 text-destructive" />
-              <div>
-                <p className="text-muted-foreground">{t('dashboard.cards.negative')}</p>
-                <p className="font-medium text-destructive">{formatCurrency(Math.abs(data.totalNegativeBalance), 'USD')}</p>
+            <div className="flex items-start gap-2">
+              <TrendingDown className="h-4 w-4 text-destructive mt-0.5 shrink-0" />
+              <div className="min-w-0">
+                <p className="text-muted-foreground">
+                  {t('dashboard.cards.negative')} ({negativeCount})
+                </p>
+                <p className="font-semibold text-destructive truncate">
+                  {formatCurrency(Math.abs(data.totalNegativeBalance), 'USD')}
+                </p>
               </div>
             </div>
           </div>

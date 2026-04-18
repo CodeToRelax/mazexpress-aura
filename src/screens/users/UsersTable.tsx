@@ -133,6 +133,7 @@ export function UsersTable({
             {visibleColumns.has('role') && <TableHead>{renderSortableHeader('role', t('users.table.columns.role'))}</TableHead>}
             {visibleColumns.has('status') && <TableHead>{t('users.table.columns.status')}</TableHead>}
             {visibleColumns.has('country') && <TableHead>{renderSortableHeader('country', t('users.table.columns.country'))}</TableHead>}
+            {visibleColumns.has('birthdate') && <TableHead>{t('users.table.columns.birthdate', { defaultValue: 'Date of birth' })}</TableHead>}
             {visibleColumns.has('joined') && <TableHead>{renderSortableHeader('joined', t('users.table.columns.joined'))}</TableHead>}
             <TableHead className="w-12"></TableHead>
           </TableRow>
@@ -201,6 +202,11 @@ export function UsersTable({
               {visibleColumns.has('country') && (
                 <TableCell className="text-muted-foreground capitalize">
                   {user.address.country}
+                </TableCell>
+              )}
+              {visibleColumns.has('birthdate') && (
+                <TableCell className="text-muted-foreground">
+                  {user.birthdate ? format(new Date(user.birthdate), 'MMM dd, yyyy') : 'N/A'}
                 </TableCell>
               )}
               {visibleColumns.has('joined') && (

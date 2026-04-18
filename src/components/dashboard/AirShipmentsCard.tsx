@@ -19,11 +19,27 @@ export function AirShipmentsCard() {
     queryFn: () => analyticsApi.getAirShipments(startDate, endDate),
   });
 
+  // Backend may expose kgBreakdown; fall back to statusBreakdown counts.
+  const breakdown = (data as any)?.kgBreakdown ?? data?.statusBreakdown ?? {};
+  const isKg = !!(data as any)?.kgBreakdown;
+  const unit = isKg ? 'kg' : '';
+
+  // Exclude "delivered" — show in-progress states only
+  const rows: { key: string; labelKey: string }[] = [
+    { key: 'in transit', labelKey: 'dashboard.status.inTransit' },
+    { key: 'received at warehouse', labelKey: 'dashboard.status.atWarehouse' },
+    { key: 'shipped to destination', labelKey: 'dashboard.status.shippedToDestination' },
+    { key: 'ready for pick up', labelKey: 'dashboard.status.readyPickup' },
+  ];
+
+  const formatVal = (v: number) =>
+    isKg ? `${(v ?? 0).toLocaleString()} ${unit}` : String(v ?? 0);
+
   return (
     <StatCard
       title={t('dashboard.cards.airShipments')}
-      value={data?.totalShipments ?? 0}
-      subtitle={`${(data?.totalKG ?? 0).toLocaleString()} KG`}
+      value={`${(data?.totalKG ?? 0).toLocaleString()} kg`}
+      subtitle={t('dashboard.cards.totalAirWeight', { defaultValue: 'Total air weight' })}
       icon={Plane}
       iconColor="text-sky-500"
       loading={isLoading}
@@ -34,22 +50,14 @@ export function AirShipmentsCard() {
       {data && (
         <div className="mt-4 pt-4 border-t border-border/50">
           <div className="grid grid-cols-2 gap-2 text-xs">
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">{t('dashboard.status.inTransit')}</span>
-              <span className="font-medium">{data.statusBreakdown['in transit'] ?? 0}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">{t('dashboard.status.delivered')}</span>
-              <span className="font-medium">{data.statusBreakdown.delivered ?? 0}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">{t('dashboard.status.atWarehouse')}</span>
-              <span className="font-medium">{data.statusBreakdown['received at warehouse'] ?? 0}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">{t('dashboard.status.readyPickup')}</span>
-              <span className="font-medium">{data.statusBreakdown['ready for pick up'] ?? 0}</span>
-            </div>
+            {rows.map((row) => (
+              <div key={row.key} className="flex justify-between">
+                <span className="text-muted-foreground">
+                  {t(row.labelKey, { defaultValue: row.key })}
+                </span>
+                <span className="font-medium">{formatVal(breakdown[row.key] ?? 0)}</span>
+              </div>
+            ))}
           </div>
         </div>
       )}
