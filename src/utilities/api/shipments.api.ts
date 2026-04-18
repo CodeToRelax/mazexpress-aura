@@ -77,26 +77,59 @@ class ShipmentsApi {
       }
     });
 
-    // If search looks like an ISN (e.g. "TRI-I928"), also pass it as `isn`
-    // so the backend can match users' shipping numbers, not just esn/csn.
-    const searchVal = (filters as any).search;
-    if (typeof searchVal === 'string' && searchVal.trim()) {
-      const trimmed = searchVal.trim();
-      if (/^[A-Z]+-[A-Z0-9]+$/i.test(trimmed) && !queryParams.has('isn')) {
-        queryParams.append('isn', trimmed);
-      }
-    }
-
     const response = await this.request<ShipmentsListResponse>(
       `/api/shipments?${queryParams.toString()}`
     );
-    
+
+    // If primary search returned 0 results and the search value looks like an
+    // ISN (e.g. "TRI-I928"), retry once with `isn` instead of `searchParam`.
+    // Wrapped in try/catch so backend validation errors don't break the page.
+    const searchVal = (filters as any).search;
+    let finalResponse = response;
+    if (
+      typeof searchVal === 'string' &&
+      searchVal.trim() &&
+      (response.data?.shipments?.length ?? 0) === 0
+    ) {
+      const trimmed = searchVal.trim();
+      if (/^[A-Z]+-[A-Z0-9]+$/i.test(trimmed)) {
+        try {
+          const isnParams = new URLSearchParams();
+          // Carry over non-search filters
+          Object.entries(filters).forEach(([key, value]) => {
+            if (
+              key !== 'search' &&
+              value !== undefined &&
+              value !== null &&
+              value !== ''
+            ) {
+              const backendKey = paramMapping[key] || key;
+              if (key === 'method' || key === 'shippingMethod') {
+                isnParams.append(backendKey, String(value).toLowerCase());
+              } else {
+                isnParams.append(backendKey, String(value));
+              }
+            }
+          });
+          isnParams.append('isn', trimmed);
+          const isnResponse = await this.request<ShipmentsListResponse>(
+            `/api/shipments?${isnParams.toString()}`
+          );
+          if ((isnResponse.data?.shipments?.length ?? 0) > 0) {
+            finalResponse = isnResponse;
+          }
+        } catch {
+          // ignore validation/format errors from `isn` retry
+        }
+      }
+    }
+
     // Normalize shipment data
     return {
-      ...response,
+      ...finalResponse,
       data: {
-        ...response.data,
-        shipments: normalizeShipments(response.data.shipments),
+        ...finalResponse.data,
+        shipments: normalizeShipments(finalResponse.data.shipments),
       },
     };
   }
