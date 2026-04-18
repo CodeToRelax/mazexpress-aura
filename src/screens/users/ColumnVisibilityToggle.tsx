@@ -24,6 +24,7 @@ const TOGGLEABLE_COLUMNS = [
   { key: 'role', labelKey: 'users.table.columns.role' },
   { key: 'status', labelKey: 'users.table.columns.status' },
   { key: 'country', labelKey: 'users.table.columns.country' },
+  { key: 'birthdate', labelKey: 'users.table.columns.birthdate' },
   { key: 'joined', labelKey: 'users.table.columns.joined' },
 ];
 

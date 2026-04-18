@@ -123,6 +123,7 @@ export function ShipmentsTable({
             {visibleColumns.has('method') && <TableHead>{t('shipments.table.columns.method')}</TableHead>}
             {visibleColumns.has('status') && <TableHead>{renderSortableHeader('status', t('shipments.table.columns.status'))}</TableHead>}
             {visibleColumns.has('weight') && <TableHead>{t('shipments.table.columns.weight')}</TableHead>}
+            {visibleColumns.has('extraCosts') && <TableHead>{t('shipments.table.columns.extraCosts', { defaultValue: 'Extra costs' })}</TableHead>}
             <TableHead>{renderSortableHeader('createdAt', t('shipments.table.columns.createdAt'))}</TableHead>
             <TableHead className="w-12"></TableHead>
           </TableRow>
@@ -181,6 +182,15 @@ export function ShipmentsTable({
               {visibleColumns.has('weight') && (
                 <TableCell className="text-muted-foreground">
                   {shipment.size?.weight ? `${shipment.size.weight} kg` : 'N/A'}
+                </TableCell>
+              )}
+              {visibleColumns.has('extraCosts') && (
+                <TableCell className="text-muted-foreground">
+                  {(shipment.shippingMethod === 'air' || shipment.shippingMethod === 'sea')
+                    ? (typeof shipment.extraCosts === 'number'
+                        ? `$${shipment.extraCosts.toFixed(2)}`
+                        : '$0.00')
+                    : 'N/A'}
                 </TableCell>
               )}
               <TableCell className="text-muted-foreground">

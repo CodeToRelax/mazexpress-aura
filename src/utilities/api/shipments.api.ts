@@ -77,6 +77,16 @@ class ShipmentsApi {
       }
     });
 
+    // If search looks like an ISN (e.g. "TRI-I928"), also pass it as `isn`
+    // so the backend can match users' shipping numbers, not just esn/csn.
+    const searchVal = (filters as any).search;
+    if (typeof searchVal === 'string' && searchVal.trim()) {
+      const trimmed = searchVal.trim();
+      if (/^[A-Z]+-[A-Z0-9]+$/i.test(trimmed) && !queryParams.has('isn')) {
+        queryParams.append('isn', trimmed);
+      }
+    }
+
     const response = await this.request<ShipmentsListResponse>(
       `/api/shipments?${queryParams.toString()}`
     );

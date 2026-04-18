@@ -70,15 +70,12 @@ export function ShipmentsFilters({
     onFiltersChange({ ...filters, [key]: value, page: 1 });
   };
 
-  // Filter statuses based on ACL
+  // Filter statuses — restricted to the 4 user-facing statuses
   const allStatuses = [
-    'in transit',
+    'received at warehouse',
+    'shipped to destination',
     'ready for pick up',
     'delivered',
-    'cancelled',
-    'returned',
-    'received at warehouse',
-    'shipped to destination'
   ];
   
   const statuses = (isSuperAdmin || accessibleStatuses.length === 0)
