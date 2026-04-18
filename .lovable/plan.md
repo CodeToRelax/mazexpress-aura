@@ -1,72 +1,43 @@
 
 
-## Plan: Integrate updated MazExpress API contracts
+## Why `TRI-I928` doesn't show up in shipment search
 
-I'll align the frontend with the new/changed API contracts documented by the backend team. Scoping by section:
+### Root cause analysis
 
-### 1. Legal/Policies editor (NEW)
-- Add API client `src/utilities/api/policies.api.ts` with `getPolicies()` and `updatePolicies(partial)` — only sends `policies | prohibitedItems | extra`.
-- Add admin screen `src/screens/settings/PoliciesCard.tsx` mounted in `SystemSettings.tsx`: 3 textareas + Markdown preview toggle. Gated by `config.manage` via `ACLGuard`.
-- Add a public/customer-facing route `src/pages/Policies.tsx` (read-only, Markdown rendered). Register in `App.tsx`.
-- Use `react-markdown` (already lightweight) for rendering; if not installed, add it.
+The frontend already has logic to handle ISN searches (lines 84-125 of `shipments.api.ts`):
+1. First tries `?searchParam=TRI-I928` — the backend's general search endpoint.
+2. If that returns 0 results AND the value matches the ISN pattern (`/^[A-Z]+-[A-Z0-9]+$/i`), it retries with `?isn=TRI-I928`.
 
-### 2. Price calculator — breaking change
-- Update `src/pages/PriceCalculator.tsx` and any consumer of `shipmentsApi.calculatePrice` to read `data.price`, `data.currency`, `data.finalWeight`, `data.dimensionalWeight`, `data.shippingMethod`, `data.country`, `data.isDomestic` from the object (not as a raw number).
-- Display `dimensionalWeight` and `finalWeight` when present.
-- Audit `CreateShipmentDialog.tsx` / `EditShipmentDialog.tsx` for any place treating `data` as a number.
+`TRI-I928` matches the regex, so the retry IS firing. The problem is one of two backend behaviors:
 
-### 3. Shipment `pricingBreakdown` display
-- Extend `IShipment` in `src/types/shipment.ts` with optional `pricingBreakdown: { cbmM3, airVolumetricWeightKg?, chargeableQuantity, chargeableUnit }`.
-- Pass through in `shipmentNormalizer.ts`.
-- Render a small "Chargeable" block in `ShipmentDetail.tsx` (e.g. "12.5 kg (volumetric)" or "0.8 cbm").
-- Lowercase ESN handling for public track is already backend-side; verify `TrackShipment.tsx` works as-is.
+**Hypothesis A (most likely):** The backend's `searchParam` searches `esn`/`csn` but NOT `isn`, AND the `isn` filter requires an **exact match**. If the stored ISN is something like `tri-i928` (lowercase) or `TRI-I0928`, the exact-match `isn=TRI-I928` query returns 0.
 
-### 4. Air international rates — already wired
-- Confirm `getAirInternationalRates` / `updateAirInternationalRates` in `config.api.ts` match the documented shape. No code change expected; just verify against the new contract once backend is live.
+**Hypothesis B:** The backend's `isn` validator rejects the format and 4xx's, which our retry silently swallows.
 
-### 5. Item cost calculator (NEW)
-- Add to `config.api.ts`: `getItemCalculatorRates()`, `updateItemCalculatorRates(partial)`, `convertItemAmount({amount, currency})`.
-- Add `src/screens/settings/ItemCalculatorCard.tsx` in System Settings: editable currency→LYD rate map + a small "Convert" widget. Gated by `config.manage`.
+I cannot confirm from the frontend alone — I need to see the actual network request/response for the failed search.
 
-### 6. Analytics enhancements
-- Update `analytics.api.ts` types to include:
-  - Air: `totalShipmentsExcludingDelivered`, `totalKGExcludingDelivered`.
-  - Wallet: `balanceDonut.segments[]` with `key: 'positive'|'negative'|'zero'`, `walletCount`, `percentOfWallets`, `sumBalance`, `distribution`.
-- Update `AirShipmentsCard.tsx` to optionally display "active pipeline" (excluding delivered).
-- Update `WalletBalanceCard.tsx` donut to consume `balanceDonut.segments` (with a backwards-compatible fallback to current shape).
+### Plan
 
-### 7. Users — DOB alias
-- In `src/types/user.ts` add `dateOfBirth?: string` as alias of `birthdate`.
-- In `EditUserDialog.tsx` / `CreateUserDialog.tsx` / `UserDetail.tsx`: display `dateOfBirth` (fallback to `birthdate`); on PATCH continue sending `birthdate` (matches existing schema in `user.schemas.ts`).
+**Step 1 — Diagnose (in default mode):**
+- Use browser tools to navigate to `/shipments`, type `TRI-I928` in the search box, and capture the actual network requests/responses for both `searchParam=TRI-I928` and the `isn=TRI-I928` retry.
+- This tells us whether the backend returns 0 (data issue / case-sensitivity) or 4xx (validator issue).
 
-### 8. Validation guardrails
-- Policies PATCH: strictly send only the 3 allowed keys (no stray fields → 422).
-- Calculate price: TypeScript change forces `.price` access — eliminates the legacy "data as number" path.
+**Step 2 — Fix based on findings:**
 
-### Files to create
-- `src/utilities/api/policies.api.ts`
-- `src/screens/settings/PoliciesCard.tsx`
-- `src/screens/settings/ItemCalculatorCard.tsx`
-- `src/pages/Policies.tsx`
+| Scenario | Fix |
+|----------|-----|
+| Backend `isn` filter is case-sensitive and stored value differs in case | Retry with both upper and lowercase variants of the ISN |
+| Backend `isn` requires exact match but user typed a partial/typo | Add a "did you mean?" hint when ISN-shaped search returns nothing |
+| Backend rejects the ISN format (4xx) | Surface the error instead of swallowing it; coordinate with backend to relax the validator |
+| Shipment with `TRI-I928` simply doesn't exist in the DB | Show clearer empty state — nothing to fix in code |
 
-### Files to modify
-- `src/utilities/api/config.api.ts` (item calculator endpoints)
-- `src/utilities/api/analytics.api.ts` (new fields)
-- `src/utilities/api/shipments.api.ts` (none expected; types only)
-- `src/types/shipment.ts`, `src/types/user.ts`, `src/types/analytics.ts`
-- `src/utilities/helpers/shipmentNormalizer.ts`
-- `src/pages/PriceCalculator.tsx`
-- `src/screens/shipments/ShipmentDetail.tsx`
-- `src/screens/settings/SystemSettings.tsx` (mount new cards)
-- `src/components/dashboard/AirShipmentsCard.tsx`, `WalletBalanceCard.tsx`
-- `src/screens/users/EditUserDialog.tsx`, `CreateUserDialog.tsx`, `UserDetail.tsx`
-- `src/App.tsx` (Policies route)
-- Localization files: `en/common.json`, `ar/common.json` for policies/item-calculator labels (≤3 levels deep per project rule)
+**Step 3 — Improve robustness regardless:**
+- Add a third fallback that tries `?esn=TRI-I928` (some backends store the prefix-format value as the ESN, not the ISN).
+- Log the retry attempts to console so future debugging is easier.
 
-### Out of scope (already implemented / no change)
-- System config GET/PUT, per-country shipping, domestic city-to-city pricing — already wired.
-- Air international rates UI — already exists; will work once backend deploy lands.
+### Files likely to change
+- `src/utilities/api/shipments.api.ts` — extend the fallback chain (searchParam → isn → esn, with case variants).
 
-### Open question
-None blocking. I'll wire policies as Markdown-rendered (with `react-markdown`) since the spec explicitly mentions Markdown links.
+### What I need from you
+Just approve and I'll run the live diagnostic against the deployed backend to confirm which scenario applies before changing code.
 
