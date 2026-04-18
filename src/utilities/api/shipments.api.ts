@@ -124,12 +124,38 @@ class ShipmentsApi {
       }
     }
 
+    // Normalize pagination shape: backend sends { page, pages, total }
+    // but the frontend expects { currentPage, totalPages, totalDocs, ... }.
+    const rawPagination: any = finalResponse.data?.pagination ?? {};
+    const limit = Number(rawPagination.limit ?? filters.limit ?? 10);
+    const currentPage = Number(
+      rawPagination.currentPage ?? rawPagination.page ?? filters.page ?? 1
+    );
+    const totalDocs = Number(
+      rawPagination.totalDocs ?? rawPagination.total ?? 0
+    );
+    const totalPages = Number(
+      rawPagination.totalPages ??
+        rawPagination.pages ??
+        (limit > 0 ? Math.ceil(totalDocs / limit) : 1)
+    );
+    const normalizedPagination = {
+      currentPage,
+      totalPages: Math.max(totalPages, 1),
+      totalDocs,
+      limit,
+      hasNextPage:
+        rawPagination.hasNextPage ?? currentPage < Math.max(totalPages, 1),
+      hasPrevPage: rawPagination.hasPrevPage ?? currentPage > 1,
+    };
+
     // Normalize shipment data
     return {
       ...finalResponse,
       data: {
         ...finalResponse.data,
         shipments: normalizeShipments(finalResponse.data.shipments),
+        pagination: normalizedPagination,
       },
     };
   }
