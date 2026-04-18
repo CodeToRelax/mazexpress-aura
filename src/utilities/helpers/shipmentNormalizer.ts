@@ -24,7 +24,10 @@ export function normalizeShipment(raw: any): IShipment {
     
     // Normalize domestic shipment details
     domesticShipmentDetails: raw.domesticShipmentDetails || undefined,
-    
+
+    // Pass through optional pricingBreakdown from backend
+    pricingBreakdown: raw.pricingBreakdown || undefined,
+
     // Normalize size data
     size: normalizeShipmentSize(raw.size),
   };

@@ -126,6 +126,13 @@ export interface IDomesticShipmentDetails {
   note?: string;
 }
 
+export interface IShipmentPricingBreakdown {
+  cbmM3: number;
+  airVolumetricWeightKg?: number;
+  chargeableQuantity: number;
+  chargeableUnit: 'cbm' | 'kg';
+}
+
 export interface IShipment {
   _id: string;
   isn?: string;
@@ -143,6 +150,7 @@ export interface IShipment {
   originCountry?: 'libya' | 'turkey' | 'china' | 'uae';
   tier?: 'A' | 'B' | 'C' | 'D' | 'E';
   domesticShipmentDetails?: IDomesticShipmentDetails;
+  pricingBreakdown?: IShipmentPricingBreakdown;
   createdAt: string;
   updatedAt: string;
   updatedBy?: string;
