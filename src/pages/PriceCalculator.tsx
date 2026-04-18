@@ -358,26 +358,74 @@ export default function PriceCalculator() {
                         {t('shipments.calculator.totalPrice', { defaultValue: 'Total Price' })}
                       </p>
                       <p className="text-4xl font-bold text-primary">
-                        ${calculatedPrice.totalPrice || calculatedPrice.price || 'N/A'}
+                        {typeof calculatedPrice.price === 'number'
+                          ? calculatedPrice.price.toLocaleString(undefined, { maximumFractionDigits: 2 })
+                          : 'N/A'}{' '}
+                        <span className="text-2xl">{calculatedPrice.currency || 'LYD'}</span>
                       </p>
                     </div>
 
-                    {calculatedPrice.breakdown && (
-                      <>
-                        <Separator />
-                        <div className="space-y-2">
-                          <h4 className="font-semibold text-sm">
-                            {t('shipments.calculator.breakdown', { defaultValue: 'Price Breakdown' })}
-                          </h4>
-                          {Object.entries(calculatedPrice.breakdown).map(([key, value]) => (
-                            <div key={key} className="flex justify-between text-sm">
-                              <span className="text-muted-foreground capitalize">{key.replace(/([A-Z])/g, ' $1')}</span>
-                              <span className="font-medium">${value as number}</span>
-                            </div>
-                          ))}
+                    <Separator />
+                    <div className="space-y-2 text-sm">
+                      {calculatedPrice.shippingMethod && (
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">
+                            {t('shipments.fields.method')}
+                          </span>
+                          <span className="font-medium capitalize">{calculatedPrice.shippingMethod}</span>
                         </div>
-                      </>
-                    )}
+                      )}
+                      {calculatedPrice.country && (
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">
+                            {t('shipments.calculator.country', { defaultValue: 'Country' })}
+                          </span>
+                          <span className="font-medium capitalize">{calculatedPrice.country}</span>
+                        </div>
+                      )}
+                      {typeof calculatedPrice.isDomestic === 'boolean' && (
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">
+                            {t('shipments.detail.domestic')}
+                          </span>
+                          <span className="font-medium">
+                            {calculatedPrice.isDomestic ? t('common.yes') : t('common.no')}
+                          </span>
+                        </div>
+                      )}
+                      {typeof calculatedPrice.finalWeight === 'number' && (
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">
+                            {t('shipments.calculator.finalWeight', { defaultValue: 'Chargeable weight' })}
+                          </span>
+                          <span className="font-medium">{calculatedPrice.finalWeight} kg</span>
+                        </div>
+                      )}
+                      {typeof calculatedPrice.dimensionalWeight === 'number' && (
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">
+                            {t('shipments.calculator.dimensionalWeight', { defaultValue: 'Dimensional weight' })}
+                          </span>
+                          <span className="font-medium">{calculatedPrice.dimensionalWeight} kg</span>
+                        </div>
+                      )}
+                      {calculatedPrice.originCity && (
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">
+                            {t('shipments.fields.originCity', { defaultValue: 'Origin city' })}
+                          </span>
+                          <span className="font-medium capitalize">{calculatedPrice.originCity}</span>
+                        </div>
+                      )}
+                      {calculatedPrice.destinationCity && (
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">
+                            {t('shipments.fields.destinationCity', { defaultValue: 'Destination city' })}
+                          </span>
+                          <span className="font-medium capitalize">{calculatedPrice.destinationCity}</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 ) : (
                   <div className="text-center py-12">

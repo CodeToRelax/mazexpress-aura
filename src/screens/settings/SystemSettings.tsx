@@ -7,6 +7,8 @@ import { CountryConfigCard } from './CountryConfigCard';
 import { DomesticRoutesCard } from './DomesticRoutesCard';
 import { ExchangeRateCard } from './ExchangeRateCard';
 import { AirInternationalRatesCard } from './AirInternationalRatesCard';
+import { PoliciesCard } from './PoliciesCard';
+import { ItemCalculatorCard } from './ItemCalculatorCard';
 import { getSystemConfig } from '@/utilities/api/config.api';
 import { toast } from '@/hooks/use-toast';
 
@@ -164,6 +166,26 @@ export default function SystemSettings() {
             </TabsContent>
           ))}
         </Tabs>
+      </motion.div>
+
+      {/* Item Cost Calculator (FX) */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.12 }}
+        className="mt-8"
+      >
+        <ItemCalculatorCard />
+      </motion.div>
+
+      {/* Legal & Policies */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.15 }}
+        className="mt-8"
+      >
+        <PoliciesCard />
       </motion.div>
     </div>
   );

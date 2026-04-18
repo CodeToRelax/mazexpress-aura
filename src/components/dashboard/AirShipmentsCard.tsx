@@ -35,6 +35,9 @@ export function AirShipmentsCard() {
   const formatVal = (v: number) =>
     isKg ? `${(v ?? 0).toLocaleString()} ${unit}` : String(v ?? 0);
 
+  const activeKg = data?.totalKGExcludingDelivered;
+  const activeShipments = data?.totalShipmentsExcludingDelivered;
+
   return (
     <StatCard
       title={t('dashboard.cards.airShipments')}
@@ -48,7 +51,19 @@ export function AirShipmentsCard() {
       }
     >
       {data && (
-        <div className="mt-4 pt-4 border-t border-border/50">
+        <div className="mt-4 pt-4 border-t border-border/50 space-y-3">
+          {(typeof activeKg === 'number' || typeof activeShipments === 'number') && (
+            <div className="flex items-center justify-between rounded-lg bg-sky-500/10 px-3 py-2 text-xs">
+              <span className="text-muted-foreground">
+                {t('dashboard.cards.activePipeline', { defaultValue: 'Active pipeline' })}
+              </span>
+              <span className="font-semibold text-sky-600 dark:text-sky-400">
+                {typeof activeKg === 'number' ? `${activeKg.toLocaleString()} kg` : ''}
+                {typeof activeKg === 'number' && typeof activeShipments === 'number' ? ' · ' : ''}
+                {typeof activeShipments === 'number' ? `${activeShipments.toLocaleString()} shp` : ''}
+              </span>
+            </div>
+          )}
           <div className="grid grid-cols-2 gap-2 text-xs">
             {rows.map((row) => (
               <div key={row.key} className="flex justify-between">

@@ -14,8 +14,15 @@ export function WalletBalanceCard() {
     queryFn: () => analyticsApi.getWalletSummary(),
   });
 
-  const positiveCount = data?.positiveBalanceCount ?? 0;
-  const negativeCount = data?.negativeBalanceCount ?? 0;
+  // Prefer new pre-computed donut segments when present, fall back to legacy fields.
+  const segments = data?.balanceDonut?.segments;
+  const positiveSeg = segments?.find((s) => s.key === 'positive');
+  const negativeSeg = segments?.find((s) => s.key === 'negative');
+
+  const positiveCount = positiveSeg?.walletCount ?? data?.positiveBalanceCount ?? 0;
+  const negativeCount = negativeSeg?.walletCount ?? data?.negativeBalanceCount ?? 0;
+  const positiveSum = positiveSeg?.sumBalance ?? data?.totalPositiveBalance ?? 0;
+  const negativeSum = negativeSeg?.sumBalance ?? data?.totalNegativeBalance ?? 0;
   const total = positiveCount + negativeCount;
 
   const chartData = [
