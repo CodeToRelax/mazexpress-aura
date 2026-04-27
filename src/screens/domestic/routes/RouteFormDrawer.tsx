@@ -18,7 +18,7 @@ import { Label } from '@/components/ui/label';
 import { CityCombobox } from '@/components/domestic/CityCombobox';
 import { routeSchema, type RouteFormValues } from '@/utilities/zod/domestic.schemas';
 import { createRoute, updateRoute } from '@/utilities/api/routes.api';
-import { RouteDuplicateError, type Route } from '@/types/domestic';
+import { RouteDuplicateError, type Route, type RouteCreateBody } from '@/types/domestic';
 import { toast } from 'sonner';
 
 interface Props {
@@ -72,8 +72,16 @@ export function RouteFormDrawer({ open, onOpenChange, route }: Props) {
 
   const mutation = useMutation({
     mutationFn: async (values: RouteFormValues) => {
-      if (isEdit && route) return updateRoute(route._id, values);
-      return createRoute(values);
+      const body: RouteCreateBody = {
+        originCity: values.originCity,
+        destinationCity: values.destinationCity,
+        priceTierA: values.priceTierA,
+        priceTierB: values.priceTierB,
+        priceTierC: values.priceTierC,
+        priceTierD: values.priceTierD,
+      };
+      if (isEdit && route) return updateRoute(route._id, body);
+      return createRoute(body);
     },
     onSuccess: () => {
       toast.success(isEdit ? 'Route updated' : 'Route created');
