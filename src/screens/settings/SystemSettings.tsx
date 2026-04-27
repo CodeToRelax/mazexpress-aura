@@ -10,6 +10,7 @@ import { PoliciesCard } from './PoliciesCard';
 import { ItemCalculatorCard } from './ItemCalculatorCard';
 import { MinimumBillCard } from './MinimumBillCard';
 import { CompanyInfoCard } from './CompanyInfoCard';
+import { DomesticRoutesCard } from './DomesticRoutesCard';
 import { getSystemConfig } from '@/utilities/api/config.api';
 import { toast } from '@/hooks/use-toast';
 
@@ -197,6 +198,16 @@ export default function SystemSettings() {
         className="mt-8"
       >
         <CompanyInfoCard />
+      </motion.div>
+
+      {/* Domestic Routes */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="mt-8"
+      >
+        <DomesticRoutesCard />
       </motion.div>
     </div>
   );
