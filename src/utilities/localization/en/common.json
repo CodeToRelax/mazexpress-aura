@@ -525,8 +525,7 @@
     "quickActions": {
       "title": "Quick Actions",
       "createAccount": "Create Account",
-      "createShipment": "Create Shipment",
-      "createDomestic": "Domestic Shipment"
+      "createShipment": "Create Shipment"
     },
     "periods": {
       "today": "Today",
@@ -567,7 +566,6 @@
   },
   "shipments": {
     "fields": {
-      "domesticDetails": "Domestic Shipment Details",
       "originCity": "Origin City",
       "destinationCity": "Destination City",
       "senderName": "Sender Name",
@@ -580,7 +578,6 @@
       "shippingPayment": "Shipping Payment",
       "companyPays": "Company Pays Shipping",
       "customerPays": "Customer Pays Shipping",
-      "domesticNote": "Domestic Shipment Notes",
       "csn": "Customer Shipping Number",
       "isn": "International Shipping Number (Optional)",
       "destination": "Destination",
@@ -592,13 +589,11 @@
       "extraCosts": "Extra Costs",
       "note": "Note (Optional)",
       "estimatedArrival": "Estimated Arrival",
-      "isDomestic": "Domestic Shipment",
       "status": "Status",
       "tier": "Pricing Tier",
       "originCountry": "Origin Country",
       "shipmentType": "Shipment Type",
-      "international": "International",
-      "domestic": "Domestic"
+      "international": "International"
     },
     "tiers": {
       "A": "Tier A",
@@ -626,11 +621,9 @@
       "secondaryPhone": "+218987654321",
       "detailedAddress": "123 Main Street, Building A, Floor 2",
       "productPrice": "150.50",
-      "productQuantity": "2",
-      "domesticNote": "Fragile items - please handle with care"
+      "productQuantity": "2"
     },
     "descriptions": {
-      "domesticDetails": "Additional details for domestic shipments within Libya",
       "originCity": "Optional: Where the shipment originates from",
       "phoneFormat": "Enter phone number in format: +218XXXXXXXXX",
       "productInfo": "Information about the product being shipped",
@@ -640,7 +633,7 @@
       "internationalStatusOnly": "International shipments use simplified 4-stage tracking",
       "csnSearch": "Search for a customer by name, email, or CSN",
       "csnReadOnly": "Customer Shipping Number cannot be changed after creation",
-      "tier": "Pricing tier affects shipping costs based on domestic tier multipliers",
+      "tier": "Pricing tier affects shipping costs",
       "originCountry": "The country where the shipment originates from"
     },
     "title": "Shipments Management",
@@ -722,7 +715,6 @@
         "allOriginCountries": "All Origin Countries",
         "from": "From",
         "to": "To",
-        "domestic": "Domestic Only",
         "international": "International Only",
         "destinations": {
           "benghazi": "Benghazi",
@@ -762,14 +754,11 @@
         "extraCosts": "Extra Costs",
         "note": "Note (Optional)",
         "estimatedArrival": "Estimated Arrival",
-        "isDomestic": "Domestic Shipment",
         "status": "Status",
         "tier": "Pricing Tier",
         "originCountry": "Origin Country",
         "shipmentType": "Shipment Type",
         "international": "International",
-        "domestic": "Domestic",
-        "domesticDetails": "Domestic Shipment Details",
         "senderName": "Sender Name",
         "receiverName": "Receiver Name",
         "receiverPrimaryPhone": "Primary Phone Number",
@@ -779,8 +768,7 @@
         "productQuantity": "Product Quantity",
         "shippingPayment": "Shipping Payment",
         "companyPays": "Company Pays Shipping",
-        "customerPays": "Customer Pays Shipping",
-        "domesticNote": "Domestic Shipment Notes"
+        "customerPays": "Customer Pays Shipping"
       },
       "placeholders": {
         "csn": "e.g., BEN-828C",
@@ -798,15 +786,13 @@
         "secondaryPhone": "+218987654321",
         "detailedAddress": "123 Main Street, Building A, Floor 2",
         "productPrice": "150.50",
-        "productQuantity": "2",
-        "domesticNote": "Fragile items - handle with care"
+        "productQuantity": "2"
       },
       "descriptions": {
         "csnSearch": "Search for a customer by name, email, or CSN",
         "csnReadOnly": "CSN cannot be changed after creation",
-        "tier": "Pricing tier affects shipping costs based on domestic tier multipliers",
+        "tier": "Pricing tier affects shipping costs",
         "originCountry": "Country where the shipment originates from",
-        "domesticDetails": "Additional details for domestic shipments within Libya",
         "phoneFormat": "Enter phone number in format: +218XXXXXXXXX",
         "productInfo": "Information about the product being shipped",
         "shippingCost": "Who is responsible for paying the shipping cost"
@@ -863,8 +849,7 @@
       "shippingDetails": "Shipping Details",
       "sizeWeight": "Size & Weight",
       "timeline": "Timeline",
-      "metadata": "Metadata",
-      "domestic": "Domestic Shipment"
+      "metadata": "Metadata"
     },
     "delete": {
       "title": "Delete Shipment",
@@ -1362,68 +1347,10 @@
     "countries": {
       "turkey": "Turkey",
       "china": "China",
-      "uae": "UAE",
-      "libya": "Libya"
+      "uae": "UAE"
     }
   },
   "settings": {
-    "domesticCities": {
-      "title": "Domestic Cities Configuration",
-      "description": "Manage shipping tiers for Libyan cities",
-      "addCity": "Add City",
-      "addCityTitle": "Add New City",
-      "addCityDescription": "Configure shipping tiers for a new Libyan city",
-      "cityName": "City Name",
-      "selectCity": "Select a city...",
-      "searchCities": "Search cities...",
-      "noCityFound": "No city found.",
-      "tier": "Tier",
-      "tiers": "Shipping Tiers",
-      "noCities": "No cities configured. Add your first city to get started.",
-      "cityAdded": "City \"{{city}}\" added successfully",
-      "cityUpdated": "City \"{{city}}\" updated successfully",
-      "cityDeleted": "City \"{{city}}\" deleted successfully",
-      "cityExists": "This city already exists",
-      "fetchFailed": "Failed to load domestic cities configuration",
-      "addFailed": "Failed to add city",
-      "updateFailed": "Failed to update city",
-      "deleteFailed": "Failed to delete city",
-      "deleteCityTitle": "Delete City",
-      "deleteCityDescription": "Are you sure you want to delete {{city}}? This will remove all tier pricing for this city. This action cannot be undone."
-    },
-    "domesticRoutes": {
-      "title": "Domestic Shipping Routes",
-      "description": "Configure city-to-city shipping prices in Libyan Dinars (LYD)",
-      "addOriginCity": "Add Origin City",
-      "addOriginCityDesc": "Add a new origin city with destinations and prices",
-      "addRoute": "Add Route",
-      "addRouteDesc": "Add a new route from {{city}}",
-      "noRoutes": "No domestic routes configured. Add your first origin city to get started.",
-      "fromTo": "From / To",
-      "from": "From",
-      "originCity": "Origin City",
-      "destinationCity": "Destination City",
-      "destinations": "Destinations",
-      "addDestination": "Add Destination",
-      "enterCityName": "Enter city name",
-      "price": "Price (LYD)",
-      "deleteOriginCity": "Delete Origin City",
-      "cityExists": "This city already exists as an origin",
-      "routeExists": "This route already exists",
-      "sameCityError": "Origin and destination cannot be the same city",
-      "originCityAdded": "Origin city added successfully",
-      "originCityDeleted": "Origin city and all its routes deleted",
-      "routeAdded": "Route added successfully",
-      "routeUpdated": "Route price updated successfully",
-      "routeDeleted": "Route deleted successfully",
-      "fetchFailed": "Failed to load domestic routes",
-      "addFailed": "Failed to add route",
-      "updateFailed": "Failed to update route",
-      "deleteFailed": "Failed to delete route",
-      "deleteRouteTitle": "Delete Route",
-      "deleteRouteDescription": "Are you sure you want to delete the route from {{origin}} to {{destination}}? This action cannot be undone.",
-      "deleteOriginCityTitle": "Delete Origin City",
-      "deleteOriginCityDescription": "Are you sure you want to delete {{city}} and all its routes? This action cannot be undone."
-    }
+    "_placeholder": ""
   }
 }

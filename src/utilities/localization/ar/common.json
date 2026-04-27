@@ -468,8 +468,7 @@
     "quickActions": {
       "title": "إجراءات سريعة",
       "createAccount": "إنشاء حساب",
-      "createShipment": "إنشاء شحنة",
-      "createDomestic": "شحنة محلية"
+      "createShipment": "إنشاء شحنة"
     },
     "periods": {
       "today": "اليوم",
@@ -570,7 +569,6 @@
     },
     "form": {
       "fields": {
-        "domesticDetails": "تفاصيل الشحنة المحلية",
         "originCity": "مدينة المنشأ",
         "destinationCity": "مدينة الوجهة",
         "senderName": "اسم المرسل",
@@ -583,7 +581,6 @@
         "shippingPayment": "دفع الشحن",
         "companyPays": "الشركة تدفع الشحن",
         "customerPays": "العميل يدفع الشحن",
-        "domesticNote": "ملاحظات الشحنة المحلية",
         "tier": "فئة التسعير"
       },
       "tiers": {
@@ -599,7 +596,6 @@
         "selectTier": "اختر الفئة"
       },
       "descriptions": {
-        "domesticDetails": "تفاصيل إضافية للشحنات المحلية داخل ليبيا",
         "originCity": "اختياري: المدينة التي تنطلق منها الشحنة",
         "phoneFormat": "أدخل رقم الهاتف بصيغة: +218XXXXXXXXX",
         "productInfo": "معلومات حول المنتج المشحون",
@@ -607,7 +603,7 @@
         "autoDestination": "يتم تعيين الوجهة من مدينة العميل المسجلة",
         "selectCustomerFirst": "اختر عميلاً لتعبئة الوجهة تلقائياً",
         "internationalStatusOnly": "الشحنات الدولية تستخدم تتبع مبسط من 4 مراحل",
-        "tier": "فئة التسعير تؤثر على تكاليف الشحن بناءً على مضاعفات الفئة المحلية"
+        "tier": "فئة التسعير تؤثر على تكاليف الشحن"
       }
     },
       "filters": {
@@ -630,7 +626,6 @@
         "allOriginCountries": "جميع بلدان المنشأ",
         "from": "من",
         "to": "إلى",
-        "domestic": "محلي فقط",
         "international": "دولي فقط",
         "destinations": {
           "benghazi": "بنغازي",
@@ -707,7 +702,6 @@
       "shippingDetails": "تفاصيل الشحن",
       "sizeWeight": "الحجم والوزن",
       "metadata": "البيانات الوصفية",
-      "domestic": "شحنة محلية",
       "basicInfo": "المعلومات الأساسية",
       "sizeInfo": "الحجم والأبعاد",
       "shippingInfo": "تفاصيل الشحن",
@@ -1171,69 +1165,11 @@
     "countries": {
       "turkey": "تركيا",
       "china": "الصين",
-      "uae": "الإمارات",
-      "libya": "ليبيا"
+      "uae": "الإمارات"
     }
   },
   "settings": {
-    "domesticCities": {
-      "title": "إعدادات المدن المحلية",
-      "description": "إدارة فئات الشحن للمدن الليبية",
-      "addCity": "إضافة مدينة",
-      "addCityTitle": "إضافة مدينة جديدة",
-      "addCityDescription": "تكوين فئات الشحن لمدينة ليبية جديدة",
-      "cityName": "اسم المدينة",
-      "selectCity": "اختر مدينة...",
-      "searchCities": "ابحث عن مدينة...",
-      "noCityFound": "لم يتم العثور على مدينة.",
-      "tier": "الفئة",
-      "tiers": "فئات الشحن",
-      "noCities": "لا توجد مدن مكونة. أضف أول مدينة للبدء.",
-      "cityAdded": "تمت إضافة المدينة \"{{city}}\" بنجاح",
-      "cityUpdated": "تم تحديث المدينة \"{{city}}\" بنجاح",
-      "cityDeleted": "تم حذف المدينة \"{{city}}\" بنجاح",
-      "cityExists": "هذه المدينة موجودة بالفعل",
-      "fetchFailed": "فشل تحميل إعدادات المدن المحلية",
-      "addFailed": "فشل إضافة المدينة",
-      "updateFailed": "فشل تحديث المدينة",
-      "deleteFailed": "فشل حذف المدينة",
-      "deleteCityTitle": "حذف المدينة",
-      "deleteCityDescription": "هل أنت متأكد من حذف {{city}}؟ سيؤدي ذلك إلى إزالة جميع أسعار الفئات لهذه المدينة. لا يمكن التراجع عن هذا الإجراء."
-    },
-    "domesticRoutes": {
-      "title": "مسارات الشحن المحلية",
-      "description": "تكوين أسعار الشحن بين المدن بالدينار الليبي",
-      "addOriginCity": "إضافة مدينة المنشأ",
-      "addOriginCityDesc": "إضافة مدينة منشأ جديدة مع الوجهات والأسعار",
-      "addRoute": "إضافة مسار",
-      "addRouteDesc": "إضافة مسار جديد من {{city}}",
-      "noRoutes": "لم يتم تكوين مسارات محلية. أضف أول مدينة منشأ للبدء.",
-      "fromTo": "من / إلى",
-      "from": "من",
-      "originCity": "مدينة المنشأ",
-      "destinationCity": "مدينة الوجهة",
-      "destinations": "الوجهات",
-      "addDestination": "إضافة وجهة",
-      "enterCityName": "أدخل اسم المدينة",
-      "price": "السعر (د.ل)",
-      "deleteOriginCity": "حذف مدينة المنشأ",
-      "cityExists": "هذه المدينة موجودة بالفعل كمدينة منشأ",
-      "routeExists": "هذا المسار موجود بالفعل",
-      "sameCityError": "لا يمكن أن تكون مدينة المنشأ والوجهة متماثلتين",
-      "originCityAdded": "تمت إضافة مدينة المنشأ بنجاح",
-      "originCityDeleted": "تم حذف مدينة المنشأ وجميع مساراتها",
-      "routeAdded": "تمت إضافة المسار بنجاح",
-      "routeUpdated": "تم تحديث سعر المسار بنجاح",
-      "routeDeleted": "تم حذف المسار بنجاح",
-      "fetchFailed": "فشل تحميل المسارات المحلية",
-      "addFailed": "فشل إضافة المسار",
-      "updateFailed": "فشل تحديث المسار",
-      "deleteFailed": "فشل حذف المسار",
-      "deleteRouteTitle": "حذف المسار",
-      "deleteRouteDescription": "هل أنت متأكد من حذف المسار من {{origin}} إلى {{destination}}؟ لا يمكن التراجع عن هذا الإجراء.",
-      "deleteOriginCityTitle": "حذف مدينة المنشأ",
-      "deleteOriginCityDescription": "هل أنت متأكد من حذف {{city}} وجميع مساراتها؟ لا يمكن التراجع عن هذا الإجراء."
-    }
+    "_placeholder": ""
   }
 }
 
