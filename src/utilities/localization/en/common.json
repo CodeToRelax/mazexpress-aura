@@ -755,14 +755,11 @@
         "extraCosts": "Extra Costs",
         "note": "Note (Optional)",
         "estimatedArrival": "Estimated Arrival",
-        "isDomestic": "Domestic Shipment",
         "status": "Status",
         "tier": "Pricing Tier",
         "originCountry": "Origin Country",
         "shipmentType": "Shipment Type",
         "international": "International",
-        "domestic": "Domestic",
-        "domesticDetails": "Domestic Shipment Details",
         "senderName": "Sender Name",
         "receiverName": "Receiver Name",
         "receiverPrimaryPhone": "Primary Phone Number",
@@ -772,8 +769,7 @@
         "productQuantity": "Product Quantity",
         "shippingPayment": "Shipping Payment",
         "companyPays": "Company Pays Shipping",
-        "customerPays": "Customer Pays Shipping",
-        "domesticNote": "Domestic Shipment Notes"
+        "customerPays": "Customer Pays Shipping"
       },
       "placeholders": {
         "csn": "e.g., BEN-828C",
@@ -791,15 +787,13 @@
         "secondaryPhone": "+218987654321",
         "detailedAddress": "123 Main Street, Building A, Floor 2",
         "productPrice": "150.50",
-        "productQuantity": "2",
-        "domesticNote": "Fragile items - handle with care"
+        "productQuantity": "2"
       },
       "descriptions": {
         "csnSearch": "Search for a customer by name, email, or CSN",
         "csnReadOnly": "CSN cannot be changed after creation",
-        "tier": "Pricing tier affects shipping costs based on domestic tier multipliers",
+        "tier": "Pricing tier affects shipping costs",
         "originCountry": "Country where the shipment originates from",
-        "domesticDetails": "Additional details for domestic shipments within Libya",
         "phoneFormat": "Enter phone number in format: +218XXXXXXXXX",
         "productInfo": "Information about the product being shipped",
         "shippingCost": "Who is responsible for paying the shipping cost"
