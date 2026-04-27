@@ -716,7 +716,6 @@
         "allOriginCountries": "All Origin Countries",
         "from": "From",
         "to": "To",
-        "domestic": "Domestic Only",
         "international": "International Only",
         "destinations": {
           "benghazi": "Benghazi",
