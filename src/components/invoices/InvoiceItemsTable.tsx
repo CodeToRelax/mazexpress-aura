@@ -145,7 +145,7 @@ export function InvoiceItemsTable({
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent className="z-50">
-                          {getAvailableStatuses(shipment.isDomestic || false).map((status) => (
+                          {getAvailableStatuses().map((status) => (
                             <SelectItem key={status} value={status} className="text-xs">
                               {status}
                             </SelectItem>

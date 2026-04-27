@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { UserPlus, Package, Truck } from 'lucide-react';
+import { UserPlus, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CreateUserDialog } from '@/screens/users/CreateUserDialog';
 import { CreateShipmentDialog } from '@/screens/shipments/CreateShipmentDialog';
@@ -12,7 +12,6 @@ export function QuickActionsPanel() {
   const queryClient = useQueryClient();
   const [createUserOpen, setCreateUserOpen] = useState(false);
   const [createShipmentOpen, setCreateShipmentOpen] = useState(false);
-  const [createDomesticOpen, setCreateDomesticOpen] = useState(false);
 
   const handleSuccess = () => {
     queryClient.invalidateQueries({ queryKey: ['analytics'] });
@@ -48,15 +47,6 @@ export function QuickActionsPanel() {
             <Package className="h-5 w-5" />
             <span className="text-xs">{t('dashboard.quickActions.createShipment')}</span>
           </Button>
-          <Button
-            type="button"
-            variant="outline"
-            className="flex-1 min-w-[140px] h-auto py-3 flex flex-col items-center gap-2"
-            onClick={() => setCreateDomesticOpen(true)}
-          >
-            <Truck className="h-5 w-5" />
-            <span className="text-xs">{t('dashboard.quickActions.createDomestic')}</span>
-          </Button>
         </div>
       </motion.div>
 
@@ -69,12 +59,6 @@ export function QuickActionsPanel() {
         open={createShipmentOpen} 
         onOpenChange={setCreateShipmentOpen}
         onSuccess={handleSuccess}
-      />
-      <CreateShipmentDialog 
-        open={createDomesticOpen} 
-        onOpenChange={setCreateDomesticOpen}
-        onSuccess={handleSuccess}
-        defaultDomestic={true}
       />
     </>
   );
