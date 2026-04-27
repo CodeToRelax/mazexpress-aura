@@ -7,7 +7,6 @@ import type { IShipment } from '@/types/shipment';
 export const normalizeShipment = (shipment: any): IShipment => ({
   ...shipment,
   isn: shipment.isn === '-' ? undefined : shipment.isn,
-  isDomestic: shipment.isDomestic || undefined,
   updatedBy: shipment.updatedBy || undefined,
   // Backend uses spaces in status values
   status: shipment.status,
