@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
-import ReactMarkdown from 'react-markdown';
-import { FileText, Loader2, Save, Eye, Pencil } from 'lucide-react';
+import MDEditor from '@uiw/react-md-editor';
+import '@uiw/react-md-editor/markdown-editor.css';
+import { FileText, Loader2, Save } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ACLGuard } from '@/components/guards/ACLGuard';
 import { toast } from '@/hooks/use-toast';
+import { useTheme } from '@/hooks/useTheme';
 import { getPolicies, updatePolicies, type Policies } from '@/utilities/api/policies.api';
 
 const MAX_LEN = 50_000;
@@ -23,7 +24,7 @@ export function PoliciesCard() {
   const [original, setOriginal] = useState<Policies>({ policies: '', prohibitedItems: '', extra: '' });
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [view, setView] = useState<'edit' | 'preview'>('edit');
+  const { isDark } = useTheme();
 
   const load = async () => {
     try {
@@ -89,27 +90,12 @@ export function PoliciesCard() {
               Legal & Policies
             </CardTitle>
             <CardDescription>
-              Edit the three customer-facing policy blocks. Markdown links like
-              <code className="mx-1 px-1 rounded bg-muted">[label](https://…)</code>
-              are supported.
+              Edit the three customer-facing policy blocks with the rich Markdown
+              editor. Use the toolbar for headings, bold, italics, lists, links,
+              code, tables and more — or write Markdown directly.
             </CardDescription>
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setView(view === 'edit' ? 'preview' : 'edit')}
-            >
-              {view === 'edit' ? (
-                <>
-                  <Eye className="h-4 w-4 mr-2" /> Preview
-                </>
-              ) : (
-                <>
-                  <Pencil className="h-4 w-4 mr-2" /> Edit
-                </>
-              )}
-            </Button>
             <Button onClick={handleSave} disabled={!isDirty || isSaving}>
               {isSaving ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -140,36 +126,28 @@ export function PoliciesCard() {
                     {f.label}
                   </Label>
                   <p className="text-xs text-muted-foreground">{f.description}</p>
-                  {view === 'edit' ? (
-                    <>
-                      <Textarea
-                        id={`field-${f.key}`}
-                        value={data[f.key]}
-                        onChange={(e) =>
-                          setData((d) => ({ ...d, [f.key]: e.target.value.slice(0, MAX_LEN) }))
-                        }
-                        rows={16}
-                        placeholder={`Enter ${f.label.toLowerCase()}…`}
-                        className="font-mono text-sm"
-                      />
-                      <div className="flex items-center justify-between text-xs text-muted-foreground">
-                        <span>
-                          {data[f.key].length.toLocaleString()} / {MAX_LEN.toLocaleString()} chars
-                        </span>
-                        {data[f.key] !== original[f.key] && (
-                          <span className="text-warning">Unsaved changes</span>
-                        )}
-                      </div>
-                    </>
-                  ) : (
-                    <div className="prose prose-sm dark:prose-invert max-w-none rounded-md border bg-card p-4 min-h-[200px]">
-                      {data[f.key].trim() ? (
-                        <ReactMarkdown>{data[f.key]}</ReactMarkdown>
-                      ) : (
-                        <p className="text-muted-foreground italic">Empty</p>
-                      )}
-                    </div>
-                  )}
+                  <div data-color-mode={isDark ? 'dark' : 'light'} className="rounded-md overflow-hidden border">
+                    <MDEditor
+                      value={data[f.key]}
+                      onChange={(val) =>
+                        setData((d) => ({ ...d, [f.key]: (val ?? '').slice(0, MAX_LEN) }))
+                      }
+                      height={420}
+                      preview="edit"
+                      textareaProps={{
+                        id: `field-${f.key}`,
+                        placeholder: `Enter ${f.label.toLowerCase()}…`,
+                      }}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <span>
+                      {data[f.key].length.toLocaleString()} / {MAX_LEN.toLocaleString()} chars
+                    </span>
+                    {data[f.key] !== original[f.key] && (
+                      <span className="text-warning">Unsaved changes</span>
+                    )}
+                  </div>
                 </TabsContent>
               ))}
             </Tabs>
