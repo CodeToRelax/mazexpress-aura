@@ -570,7 +570,6 @@
     },
     "form": {
       "fields": {
-        "domesticDetails": "تفاصيل الشحنة المحلية",
         "originCity": "مدينة المنشأ",
         "destinationCity": "مدينة الوجهة",
         "senderName": "اسم المرسل",
@@ -583,7 +582,6 @@
         "shippingPayment": "دفع الشحن",
         "companyPays": "الشركة تدفع الشحن",
         "customerPays": "العميل يدفع الشحن",
-        "domesticNote": "ملاحظات الشحنة المحلية",
         "tier": "فئة التسعير"
       },
       "tiers": {
@@ -599,7 +597,6 @@
         "selectTier": "اختر الفئة"
       },
       "descriptions": {
-        "domesticDetails": "تفاصيل إضافية للشحنات المحلية داخل ليبيا",
         "originCity": "اختياري: المدينة التي تنطلق منها الشحنة",
         "phoneFormat": "أدخل رقم الهاتف بصيغة: +218XXXXXXXXX",
         "productInfo": "معلومات حول المنتج المشحون",
@@ -607,7 +604,7 @@
         "autoDestination": "يتم تعيين الوجهة من مدينة العميل المسجلة",
         "selectCustomerFirst": "اختر عميلاً لتعبئة الوجهة تلقائياً",
         "internationalStatusOnly": "الشحنات الدولية تستخدم تتبع مبسط من 4 مراحل",
-        "tier": "فئة التسعير تؤثر على تكاليف الشحن بناءً على مضاعفات الفئة المحلية"
+        "tier": "فئة التسعير تؤثر على تكاليف الشحن"
       }
     },
       "filters": {
@@ -630,7 +627,6 @@
         "allOriginCountries": "جميع بلدان المنشأ",
         "from": "من",
         "to": "إلى",
-        "domestic": "محلي فقط",
         "international": "دولي فقط",
         "destinations": {
           "benghazi": "بنغازي",
