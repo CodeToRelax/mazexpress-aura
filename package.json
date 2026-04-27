@@ -43,6 +43,7 @@
     "@tanstack/react-query": "^5.83.0",
     "@types/jsbarcode": "^3.11.4",
     "@types/uuid": "^11.0.0",
+    "@uiw/react-md-editor": "^4.1.0",
     "arabic-reshaper": "^1.1.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
