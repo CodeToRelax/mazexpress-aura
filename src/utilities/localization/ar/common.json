@@ -468,8 +468,7 @@
     "quickActions": {
       "title": "إجراءات سريعة",
       "createAccount": "إنشاء حساب",
-      "createShipment": "إنشاء شحنة",
-      "createDomestic": "شحنة محلية"
+      "createShipment": "إنشاء شحنة"
     },
     "periods": {
       "today": "اليوم",
