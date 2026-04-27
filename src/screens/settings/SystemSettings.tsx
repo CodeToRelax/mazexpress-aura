@@ -8,6 +8,7 @@ import { ExchangeRateCard } from './ExchangeRateCard';
 import { AirInternationalRatesCard } from './AirInternationalRatesCard';
 import { PoliciesCard } from './PoliciesCard';
 import { ItemCalculatorCard } from './ItemCalculatorCard';
+import { MinimumBillCard } from './MinimumBillCard';
 import { getSystemConfig } from '@/utilities/api/config.api';
 import { toast } from '@/hooks/use-toast';
 
@@ -112,6 +113,16 @@ export default function SystemSettings() {
           <ExchangeRateCard lydExchangeRate={config.lydExchangeRate} onUpdate={fetchConfig} />
         </motion.div>
       )}
+
+      {/* Minimum Bill */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.02 }}
+        className="mb-8"
+      >
+        <MinimumBillCard />
+      </motion.div>
 
       {/* Air International Pricing Tiers */}
       <motion.div
