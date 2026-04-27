@@ -27,7 +27,6 @@ import TrackShipment from "@/pages/TrackShipment";
 import PriceCalculator from "@/pages/PriceCalculator";
 import PoliciesPage from "@/pages/Policies";
 import MyProfile from "@/screens/profile/MyProfile";
-import DomesticRoutesPage from "@/screens/domestic/routes/Routes";
 import DomesticShipmentsPage from "@/screens/domestic/shipments/Shipments";
 import CreateWalkInPage from "@/screens/domestic/shipments/CreateWalkIn";
 import DomesticShipmentDetailPage from "@/screens/domestic/shipments/ShipmentDetail";
@@ -75,7 +74,7 @@ const App = () => {
               <Route path="/invoices/:id" element={<InvoiceDetail />} />
               <Route path="/settings" element={<SystemSettings />} />
               {/* Domestic shipments module */}
-              <Route path="/admin/domestic/routes" element={<DomesticRoutesPage />} />
+              <Route path="/admin/domestic/routes" element={<Navigate to="/settings" replace />} />
               <Route path="/admin/domestic/shipments" element={<DomesticShipmentsPage />} />
               <Route path="/admin/domestic/shipments/new" element={<CreateWalkInPage />} />
               <Route path="/admin/domestic/shipments/:id" element={<DomesticShipmentDetailPage />} />
