@@ -1,43 +1,40 @@
+## Upgrade Policies editor to a rich Markdown editor
 
+Replace the plain `Textarea` in `src/screens/settings/PoliciesCard.tsx` with a richer editing experience that still saves Markdown (the backend contract is unchanged — Markdown in, Markdown rendered with `react-markdown`).
 
-## Why `TRI-I928` doesn't show up in shipment search
+### Editor choice: `@uiw/react-md-editor`
 
-### Root cause analysis
+- Battle-tested Markdown editor with a built-in toolbar, keyboard shortcuts, drag-to-resize, and live preview.
+- Toolbar buttons act as **snippet inserters** for: bold, italic, strikethrough, H1–H3, quote, code, code block, unordered list, ordered list, checklist, link, image, table, horizontal rule.
+- Keyboard shortcuts: `Cmd/Ctrl+B` bold, `Cmd/Ctrl+I` italic, `Cmd/Ctrl+K` link, etc.
+- Output is plain Markdown (a string) — drop-in replacement for the current `value`/`onChange` text state, no API changes.
+- Has an Edit / Preview / Live split-view toggle built in, so we can drop our custom Edit/Preview button.
+- Lightweight (~50KB gzipped) and works in dark mode via a `data-color-mode` attribute.
 
-The frontend already has logic to handle ISN searches (lines 84-125 of `shipments.api.ts`):
-1. First tries `?searchParam=TRI-I928` — the backend's general search endpoint.
-2. If that returns 0 results AND the value matches the ISN pattern (`/^[A-Z]+-[A-Z0-9]+$/i`), it retries with `?isn=TRI-I928`.
+Alternative considered: TipTap (WYSIWYG). Rejected because it's heavy, requires a Markdown serializer, and risks data loss on round-trips with content authored in raw Markdown. Markdown-native editor is the safer fit for a legal/policies field.
 
-`TRI-I928` matches the regex, so the retry IS firing. The problem is one of two backend behaviors:
+### Changes
 
-**Hypothesis A (most likely):** The backend's `searchParam` searches `esn`/`csn` but NOT `isn`, AND the `isn` filter requires an **exact match**. If the stored ISN is something like `tri-i928` (lowercase) or `TRI-I0928`, the exact-match `isn=TRI-I928` query returns 0.
+1. **Add dependency**: `@uiw/react-md-editor`.
 
-**Hypothesis B:** The backend's `isn` validator rejects the format and 4xx's, which our retry silently swallows.
+2. **`src/screens/settings/PoliciesCard.tsx`**
+   - Replace the `Textarea` + custom Edit/Preview toggle with `<MDEditor value={...} onChange={...} height={420} preview="edit" />`.
+   - Keep the per-tab structure (Policies / Prohibited Items / Extra), the dirty-tracking, the character counter, the 50,000-char cap (enforced in `onChange`), the Save button, and the ACL guard.
+   - Remove our local `view` state and the standalone Eye/Pencil button — `MDEditor`'s built-in toolbar offers Edit/Live/Preview modes.
+   - Set `data-color-mode` on the editor wrapper based on the current theme so it matches dark/light mode (`useTheme` hook already exists).
+   - Import the editor's CSS once: `import '@uiw/react-md-editor/markdown-editor.css';`.
+   - Style overrides: a small CSS block (or `className`) so the editor's border radius / background blends with our `glass-card` look.
 
-I cannot confirm from the frontend alone — I need to see the actual network request/response for the failed search.
+3. **`src/pages/Policies.tsx`** — no change. It's read-only and already renders saved Markdown via `react-markdown`.
 
-### Plan
+4. **`src/utilities/api/policies.api.ts`** — no change. Still PATCHes only `policies | prohibitedItems | extra`.
 
-**Step 1 — Diagnose (in default mode):**
-- Use browser tools to navigate to `/shipments`, type `TRI-I928` in the search box, and capture the actual network requests/responses for both `searchParam=TRI-I928` and the `isn=TRI-I928` retry.
-- This tells us whether the backend returns 0 (data issue / case-sensitivity) or 4xx (validator issue).
+### Snippet/toolbar coverage answer
 
-**Step 2 — Fix based on findings:**
+Yes — the new editor provides a full toolbar that **inserts Markdown snippets** at the cursor (e.g. clicking "Link" inserts `[label](url)`, "Table" inserts a 3×3 table skeleton, "Code Block" wraps selection in triple backticks). It also supports keyboard shortcuts for the common ones. So users get both: clickable snippet buttons and raw-Markdown editing power.
 
-| Scenario | Fix |
-|----------|-----|
-| Backend `isn` filter is case-sensitive and stored value differs in case | Retry with both upper and lowercase variants of the ISN |
-| Backend `isn` requires exact match but user typed a partial/typo | Add a "did you mean?" hint when ISN-shaped search returns nothing |
-| Backend rejects the ISN format (4xx) | Surface the error instead of swallowing it; coordinate with backend to relax the validator |
-| Shipment with `TRI-I928` simply doesn't exist in the DB | Show clearer empty state — nothing to fix in code |
+### Out of scope
 
-**Step 3 — Improve robustness regardless:**
-- Add a third fallback that tries `?esn=TRI-I928` (some backends store the prefix-format value as the ESN, not the ISN).
-- Log the retry attempts to console so future debugging is easier.
-
-### Files likely to change
-- `src/utilities/api/shipments.api.ts` — extend the fallback chain (searchParam → isn → esn, with case variants).
-
-### What I need from you
-Just approve and I'll run the live diagnostic against the deployed backend to confirm which scenario applies before changing code.
-
+- No backend changes.
+- No change to the public-facing `/policies` viewer page.
+- No change to localization keys.
