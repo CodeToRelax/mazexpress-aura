@@ -458,8 +458,8 @@ export async function getItemCalculatorRates(): Promise<ItemCalculatorRates> {
   if (!response.ok) throw new Error('Failed to fetch FX rates');
   const result = await response.json();
   const data = result.data ?? result;
-  // Backend may return { rates: {...} } or the map directly.
-  return (data?.rates ?? data) as ItemCalculatorRates;
+  // Backend returns { ratesToLyd: {...} }; tolerate { rates: {...} } or the map directly.
+  return (data?.ratesToLyd ?? data?.rates ?? data) as ItemCalculatorRates;
 }
 
 export async function updateItemCalculatorRates(
@@ -474,8 +474,8 @@ export async function updateItemCalculatorRates(
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     },
-    // Always send under `rates` to match documented partial-update shape.
-    body: JSON.stringify({ rates }),
+    // Backend expects { ratesToLyd: {...} }.
+    body: JSON.stringify({ ratesToLyd: rates }),
   });
   if (!response.ok) {
     const err = await response.json().catch(() => ({}));
@@ -483,7 +483,7 @@ export async function updateItemCalculatorRates(
   }
   const result = await response.json();
   const data = result.data ?? result;
-  return (data?.rates ?? data) as ItemCalculatorRates;
+  return (data?.ratesToLyd ?? data?.rates ?? data) as ItemCalculatorRates;
 }
 
 export async function convertItemAmount(body: {
