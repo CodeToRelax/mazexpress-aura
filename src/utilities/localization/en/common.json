@@ -567,7 +567,6 @@
   },
   "shipments": {
     "fields": {
-      "domesticDetails": "Domestic Shipment Details",
       "originCity": "Origin City",
       "destinationCity": "Destination City",
       "senderName": "Sender Name",
@@ -580,7 +579,6 @@
       "shippingPayment": "Shipping Payment",
       "companyPays": "Company Pays Shipping",
       "customerPays": "Customer Pays Shipping",
-      "domesticNote": "Domestic Shipment Notes",
       "csn": "Customer Shipping Number",
       "isn": "International Shipping Number (Optional)",
       "destination": "Destination",
@@ -592,13 +590,11 @@
       "extraCosts": "Extra Costs",
       "note": "Note (Optional)",
       "estimatedArrival": "Estimated Arrival",
-      "isDomestic": "Domestic Shipment",
       "status": "Status",
       "tier": "Pricing Tier",
       "originCountry": "Origin Country",
       "shipmentType": "Shipment Type",
-      "international": "International",
-      "domestic": "Domestic"
+      "international": "International"
     },
     "tiers": {
       "A": "Tier A",
@@ -626,11 +622,9 @@
       "secondaryPhone": "+218987654321",
       "detailedAddress": "123 Main Street, Building A, Floor 2",
       "productPrice": "150.50",
-      "productQuantity": "2",
-      "domesticNote": "Fragile items - please handle with care"
+      "productQuantity": "2"
     },
     "descriptions": {
-      "domesticDetails": "Additional details for domestic shipments within Libya",
       "originCity": "Optional: Where the shipment originates from",
       "phoneFormat": "Enter phone number in format: +218XXXXXXXXX",
       "productInfo": "Information about the product being shipped",
@@ -640,7 +634,7 @@
       "internationalStatusOnly": "International shipments use simplified 4-stage tracking",
       "csnSearch": "Search for a customer by name, email, or CSN",
       "csnReadOnly": "Customer Shipping Number cannot be changed after creation",
-      "tier": "Pricing tier affects shipping costs based on domestic tier multipliers",
+      "tier": "Pricing tier affects shipping costs",
       "originCountry": "The country where the shipment originates from"
     },
     "title": "Shipments Management",
