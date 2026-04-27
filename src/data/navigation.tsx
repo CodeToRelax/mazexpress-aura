@@ -1,4 +1,4 @@
-import { Home, Users, BarChart, Package, FileText, Warehouse, Wallet } from 'lucide-react';
+import { Home, Users, BarChart, Package, FileText, Warehouse, Wallet, Truck, Route as RouteIcon } from 'lucide-react';
 import type { NavItem } from '@/types/navigation';
 import type { ACLFlags } from '@/types/acl';
 
@@ -39,6 +39,30 @@ export const navigationItems: NavItemWithACL[] = [
     href: '/shipments',
     match: 'prefix',
     aclFlag: 'canViewShipments',
+  },
+  {
+    id: 'domestic',
+    labelKey: 'nav.domestic',
+    icon: Truck,
+    aclFlag: 'canViewShipments',
+    children: [
+      {
+        id: 'domestic-shipments',
+        labelKey: 'nav.domestic.shipments',
+        icon: Package,
+        href: '/admin/domestic/shipments',
+        match: 'prefix',
+        aclFlag: 'canViewShipments',
+      },
+      {
+        id: 'domestic-routes',
+        labelKey: 'nav.domestic.routes',
+        icon: RouteIcon,
+        href: '/admin/domestic/routes',
+        match: 'prefix',
+        aclFlag: 'canViewShipments',
+      },
+    ],
   },
   {
     id: 'invoices',
