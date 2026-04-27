@@ -525,8 +525,7 @@
     "quickActions": {
       "title": "Quick Actions",
       "createAccount": "Create Account",
-      "createShipment": "Create Shipment",
-      "createDomestic": "Domestic Shipment"
+      "createShipment": "Create Shipment"
     },
     "periods": {
       "today": "Today",
