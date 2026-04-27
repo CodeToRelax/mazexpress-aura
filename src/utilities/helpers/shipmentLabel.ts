@@ -1,112 +1,10 @@
 import JsBarcode from 'jsbarcode';
-import QRCode from 'qrcode';
 import type { IShipment } from '@/types/shipment';
 import logoImage from '@/assets/maz-express-logo.png';
 import { formatCityName } from './shipmentHelpers';
 
 // Re-export 10x10 cm label functions
 export { generateLabel10x10, generateBulkLabels10x10 } from '@/components/shipments/PrintLabel10x10';
-
-// Generate domestic label HTML with Arabic text
-async function generateDomesticLabelHTML(shipment: IShipment): Promise<string> {
-  // Generate QR code from ESN
-  let qrCodeDataUrl = '';
-  try {
-    qrCodeDataUrl = await QRCode.toDataURL(shipment.esn, {
-      width: 200,
-      margin: 1,
-      color: {
-        dark: '#000000',
-        light: '#FFFFFF'
-      }
-    });
-  } catch (error) {
-    console.error('Error generating QR code for ESN:', shipment.esn, error);
-  }
-
-  // Format date as DD.MM.YYYY
-  const formatDate = (dateString: string | undefined): string => {
-    if (!dateString) return new Date().toLocaleDateString('en-GB').replace(/\//g, '.');
-    const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}.${month}.${year}`;
-  };
-
-  const details = shipment.domesticShipmentDetails;
-  const senderName = details?.senderName || 'N/A';
-  const receiverName = details?.receiverName || 'N/A';
-  const receiverPhone = details?.receiverPrimaryPhoneNumber || 'N/A';
-  const originCity = shipment.originCity ? formatCityName(shipment.originCity) : 'N/A';
-  const destinationCity = formatCityName(shipment.shipmentDestination) || 'N/A';
-  const detailedAddress = details?.destination || 'N/A';
-  const productPrice = details?.productPrice || 0;
-  const productQuantity = details?.productQuantity || 1;
-  const note = details?.note || shipment.note || '-';
-  const date = formatDate(shipment.createdAt);
-
-  return `
-    <div class="label-container domestic">
-      <table class="header-table">
-        <tr>
-          <td class="logo-cell">
-            <img src="${logoImage}" alt="MAZ Express" class="logo" />
-          </td>
-          <td class="qr-cell">
-            ${qrCodeDataUrl ? `<img src="${qrCodeDataUrl}" alt="QR Code" class="qr-code" />` : ''}
-            <div class="date-box">${date}</div>
-          </td>
-        </tr>
-      </table>
-      
-      <table class="info-table">
-        <tr>
-          <td class="label-arabic">اسم المرسل</td>
-          <td class="value-text">${senderName}</td>
-        </tr>
-        <tr>
-          <td class="label-arabic">اسم المستلم</td>
-          <td class="value-text">${receiverName}</td>
-        </tr>
-        <tr>
-          <td class="label-arabic">هاتف المستلم</td>
-          <td class="value-text">${receiverPhone}</td>
-        </tr>
-        <tr>
-          <td class="label-arabic">مدينة المنشأ</td>
-          <td class="value-text">${originCity}</td>
-        </tr>
-        <tr>
-          <td class="label-arabic">مدينة الوجهة</td>
-          <td class="value-text">${destinationCity}</td>
-        </tr>
-        <tr>
-          <td class="label-arabic">العنوان التفصيلي</td>
-          <td class="value-text">${detailedAddress}</td>
-        </tr>
-        <tr>
-          <td class="label-arabic">سعر المنتج</td>
-          <td class="value-text">${productPrice}</td>
-        </tr>
-        <tr>
-          <td class="label-arabic">العدد</td>
-          <td class="value-text">${productQuantity}</td>
-        </tr>
-        <tr>
-          <td class="label-arabic">ملاحظة</td>
-          <td class="value-text">${note}</td>
-        </tr>
-      </table>
-      
-      <table class="footer-table">
-        <tr>
-          <td class="footer-text">mazexpress2020@gmail.com</td>
-        </tr>
-      </table>
-    </div>
-  `;
-}
 
 // Generate label HTML for a single shipment
 function generateLabelHTML(shipment: IShipment): string {
@@ -168,10 +66,7 @@ function generateLabelHTML(shipment: IShipment): string {
 
 // Print single shipment label
 export async function generateShipmentLabel(shipment: IShipment): Promise<void> {
-  // Check if domestic and generate appropriate label
-  const labelHTML = shipment.isDomestic 
-    ? await generateDomesticLabelHTML(shipment)
-    : generateLabelHTML(shipment);
+  const labelHTML = generateLabelHTML(shipment);
   
   if (!labelHTML) {
     alert('Failed to generate label for this shipment');
@@ -187,7 +82,7 @@ export async function generateShipmentLabel(shipment: IShipment): Promise<void> 
 
   const fullHTML = `
     <!DOCTYPE html>
-    <html lang="${shipment.isDomestic ? 'ar' : 'en'}" dir="${shipment.isDomestic ? 'rtl' : 'ltr'}">
+    <html lang="en" dir="ltr">
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -441,14 +336,8 @@ export async function generateBulkShipmentLabels(shipments: IShipment[]): Promis
     return;
   }
 
-  // Generate HTML for all shipments (handle both domestic and international)
-  const labelPromises = shipments.map(shipment => 
-    shipment.isDomestic 
-      ? generateDomesticLabelHTML(shipment)
-      : Promise.resolve(generateLabelHTML(shipment))
-  );
-  
-  const labels = await Promise.all(labelPromises);
+  // Generate HTML for all shipments
+  const labels = shipments.map(shipment => generateLabelHTML(shipment));
   const labelsHTML = labels.filter(html => html !== '').join('\n');
 
   if (!labelsHTML) {

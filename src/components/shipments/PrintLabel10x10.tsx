@@ -1,5 +1,4 @@
 import JsBarcode from 'jsbarcode';
-import QRCode from 'qrcode';
 import type { IShipment } from '@/types/shipment';
 import stampImage from '@/assets/maz-express-stamp.png';
 import { formatCityName } from '@/utilities/helpers/shipmentHelpers';
