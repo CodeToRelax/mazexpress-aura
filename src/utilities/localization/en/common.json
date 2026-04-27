@@ -1355,5 +1355,171 @@
   },
   "settings": {
     "_placeholder": ""
+  },
+  "domestic": {
+    "status": {
+      "awaiting_approval": "Awaiting approval",
+      "awaiting_shipping": "Awaiting shipping",
+      "in_transit": "In transit",
+      "delivered": "Delivered",
+      "delivery_failed": "Delivery failed",
+      "returned": "Returned",
+      "cancelled": "Cancelled"
+    },
+    "tier": {
+      "A": "Tier A",
+      "B": "Tier B",
+      "C": "Tier C",
+      "D": "Tier D",
+      "OTHER": "Custom"
+    },
+    "paid-by": {
+      "sender": "Sender",
+      "receiver": "Receiver"
+    },
+    "admin": {
+      "routes": {
+        "title": "Routes",
+        "subtitle": "Origin → destination price directory for domestic shipping.",
+        "create": "New route",
+        "edit": "Edit route",
+        "delete-confirm": "This route will be soft-deleted. Existing shipments are unaffected and you can recreate the same pair afterwards.",
+        "duplicate-error": "A route already exists for this pair.",
+        "field": {
+          "origin": "Origin city",
+          "destination": "Destination city",
+          "tier-a": "Tier A price",
+          "tier-b": "Tier B price",
+          "tier-c": "Tier C price",
+          "tier-d": "Tier D price"
+        }
+      },
+      "shipments": {
+        "title": "Domestic Shipments",
+        "subtitle": "Manage city-to-city shipments inside Libya.",
+        "create": "New walk-in shipment",
+        "showing": "Showing {{from}}-{{to}} of {{total}}",
+        "charged": "Charged",
+        "credited": "Credited",
+        "tabs": {
+          "all": "All"
+        },
+        "filters": {
+          "search": "Search",
+          "search-placeholder": "Shipment number, recipient name, or phone",
+          "origin": "Origin",
+          "destination": "Destination",
+          "sender": "Sender",
+          "all": "All",
+          "reset": "Reset"
+        },
+        "col": {
+          "number": "Number",
+          "status": "Status",
+          "route": "Route",
+          "sender": "Sender",
+          "recipient": "Recipient",
+          "tier": "Tier",
+          "shipping": "Shipping",
+          "item": "Item",
+          "created": "Created"
+        },
+        "actions": {
+          "view": "View details",
+          "copy-number": "Copy number"
+        },
+        "empty": {
+          "title": "No shipments found",
+          "description": "Try adjusting filters or create a new walk-in shipment."
+        },
+        "options": {
+          "fragile": "Fragile",
+          "store": "Store on delivery failure",
+          "insurance": "Insurance"
+        },
+        "walk-in": {
+          "title": "New walk-in shipment",
+          "subtitle": "Create a domestic shipment on behalf of a customer at the counter.",
+          "step1": "1. Sender",
+          "step1-hint": "Search the existing customer paying for the shipment.",
+          "step2": "2. Recipient & shipment",
+          "step2-hint": "Where the parcel is going and what it contains.",
+          "step3": "3. Options & initial status",
+          "sender": "Customer",
+          "origin": "Origin city",
+          "recipient-name": "Recipient name",
+          "primary-phone": "Primary phone",
+          "alt-phone": "Alternate phone",
+          "dest-city": "Destination city",
+          "address": "Address",
+          "description": "Item description",
+          "quantity": "Quantity",
+          "item-price": "Item price (LYD)",
+          "item-paid-by": "Item paid by",
+          "tier": "Tier",
+          "shipping-paid-by": "Shipping paid by",
+          "shipping-price": "Shipping price (LYD)",
+          "looking-up": "Looking up route price…",
+          "no-route": "No route exists for this pair. Create one in Routes first.",
+          "initial-status": "Initial status",
+          "in-transit-hint": "Wallet posting rules will be evaluated when status changes occur.",
+          "notes": "Notes",
+          "submit": "Create shipment",
+          "success": "Walk-in shipment {{number}} created."
+        }
+      },
+      "detail": {
+        "walk-in": "Walk-in",
+        "change-status": "Change status",
+        "change-from": "From",
+        "change-to": "Move to",
+        "note": "Note (optional, max 500)",
+        "note-placeholder": "Add a short note for the audit log…",
+        "confirm": "Confirm change",
+        "no-transitions": "No further status transitions are allowed.",
+        "hint-debit": "Will debit the sender wallet for the shipping price.",
+        "hint-credit": "Will credit the sender wallet for the item price collected from the receiver.",
+        "invalid-transition": "That status change is no longer allowed.",
+        "refreshed": "Allowed transitions refreshed.",
+        "status-changed": "Status updated.",
+        "edit-title": "Edit shipment",
+        "edit-subtitle": "Sender and status can't be changed here. Use the status popover for status changes.",
+        "recalc-hint": "Leave blank to recalculate from route directory.",
+        "updated": "Shipment updated.",
+        "delete": "Soft delete",
+        "delete-title": "Soft delete this shipment?",
+        "delete-confirm": "It will be hidden from lists but the record (and any wallet postings) is preserved.",
+        "deleted": "Shipment soft-deleted.",
+        "soft-deleted-banner": "This shipment has been soft-deleted on {{date}} and is hidden from lists.",
+        "load-error": "Failed to load shipment.",
+        "pricing-title": "Pricing & wallet",
+        "shipping-price": "Shipping price",
+        "item-price": "Item price",
+        "paid-by": "Paid by",
+        "charged-on": "Charged on {{date}}",
+        "credited-on": "Credited on {{date}}",
+        "not-charged": "Wallet not yet charged",
+        "not-credited": "Wallet not yet credited",
+        "delta-shipping": "Original charge differs from current price; backend will post a delta on next change.",
+        "delta-item": "Original credit differs from current item price.",
+        "tx-title": "Wallet transactions for this shipment",
+        "tx-empty": "No wallet transactions yet. Postings appear when shipping is debited or items are credited.",
+        "tx-view-all": "View all transactions",
+        "sender": "Sender",
+        "no-sender-data": "Sender details not loaded.",
+        "view-customer": "View customer profile",
+        "recipient": "Recipient",
+        "item": "Item",
+        "qty": "Qty",
+        "price": "Price",
+        "options": "Options",
+        "notes": "Notes",
+        "history": "Status history",
+        "history-empty": "No history yet.",
+        "posted-shipping": "Shipping charged",
+        "posted-item": "Item credited",
+        "system": "System"
+      }
+    }
   }
 }
