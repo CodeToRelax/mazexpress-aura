@@ -1166,69 +1166,11 @@
     "countries": {
       "turkey": "تركيا",
       "china": "الصين",
-      "uae": "الإمارات",
-      "libya": "ليبيا"
+      "uae": "الإمارات"
     }
   },
   "settings": {
-    "domesticCities": {
-      "title": "إعدادات المدن المحلية",
-      "description": "إدارة فئات الشحن للمدن الليبية",
-      "addCity": "إضافة مدينة",
-      "addCityTitle": "إضافة مدينة جديدة",
-      "addCityDescription": "تكوين فئات الشحن لمدينة ليبية جديدة",
-      "cityName": "اسم المدينة",
-      "selectCity": "اختر مدينة...",
-      "searchCities": "ابحث عن مدينة...",
-      "noCityFound": "لم يتم العثور على مدينة.",
-      "tier": "الفئة",
-      "tiers": "فئات الشحن",
-      "noCities": "لا توجد مدن مكونة. أضف أول مدينة للبدء.",
-      "cityAdded": "تمت إضافة المدينة \"{{city}}\" بنجاح",
-      "cityUpdated": "تم تحديث المدينة \"{{city}}\" بنجاح",
-      "cityDeleted": "تم حذف المدينة \"{{city}}\" بنجاح",
-      "cityExists": "هذه المدينة موجودة بالفعل",
-      "fetchFailed": "فشل تحميل إعدادات المدن المحلية",
-      "addFailed": "فشل إضافة المدينة",
-      "updateFailed": "فشل تحديث المدينة",
-      "deleteFailed": "فشل حذف المدينة",
-      "deleteCityTitle": "حذف المدينة",
-      "deleteCityDescription": "هل أنت متأكد من حذف {{city}}؟ سيؤدي ذلك إلى إزالة جميع أسعار الفئات لهذه المدينة. لا يمكن التراجع عن هذا الإجراء."
-    },
-    "domesticRoutes": {
-      "title": "مسارات الشحن المحلية",
-      "description": "تكوين أسعار الشحن بين المدن بالدينار الليبي",
-      "addOriginCity": "إضافة مدينة المنشأ",
-      "addOriginCityDesc": "إضافة مدينة منشأ جديدة مع الوجهات والأسعار",
-      "addRoute": "إضافة مسار",
-      "addRouteDesc": "إضافة مسار جديد من {{city}}",
-      "noRoutes": "لم يتم تكوين مسارات محلية. أضف أول مدينة منشأ للبدء.",
-      "fromTo": "من / إلى",
-      "from": "من",
-      "originCity": "مدينة المنشأ",
-      "destinationCity": "مدينة الوجهة",
-      "destinations": "الوجهات",
-      "addDestination": "إضافة وجهة",
-      "enterCityName": "أدخل اسم المدينة",
-      "price": "السعر (د.ل)",
-      "deleteOriginCity": "حذف مدينة المنشأ",
-      "cityExists": "هذه المدينة موجودة بالفعل كمدينة منشأ",
-      "routeExists": "هذا المسار موجود بالفعل",
-      "sameCityError": "لا يمكن أن تكون مدينة المنشأ والوجهة متماثلتين",
-      "originCityAdded": "تمت إضافة مدينة المنشأ بنجاح",
-      "originCityDeleted": "تم حذف مدينة المنشأ وجميع مساراتها",
-      "routeAdded": "تمت إضافة المسار بنجاح",
-      "routeUpdated": "تم تحديث سعر المسار بنجاح",
-      "routeDeleted": "تم حذف المسار بنجاح",
-      "fetchFailed": "فشل تحميل المسارات المحلية",
-      "addFailed": "فشل إضافة المسار",
-      "updateFailed": "فشل تحديث المسار",
-      "deleteFailed": "فشل حذف المسار",
-      "deleteRouteTitle": "حذف المسار",
-      "deleteRouteDescription": "هل أنت متأكد من حذف المسار من {{origin}} إلى {{destination}}؟ لا يمكن التراجع عن هذا الإجراء.",
-      "deleteOriginCityTitle": "حذف مدينة المنشأ",
-      "deleteOriginCityDescription": "هل أنت متأكد من حذف {{city}} وجميع مساراتها؟ لا يمكن التراجع عن هذا الإجراء."
-    }
+    "_placeholder": ""
   }
 }
 
