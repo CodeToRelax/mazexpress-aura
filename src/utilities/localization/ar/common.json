@@ -22,7 +22,10 @@
     "wallet.dashboard": "لوحة التحكم",
     "wallet.transactions": "المعاملات",
     "invoices": "الفواتير",
-    "settings": "الإعدادات"
+    "settings": "الإعدادات",
+    "domestic": "الشحن المحلي",
+    "domestic.shipments": "الشحنات",
+    "domestic.routes": "المسارات"
   },
   "users": {
     "title": "إدارة المستخدمين",

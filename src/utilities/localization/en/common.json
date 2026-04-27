@@ -23,7 +23,10 @@
     "wallet.transactions": "Transactions",
     "wallets": "Wallets",
     "invoices": "Invoices",
-    "settings": "Settings"
+    "settings": "Settings",
+    "domestic": "Domestic",
+    "domestic.shipments": "Shipments",
+    "domestic.routes": "Routes"
   },
   "wallets": {
     "title": "Wallets Management",
