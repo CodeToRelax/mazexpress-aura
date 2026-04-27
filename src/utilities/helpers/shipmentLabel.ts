@@ -201,11 +201,6 @@ export async function generateShipmentLabel(shipment: IShipment): Promise<void> 
           border: 2px dashed #000;
         }
 
-        /* Domestic Label Styles */
-        .label-container.domestic {
-          padding: 0.2in;
-        }
-
         /* Header Table */
         .header-table {
           width: 100%;
