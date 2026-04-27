@@ -275,6 +275,42 @@ export async function convertItemAmount(body: {
   return Number(data?.converted ?? data?.amount ?? data?.value ?? 0);
 }
 
+// Minimum Bill (LYD) — invoice floor
+
+export async function getMinimumBill(): Promise<number> {
+  const token = await getAuthToken();
+  if (!token) throw new Error('Authentication required');
+
+  const response = await fetch(`${API_BASE_URL}/api/config/minimum-bill`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!response.ok) throw new Error('Failed to fetch minimum bill');
+  const result = await response.json();
+  const data = result.data ?? result;
+  return Number(data?.minimumBillLyd ?? 0);
+}
+
+export async function updateMinimumBill(minimumBillLyd: number): Promise<number> {
+  const token = await getAuthToken();
+  if (!token) throw new Error('Authentication required');
+
+  const response = await fetch(`${API_BASE_URL}/api/config/minimum-bill`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ minimumBillLyd }),
+  });
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.error?.message || err.message || 'Failed to update minimum bill');
+  }
+  const result = await response.json();
+  const data = result.data ?? result;
+  return Number(data?.minimumBillLyd ?? minimumBillLyd);
+}
+
 export type {
   CountryShippingConfig,
   SystemConfig,
