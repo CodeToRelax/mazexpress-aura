@@ -114,18 +114,6 @@ export interface IShipmentSize {
   length: number;
 }
 
-export interface IDomesticShipmentDetails {
-  senderName?: string;
-  receiverName?: string;
-  receiverPrimaryPhoneNumber?: string;
-  receiverSecondaryPhoneNumber?: string;
-  destination?: string;
-  productPrice?: number;
-  productQuantity?: number;
-  customerPaysShipping?: boolean;
-  note?: string;
-}
-
 export interface IShipmentPricingBreakdown {
   cbmM3: number;
   airVolumetricWeightKg?: number;
@@ -146,10 +134,8 @@ export interface IShipment {
   note?: string;
   status: string;
   estimatedArrival?: string;
-  isDomestic?: boolean;
-  originCountry?: 'libya' | 'turkey' | 'china' | 'uae';
+  originCountry?: 'turkey' | 'china' | 'uae';
   tier?: 'A' | 'B' | 'C' | 'D' | 'E';
-  domesticShipmentDetails?: IDomesticShipmentDetails;
   pricingBreakdown?: IShipmentPricingBreakdown;
   createdAt: string;
   updatedAt: string;
@@ -166,10 +152,8 @@ export interface CreateShipmentPayload {
   extraCosts?: number;
   note?: string;
   estimatedArrival?: string;
-  isDomestic?: boolean;
-  originCountry?: 'libya' | 'turkey' | 'china' | 'uae';
+  originCountry?: 'turkey' | 'china' | 'uae';
   tier?: 'A' | 'B' | 'C' | 'D' | 'E';
-  domesticShipmentDetails?: IDomesticShipmentDetails;
 }
 
 export interface UpdateShipmentPayload {
@@ -183,16 +167,14 @@ export interface UpdateShipmentPayload {
   note?: string;
   status?: string;
   estimatedArrival?: string;
-  isDomestic?: boolean;
-  originCountry?: 'libya' | 'turkey' | 'china' | 'uae';
+  originCountry?: 'turkey' | 'china' | 'uae';
   tier?: 'A' | 'B' | 'C' | 'D' | 'E';
-  domesticShipmentDetails?: IDomesticShipmentDetails;
 }
 
 export interface BulkUpdatePayload {
   shipmentsId: string[];
   shipmentStatus?: string;
-  originCountry?: 'libya' | 'turkey' | 'china' | 'uae';
+  originCountry?: 'turkey' | 'china' | 'uae';
   tier?: 'A' | 'B' | 'C' | 'D' | 'E';
 }
 
@@ -218,7 +200,6 @@ export interface ShipmentFilters {
   shipmentDestination?: string;
   method?: string; // Alias for shippingMethod
   shippingMethod?: string;
-  isDomestic?: boolean;
   tier?: string;
   originCountry?: string;
   from?: string;
@@ -257,7 +238,6 @@ export interface PriceCalculationPayload {
   shippingMethod: string;
   destination: string;
   country: string;
-  isDomestic?: boolean;
   tier?: 'A' | 'B' | 'C' | 'D' | 'E';
 }
 

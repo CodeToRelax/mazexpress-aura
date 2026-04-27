@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2, Calendar as CalendarIcon, Globe, Home } from 'lucide-react';
+import { Loader2, Calendar as CalendarIcon } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -13,7 +13,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import {
@@ -34,7 +33,6 @@ import {
 } from '@/components/ui/select';
 import { CustomerSearchCombobox } from '@/components/shipments/CustomerSearchCombobox';
 import { CitySearchCombobox } from '@/components/ui/CitySearchCombobox';
-import { DomesticShipmentDetailsForm } from '@/components/shipments/DomesticShipmentDetailsForm';
 import { toast } from '@/hooks/use-toast';
 import { shipmentsApi } from '@/utilities/api/shipments.api';
 import { createShipmentSchema, type CreateShipmentFormData } from '@/utilities/zod/shipment.schemas';
@@ -49,14 +47,13 @@ interface CreateShipmentDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
-  defaultDomestic?: boolean;
 }
 
-export function CreateShipmentDialog({ open, onOpenChange, onSuccess, defaultDomestic = false }: CreateShipmentDialogProps) {
+export function CreateShipmentDialog({ open, onOpenChange, onSuccess }: CreateShipmentDialogProps) {
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [sizeInputMode, setSizeInputMode] = useState<'weight' | 'dimensions'>('weight');
-  const [selectedCustomer, setSelectedCustomer] = useState<any>(null);
+  const [, setSelectedCustomer] = useState<any>(null);
 
   const form = useForm<CreateShipmentFormData>({
     resolver: zodResolver(createShipmentSchema),
@@ -65,7 +62,7 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess, defaultDom
       isn: '',
       shipmentDestination: undefined,
       shippingMethod: undefined,
-      isDomestic: defaultDomestic,
+      originCountry: undefined,
       size: {
         weight: undefined,
         height: undefined,
@@ -75,17 +72,6 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess, defaultDom
       extraCosts: 0,
       note: '',
       estimatedArrival: '',
-      domesticShipmentDetails: {
-        senderName: '',
-        receiverName: '',
-        receiverPrimaryPhoneNumber: '',
-        receiverSecondaryPhoneNumber: '',
-        destination: '',
-        productPrice: undefined,
-        productQuantity: undefined,
-        customerPaysShipping: false,
-        note: '',
-      },
     },
   });
 
@@ -96,7 +82,7 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess, defaultDom
         isn: '',
         shipmentDestination: undefined,
         shippingMethod: undefined,
-        isDomestic: defaultDomestic,
+        originCountry: undefined,
         size: {
           weight: undefined,
           height: undefined,
@@ -106,27 +92,16 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess, defaultDom
         extraCosts: 0,
         note: '',
         estimatedArrival: '',
-        domesticShipmentDetails: {
-          senderName: '',
-          receiverName: '',
-          receiverPrimaryPhoneNumber: '',
-          receiverSecondaryPhoneNumber: '',
-          destination: '',
-          productPrice: undefined,
-          productQuantity: undefined,
-          customerPaysShipping: false,
-          note: '',
-        },
       });
       setSizeInputMode('weight');
       setSelectedCustomer(null);
     }
-  }, [open, form, defaultDomestic]);
+  }, [open, form]);
 
   const onSubmit = async (data: CreateShipmentFormData) => {
     try {
       setIsSubmitting(true);
-      
+
       await shipmentsApi.createShipment(data as any);
       toast({
         title: t('status.success'),
@@ -158,7 +133,7 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess, defaultDom
             {/* Basic Information */}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">{t('shipments.form.basicInfo')}</h3>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
@@ -187,176 +162,162 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess, defaultDom
                   )}
                 />
 
-                {!form.watch('isDomestic') && (
-                  <FormField
-                    control={form.control}
-                    name="isn"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('shipments.fields.isn')} <span className="text-muted-foreground text-xs">({t('common.optional', { defaultValue: 'Optional' })})</span></FormLabel>
-                        <FormControl>
-                          <Input {...field} placeholder={t('shipments.placeholders.isn')} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                )}
+                <FormField
+                  control={form.control}
+                  name="isn"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('shipments.fields.isn')} <span className="text-muted-foreground text-xs">({t('common.optional', { defaultValue: 'Optional' })})</span></FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder={t('shipments.placeholders.isn')} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Shipment Type Toggle */}
                 <FormField
                   control={form.control}
-                  name="isDomestic"
+                  name="originCountry"
                   render={({ field }) => (
-                    <FormItem className="col-span-full">
-                      <FormLabel>{t('shipments.fields.shipmentType')}</FormLabel>
+                    <FormItem>
+                      <FormLabel>{t('shipments.fields.originCountry')} <span className="text-destructive">*</span></FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder={t('shipments.placeholders.originCountry', { defaultValue: 'Select origin country' })} />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="turkey">{t('shipments.originCountry.turkey', { defaultValue: 'Turkey' })}</SelectItem>
+                          <SelectItem value="china">{t('shipments.originCountry.china', { defaultValue: 'China' })}</SelectItem>
+                          <SelectItem value="uae">{t('shipments.originCountry.uae', { defaultValue: 'UAE' })}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormDescription>
+                        {t('shipments.form.descriptions.originCountry', { defaultValue: 'Country where shipment originates from' })}
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
+            {/* Shipping Details */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">{t('shipments.form.shippingInfo')}</h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="shipmentDestination"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('shipments.fields.destination')}</FormLabel>
                       <FormControl>
-                        <div className="flex gap-2">
-                          <Button
-                            type="button"
-                            variant={!field.value ? "default" : "outline"}
-                            className="flex-1 transition-all"
-                            onClick={() => field.onChange(false)}
-                          >
-                            <Globe className="h-4 w-4 mr-2" />
-                            {t('shipments.fields.international')}
-                          </Button>
-                          <Button
-                            type="button"
-                            variant={field.value ? "default" : "outline"}
-                            className="flex-1 transition-all"
-                            onClick={() => field.onChange(true)}
-                          >
-                            <Home className="h-4 w-4 mr-2" />
-                            {t('shipments.fields.domestic')}
-                          </Button>
-                        </div>
+                        <CitySearchCombobox
+                          cities={Object.values(Cities).map((city) => ({
+                            value: city,
+                            label: city.charAt(0).toUpperCase() + city.slice(1).replace(/_/g, ' '),
+                          }))}
+                          value={field.value || ''}
+                          onChange={field.onChange}
+                          placeholder={t('shipments.filters.allDestinations')}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
 
-                {!form.watch('isDomestic') && (
-                  <FormField
-                    control={form.control}
-                    name="originCountry"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('shipments.fields.originCountry')} <span className="text-destructive">*</span></FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder={t('shipments.placeholders.originCountry', { defaultValue: 'Select origin country' })} />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="turkey">{t('shipments.originCountry.turkey', { defaultValue: 'Turkey' })}</SelectItem>
-                            <SelectItem value="china">{t('shipments.originCountry.china', { defaultValue: 'China' })}</SelectItem>
-                            <SelectItem value="uae">{t('shipments.originCountry.uae', { defaultValue: 'UAE' })}</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormDescription>
-                          {t('shipments.form.descriptions.originCountry', { defaultValue: 'Country where shipment originates from' })}
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                )}
-              </div>
-
-              {/* Domestic Shipment Details Form */}
-              {form.watch('isDomestic') && (
-                <DomesticShipmentDetailsForm
+                <FormField
                   control={form.control}
-                  isDisabled={isSubmitting}
+                  name="shippingMethod"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('shipments.fields.method')}</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder={t('shipments.filters.allMethods')} />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {Object.values(ShippingMethod).map((method) => (
+                            <SelectItem key={method} value={method}>
+                              {t(`shipments.table.method.${method}`)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              )}
+
+                <FormField
+                  control={form.control}
+                  name="extraCosts"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('shipments.fields.extraCosts')}</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          {...field}
+                          value={field.value ?? ''}
+                          onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : 0)}
+                          placeholder={t('shipments.placeholders.extraCosts', { defaultValue: '0.00' })}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="estimatedArrival"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>{t('shipments.fields.estimatedArrival', { defaultValue: 'Estimated Arrival' })}</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant="outline"
+                              className={cn(
+                                'w-full pl-3 text-left font-normal',
+                                !field.value && 'text-muted-foreground'
+                              )}
+                            >
+                              {field.value ? format(new Date(field.value), 'PPP') : <span>{t('common.pickDate', { defaultValue: 'Pick a date' })}</span>}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value ? new Date(field.value) : undefined}
+                            onSelect={(date) => field.onChange(date ? formatDateISO(date) : '')}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
 
-            {/* Shipping Details - Only for International */}
-            {!form.watch('isDomestic') && (
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">{t('shipments.form.shippingInfo')}</h3>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="shipmentDestination"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('shipments.fields.destination')}</FormLabel>
-                        <FormControl>
-                          <CitySearchCombobox
-                            cities={Object.values(Cities).map((city) => ({
-                              value: city,
-                              label: city.charAt(0).toUpperCase() + city.slice(1).replace(/_/g, ' ')
-                            }))}
-                            value={field.value || ''}
-                            onChange={field.onChange}
-                            placeholder={t('shipments.filters.allDestinations')}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="shippingMethod"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('shipments.fields.method')}</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder={t('shipments.filters.allMethods')} />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {Object.values(ShippingMethod).map((method) => (
-                              <SelectItem key={method} value={method}>
-                                {t(`shipments.table.method.${method}`)}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="extraCosts"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('shipments.fields.extraCosts')}</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            step="0.01"
-                            {...field}
-                            value={field.value ?? ''}
-                            onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : 0)}
-                            placeholder={t('shipments.placeholders.extraCosts', { defaultValue: '0.00' })}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Size & Dimensions - Only for International */}
-            {!form.watch('isDomestic') && (
-              <div className="space-y-4">
+            {/* Size & Dimensions */}
+            <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold">{t('shipments.form.sizeInfo')}</h3>
                 <div className="flex items-center gap-3">
@@ -370,7 +331,7 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess, defaultDom
                   />
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {sizeInputMode === 'weight' ? (
                   <FormField
@@ -416,47 +377,47 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess, defaultDom
                       )}
                     />
 
-                <FormField
-                  control={form.control}
-                  name="size.height"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('shipments.fields.height')}</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          step="0.1"
-                          {...field}
-                          value={field.value || ''}
-                          onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
-                          placeholder={t('shipments.placeholders.height')}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                    <FormField
+                      control={form.control}
+                      name="size.height"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('shipments.fields.height')}</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              step="0.1"
+                              {...field}
+                              value={field.value || ''}
+                              onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
+                              placeholder={t('shipments.placeholders.height')}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                <FormField
-                  control={form.control}
-                  name="size.width"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('shipments.fields.width')}</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          step="0.1"
-                          {...field}
-                          value={field.value || ''}
-                          onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
-                          placeholder={t('shipments.placeholders.width')}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                    <FormField
+                      control={form.control}
+                      name="size.width"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('shipments.fields.width')}</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              step="0.1"
+                              {...field}
+                              value={field.value || ''}
+                              onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
+                              placeholder={t('shipments.placeholders.width')}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
                     <FormField
                       control={form.control}
@@ -482,32 +443,29 @@ export function CreateShipmentDialog({ open, onOpenChange, onSuccess, defaultDom
                 )}
               </div>
             </div>
-            )}
 
-            {/* Optional Information - Only for International */}
-            {!form.watch('isDomestic') && (
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">{t('shipments.form.optionalInfo')}</h3>
-                
-                <FormField
-                  control={form.control}
-                  name="note"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('shipments.fields.note')}</FormLabel>
-                      <FormControl>
-                        <Textarea 
-                          {...field} 
-                          placeholder={t('shipments.placeholders.note')}
-                          rows={3}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            )}
+            {/* Optional Information */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">{t('shipments.form.optionalInfo')}</h3>
+
+              <FormField
+                control={form.control}
+                name="note"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('shipments.fields.note')}</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        {...field}
+                        placeholder={t('shipments.placeholders.note')}
+                        rows={3}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             <DialogFooter>
               <Button

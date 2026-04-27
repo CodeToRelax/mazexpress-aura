@@ -30,7 +30,6 @@ export default function PriceCalculator() {
       shippingMethod: ShippingMethod.AIR,
       destination: '',
       country: 'libya',
-      isDomestic: false,
       tier: 'A',
     },
   });
@@ -381,16 +380,6 @@ export default function PriceCalculator() {
                             {t('shipments.calculator.country', { defaultValue: 'Country' })}
                           </span>
                           <span className="font-medium capitalize">{calculatedPrice.country}</span>
-                        </div>
-                      )}
-                      {typeof calculatedPrice.isDomestic === 'boolean' && (
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">
-                            {t('shipments.detail.domestic')}
-                          </span>
-                          <span className="font-medium">
-                            {calculatedPrice.isDomestic ? t('common.yes') : t('common.no')}
-                          </span>
                         </div>
                       )}
                       {typeof calculatedPrice.finalWeight === 'number' && (

@@ -13,7 +13,6 @@ export function normalizeShipment(raw: any): IShipment {
     isn: raw.isn === '-' || !raw.isn ? undefined : raw.isn,
     
     // Handle optional fields
-    isDomestic: raw.isDomestic ?? undefined,
     updatedBy: raw.updatedBy ?? undefined,
     extraCosts: raw.extraCosts ?? 0,
     note: raw.note ?? undefined,
@@ -22,9 +21,6 @@ export function normalizeShipment(raw: any): IShipment {
     // Normalize tier: default to 'A' if not specified
     tier: raw.tier || 'A',
     
-    // Normalize domestic shipment details
-    domesticShipmentDetails: raw.domesticShipmentDetails || undefined,
-
     // Pass through optional pricingBreakdown from backend
     pricingBreakdown: raw.pricingBreakdown || undefined,
 

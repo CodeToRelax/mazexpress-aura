@@ -4,7 +4,6 @@ import { Settings, Loader2, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CountryConfigCard } from './CountryConfigCard';
-import { DomesticRoutesCard } from './DomesticRoutesCard';
 import { ExchangeRateCard } from './ExchangeRateCard';
 import { AirInternationalRatesCard } from './AirInternationalRatesCard';
 import { PoliciesCard } from './PoliciesCard';
@@ -122,16 +121,6 @@ export default function SystemSettings() {
         className="mb-8"
       >
         <AirInternationalRatesCard />
-      </motion.div>
-
-      {/* Domestic Routes Section */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.05 }}
-        className="mb-8"
-      >
-        <DomesticRoutesCard onUpdate={fetchConfig} />
       </motion.div>
 
       {/* Country Configuration Tabs */}

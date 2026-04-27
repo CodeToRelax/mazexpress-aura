@@ -1,5 +1,4 @@
 import JsBarcode from 'jsbarcode';
-import QRCode from 'qrcode';
 import type { IShipment } from '@/types/shipment';
 import stampImage from '@/assets/maz-express-stamp.png';
 import { formatCityName } from '@/utilities/helpers/shipmentHelpers';
@@ -219,205 +218,7 @@ export async function generateLabel10x10(shipment: IShipment): Promise<void> {
   };
 }
 
-// Generate domestic 10x10 cm label HTML with Arabic text and QR code
-async function generateDomesticLabel10x10HTML(shipment: IShipment): Promise<string> {
-  // Generate QR code from ESN
-  let qrCodeDataUrl = '';
-  try {
-    qrCodeDataUrl = await QRCode.toDataURL(shipment.esn, {
-      width: 150,
-      margin: 1,
-      color: { dark: '#000000', light: '#FFFFFF' }
-    });
-  } catch (error) {
-    console.error('Error generating QR code for ESN:', shipment.esn, error);
-  }
-
-  const details = shipment.domesticShipmentDetails;
-  const senderName = details?.senderName || 'N/A';
-  const receiverName = details?.receiverName || 'N/A';
-  const receiverPhone = details?.receiverPrimaryPhoneNumber || 'N/A';
-  const originCity = shipment.originCity ? formatCityName(shipment.originCity) : 'N/A';
-  const destinationCity = formatCityName(shipment.shipmentDestination) || 'N/A';
-  const productPrice = details?.productPrice || 0;
-  const productQuantity = details?.productQuantity || 1;
-  const note = details?.note || shipment.note || '';
-
-  return `
-    <div class="label domestic-label">
-      <div class="domestic-header">
-        <img src="${stampImage}" alt="MAZ Express" class="domestic-logo" />
-        <div class="qr-container">
-          ${qrCodeDataUrl ? `<img src="${qrCodeDataUrl}" alt="QR" class="qr-code" />` : ''}
-        </div>
-      </div>
-      
-      <div class="domestic-info">
-        <div class="info-row-ar">
-          <span class="label-ar">المرسل:</span>
-          <span class="value-ar">${senderName}</span>
-        </div>
-        <div class="info-row-ar">
-          <span class="label-ar">المستلم:</span>
-          <span class="value-ar">${receiverName}</span>
-        </div>
-        <div class="info-row-ar">
-          <span class="label-ar">الهاتف:</span>
-          <span class="value-ar">${receiverPhone}</span>
-        </div>
-        <div class="info-row-ar cities-row">
-          <span class="city-tag">${originCity}</span>
-          <span class="arrow">←</span>
-          <span class="city-tag highlight">${destinationCity}</span>
-        </div>
-        <div class="info-row-ar price-row">
-          <span class="price-box">${productPrice} د.ل</span>
-          <span class="qty-box">العدد: ${productQuantity}</span>
-        </div>
-        ${note ? `<div class="note-row">${note}</div>` : ''}
-      </div>
-      
-      <div class="domestic-footer">
-        <span class="esn-text">${shipment.esn}</span>
-      </div>
-    </div>
-  `;
-}
-
-// Get CSS for domestic 10x10 cm labels
-function getDomesticLabel10x10CSS(): string {
-  return `
-    .domestic-label {
-      direction: rtl;
-      text-align: right;
-      font-family: 'Cairo', 'Segoe UI', Arial, sans-serif;
-    }
-
-    .domestic-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-bottom: 2mm;
-      border-bottom: 1px solid #000;
-    }
-
-    .domestic-logo {
-      height: 16mm;
-      width: auto;
-      object-fit: contain;
-    }
-
-    .qr-container {
-      display: flex;
-      align-items: center;
-    }
-
-    .qr-code {
-      width: 20mm;
-      height: 20mm;
-      object-fit: contain;
-    }
-
-    .domestic-info {
-      padding: 2mm 0;
-      display: flex;
-      flex-direction: column;
-      gap: 1.5mm;
-    }
-
-    .info-row-ar {
-      display: flex;
-      align-items: center;
-      gap: 2mm;
-      font-size: 11pt;
-    }
-
-    .label-ar {
-      font-weight: 700;
-      min-width: 18mm;
-      color: #333;
-    }
-
-    .value-ar {
-      font-weight: 600;
-    }
-
-    .cities-row {
-      justify-content: center;
-      gap: 3mm;
-      padding: 2mm 0;
-      border-top: 1px dashed #999;
-      border-bottom: 1px dashed #999;
-    }
-
-    .city-tag {
-      font-size: 12pt;
-      font-weight: 700;
-      padding: 1mm 3mm;
-      background: #f0f0f0;
-      border-radius: 2mm;
-    }
-
-    .city-tag.highlight {
-      background: #000;
-      color: #fff;
-    }
-
-    .arrow {
-      font-size: 14pt;
-      font-weight: bold;
-    }
-
-    .price-row {
-      justify-content: center;
-      gap: 4mm;
-      padding-top: 2mm;
-    }
-
-    .price-box {
-      font-size: 14pt;
-      font-weight: 800;
-      padding: 1mm 4mm;
-      background: #000;
-      color: #fff;
-      border-radius: 2mm;
-    }
-
-    .qty-box {
-      font-size: 11pt;
-      font-weight: 700;
-      padding: 1mm 3mm;
-      border: 1px solid #000;
-      border-radius: 2mm;
-    }
-
-    .note-row {
-      font-size: 9pt;
-      color: #555;
-      text-align: center;
-      padding: 1mm;
-      background: #f9f9f9;
-      border-radius: 1mm;
-      margin-top: 1mm;
-    }
-
-    .domestic-footer {
-      display: flex;
-      justify-content: center;
-      padding-top: 2mm;
-      border-top: 1px solid #000;
-    }
-
-    .esn-text {
-      font-size: 10pt;
-      font-weight: 700;
-      font-family: 'Courier New', monospace;
-      letter-spacing: 0.5px;
-    }
-  `;
-}
-
-// Print multiple 10x10 cm labels (smart: detects domestic vs international)
+// Print multiple 10x10 cm labels
 export async function generateBulkLabels10x10(shipments: IShipment[]): Promise<void> {
   if (shipments.length === 0) {
     alert('No shipments selected');
@@ -431,17 +232,7 @@ export async function generateBulkLabels10x10(shipments: IShipment[]): Promise<v
     return;
   }
 
-  // Separate domestic and international shipments
-  const domesticShipments = shipments.filter(s => s.isDomestic);
-  const internationalShipments = shipments.filter(s => !s.isDomestic);
-
-  // Generate labels for each type
-  const domesticLabelsPromises = domesticShipments.map(s => generateDomesticLabel10x10HTML(s));
-  const domesticLabels = await Promise.all(domesticLabelsPromises);
-  const internationalLabels = internationalShipments.map(s => generateLabel10x10HTML(s));
-
-  // Combine all labels
-  const allLabelsHTML = [...internationalLabels, ...domesticLabels].join('\n');
+  const allLabelsHTML = shipments.map(s => generateLabel10x10HTML(s)).join('\n');
 
   const fullHTML = `
     <!DOCTYPE html>
@@ -452,7 +243,6 @@ export async function generateBulkLabels10x10(shipments: IShipment[]): Promise<v
       <title>Labels (${shipments.length})</title>
       <style>
         ${getLabel10x10CSS()}
-        ${getDomesticLabel10x10CSS()}
       </style>
     </head>
     <body>

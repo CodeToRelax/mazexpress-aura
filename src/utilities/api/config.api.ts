@@ -9,29 +9,9 @@ interface CountryShippingConfig {
   airShippingFactor: number;
 }
 
-// New city-to-city routing types
-interface DomesticRoutesResponse {
-  domestic: Record<string, Record<string, number>>; // { originCity: { destCity: price } }
-  cities: string[]; // API returns 'cities' field
-}
-
-interface OriginCityRoutesResponse {
-  originCity: string;
-  routes: Record<string, number>;
-  destinationCities: string[];
-}
-
-interface RoutePrice {
-  originCity: string;
-  destinationCity: string;
-  price: number;
-  currency: string;
-}
-
 interface SystemConfig {
   _id: string;
   lydExchangeRate: number;
-  domestic: Record<string, Record<string, number>>;
   countries: Record<string, CountryShippingConfig>;
   updatedBy?: string;
   createdAt: string;
@@ -516,9 +496,6 @@ export async function convertItemAmount(body: {
 }
 
 export type {
-  DomesticRoutesResponse,
-  OriginCityRoutesResponse,
-  RoutePrice,
   CountryShippingConfig,
   SystemConfig,
 };
