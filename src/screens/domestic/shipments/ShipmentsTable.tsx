@@ -6,6 +6,7 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import { Copy, MoreHorizontal, Package, CheckCircle2, Loader2, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Table,
   TableBody,
@@ -32,6 +33,9 @@ interface Props {
   shipments: DomesticShipment[];
   isLoading: boolean;
   onRowClick: (s: DomesticShipment) => void;
+  selectedIds: Set<string>;
+  onToggleId: (id: string) => void;
+  onToggleAll: (ids: string[], select: boolean) => void;
 }
 
 function senderOf(s: DomesticShipment): PopulatedSender | null {
@@ -51,7 +55,14 @@ function copy(text: string, label = 'Copied') {
   navigator.clipboard.writeText(text).then(() => toast.success(label));
 }
 
-export function ShipmentsTable({ shipments, isLoading, onRowClick }: Props) {
+export function ShipmentsTable({
+  shipments,
+  isLoading,
+  onRowClick,
+  selectedIds,
+  onToggleId,
+  onToggleAll,
+}: Props) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
@@ -80,12 +91,23 @@ export function ShipmentsTable({ shipments, isLoading, onRowClick }: Props) {
     );
   }
 
+  const pageIds = shipments.map((s) => s._id);
+  const allSelected = pageIds.length > 0 && pageIds.every((id) => selectedIds.has(id));
+  const someSelected = pageIds.some((id) => selectedIds.has(id));
+
   return (
     <Card className="glass-card overflow-hidden">
       <div className="overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-[36px]">
+                <Checkbox
+                  checked={allSelected ? true : someSelected ? 'indeterminate' : false}
+                  onCheckedChange={(v) => onToggleAll(pageIds, !!v)}
+                  aria-label="Select all"
+                />
+              </TableHead>
               <TableHead>{t('domestic.admin.shipments.col.number', 'Number')}</TableHead>
               <TableHead>{t('domestic.admin.shipments.col.status', 'Status')}</TableHead>
               <TableHead>{t('domestic.admin.shipments.col.route', 'Route')}</TableHead>
@@ -105,14 +127,22 @@ export function ShipmentsTable({ shipments, isLoading, onRowClick }: Props) {
           <TableBody>
             {shipments.map((s) => {
               const sender = senderOf(s);
+              const checked = selectedIds.has(s._id);
               return (
                 <motion.tr
                   key={s._id}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="border-b transition-colors hover:bg-muted/40 cursor-pointer"
+                  className={`border-b transition-colors hover:bg-muted/40 cursor-pointer ${checked ? 'bg-primary/5' : ''}`}
                   onClick={() => onRowClick(s)}
                 >
+                  <TableCell onClick={(e) => e.stopPropagation()} className="w-[36px]">
+                    <Checkbox
+                      checked={checked}
+                      onCheckedChange={() => onToggleId(s._id)}
+                      aria-label={`Select ${s.shipmentNumber}`}
+                    />
+                  </TableCell>
                   <TableCell onClick={(e) => e.stopPropagation()} className="font-mono text-xs">
                     <button
                       onClick={() => copy(s.shipmentNumber, 'Shipment number copied')}

@@ -2,7 +2,10 @@ import { getFirebaseAuth } from '@/utilities/firebase/firebase';
 import {
   AdminCreateBody,
   AdminEditBody,
+  BulkStatusResponse,
   ChangeStatusBody,
+  DomesticLabelData,
+  DomesticStatus,
   DomesticShipment,
   InvalidTransitionError,
   PaginatedDocs,
@@ -101,6 +104,28 @@ export async function softDeleteShipment(id: string): Promise<void> {
     const body = await response.json().catch(() => ({}));
     throw new Error(body?.message || 'Failed to delete shipment');
   }
+}
+
+export async function bulkUpdateStatus(
+  ids: string[],
+  toStatus: DomesticStatus,
+  note?: string
+): Promise<BulkStatusResponse> {
+  const headers = await authHeaders();
+  const response = await fetch(`${API_BASE_URL}/api/domestic-shipments/admin/bulk-status`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ ids, toStatus, ...(note ? { note } : {}) }),
+  });
+  return unwrap<BulkStatusResponse>(response);
+}
+
+export async function getShipmentLabel(id: string): Promise<DomesticLabelData> {
+  const headers = await authHeaders();
+  const response = await fetch(`${API_BASE_URL}/api/domestic-shipments/admin/${id}/label`, {
+    headers,
+  });
+  return unwrap<DomesticLabelData>(response);
 }
 
 /** Wallet transactions tied to a single shipment (server-side filter). */
