@@ -53,11 +53,9 @@ export function EditShipmentDialog({ open, onOpenChange, shipment }: Props) {
       },
       description: shipment.description,
       itemPrice: shipment.itemPrice,
-      itemPaidBy: shipment.itemPaidBy,
       quantity: shipment.quantity,
-      tier: shipment.tier,
+      tier: shipment.tier === ('OTHER' as unknown) ? 'D' : shipment.tier,
       shippingPrice: shipment.shippingPrice,
-      shippingPaidBy: shipment.shippingPaidBy,
       options: shipment.options ?? {},
       notes: shipment.notes ?? '',
     },
@@ -76,11 +74,9 @@ export function EditShipmentDialog({ open, onOpenChange, shipment }: Props) {
         },
         description: shipment.description,
         itemPrice: shipment.itemPrice,
-        itemPaidBy: shipment.itemPaidBy,
         quantity: shipment.quantity,
-        tier: shipment.tier,
+        tier: shipment.tier === ('OTHER' as unknown) ? 'D' : shipment.tier,
         shippingPrice: shipment.shippingPrice,
-        shippingPaidBy: shipment.shippingPaidBy,
         options: shipment.options ?? {},
         notes: shipment.notes ?? '',
       });
@@ -92,9 +88,9 @@ export function EditShipmentDialog({ open, onOpenChange, shipment }: Props) {
   const originCity = form.watch('originCity');
   const destCity = form.watch('recipient.city');
 
-  // Auto-recalc: when tier/origin/dest change and tier !== OTHER, clear shippingPrice
+  // Auto-recalc: when tier/origin/dest change and tier !== D, clear shippingPrice (server recalcs).
   useEffect(() => {
-    if (tier !== 'OTHER') {
+    if (tier !== 'D') {
       const changedRoute =
         originCity !== shipment.originCity ||
         destCity !== shipment.recipient.city ||
@@ -119,17 +115,13 @@ export function EditShipmentDialog({ open, onOpenChange, shipment }: Props) {
         },
         description: values.description,
         itemPrice: values.itemPrice,
-        itemPaidBy: values.itemPaidBy,
         quantity: values.quantity,
         tier: values.tier,
-        shippingPaidBy: values.shippingPaidBy,
         options: values.options,
         notes: values.notes || null,
       };
-      if (values.tier === 'OTHER' && typeof values.shippingPrice === 'number') {
-        body.shippingPrice = values.shippingPrice;
-      } else if (typeof values.shippingPrice === 'number' && values.tier !== 'OTHER') {
-        // explicit override even on tiered route
+      // Only send shippingPrice for tier D (admin-priced). A/B/C are auto-calculated server-side.
+      if (values.tier === 'D' && typeof values.shippingPrice === 'number') {
         body.shippingPrice = values.shippingPrice;
       }
       return updateAdminShipment(shipment._id, body);
