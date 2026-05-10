@@ -1,145 +1,85 @@
-## Plan: Domestic Shipments admin module
+## Backend API alignment — admin web
 
-Build to the Cursor "continuation" PRD. The original uploaded PRD is background context — it's superseded.
+Five backend changes to integrate. Frontend-only edits, no backend contract assumptions beyond what the user provided.
 
-### 1. Types & API clients
+### 1. Domestic shipments — remove `itemPaidBy` / `shippingPaidBy` from request bodies
 
-- **`src/types/domestic.ts`** — `Route`, `DomesticShipment`, `StatusHistoryEntry`, `DomesticStatus` union (7 states), `Tier` union (`A|B|C|D|OTHER`), `AdminCreateBody`, `AdminEditBody`, `WalletTransaction` (for the inline card), paginated response wrappers.
-- **`src/utilities/api/routes.api.ts`** — `listRoutes`, `getRoute`, `createRoute`, `updateRoute`, `deleteRoute`, `lookupRoute(origin, destination)`. Unwraps `{success, data, message}`. Surfaces `409 ROUTE_DUPLICATE` as a typed error.
-- **`src/utilities/api/domesticShipments.api.ts`** — `listAdminShipments`, `getAdminShipment`, `createWalkIn`, `updateAdminShipment`, `changeStatus`, `softDelete`, `getShipmentTransactions`. `changeStatus` parses `409 DOMESTIC_SHIPMENT_INVALID_TRANSITION` and exposes `details.allowed`.
-- Reuse existing `/users?search=&userType=customer` for the sender picker via a thin wrapper.
+The fields still exist on the **read** model (we display "Paid by sender/receiver" on detail/table cards), so we keep them in the `DomesticShipment` type. We just stop **sending** them on create/edit.
 
-### 2. Shared building blocks
+Files:
+- `src/types/domestic.ts` — drop `itemPaidBy` and `shippingPaidBy` from `AdminCreateBody` and `AdminEditBody`. Keep them on `DomesticShipment` (read-only).
+- `src/utilities/zod/domestic.schemas.ts` — remove `itemPaidBy` and `shippingPaidBy` from `walkInSchema` and `editShipmentSchema` (and from the inferred form value types).
+- `src/screens/domestic/shipments/CreateWalkIn.tsx` — remove the two "Paid by" Select fields, the smart-default `useEffect` that flips `itemPaidBy`, and stop including the fields in the submitted body.
+- `src/screens/domestic/shipments/EditShipmentDialog.tsx` — remove the two "Paid by" Select fields and stop including them in the submitted body. Keep showing the current value somewhere read-only is unnecessary (already visible on the detail page cards).
 
-- **`src/components/domestic/DomesticStatusChip.tsx`** — single source for the 7 status colors + bilingual labels; `sm` and `md` variants.
-- **`src/components/domestic/TierChip.tsx`** — A/B/C/D neutral, OTHER warning tone.
-- **`src/components/domestic/CityCombobox.tsx`** — Libya-only subset (32 entries, including the intentional duplicates) wrapped around the existing `CitySearchCombobox` pattern.
-- **`src/data/domesticCities.ts`** — title-case helper + the 32-city list.
-- **`src/utilities/zod/domestic.schemas.ts`** — `routeSchema`, `walkInSchema`, `editShipmentSchema`. Phone regex `/^[+]?[0-9\s\-()]{7,20}$/`. Origin ≠ destination guard. `tier === 'OTHER' ⇒ shippingPrice required`.
+### 2. Domestic shipments — new tier rules
 
-### 3. Navigation & routes
+- Customer mobile uses A/B/C only. Admin web uses A/B/C/D and removes `OTHER`.
+- For tier D, `shippingPrice` is required and admin-set. For A/B/C, the input is hidden (server auto-calculates from the route).
 
-Extend `src/data/navigation.tsx` with a `Domestic` parent (icon `Truck`) right under the existing `shipments` entry, with two children:
-- `Routes` → `/admin/domestic/routes` (icon `Route`)
-- `Shipments` → `/admin/domestic/shipments` (icon `Package`)
+Files:
+- `src/types/domestic.ts` — change `DomesticTier` to `'A' | 'B' | 'C' | 'D'` (drop `OTHER`). Update `STANDARD_TIERS` accordingly.
+- `src/utilities/zod/domestic.schemas.ts` — `tierEnum = z.enum(['A','B','C','D'])`. Replace the OTHER-based `shippingPrice` refinement with: `shippingPrice` required when `tier === 'D'`, otherwise omit/ignore.
+- `src/screens/domestic/shipments/CreateWalkIn.tsx`:
+  - Remove the `OTHER` `<SelectItem>`.
+  - Show the shipping price input only when `tier === 'D'`.
+  - Live route lookup + tier price preview now runs for A/B/C only (D shows "manual price" hint instead).
+  - Submission: send `shippingPrice` only when `tier === 'D'`.
+- `src/screens/domestic/shipments/EditShipmentDialog.tsx`:
+  - Same tier list change, same conditional `shippingPrice` field (only for D), same submission rule.
+  - Drop the "leave blank to recalculate" hint for non-D tiers since the input itself is gone.
+- `src/components/domestic/TierChip.tsx` — confirm it handles only A/B/C/D. Remove any `OTHER` styling branch.
 
-Add to `src/App.tsx`:
+### 3. Domestic shipments — bulk status update
+
+New endpoint:
 ```
-/admin/domestic/routes
-/admin/domestic/shipments
-/admin/domestic/shipments/new
-/admin/domestic/shipments/:id
-```
-
-### 4. Routes pricing page (`src/screens/domestic/routes/`)
-
-- **`Routes.tsx`** — header, search box, two clearable city filters, `+ New route` button, shadcn `Table`, server-side pagination (`limit=50`), empty state.
-- **`RouteFormDrawer.tsx`** — right-side drawer (480px) for create + edit. Fields: origin, destination (must differ), four tier prices (number, ≥0, step 0.01). Inline `409` → "A route already exists for this pair." on the destination field.
-- **`DeleteRouteDialog.tsx`** — `AlertDialog` with the soft-delete copy.
-
-### 5. Domestic shipments list (`src/screens/domestic/shipments/`)
-
-- **`Shipments.tsx`** — header, optional client-computed KPI strip, `+ New walk-in shipment`.
-- **`StatusTabs.tsx`** — horizontal scrollable tab strip, `All` + one per status, drives `?status=`.
-- **`ShipmentsFilters.tsx`** — debounced (300ms) search → `?q=`, origin/destination city, sender async picker → `?senderUserId=`, reset.
-- **`ShipmentsTable.tsx`** — columns per §6.4 (Number mono + copy, Status chip, Origin → Dest, Sender + USN, Recipient + tel: link, Tier chip, Shipping + ✓ charged pill, Item + ✓ credited pill, Created relative+hover, row actions). `limit=20`. Row click → detail.
-
-### 6. Walk-in create (`src/screens/domestic/shipments/CreateWalkIn.tsx`)
-
-Three cards on one page:
-
-- **Step 1 – Sender:** async user combobox on `/users?search=&userType=customer&limit=10`. On select: prefill `senderUserId` and `originCity` (still editable).
-- **Step 2 – Recipient & shipment:** recipient block + shipment block. On `tier !== 'OTHER'` + both cities filled, call `GET /routes/lookup` and render a read-only "Tier C • 25.00 LYD" chip; on 404, destructive `Alert` "No route exists for this pair. Create one in Routes first." and disable submit. On `tier === 'OTHER'`, hide the chip and show a required `shippingPrice` input. Smart `itemPaidBy` default: Receiver if `itemPrice > 0`, else Sender.
-- **Step 3 – Options & status:** three switches + initial status radio (default `awaiting_shipping`). Hint card under `in_transit` (generic wording per PRD).
-
-On success: navigate to detail with toast `Walk-in shipment {{number}} created.`
-
-### 7. Shipment detail (`src/screens/domestic/shipments/ShipmentDetail.tsx`)
-
-Two columns; single column on small screens.
-
-- **Hero:** `#shipmentNumber` + status chip; subline `originCity → recipient.city`, relative createdAt.
-- **Right-side actions:**
-  - **Change status popover** — only allowed next statuses (computed via the §4 transition table). Each option shows label, optional note (≤500), and the wallet hint when applicable:
-    - to `in_transit`: only when `creationSource === 'app' && shippingPaidBy === 'sender' && shippingPrice > 0 && !shippingChargedAt` (walk-in suppresses).
-    - to `delivered`: only when `itemPaidBy === 'receiver' && itemPrice > 0 && !itemCreditedAt`.
-    - On 409, refresh the popover from `details.allowed`.
-  - **Edit dialog** — same form as walk-in minus sender. Auto-recalc: when admin changes `tier`, `originCity`, or `recipient.city` and tier ≠ OTHER, clear `shippingPrice` so the server recomputes; show inline note "Shipping price will be recalculated from the route directory. Type a custom value to override." `tier === 'OTHER'` requires `shippingPrice`.
-  - Overflow → soft delete with confirmation.
-
-- **Left column:**
-  - **Pricing & wallet card** — tier chip, shipping price + "✓ Charged on …" + amount + delta-posted banner if `shippingChargedAmount !== shippingPrice`; same for item; tiny "Wallet not yet charged" / "Wallet already charged on {{date}}" info chip.
-  - **Wallet transactions for this shipment card** (sits beneath pricing) — `GET /wallet/admin/user/{senderUserId}/transactions?domesticShipmentId={id}&limit=10`. Compact rows: type icon (truck / package-plus / coins), description + status pill if not `completed`, signed amount + relative createdAt, tooltip with absolute timestamp + transactionNumber. Documented empty state. `View all` link if `totalDocs > 5`. Refresh button on header. Auto-invalidates with `['domestic-shipment', id]`.
-  - **Recipient card** — phones with `tel:` + copy buttons.
-  - **Item card** — description, quantity, paidBy, price.
-  - **Options card** — three pills.
-  - **Notes card** (collapsed if empty).
-
-- **Right column – Status history timeline:** chip `from → to`, wallet posting badge if `shippingChargedAt`/`itemCreditedAt` flipped on this transition, actor (or "System"), note, timestamp. Newest on top.
-
-- **Soft-deleted detail still loads** → destructive banner instead of 404.
-
-### 8. React Query keys
-
-```
-['routes', { page, limit, originCity, destinationCity }]
-['route', id]
-['domestic-shipments', { status, page, limit, originCity, destinationCity, senderUserId, q }]
-['domestic-shipment', id]
-['domestic-shipment-transactions', { id, senderUserId }]
-['users:search', { q, userType }]
+POST /api/domestic-shipments/admin/bulk-status
+body: { ids: string[], toStatus: DomesticStatus, note?: string }
+→ { results: [{id, success, error?}], successCount, failCount }
 ```
 
-Invalidations per §9: route mutations invalidate `['routes']` + `['domestic-shipments']`; shipment edit/status/delete invalidates `['domestic-shipment', id]` + `['domestic-shipments']` + `['domestic-shipment-transactions', { id }]`.
+Files:
+- `src/utilities/api/domesticShipments.api.ts` — add `bulkUpdateStatus(ids, toStatus, note?)`.
+- `src/screens/domestic/shipments/ShipmentsTable.tsx` — add row-level checkbox column + header "select all on page" checkbox. Lift selection state to parent.
+- `src/screens/domestic/shipments/Shipments.tsx` — track `selectedIds: Set<string>`; render a sticky toolbar above the table when `selectedIds.size > 0` showing count, a status `<Select>`, optional note `<Input>`, "Apply" and "Clear" buttons. On apply: call `bulkUpdateStatus`, toast `successCount`/`failCount`, invalidate `['domestic-shipments']`, clear selection.
+- The status options shown in the bulk select are the union of `ALLOWED_TRANSITIONS` targets — keep it simple: list all `DomesticStatus` values and let the backend reject per-row (the response already reports per-id failures).
 
-### 9. i18n
+### 4. Domestic shipments — label data endpoint (replaces ad-hoc print)
 
-Add the full `domestic.admin.*` key tree (plus `domestic.status.*`, `domestic.tier.*`, `domestic.paid-by.*`) to both `src/utilities/localization/en/common.json` and `ar/common.json`. EN values straight from §11. AR labels per the original PRD §4 (بانتظار الموافقة, بانتظار الشحن, قيد التوصيل, تم التسليم, فشل التسليم, تم الإرجاع, ملغاة) and §11 hints.
+```
+GET /api/domestic-shipments/admin/:id/label
+→ { shipmentNumber, barcode, createdAt, status, tier,
+    origin: { city, senderName, senderPhone },
+    destination: { city, address, recipientName, recipientPhone, recipientAlternatePhone },
+    parcel: { description, quantity, itemPrice, itemCurrency },
+    shipping: { price, currency },
+    options, notes }
+```
 
-### 10. Edge cases respected
+Files:
+- `src/types/domestic.ts` — add `DomesticLabelData` interface matching the response.
+- `src/utilities/api/domesticShipments.api.ts` — add `getShipmentLabel(id): Promise<DomesticLabelData>`.
+- New: `src/components/domestic/PrintDomesticLabel.tsx` — A6/10×10 printable label using the response data: barcode (use existing barcode lib if present, else `JsBarcode` via existing `PrintLabel*` pattern), shipment number, status chip, tier, origin/destination blocks (name + phone + city + address), parcel description and quantity, shipping price.
+  - Re-use the look-and-feel of `src/components/shipments/PrintLabel10x10.tsx`. Same print CSS (`@media print`).
+- `src/screens/domestic/shipments/ShipmentDetail.tsx` — add a "Print label" button next to "Edit". On click: fetch label data via the new endpoint, render `PrintDomesticLabel` in a portal, call `window.print()`. Mirror the existing print pattern used by international shipments.
 
-- Soft-delete only (no hard-delete UI).
-- Same-pair recreate after soft delete is allowed.
-- Admin edit never sends `status` (status changes only via `/status`).
-- Walk-in (`creationSource === 'walk_in'`) suppresses the wallet debit hint on `in_transit`.
-- OTHER tier requires `shippingPrice` on create and on any edit switching to OTHER.
-- All currency inputs `step="0.01"`, plain numbers.
-- 401 falls through to the existing login redirect.
+### 5. Dashboard stats — values are now KG, not counts
 
-## Files to create / modify
+`GET /api/shipments/stats` keeps the same keys but each value is total weight in kg. The dashboard widgets that consume this need their unit relabeled.
 
-**New (~21 files):**
-- `src/types/domestic.ts`
-- `src/utilities/api/routes.api.ts`
-- `src/utilities/api/domesticShipments.api.ts`
-- `src/utilities/zod/domestic.schemas.ts`
-- `src/data/domesticCities.ts`
-- `src/components/domestic/DomesticStatusChip.tsx`
-- `src/components/domestic/TierChip.tsx`
-- `src/components/domestic/CityCombobox.tsx`
-- `src/components/domestic/SenderUserCombobox.tsx`
-- `src/screens/domestic/routes/Routes.tsx`
-- `src/screens/domestic/routes/RouteFormDrawer.tsx`
-- `src/screens/domestic/routes/DeleteRouteDialog.tsx`
-- `src/screens/domestic/shipments/Shipments.tsx`
-- `src/screens/domestic/shipments/StatusTabs.tsx`
-- `src/screens/domestic/shipments/ShipmentsFilters.tsx`
-- `src/screens/domestic/shipments/ShipmentsTable.tsx`
-- `src/screens/domestic/shipments/CreateWalkIn.tsx`
-- `src/screens/domestic/shipments/ShipmentDetail.tsx`
-- `src/screens/domestic/shipments/ChangeStatusPopover.tsx`
-- `src/screens/domestic/shipments/EditShipmentDialog.tsx`
-- `src/screens/domestic/shipments/ShipmentTransactionsCard.tsx`
+Files (verify usages with `rg "shipments/stats" src/` and `rg "ShipmentsStatsBar"`):
+- `src/screens/shipments/ShipmentsStatsBar.tsx` — append `kg` to each stat value (use `kg` suffix and format with `toLocaleString(undefined, { maximumFractionDigits: 1 })`). Update the i18n labels to read "Total weight", "Pending weight", etc. Keep the click-through filter behavior intact.
+- `src/types/shipment.ts` — keep `ShipmentStats` shape; add a JSDoc note that values are kilograms.
+- Any dashboard cards on `Dashboard.tsx` that pull from `/shipments/stats` need the same kg suffix. (Existing `AirShipmentsCard` already uses `analytics` endpoints and is unaffected.)
+- i18n: add/update `shipments.stats.*` keys in `src/utilities/localization/en/common.json` and `ar/common.json` to use weight wording. Keep keys at ≤3 levels (per project memory).
 
-**Modified:**
-- `src/App.tsx` (4 new routes)
-- `src/data/navigation.tsx` (Domestic parent + 2 children)
-- `src/utilities/localization/en/common.json` and `ar/common.json` (domestic.* keys)
+### Out of scope (per the user's note)
 
-## Out of scope (per §13)
+- Sea invoice fix: backend-only, no client change. Don't touch invoice generation code.
 
-Driver assignment, push/SMS, bulk operations, separate rejection workflow, reports, multi-currency.
+### Verification
 
-## One question before I start
-
-The Cursor PRD specifies `/admin/domestic/routes` and `/admin/domestic/shipments`. Your existing app uses unprefixed paths (`/shipments`, `/users`, `/settings`). I'll follow the PRD literally and use the `/admin/domestic/...` prefix unless you'd rather match the existing convention with `/domestic/routes` + `/domestic/shipments`. Defaulting to the PRD prefix — say the word if you want the shorter version.
+- `tsc --noEmit` after the type and form-schema edits (catch any leftover `itemPaidBy`/`shippingPaidBy` / `OTHER` references).
+- Manually run through: create walk-in (tier A → no price field, tier D → required), edit shipment (same), bulk status update from list, print label from detail.
+- Check the dashboard stats card visibly shows `kg` units in both EN and AR.
