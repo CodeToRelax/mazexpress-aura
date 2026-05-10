@@ -23,6 +23,7 @@ import {
   Truck,
   PackagePlus,
   Info,
+  Printer,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -48,8 +49,10 @@ import { TierChip } from '@/components/domestic/TierChip';
 import { titleCaseCity } from '@/data/domesticCities';
 import {
   getAdminShipment,
+  getShipmentLabel,
   softDeleteShipment,
 } from '@/utilities/api/domesticShipments.api';
+import { printDomesticLabel } from '@/utilities/helpers/domesticLabel';
 import { ChangeStatusPopover } from './ChangeStatusPopover';
 import { EditShipmentDialog } from './EditShipmentDialog';
 import { ShipmentTransactionsCard } from './ShipmentTransactionsCard';
@@ -78,6 +81,7 @@ export default function DomesticShipmentDetailPage() {
   const qc = useQueryClient();
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [printing, setPrinting] = useState(false);
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ['domestic-shipment', id] as const,
@@ -95,6 +99,19 @@ export default function DomesticShipmentDetailPage() {
     },
     onError: (err) => toast.error(err instanceof Error ? err.message : 'Delete failed'),
   });
+
+  const handlePrintLabel = async () => {
+    if (!id) return;
+    setPrinting(true);
+    try {
+      const label = await getShipmentLabel(id);
+      await printDomesticLabel(label);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to load label');
+    } finally {
+      setPrinting(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -174,6 +191,10 @@ export default function DomesticShipmentDetailPage() {
               </Button>
             }
           />
+          <Button variant="outline" onClick={handlePrintLabel} disabled={printing} className="gap-2">
+            {printing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Printer className="h-3.5 w-3.5" />}
+            {t('domestic.admin.detail.print-label', 'Print label')}
+          </Button>
           <Button variant="outline" onClick={() => setEditOpen(true)} className="gap-2">
             <Pencil className="h-3.5 w-3.5" />
             {t('common.edit', 'Edit')}

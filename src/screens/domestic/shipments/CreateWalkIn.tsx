@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Loader2, Truck, User as UserIcon, Package, Settings as SettingsIcon, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, Loader2, Truck, User as UserIcon, Package, Settings as SettingsIcon, AlertCircle, CheckCircle2, Info } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -56,11 +56,9 @@ export default function CreateWalkInPage() {
       },
       description: '',
       itemPrice: 0,
-      itemPaidBy: 'sender',
       quantity: 1,
       tier: 'A',
       shippingPrice: undefined,
-      shippingPaidBy: 'sender',
       options: { fragile: false, storeOnDeliveryFailure: false, insurance: false },
       notes: '',
       status: 'awaiting_shipping',
@@ -70,24 +68,9 @@ export default function CreateWalkInPage() {
   const tier = form.watch('tier');
   const originCity = form.watch('originCity');
   const destCity = form.watch('recipient.city');
-  const itemPrice = form.watch('itemPrice');
 
-  // Smart itemPaidBy default
-  useEffect(() => {
-    if (Number(itemPrice) > 0) {
-      if (form.getValues('itemPaidBy') === 'sender') {
-        form.setValue('itemPaidBy', 'receiver');
-      }
-    } else {
-      if (form.getValues('itemPaidBy') === 'receiver') {
-        form.setValue('itemPaidBy', 'sender');
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [itemPrice]);
-
-  // Live route lookup for tiered pricing preview
-  const lookupEnabled = tier !== 'OTHER' && !!originCity && !!destCity && originCity !== destCity;
+  // Live route lookup for tiered pricing preview (A/B/C). Tier D is admin-priced.
+  const lookupEnabled = tier !== 'D' && !!originCity && !!destCity && originCity !== destCity;
   const { data: route, isLoading: lookupLoading, isError: lookupError } = useQuery({
     queryKey: ['route-lookup', originCity, destCity] as const,
     queryFn: () => lookupRoute(originCity, destCity),
@@ -95,8 +78,8 @@ export default function CreateWalkInPage() {
   });
 
   const tierPrice = useMemo(() => {
-    if (!route || tier === 'OTHER') return null;
-    return priceForTier(route, tier as Exclude<DomesticTier, 'OTHER'>);
+    if (!route || tier === 'D') return null;
+    return priceForTier(route, tier as Exclude<DomesticTier, 'D'>);
   }, [route, tier]);
 
   const routeMissing = lookupEnabled && !lookupLoading && !route && !lookupError;
@@ -115,11 +98,10 @@ export default function CreateWalkInPage() {
         },
         description: values.description,
         itemPrice: values.itemPrice,
-        itemPaidBy: values.itemPaidBy,
         quantity: values.quantity,
         tier: values.tier,
-        shippingPrice: values.tier === 'OTHER' ? values.shippingPrice : undefined,
-        shippingPaidBy: values.shippingPaidBy,
+        // Only send shippingPrice for tier D (admin-priced).
+        shippingPrice: values.tier === 'D' ? values.shippingPrice : undefined,
         options: values.options,
         notes: values.notes || null,
         status: values.status,
@@ -312,24 +294,6 @@ export default function CreateWalkInPage() {
                 {...form.register('itemPrice', { valueAsNumber: true })}
               />
             </div>
-            <div className="space-y-2">
-              <Label>{t('domestic.admin.shipments.walk-in.item-paid-by', 'Item paid by')}</Label>
-              <Controller
-                control={form.control}
-                name="itemPaidBy"
-                render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="sender">{t('domestic.paid-by.sender', 'Sender')}</SelectItem>
-                      <SelectItem value="receiver">{t('domestic.paid-by.receiver', 'Receiver')}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-            </div>
 
             <div className="space-y-2">
               <Label>{t('domestic.admin.shipments.walk-in.tier', 'Tier')}</Label>
@@ -345,34 +309,14 @@ export default function CreateWalkInPage() {
                       <SelectItem value="A">Tier A</SelectItem>
                       <SelectItem value="B">Tier B</SelectItem>
                       <SelectItem value="C">Tier C</SelectItem>
-                      <SelectItem value="D">Tier D</SelectItem>
-                      <SelectItem value="OTHER">OTHER (custom)</SelectItem>
+                      <SelectItem value="D">Tier D (manual price)</SelectItem>
                     </SelectContent>
                   </Select>
                 )}
               />
             </div>
 
-            <div className="space-y-2">
-              <Label>{t('domestic.admin.shipments.walk-in.shipping-paid-by', 'Shipping paid by')}</Label>
-              <Controller
-                control={form.control}
-                name="shippingPaidBy"
-                render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="sender">{t('domestic.paid-by.sender', 'Sender')}</SelectItem>
-                      <SelectItem value="receiver">{t('domestic.paid-by.receiver', 'Receiver')}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-            </div>
-
-            {tier === 'OTHER' && (
+            {tier === 'D' && (
               <div className="md:col-span-2 space-y-2">
                 <Label>
                   {t('domestic.admin.shipments.walk-in.shipping-price', 'Shipping price (LYD)')}
@@ -388,11 +332,18 @@ export default function CreateWalkInPage() {
                     {form.formState.errors.shippingPrice.message}
                   </p>
                 )}
+                <p className="text-xs text-muted-foreground inline-flex items-center gap-1">
+                  <Info className="h-3 w-3" />
+                  {t(
+                    'domestic.admin.shipments.walk-in.tier-d-hint',
+                    'Tier D: shipping price is set manually by the admin.'
+                  )}
+                </p>
               </div>
             )}
 
             {/* Live tier price preview */}
-            {tier !== 'OTHER' && lookupEnabled && (
+            {tier !== 'D' && lookupEnabled && (
               <div className="md:col-span-2">
                 {lookupLoading ? (
                   <div className="inline-flex items-center gap-2 text-sm text-muted-foreground">

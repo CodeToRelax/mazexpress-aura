@@ -5,8 +5,10 @@
 
 export type DomesticCity = string; // lowercase, e.g. 'tripoli', 'al bayda'
 
-export type DomesticTier = 'A' | 'B' | 'C' | 'D' | 'OTHER';
+export type DomesticTier = 'A' | 'B' | 'C' | 'D';
 export const STANDARD_TIERS: DomesticTier[] = ['A', 'B', 'C', 'D'];
+/** Tier that requires admin to manually set shippingPrice. A/B/C are auto-calculated by the backend. */
+export const MANUAL_PRICE_TIER: DomesticTier = 'D';
 
 export type DomesticStatus =
   | 'awaiting_approval'
@@ -164,11 +166,10 @@ export interface AdminCreateBody {
   recipient: Recipient;
   description: string;
   itemPrice?: number;
-  itemPaidBy?: PaidBy;
   quantity?: number;
   tier: DomesticTier;
+  /** Required when tier === 'D'. Ignored otherwise (server auto-calculates). */
   shippingPrice?: number;
-  shippingPaidBy: PaidBy;
   options?: ShipmentOptions;
   notes?: string | null;
   status?: 'awaiting_approval' | 'awaiting_shipping' | 'in_transit';
@@ -178,11 +179,10 @@ export type AdminEditBody = Partial<{
   recipient: Recipient;
   description: string;
   itemPrice: number;
-  itemPaidBy: PaidBy;
   quantity: number;
   tier: DomesticTier;
+  /** Required when tier === 'D'. */
   shippingPrice: number;
-  shippingPaidBy: PaidBy;
   options: ShipmentOptions;
   notes: string | null;
   originCity: DomesticCity;
@@ -237,6 +237,54 @@ export type DomesticTxType =
   | 'domestic_shipping_charge'
   | 'domestic_item_credit'
   | string;
+
+// ───────── Label payload ─────────
+
+export interface DomesticLabelData {
+  shipmentNumber: string;
+  barcode: string;
+  createdAt: string;
+  status: DomesticStatus;
+  tier: DomesticTier;
+  origin: {
+    city: DomesticCity;
+    senderName: string;
+    senderPhone: string;
+  };
+  destination: {
+    city: DomesticCity;
+    address: string;
+    recipientName: string;
+    recipientPhone: string;
+    recipientAlternatePhone?: string | null;
+  };
+  parcel: {
+    description: string;
+    quantity: number;
+    itemPrice: number;
+    itemCurrency?: string;
+  };
+  shipping: {
+    price: number;
+    currency?: string;
+  };
+  options?: ShipmentOptions;
+  notes?: string | null;
+}
+
+// ───────── Bulk status ─────────
+
+export interface BulkStatusResult {
+  id: string;
+  success: boolean;
+  error?: string;
+}
+
+export interface BulkStatusResponse {
+  results: BulkStatusResult[];
+  successCount: number;
+  failCount: number;
+}
 
 export interface WalletTransaction {
   _id: string;

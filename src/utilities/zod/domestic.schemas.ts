@@ -7,8 +7,7 @@ const cityEnum = z.string().refine((v) => DOMESTIC_CITIES.includes(v), {
   message: 'Invalid city',
 });
 
-const tierEnum = z.enum(['A', 'B', 'C', 'D', 'OTHER']);
-const paidByEnum = z.enum(['sender', 'receiver']);
+const tierEnum = z.enum(['A', 'B', 'C', 'D']);
 
 export const recipientSchema = z.object({
   name: z.string().trim().min(1, 'Name is required').max(100),
@@ -53,11 +52,9 @@ export const walkInSchema = z
     recipient: recipientSchema,
     description: z.string().trim().min(1, 'Required').max(500),
     itemPrice: z.coerce.number().min(0).default(0),
-    itemPaidBy: paidByEnum,
     quantity: z.coerce.number().int().min(1).default(1),
     tier: tierEnum,
     shippingPrice: z.coerce.number().min(0).optional(),
-    shippingPaidBy: paidByEnum,
     options: optionsSchema.optional(),
     notes: z.string().trim().max(500).optional().or(z.literal('')).nullable(),
     status: z
@@ -69,9 +66,9 @@ export const walkInSchema = z
     path: ['recipient', 'city'],
   })
   .refine(
-    (v) => v.tier !== 'OTHER' || (typeof v.shippingPrice === 'number' && v.shippingPrice >= 0),
+    (v) => v.tier !== 'D' || (typeof v.shippingPrice === 'number' && v.shippingPrice >= 0),
     {
-      message: 'Shipping price is required for OTHER tier.',
+      message: 'Shipping price is required for tier D.',
       path: ['shippingPrice'],
     }
   );
@@ -84,11 +81,9 @@ export const editShipmentSchema = z
     recipient: recipientSchema,
     description: z.string().trim().min(1, 'Required').max(500),
     itemPrice: z.coerce.number().min(0),
-    itemPaidBy: paidByEnum,
     quantity: z.coerce.number().int().min(1),
     tier: tierEnum,
     shippingPrice: z.coerce.number().min(0).optional(),
-    shippingPaidBy: paidByEnum,
     options: optionsSchema.optional(),
     notes: z.string().trim().max(500).optional().or(z.literal('')).nullable(),
   })
@@ -97,9 +92,9 @@ export const editShipmentSchema = z
     path: ['recipient', 'city'],
   })
   .refine(
-    (v) => v.tier !== 'OTHER' || (typeof v.shippingPrice === 'number' && v.shippingPrice >= 0),
+    (v) => v.tier !== 'D' || (typeof v.shippingPrice === 'number' && v.shippingPrice >= 0),
     {
-      message: 'Shipping price is required for OTHER tier.',
+      message: 'Shipping price is required for tier D.',
       path: ['shippingPrice'],
     }
   );
