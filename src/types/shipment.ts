@@ -209,6 +209,10 @@ export interface ShipmentFilters {
   sort?: string;
 }
 
+/**
+ * Stats from GET /api/shipments/stats.
+ * NOTE: Values are total weight in **kilograms** (not shipment counts).
+ */
 export interface ShipmentStats {
   total: number;
   pending: number;
