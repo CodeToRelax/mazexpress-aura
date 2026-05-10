@@ -1,20 +1,30 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { Plus, Package, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Plus, Package, ChevronLeft, ChevronRight, Loader2, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { listAdminShipments } from '@/utilities/api/domesticShipments.api';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { listAdminShipments, bulkUpdateStatus } from '@/utilities/api/domesticShipments.api';
 import { StatusTabs } from './StatusTabs';
 import { ShipmentsFilters, type ShipmentsFilterState } from './ShipmentsFilters';
 import { ShipmentsTable } from './ShipmentsTable';
-import type { DomesticStatus } from '@/types/domestic';
+import { DOMESTIC_STATUSES, type DomesticStatus } from '@/types/domestic';
+import { toast } from 'sonner';
 
 const LIMIT = 20;
 
 export default function DomesticShipmentsPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const qc = useQueryClient();
   const [page, setPage] = useState(1);
   const [statusTab, setStatusTab] = useState<DomesticStatus | 'all'>('all');
   const [filters, setFilters] = useState<ShipmentsFilterState>({
@@ -23,6 +33,9 @@ export default function DomesticShipmentsPage() {
     destinationCity: '',
     senderUserId: '',
   });
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkStatus, setBulkStatus] = useState<DomesticStatus | ''>('');
+  const [bulkNote, setBulkNote] = useState('');
 
   const queryArgs = useMemo(
     () => ({
@@ -47,6 +60,52 @@ export default function DomesticShipmentsPage() {
   const totalPages = data?.totalPages ?? 1;
   const showingFrom = total === 0 ? 0 : (page - 1) * LIMIT + 1;
   const showingTo = Math.min(page * LIMIT, total);
+
+  const toggleId = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+  const toggleAll = (ids: string[], select: boolean) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (select) ids.forEach((i) => next.add(i));
+      else ids.forEach((i) => next.delete(i));
+      return next;
+    });
+  };
+  const clearSelection = () => {
+    setSelectedIds(new Set());
+    setBulkStatus('');
+    setBulkNote('');
+  };
+
+  const bulkMutation = useMutation({
+    mutationFn: () =>
+      bulkUpdateStatus(Array.from(selectedIds), bulkStatus as DomesticStatus, bulkNote || undefined),
+    onSuccess: (res) => {
+      if (res.failCount > 0) {
+        toast.warning(
+          t('domestic.admin.shipments.bulk-partial', '{{ok}} updated, {{fail}} failed.', {
+            ok: res.successCount,
+            fail: res.failCount,
+          })
+        );
+      } else {
+        toast.success(
+          t('domestic.admin.shipments.bulk-success', '{{ok}} shipments updated.', {
+            ok: res.successCount,
+          })
+        );
+      }
+      qc.invalidateQueries({ queryKey: ['domestic-shipments'] });
+      clearSelection();
+    },
+    onError: (err) => toast.error(err instanceof Error ? err.message : 'Bulk update failed'),
+  });
 
   return (
     <div className="relative z-10 space-y-6">
@@ -92,11 +151,55 @@ export default function DomesticShipmentsPage() {
         }}
       />
 
+      {/* Bulk action toolbar */}
+      {selectedIds.size > 0 && (
+        <div className="glass-card rounded-xl p-3 flex flex-wrap items-center gap-3 sticky top-2 z-20">
+          <span className="text-sm font-medium">
+            {t('domestic.admin.shipments.bulk-selected', '{{n}} selected', { n: selectedIds.size })}
+          </span>
+          <Select value={bulkStatus} onValueChange={(v) => setBulkStatus(v as DomesticStatus)}>
+            <SelectTrigger className="h-9 w-[220px]">
+              <SelectValue placeholder={t('domestic.admin.shipments.bulk-pick-status', 'Change status to…')} />
+            </SelectTrigger>
+            <SelectContent className="bg-white dark:bg-gray-900">
+              {DOMESTIC_STATUSES.map((s) => (
+                <SelectItem key={s} value={s}>
+                  {t(`domestic.status.${s}`, s)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Input
+            value={bulkNote}
+            onChange={(e) => setBulkNote(e.target.value)}
+            placeholder={t('domestic.admin.shipments.bulk-note', 'Optional note')}
+            className="h-9 max-w-xs"
+          />
+          <div className="ml-auto flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={clearSelection} disabled={bulkMutation.isPending}>
+              <X className="h-3.5 w-3.5 mr-1" />
+              {t('common.cancel', 'Cancel')}
+            </Button>
+            <Button
+              size="sm"
+              disabled={!bulkStatus || bulkMutation.isPending}
+              onClick={() => bulkMutation.mutate()}
+            >
+              {bulkMutation.isPending && <Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" />}
+              {t('domestic.admin.shipments.bulk-apply', 'Apply')}
+            </Button>
+          </div>
+        </div>
+      )}
+
       {/* Table */}
       <ShipmentsTable
         shipments={docs}
         isLoading={isLoading}
         onRowClick={(s) => navigate(`/admin/domestic/shipments/${s._id}`)}
+        selectedIds={selectedIds}
+        onToggleId={toggleId}
+        onToggleAll={toggleAll}
       />
 
       {/* Pagination */}
