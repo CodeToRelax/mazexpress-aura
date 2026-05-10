@@ -294,24 +294,6 @@ export default function CreateWalkInPage() {
                 {...form.register('itemPrice', { valueAsNumber: true })}
               />
             </div>
-            <div className="space-y-2">
-              <Label>{t('domestic.admin.shipments.walk-in.item-paid-by', 'Item paid by')}</Label>
-              <Controller
-                control={form.control}
-                name="itemPaidBy"
-                render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="sender">{t('domestic.paid-by.sender', 'Sender')}</SelectItem>
-                      <SelectItem value="receiver">{t('domestic.paid-by.receiver', 'Receiver')}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-            </div>
 
             <div className="space-y-2">
               <Label>{t('domestic.admin.shipments.walk-in.tier', 'Tier')}</Label>
@@ -327,34 +309,14 @@ export default function CreateWalkInPage() {
                       <SelectItem value="A">Tier A</SelectItem>
                       <SelectItem value="B">Tier B</SelectItem>
                       <SelectItem value="C">Tier C</SelectItem>
-                      <SelectItem value="D">Tier D</SelectItem>
-                      <SelectItem value="OTHER">OTHER (custom)</SelectItem>
+                      <SelectItem value="D">Tier D (manual price)</SelectItem>
                     </SelectContent>
                   </Select>
                 )}
               />
             </div>
 
-            <div className="space-y-2">
-              <Label>{t('domestic.admin.shipments.walk-in.shipping-paid-by', 'Shipping paid by')}</Label>
-              <Controller
-                control={form.control}
-                name="shippingPaidBy"
-                render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="sender">{t('domestic.paid-by.sender', 'Sender')}</SelectItem>
-                      <SelectItem value="receiver">{t('domestic.paid-by.receiver', 'Receiver')}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-            </div>
-
-            {tier === 'OTHER' && (
+            {tier === 'D' && (
               <div className="md:col-span-2 space-y-2">
                 <Label>
                   {t('domestic.admin.shipments.walk-in.shipping-price', 'Shipping price (LYD)')}
@@ -370,11 +332,18 @@ export default function CreateWalkInPage() {
                     {form.formState.errors.shippingPrice.message}
                   </p>
                 )}
+                <p className="text-xs text-muted-foreground inline-flex items-center gap-1">
+                  <Info className="h-3 w-3" />
+                  {t(
+                    'domestic.admin.shipments.walk-in.tier-d-hint',
+                    'Tier D: shipping price is set manually by the admin.'
+                  )}
+                </p>
               </div>
             )}
 
             {/* Live tier price preview */}
-            {tier !== 'OTHER' && lookupEnabled && (
+            {tier !== 'D' && lookupEnabled && (
               <div className="md:col-span-2">
                 {lookupLoading ? (
                   <div className="inline-flex items-center gap-2 text-sm text-muted-foreground">
