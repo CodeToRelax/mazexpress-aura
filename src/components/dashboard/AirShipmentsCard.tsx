@@ -20,8 +20,8 @@ export function AirShipmentsCard() {
   });
 
   // Backend may expose kgBreakdown; fall back to statusBreakdown counts.
-  const breakdown = (data as any)?.kgBreakdown ?? data?.statusBreakdown ?? {};
-  const isKg = !!(data as any)?.kgBreakdown;
+  const breakdown = (data?.kgBreakdown ?? data?.statusBreakdown ?? {}) as Record<string, number>;
+  const isKg = !!data?.kgBreakdown;
   const unit = isKg ? 'kg' : '';
 
   // Exclude "delivered" — show in-progress states only
