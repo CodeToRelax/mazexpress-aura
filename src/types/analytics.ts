@@ -29,6 +29,8 @@ export interface AirShipmentsAnalytics {
   /** Active pipeline KG (excludes delivered) — new field. */
   totalKGExcludingDelivered?: number;
   statusBreakdown: ShipmentStatusBreakdown;
+  /** Per-status weight in kg. When present, UI shows kg instead of counts. */
+  kgBreakdown?: ShipmentStatusBreakdown;
   chartData: ShipmentChartDataPoint[];
 }
 
