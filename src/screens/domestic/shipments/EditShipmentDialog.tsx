@@ -115,6 +115,7 @@ export function EditShipmentDialog({ open, onOpenChange, shipment }: Props) {
         },
         description: values.description,
         itemPrice: values.itemPrice,
+        itemPaidBy: (values.itemPrice ?? 0) > 0 ? 'receiver' : 'sender',
         quantity: values.quantity,
         tier: values.tier,
         options: values.options,

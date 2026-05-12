@@ -166,6 +166,8 @@ export interface AdminCreateBody {
   recipient: Recipient;
   description: string;
   itemPrice?: number;
+  /** Derived from itemPrice on the client: >0 → 'receiver', 0 → 'sender'. */
+  itemPaidBy?: PaidBy;
   quantity?: number;
   tier: DomesticTier;
   /** Required when tier === 'D'. Ignored otherwise (server auto-calculates). */
@@ -179,6 +181,8 @@ export type AdminEditBody = Partial<{
   recipient: Recipient;
   description: string;
   itemPrice: number;
+  /** Derived from itemPrice on the client: >0 → 'receiver', 0 → 'sender'. */
+  itemPaidBy: PaidBy;
   quantity: number;
   tier: DomesticTier;
   /** Required when tier === 'D'. */
