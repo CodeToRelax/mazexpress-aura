@@ -98,6 +98,7 @@ export default function CreateWalkInPage() {
         },
         description: values.description,
         itemPrice: values.itemPrice,
+        itemPaidBy: (values.itemPrice ?? 0) > 0 ? 'receiver' : 'sender',
         quantity: values.quantity,
         tier: values.tier,
         // Only send shippingPrice for tier D (admin-priced).
